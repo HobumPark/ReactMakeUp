@@ -2,7 +2,7 @@ import React from "react";
 
 const TextArea = ({
   value = "",
-  placeholder = "Enter text here...",
+  placeholder,
   className,
   onChange,
   id,

@@ -115,9 +115,20 @@ button.btn-search {
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
-	padding: 6px 12px;
+	padding: 9px 12px;
 }
 
+
+button.btn-filter-active{
+	background-color: var(--blueprimary-500);
+	color: var(--neutral-50);
+	border: none;
+	font-weight: 400;
+	border-radius: 5px;
+	border: 2px solid var(--blueprimary-500);
+	cursor: pointer;
+	padding: 6px 12px;
+}
 
 button.btn-search:disabled {
     color: #FBFCFF;
@@ -126,7 +137,7 @@ button.btn-search:disabled {
 	cursor: default; 
 }
   
-button.btn-search:not(:disabled):hover {
+button.btn-search:not(:disabled):hover, button.btn-filter-active:not(:disabled):hover {
 	filter: brightness(90%);
 }
 
@@ -142,7 +153,12 @@ button.btn-reset {
 }
   
 button.btn-reset:not(:disabled):hover {
-	filter: brightness(90%);
+	background-color: var(--blueprimary-500);
+	color: var(--neutral-50);
+	border: 2px solid var(--blueprimary-500);
+}
+button.btn-reset:hover img, button.btn-filter-active img{
+	filter: brightness(400) !important;
 }
 
 
@@ -221,9 +237,23 @@ input:focus, select:focus, textarea:focus {
   select:disabled, textarea:disabled{
 	  background-color: var(--neutral-600);
 	  border-color: var(--neutral-600);
-	  color: var(--neutral-900);
+	  color: var(--neutral-700);
 }
 
+
+.subfilter_container {
+	display: flex;
+	overflow: hidden;
+	max-height: 0; /* Mulai dari 0 */
+	box-sizing: border-box;
+	transition-property: max-height; 
+	transition-duration: 500ms
+}
+  
+.subfilter_container.open {
+	max-height: 150px;
+}
+  
 
 .types{
 	align-items: center;
@@ -236,6 +266,7 @@ input:focus, select:focus, textarea:focus {
 	text-align: left;
 	border-radius: 2px;
 	gap: 12px;
+	
   }
 
   .type_name {
@@ -320,7 +351,7 @@ select {
 }
 
 select:disabled {
-    background-image: url(../assets/icon/dropdown-arrow-grey.svg);
+    background-image: none;
 }
 
 select.readonly {
@@ -358,10 +389,9 @@ textarea {
 
 .input-search {
 	width: 100%;
-	padding: 6px 50px 6px 12px; 
+	padding: 12px 50px 12px 12px; 
 	box-sizing: border-box;
 	position: relative;
-	
 }
 
 .wrapper-icon {

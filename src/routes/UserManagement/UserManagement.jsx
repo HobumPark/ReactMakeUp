@@ -57,7 +57,7 @@ const columnsHistory = [
   {
     title: "Phone No.",
     field: "phone_no",
-    widthGrow: 2,
+    widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -66,7 +66,7 @@ const columnsHistory = [
   {
     title: "Position",
     field: "position",
-    widthGrow: 1,
+    widthGrow: 2,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -274,6 +274,7 @@ const updateCallback = () => {
         setDisabledForm(false);
         setDisabledId(true);
         setHasChangesUpdate(false);
+        setIsNewClicked(false);
       });
     } else {
       const rowData = row.getData();
@@ -283,6 +284,7 @@ const updateCallback = () => {
       setDisabledForm(false);
       setDisabledId(true);
       enableUPDATEButtons();
+      setIsNewClicked(false);
     }
 
   }, []);
@@ -349,20 +351,6 @@ const updateCallback = () => {
   };
   const handleRegistButtonClick = () => {
 
-    // if (
-    //   !formValues.password ||
-    //   !formValues.confirmation ||
-    //   !formValues.organization?.id ||
-    //   !formValues.name ||
-    //   !formValues.birth
-    // ) {
-    //   new NoticeMessage('Registration failed. Please check and try again. All fields marked with * are required and must be filled.')
-    // }
-  
-    // if (formValues.password !== formValues.confirmation) {
-    //   new NoticeMessage('Registration failed. Please check and try again. Password does not match. Please check again.')
-    // }
-
     const updatedFormValues = {
       ...formValues,
       no_hash_password: formValues.password, 
@@ -379,7 +367,6 @@ const updateCallback = () => {
       password: Common.SHA256(formValues.password), 
       birth: formatDateToMMDDYYYY(formValues.birth)
     };
-    console.log(updatedFormValues);
     updateUser(updatedFormValues);
 
   }
@@ -435,7 +422,7 @@ const updateCallback = () => {
       setDisabledForm(true);
       setDisabledId(true);
       enableInitialButtons();
-      hasChangesCreate(false);
+      setHasChangesCreate(false);
     }
   }   else {
     reloadCallback()
@@ -458,7 +445,6 @@ const updateCallback = () => {
 
 
   useEffect(() => {
-    
   }, [selectedUser, formValues]);
 
   useEffect(() => {
@@ -580,11 +566,17 @@ const updateCallback = () => {
                 name={"organization"}
                 disabled={disabledForm}
                 required={true}
-                optionSelect={[
-                  { value: "", label: "" },
-                  { value: "org1", label: "Organization 1" },
-                  { value: "org2", label: "Organization 2" },
-                ]}
+                optionSelect={
+                      commonListData?.["ORG"]
+                        ? [
+                            { value: "", label: ""}, 
+                            ...commonListData["ORG"].code.map((code, index) => ({
+                              value: code,
+                              label: commonListData["ORG"].name[index],
+                            })),
+                          ]
+                        : []
+                    }
               />
               <DetailForm
                 label={"Date of Birth"}
@@ -611,11 +603,17 @@ const updateCallback = () => {
                 onChange={handleInputChange}
                 name={"position"}
                 disabled={disabledForm}
-                optionSelect={[
-                  { value: "", label: "" },
-                  { value: "pst1", label: "Position 1" },
-                  { value: "pst2", label: "Position 2" },
-                ]}
+                optionSelect={
+                      commonListData?.["021"]
+                        ? [
+                            { value: "", label: ""}, 
+                            ...commonListData["021"].code.map((code, index) => ({
+                              value: code,
+                              label: commonListData["021"].name[index],
+                            })),
+                          ]
+                        : []
+                    }
               />
             </div>
         <hr className="border-t border-gray-300" />

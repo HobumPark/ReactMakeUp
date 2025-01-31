@@ -2,6 +2,7 @@ import React, {
     useRef,
     forwardRef,
     useState,
+    useImperativeHandle,
   } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +15,7 @@ const PasswordInput =  forwardRef(({
   id,
   name,
   onChange = () => {},
+  onKeyUp = () => {},
   state ='default',
   pattern = "",
   disabled,
@@ -21,11 +23,27 @@ const PasswordInput =  forwardRef(({
 }, ref) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const inputRef = useRef(null); 
+  const [inputValue, setInputValue] = useState(value);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
     inputRef.current.type = isPasswordVisible ? 'password' : 'text';
   };
+  const handleInputChange = (event) => {
+    if (pattern) {
+      if (pattern.test(event.target.value)) {
+        setInputValue(event.target.value);
+      }
+    } else {
+      setInputValue(event.target.value);
+    }
+    onChange(event);
+  };
+
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current.focus(),
+    empty: () => setInputValue(""),
+  }));  
 
   return (
     <div className={customInput}>
@@ -34,8 +52,11 @@ const PasswordInput =  forwardRef(({
         type="password"
         placeholder={placeholder}
         className='input'
+        value={inputValue}
         id={id}
         disabled={disabled}
+        onKeyUp={onKeyUp}
+        onChange={handleInputChange}
       />
       
       {!disabled && (

@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, deleteUser, fetchDetailUser, fetchUserList, updateUser } from "../api/user-mgt";
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
 

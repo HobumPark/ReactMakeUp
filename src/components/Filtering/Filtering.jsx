@@ -3,7 +3,7 @@ import GeneralInput from "../GeneralInput/GeneralInput";
 import Button from "../Button/Button";
 import Magnifier from "../../assets/icon/icon-search.svg";
 import Frame from "../../assets/icon/Frame.png";
-import RadioFilter from "../RadioFilter/RadioFilter"; // Import komponen RadioFilter
+import RadioFilter from "../RadioFilter/RadioFilter"; 
 
 const Filtering = ({
   labelSelect,
@@ -66,7 +66,7 @@ const Filtering = ({
           {children}
         </div>
 
-        <div className="flex gap-4 ml-auto items-center">
+        <div className="flex gap-[12px] ml-auto items-center">
           {!disableSearchInput && (
             <GeneralInput
               customInput={"wrapper-icon"}
@@ -82,14 +82,12 @@ const Filtering = ({
           {!disableSearchButton && <Button label={searchButtonLabel} customButton="btn-search" onClick={handleSearchButtonClick}/>}
           {!disableResetButton && <Button label={resetButtonLabel} customButton="btn-reset" onClick={handleReset} />}
           {!disableFiltering && (
-            <Button label={filteringButtonLabel} customButton="flex btn-reset " isImage={Frame} onClick={toggleRadioFilter} />
+            <Button label={filteringButtonLabel} customButton={`flex ${isRadioFilterVisible ? "btn-filter-active" : "btn-reset"}`} isImage={Frame} onClick={toggleRadioFilter} />
           )}
         </div>
       </div>
-
       {isRadioFilterVisible && (
-        <div className="mt-4">
-        
+        <div >
           <RadioFilter
             name="Deleted"
             label="Deleted"

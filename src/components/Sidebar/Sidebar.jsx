@@ -11,6 +11,7 @@ import useAuth from '../../hooks/useAuth';
 const Sidebar = () => {
   const { handleLogout } = useAuth();
   const [isActive, setIsActive] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [time, setTime] = useState(""); 
   const [date, setDate] = useState("");
   const location = useLocation();
@@ -49,8 +50,6 @@ const Sidebar = () => {
     { id: "user", label: "User Management", path: "/system-management/user" },
     { id: "program", label: "Program Management", path: "/system-management/program" },
     { id: "authority", label: "Authority Management", path: "/system-management/authority" },
-    { id: "language", label: "Language Management", path: "/system-management/language" },
-    { id: "loginhistory", label: "Login History", path: "/system-management/login-history" },
   ];
 
   const handleLinkClick = (id) => {
@@ -60,7 +59,11 @@ const Sidebar = () => {
   const toggleActive = () => {
     setIsActive(prevState => !prevState);
   };
-
+  const toggleVisibility = () => {
+    console.log('gdasg');
+    
+    setIsVisible((prev) => !prev);
+  };
   const isLinkActive = (linkPath) => {
     return location.pathname.includes(linkPath);
   };
@@ -108,9 +111,9 @@ const Sidebar = () => {
           <div className={classes["box-toggle-dropdown"]}>
             <div className={classes["box-system-management"]}>
               <span
-                className={`${classes["title-system-management"]} ${isActive || links.some(link => isLinkActive(link.path)) ? classes.active : ''}`}
+                className={`${classes["title-system-management"]} ${isVisible ? classes.active : ''}`}
                 id="title-system-management"
-                onClick={toggleActive}
+                onClick={toggleVisibility}
               >
                 System
                 <img
@@ -119,6 +122,7 @@ const Sidebar = () => {
                   alt="Dropdown"
                 />
               </span>
+              {isVisible && (
               <div className={classes["content-system-management"]} id="content-system-management">
                 {links.map(link => (
                   <Link
@@ -133,6 +137,7 @@ const Sidebar = () => {
                   </Link>
                 ))}
               </div>
+            )}
             </div>
           </div>
         </div>

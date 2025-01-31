@@ -6,7 +6,9 @@ import React, {
   useImperativeHandle,
 } from "react";
 
-const GeneralInput = forwardRef(({ 
+const GeneralInput = forwardRef(
+  (
+    { 
   customInput, 
   inputFormStyle,
   type, 
@@ -14,13 +16,13 @@ const GeneralInput = forwardRef(({
   value,
   id,
   name,
-  onChange = () => {},
   maxLength,
-  state = 'default',
   pattern = "",
   rightIconStyle,
   rightIcon, 
   disabled,
+  onKeyUp = () => {},
+  onChange = () => {},
 }, ref) => {
   const inputRef = useRef();
   
@@ -54,6 +56,7 @@ const GeneralInput = forwardRef(({
         type={type}
         placeholder={placeholder}
         value={inputValue}
+        onKeyUp={onKeyUp}
         onChange={handleInputChange}
         className={`input ${inputFormStyle} `}
         maxLength={maxLength}
@@ -71,6 +74,5 @@ const GeneralInput = forwardRef(({
     </div>
   );
 });
-
 
 export default GeneralInput;

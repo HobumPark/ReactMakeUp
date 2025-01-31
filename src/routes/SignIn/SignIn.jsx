@@ -24,12 +24,50 @@ function SignIn() {
       new NoticeMessage(err?.message);
     },
   });
+
+  const handleOnKeyID = (event) => {
+    const keyInput = event.key;
+    const target = event.target;
+    const idValue = target.value;
+    if (keyInput === "Enter") {
+      if (idValue === "") {
+        return;
+      }
+
+      
+      if (!pwInputRef.current.value) {
+        pwInputRef.current.focus();
+        return;
+      }
+      onLogin();
+    }
+  };
+  
+
+  const handleOnKeyPW = (event) => {
+    const keyInput = event.key;
+    const target = event.target;
+    const pwValue = target.value;
+    if (keyInput === "Enter") {
+      if (!idInputRef.current.value) {
+        idInputRef.current.focus();
+      }
+
+      if (pwValue === "") {
+        return;
+      }
+
+      onLogin();
+    }
+  };
   
 
   useEffect(() => {
+    if (idInputRef.current) {
+      idInputRef.current.focus();
+    }
     const isLogin = getIsLogin();
-    console.log(isLogin);
-    
+
     if (isLogin) {
         navigate("/system-management/user");
     }
@@ -41,9 +79,8 @@ function SignIn() {
       ...accountInfo,
       password: hashedPassword, 
     };
-    console.log(hashedPassword);
+    console.log(loginPayload);
     
-
     handleLogin(loginPayload); 
   };
   
@@ -63,6 +100,7 @@ function SignIn() {
             placeholder="User ID"
             value={accountInfo.identifier.trim()}
             type={'text'}
+            onKeyUp={handleOnKeyID}
             maxLength={20}
             onChange={({ target }) =>
               setAccountInfo((curInfo) => ({
@@ -76,6 +114,7 @@ function SignIn() {
               ref={pwInputRef}
               customInput={classes._inputPassword}
               placeholder="Password"
+              onKeyUp={handleOnKeyPW}
               value={accountInfo.password.trim()}
               onChange={({ target }) =>
               setAccountInfo((curInfo) => ({
