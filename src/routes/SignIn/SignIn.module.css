@@ -1,0 +1,151 @@
+.wrapperSignIn {
+  font-family: "Noto Sans KR";
+  font-size: 14px;
+  font-weight: 400;
+  position: relative;
+  background: url(../../assets/img/img-bg.png);
+  background-position: 70%;
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.nm_container {
+  border-top: 4px solid var(--blueprimary-500);
+}
+
+._containerLogIn {
+background: rgba(255, 255, 255, 0.5);
+width: 21%;
+height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 0 40px;
+border-radius: 0 25px 25px 0;
+backdrop-filter: blur(9px);
+}
+
+._containerLogIn .logo {
+margin-bottom: 67px;
+max-width: 400px;
+}
+
+._boxInput {
+display: flex;
+flex-direction: column;
+gap: 16px;
+width: 100%;
+}
+
+._inputUser,
+._inputPassword {
+width: 100%;
+display: flex;
+position: relative;
+}
+
+
+._inputUser input,
+._inputPassword input {
+  height: 56px;
+  /* outline: none; */
+  background-color: var(--neutral-500);
+  border: 1px solid var(--neutral-700);
+  border-radius: 8px;
+  width: inherit;
+  padding: 0 16px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--black-500);
+  font-family: "Noto Sans KR";
+}
+
+._btnSend {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+._btnSend span {
+  color: var(--blueprimary-500);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+button.btnlogin {
+  background-color: var(--blueprimary-500);
+  height: 60px;
+  color: var(--neutral-50);
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button.btn-login:hover {
+  filter: brightness(90%);
+}
+
+._boxTitle {
+  place-items: center;
+  width: 35%;
+  align-items: center;
+  margin: auto;
+  display: grid;
+}
+
+._boxTitle h1 {
+  color: #d1d2d3;
+  font-weight: 500;
+  font-size: 45px;
+}
+
+
+@media only screen and (min-width: 360px) and (max-width: 650px) {
+  ._containerLogIn {
+    width: 100% !important;
+  }
+  ._boxTitle {
+    display: none;
+  }
+  .modal-box {
+    width: 84%;
+  }
+  ._tableForgot tbody {
+    height: 400px;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    overflow-y: scroll;
+  }
+  ._contentModalInput {
+    padding: 20px;
+  }
+  ._tableForgot tbody tr td {
+    width: auto;
+  }
+  ._tableForgot tbody tr:nth-child(7) {
+    grid-row: 6;
+    grid-column: 1;
+  }
+  ._boxBtnForgot button {
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width: 1370px) {
+  ._containerLogIn {
+    width: 25%;
+  }
+  ._boxTitle {
+    width: 60%;
+    margin: 20px auto;
+  }
+}
