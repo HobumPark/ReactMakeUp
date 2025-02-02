@@ -31,5 +31,6 @@ export const APIS = {
   deleteUser: (userID) =>
     `/users/${userID}`,
   createUser: '/users',
-  updateUser: '/users/update'
+  updateUser: '/users/update',
+  codeList: (filterParams) => `/codes?${filterParams}`,
 };

@@ -367,6 +367,7 @@ const updateCallback = () => {
       password: Common.SHA256(formValues.password), 
       birth: formatDateToMMDDYYYY(formValues.birth)
     };
+    
     updateUser(updatedFormValues);
 
   }
@@ -471,9 +472,7 @@ const updateCallback = () => {
     ]
   : [];
   return (
-    <div className='wrapper'>
-      <Sidebar />
-        <div className='article-content-right'>
+    <>
         <section className='wrap'>
           <div className='header-title'>
             <h3>System Management</h3>
@@ -639,8 +638,7 @@ const updateCallback = () => {
       </div>
         
        </ContainerCard>
-        </div>
-    </div>
+       </>
   );
 };
 

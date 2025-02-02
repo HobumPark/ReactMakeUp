@@ -186,9 +186,7 @@ const AuthorityManagement = () => {
       { label: "Option 3", value: "option3" },
     ];
   return (
-    <div className='wrapper'>
-      <Sidebar />
-        <div className='article-content-right'>
+    <>
         <section className='wrap'>
           <div className='header-title'>
             <h3>SYSTEM</h3>
@@ -305,8 +303,7 @@ const AuthorityManagement = () => {
         </ContainerCard>
       </div>
     </div>
-        </div>
-    </div>
+        </>
   );
 };
 

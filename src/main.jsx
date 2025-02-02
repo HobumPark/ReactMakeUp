@@ -10,7 +10,7 @@ import ProgramManagement from './routes/ProgramManagement/ProgramManagement.jsx'
 import CodeManagement from './routes/CodeManagement/CodeManagement.jsx';
 import AuthorityManagement from './routes/AuthorityManagement/AuthorityManagement.jsx';
 import GroupManagement from './routes/GroupManagement/GroupManagement.jsx';
-import ProtectedRoutes from './components/ProtectedRout/ProtectedRoute.jsx';
+import ProtectedRoutes from './components/ProtectedRoute/ProtectedRoute.jsx';
 
 
 const queryClient = new QueryClient();

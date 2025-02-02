@@ -8,6 +8,7 @@ import Button from '../../components/Button/Button';
 import LogList from '../../components/LogList/LogList';
 import ButtonGroup from '../../components/ButtonGroup/ButtonGroup';
 import Select from '../../components/Select/Select';
+import useCodeMgt from '../../hooks/useCodeMgt';
 
 
 // tabulator top
@@ -23,8 +24,18 @@ const columnsHistory = [
     resizable: false,
   },
   {
+    title: "ID",
+    field: "id",
+    widthGrow: 1,
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+    visible: false,
+  },
+  {
     title: "Code Group",
-    field: "codeGroup",
+    field: "upper_code",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -33,7 +44,7 @@ const columnsHistory = [
   },
   {
     title: "Code",
-    field: "code",
+    field: "lower_code",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -42,71 +53,52 @@ const columnsHistory = [
   },
   {
     title: "Code Name (ENG)",
-    field: "codeNameENG",
+    field: "eng",
     widthGrow: 2,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: function (cell, formatterParams, onRendered) {
+      const data = cell.getRow().getData();
+      return data.lower_code
+        ? "　└　" + cell.getValue()
+        : cell.getValue();
+    },
   },
   {
     title: "Code Name (IND)",
-    field: "codeNameIND",
+    field: "ind",
     widthGrow: 2,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
-  },
-];
-
-const dataHistory = [
-  {
-    code_id:"1",
-    codeGroup: "Dashboard",
-    code: "Code-001",
-    codeNameENG: "Dashboard Box 1",
-    codeNameIND: "Kotak Dashboard 1",
-  },
-  {
-    code_id:"2",
-    codeGroup: "Dashboard",
-    code: "Code-002",
-    codeNameENG: "Dashboard Box 2",
-    codeNameIND: "Kotak Dashboard 2",
-  },
-  {
-    code_id:"3",
-    codeGroup: "Dashboard",
-    code: "Code-003",
-    codeNameENG: "Dashboard Box 3",
-    codeNameIND: "Kotak Dashboard 3",
-  },
-  {
-    code_id:"4",
-    codeGroup: "Dashboard",
-    code: "Code-004",
-    codeNameENG: "Dashboard Box 4",
-    codeNameIND: "Kotak Dashboard 4",
-  },
-  {
-    code_id:"5",
-    codeGroup: "Dashboard",
-    code: "Code-005",
-    codeNameENG: "Dashboard Box 5",
-    codeNameIND: "Kotak Dashboard 5",
+    formatter: function (cell, formatterParams, onRendered) {
+      const data = cell.getRow().getData();
+      return data.lower_code
+        ? "　└　" + cell.getValue()
+        : cell.getValue();
+    },
   },
 ];
 
 
 
 const CodeManagement = () => {
-    const [selectedOption, setSelectedOption] = useState("");
     const tbRef = useRef(null);
     const [disabled, setDisabled] = useState(true);
+    const [queryParams, setQueryParams] = useState("");
     const [selectedCode, setSelectedCode] = useState({
-        code_id: null,
+        id: null,
     });
+
+    const { codeListData } = useCodeMgt({
+      codeID: selectedCode?.id,
+      queryParams: queryParams  || "deletion=001002"
+  
+    });
+  
     const [formValues, setFormValues] = useState({
       codeNameENG: "",
       codeNameIND: "",
@@ -118,22 +110,25 @@ const CodeManagement = () => {
       sortOrder:""
       });  
 
-    const optionsHistory = {
+    const optionsTabulator = {
       debugInvalidOptions: true,
       pagination: true,
       movableRows: false,
       resizableRows: false,
-      index: "code_id",
-      paginationSize: 15,
-      rowHeight: 41,
+      index: "id",
+      paginationSize: 10,
       selectableRows: 1,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${dataHistory.length || 0} Results</div>`,
+      rowHeight: 41,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${codeListData?.length || 0} Results</div>`,
+      selectableRowsCheck: (row) => {
+        return !row.getElement().classList.contains("tabulator-selected");
+      },
     };
 
     const handleRowSelected = useCallback((row) => {
       console.log("Row Selected", row);
       const rowData = row.getData(); 
-      setSelectedCode((cur) => ({ ...cur, code_id: rowData.code_id }));
+      setSelectedCode((cur) => ({ ...cur, id: rowData.id }));
       setFormValues({
         codeNameENG: rowData.codeNameENG || "",
         codeNameIND: rowData.codeNameIND || "",
@@ -147,20 +142,6 @@ const CodeManagement = () => {
       setDisabled(false); 
     }, []);
     
-    const handleRowDeselected = useCallback((row) => {
-      console.log("Deselected", row);
-      setFormValues({
-        codeNameENG: "",
-        codeNameIND: "",
-        codeGroup: "",
-        code: "",
-        codeType: "",
-        usage:"",
-        description:"",
-        sortOrder:""
-      });
-      setDisabled(true);
-    }, []);
     
     const handleInputChange = (e) => {
       const { name, value } = e.target;
@@ -175,9 +156,7 @@ const CodeManagement = () => {
       { label: "Option 3", value: "option3" },
     ];
   return (
-    <div className='wrapper'>
-      <Sidebar />
-        <div className='article-content-right'>
+    <>
         <section className='wrap'>
           <div className='header-title'>
             <h3>SYSTEM</h3>
@@ -201,16 +180,15 @@ const CodeManagement = () => {
         <ContainerCard>
         <ReactTabulator
             className="container-tabullator"
-            data={dataHistory || []}
+            data={codeListData  || []}
             columns={columnsHistory}
             layout={"fitColumns"}
-            options={optionsHistory}
+            options={optionsTabulator}
             onRef={(r) => {
               tbRef.current = r.current;
             }}
             events={{
               rowSelected: handleRowSelected,
-              rowDeselected: handleRowDeselected,
               tableBuilt: () => {
                 if (selectedCode?.code_id) {
                   const row = tbRef.current.getRow(selectedCode?.code_id);
@@ -222,66 +200,18 @@ const CodeManagement = () => {
         </ContainerCard>
         <ContainerCard>
         <div className="flex w-full flex-col gap-[10px]">
-        <div className="grid grid-cols-3 grid-rows-3 gap-x-[40px] gap-y-[10px] auto-cols-fr">
-             <DetailForm
-                label={"Code Type"}
-                value={formValues.codeType}
-                inputType={'select'}
-                onChange={handleInputChange}
-                name={"codeType"}
-                disabled={disabled}/>
-              <DetailForm
-                label={"Code Name (ENG)"}
-                value={formValues.codeNameENG}
-                inputType={'text'}
-                onChange={handleInputChange}
-                name={"codeNameENG"}
-                required={true}
-                disabled={disabled}/>
-              <DetailForm
-                label={"Sort Order"}
-                value={formValues.sortOrder}
-                inputType={'text'}
-                onChange={handleInputChange}
-                name={"sortOrder"}
-                disabled={disabled}/>
-               <DetailForm
-                label={"Code Group"}
-                value={formValues.codeGroup}
-                inputType={'text'}
-                onChange={handleInputChange}
-                name={"codeGroup"}
-                disabled={disabled}/>
-              <DetailForm
-                label={"Code Name (IND)"}
-                value={formValues.codeNameIND}
-                inputType={'text'}
-                required={true}
-                onChange={handleInputChange}
-                name={"codeNameIND"}
-                disabled={disabled}/>
-              <DetailForm
-                label={"Description"}
-                value={formValues.description}
-                onChange={handleInputChange}
-                name={"description"}
-                inputType={'textarea'}
-                disabled={disabled}/>
-              <DetailForm
-                label={"Code"}
-                value={formValues.code}
-                onChange={handleInputChange}
-                name={"code"}
-                required={true}
-                inputType={'text'}
-                disabled={disabled}/>
-              <DetailForm
-                label={"Usage"}
-                value={'121212'}
-                inputType={'select'}
-                onChange={handleInputChange}
-                disabled={disabled}/>
-            </div>
+        <div className="grid grid-cols-3 gap-4 items-center">
+        <DetailForm label="Code Type" value={formValues.codeType} inputType="select" onChange={handleInputChange} name="codeType" disabled={disabled} />
+        <DetailForm label="Code Name (ENG)" value={formValues.codeNameENG} inputType="text" onChange={handleInputChange} name="codeNameENG" disabled={disabled} />
+        <DetailForm label="Sort Order" value={formValues.sortOrder} inputType="text" onChange={handleInputChange} name="sortOrder" disabled={disabled} />
+        <DetailForm label="Group Code" value={formValues.codeGroup} inputType="text" onChange={handleInputChange} name="codeGroup" disabled={disabled} />
+        <DetailForm label="Code Name (IND)" value={formValues.codeNameIND} inputType="text" onChange={handleInputChange} name="codeNameIND" disabled={disabled} />
+        <DetailForm label="Description" value={formValues.description} inputType="textarea" onChange={handleInputChange} name="description" disabled={disabled} className="row-span-2" />
+        <DetailForm label="Code" value={formValues.code} inputType="text" onChange={handleInputChange} name="code" required={true} disabled={disabled} />
+        <DetailForm label="Usage" value={formValues.usage} inputType="select" onChange={handleInputChange} name="usage" disabled={disabled} />
+      </div>
+
+
         <hr className="border-t border-gray-300" />
         <div className="flex items-center justify-between gap-4 w-full">
         <div className="flex-1">
@@ -296,10 +226,7 @@ const CodeManagement = () => {
         </div>
         
         </ContainerCard>
-
-      
-        </div>
-    </div>
+        </>
   );
 };
 

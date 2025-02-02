@@ -8,7 +8,7 @@ import { Link, useLocation } from 'react-router-dom';
 import NoticeMessage from '../../plugin/noticemessage/noticemessage';
 import useAuth from '../../hooks/useAuth';
 
-const Sidebar = () => {
+const Sidebar = ({ userInfo }) => {
   const { handleLogout } = useAuth();
   const [isActive, setIsActive] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -90,8 +90,8 @@ const Sidebar = () => {
             <div className={`${classes.spacesProfile} ${classes._modalProp}`}>
               <img src={imgUser} className={classes["img-user"]} alt="User" />
               <div className={classes["name-user"]}>
-                <span id="user-name">Admin</span>
-                <p id="user-position">Administrator</p>
+                <span id="user-name">{userInfo?.username}</span>
+                <p id="user-position">{userInfo?.job}</p>
               </div>
             </div>
             <div className={classes["title-languange-logout"]}>
