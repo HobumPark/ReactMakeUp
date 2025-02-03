@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ContainerCard from '../../components/ContainerCard/ContainerCard';
-import Filtering from '../../components/Filtering/filtering';
+import Filtering from '../../components/Filtering/Filtering';
 import { ReactTabulator } from 'react-tabulator';
 import DetailForm from '../../components/DetailForm/DetailForm';
 import LogList from '../../components/LogList/LogList';

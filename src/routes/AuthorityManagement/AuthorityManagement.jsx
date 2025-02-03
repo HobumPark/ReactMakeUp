@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import ContainerCard from '../../components/ContainerCard/ContainerCard';
-import Filtering from '../../components/Filtering/filtering';
+import Filtering from '../../components/Filtering/Filtering';
 import { ReactTabulator } from 'react-tabulator';
 import DetailForm from '../../components/DetailForm/DetailForm';
 import Button from '../../components/Button/Button';
