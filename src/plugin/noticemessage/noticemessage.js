@@ -1,4 +1,4 @@
-import './NoticeMessage.css';
+import './noticemessage.css';
 
 let noti_id = 0;
 /* NoticeMessage v1.0.0 Zeki Jo 2022.06.17 */
