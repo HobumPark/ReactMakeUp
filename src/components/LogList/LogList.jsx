@@ -1,5 +1,5 @@
 import React from "react";
-import LogItem from "../logItem/LogItem";
+import LogItem from "../LogItem/LogItem";
 
 const LogList = ({logs}) => {
 
