@@ -14,6 +14,7 @@ const PasswordInput =  forwardRef(({
   value,
   id,
   name,
+  maxLength,
   onChange = () => {},
   onKeyUp = () => {},
   state ='default',
@@ -54,6 +55,7 @@ const PasswordInput =  forwardRef(({
         className='input'
         value={inputValue}
         id={id}
+        maxLength={maxLength}
         disabled={disabled}
         onKeyUp={onKeyUp}
         onChange={handleInputChange}

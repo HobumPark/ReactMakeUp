@@ -7,14 +7,9 @@ import useUserMgt from "../../hooks/useUserMgt";
 const ProtectedRoutes = () => {
   const isLogin = localStorage.getItem("isLogin") || sessionStorage.getItem("isLogin");
   const user_id = localStorage.getItem("user_id");
-  console.log(user_id);
-  
-
   const { detailUserData} = useUserMgt({
     userID: user_id,
   });
-
-  
 
   if (!isLogin) {
     return <Navigate to="/" />;

@@ -377,6 +377,10 @@ input, select {
 	height: 36px;
 	font-weight: 400;
 }
+
+.custom-select {
+	color: #8F9193 !important;
+}
 textarea {
     border: 1px solid var(--neutral-600);
     color: var(--black-500);
@@ -385,6 +389,7 @@ textarea {
     display: flex;
 	resize: none;
 	font-size: 14px;
+	font-weight: 400;
 }
 
 .input-search {

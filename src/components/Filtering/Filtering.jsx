@@ -17,19 +17,22 @@ const Filtering = ({
   disableResetButton = false,
   resetButtonLabel = "Reset",
   isSearchOnInput = false,
-  optionsRadioFilter ,
+  optionsRadioFilter,
+  optionsRadioFilterUsage,
+  isUsage,
   onSearch = () => {},
   onReset = () => {},
 }) => {
   const [searchInput, setSearchInput] = useState("");
-  const [selectedRadio, setSelectedRadio] = useState("All"); 
+  const [selectedRadio, setSelectedRadio] = useState("001002"); 
+  const [selectedRadioUsage, setSelectedRadioUsage] = useState("All"); 
   const [isRadioFilterVisible, setIsRadioFilterVisible] = useState(false);
 
   const handleSearchInput = (event) => {
     const keyInput = event.key;
     const target = event.target;
     if (keyInput === "Enter") {
-      onSearch(target.value, selectedRadio); 
+      onSearch(target.value, selectedRadio,selectedRadioUsage); 
     }
   };
 
@@ -42,14 +45,23 @@ const Filtering = ({
       }
     } 
   };
+  const handleRadioUsageChange = (event) => {
+    if (event.target && event.target.value) {
+      const selectedValue = event.target.value;
+      setSelectedRadioUsage(selectedValue);
+      if (selectedValue === "All") {
+        setSelectedRadioUsage(null);
+      }
+    } 
+  };
 
   const handleReset = (e) => {
     setSearchInput("");
-    setSelectedRadio("All");
-    onReset();
+    setSelectedRadio("001002");
+    setSelectedRadioUsage("All")
   };
   const handleSearchButtonClick = () => {
-    onSearch(searchInput, selectedRadio);
+    onSearch(searchInput, selectedRadio,);
   };
   
 
@@ -87,14 +99,24 @@ const Filtering = ({
         </div>
       </div>
       {isRadioFilterVisible && (
-        <div >
+        <div>
+        {isUsage && (
+          <RadioFilter
+            name="Usage"
+            label="Usage"
+            options={optionsRadioFilterUsage}
+            value={selectedRadioUsage}
+            onRadioChange={handleRadioUsageChange}
+          />
+      )}
           <RadioFilter
             name="Deleted"
             label="Deleted"
             options={optionsRadioFilter}
-            defaultValue="001002"
+            value={selectedRadio}
             onRadioChange={handleRadioChange}
           />
+
         </div>
       )}
     </div>

@@ -115,6 +115,7 @@ function SignIn() {
               customInput={classes._inputPassword}
               placeholder="Password"
               onKeyUp={handleOnKeyPW}
+              maxLength={20}
               value={accountInfo.password.trim()}
               onChange={({ target }) =>
               setAccountInfo((curInfo) => ({

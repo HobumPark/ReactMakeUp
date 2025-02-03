@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Sidebar from '../../components/Sidebar/Sidebar';
 import ContainerCard from '../../components/ContainerCard/ContainerCard';
 import Filtering from '../../components/Filtering/filtering';
 import { ReactTabulator } from 'react-tabulator';
@@ -126,7 +125,6 @@ const UserManagement = () => {
       birth: '',
       position: '',
     }));
-
   };
 
 //Button 
@@ -182,7 +180,7 @@ const reloadCallback = () => {
   emptyDetail();
   setDisabledForm(true);
   setDisabledId(true);
-  hasChangesUpdate(false);
+  setHasChangesUpdate(false);
   setSelectedUser({ id: null });
 };
 
@@ -203,7 +201,6 @@ const updateCallback = () => {
   setDisabledForm(true);
   setDisabledId(true);
   setHasChangesUpdate(false);
-  setSelectedUser({ id: null });
 };
 
   const [queryParams, setQueryParams] = useState("");
@@ -226,7 +223,7 @@ const updateCallback = () => {
 
   useEffect(() => {
     if (detailUserError) {
-      alert(`Error fetching user details: ${detailUserError.message || "Unknown error"}`);
+      new NoticeMessage('Failed to load data. Please reload the page.')
     }
   }, [detailUserError]);
   
@@ -242,7 +239,6 @@ const updateCallback = () => {
     ]
   : [];
   
-
   const optionsTabulator = {
     debugInvalidOptions: true,
     pagination: true,
@@ -306,15 +302,17 @@ const updateCallback = () => {
       setHasChangesUpdate(true);
     }
   };
+
   const handleSearch = useCallback(
     (inputVal = null, radioVal = null) => {
       const resultInput = inputVal ? `input=${inputVal}` : "";
-      const resultRadio = radioVal && radioVal !== "All" ? `&deletion=${radioVal}` : "";
+      const resultRadio = radioVal && radioVal !== "All" ? `&deletion=${radioVal}` : `&deletion=001002`;
       const result = resultInput + resultRadio;
       setQueryParams(result); 
     },
     []
   );
+
 
   const handleNewButtonClick = () => {
     if(hasChangesCreate || hasChangesUpdate){
@@ -346,8 +344,6 @@ const updateCallback = () => {
       setDisabledForm(false); 
       setHasChangesUpdate(false);
     }
-  
-
   };
   const handleRegistButtonClick = () => {
 
@@ -484,7 +480,6 @@ const updateCallback = () => {
             <Filtering 
             placeholder="ID / Name / Email / Phone No."
             onSearch={handleSearch}
-            onReset={'test'}
             optionsRadioFilter={optionsRadioFilter}
             />
  

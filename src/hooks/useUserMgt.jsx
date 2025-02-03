@@ -23,8 +23,7 @@ const useUserMgt = ({
     queryFn: () => fetchDetailUser(userID),
     retry: false, 
     enabled: !!userID,
-    onError: (err) => {
-      alert(err)
+    onError: () => {
     },
   });
 

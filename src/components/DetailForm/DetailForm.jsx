@@ -4,8 +4,8 @@ import PasswordInput from "../PasswordInput/PasswordInput";
 import Select from "../Select/Select";
 import TextArea from "../TextArea/TextArea";
 
-const DetailForm = ({ label, inputType, value, className, disabled, onChange, optionSelect = [], required,name  }) => {
-    const [selectedOption, setSelectedOption] = useState("");
+const DetailForm = ({ label, inputType, value, className, disabled, onChange, optionSelect = [], required,name, maxLength, readonly  }) => {
+  const [selectedOption, setSelectedOption] = useState("");
 
   return (
     <div className={`flex items-center gap-x-4 ${className}`} >
@@ -21,9 +21,16 @@ const DetailForm = ({ label, inputType, value, className, disabled, onChange, op
             name={name}
             disabled={disabled}
             onChange={onChange}
+            disableEmptyOption={true}
         />
         ) : inputType === "textarea"?(
-            <TextArea rows={4} className={'resize-y w-full'} disabled={disabled} />
+            <TextArea 
+            rows={10} 
+            className={'resize-y w-full'} 
+            disabled={disabled}
+            value={value}
+            name={name}
+            onChange={onChange} />
         ) : (
         <GeneralInput
             type={inputType}
@@ -32,7 +39,9 @@ const DetailForm = ({ label, inputType, value, className, disabled, onChange, op
             required={required}
             customInput={'flex flex-col gap-2 w-full'}
             disabled={disabled}
-            onChange={onChange}   
+            onChange={onChange}  
+            maxLength={maxLength} 
+            readonly={readonly}
         />
         )}
 

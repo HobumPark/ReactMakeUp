@@ -13,6 +13,7 @@ const GeneralInput = forwardRef(
   inputFormStyle,
   type, 
   placeholder, 
+  readonly,
   value,
   id,
   name,
@@ -62,6 +63,7 @@ const GeneralInput = forwardRef(
         maxLength={maxLength}
         id={id}
         name={name}
+        readOnly={readonly}
         disabled={disabled}
       />
           {rightIcon && (

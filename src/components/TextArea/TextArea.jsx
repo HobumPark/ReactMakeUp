@@ -1,7 +1,7 @@
 import React from "react";
 
 const TextArea = ({
-  value = "",
+  value,
   placeholder,
   className,
   onChange,

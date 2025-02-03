@@ -1,6 +1,6 @@
 import React from "react";
 
-const RadioFilter = ({ name, label, options, defaultValue, onRadioChange }) => {
+const RadioFilter = ({ name, label, options, onRadioChange, value }) => {
   const handleRadioChange = (event) => {
     if (onRadioChange) {
       onRadioChange(event);  
@@ -19,7 +19,7 @@ const RadioFilter = ({ name, label, options, defaultValue, onRadioChange }) => {
               name={name}
               value={option.value}
               data-code={option.code}
-              defaultChecked={option.value === defaultValue} 
+              checked ={option.value === value} 
               onChange={handleRadioChange} 
             />
             <span className="radio-mark"></span>

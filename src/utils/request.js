@@ -99,7 +99,6 @@ export const handleErrorCode = (errCode) => {
         if (!response.ok) {
           throw { response, data: responseData };
         }
-  
         return responseData;
       })
       .catch(async (err) => {

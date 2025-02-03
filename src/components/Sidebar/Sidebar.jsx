@@ -60,8 +60,6 @@ const Sidebar = ({ userInfo }) => {
     setIsActive(prevState => !prevState);
   };
   const toggleVisibility = () => {
-    console.log('gdasg');
-    
     setIsVisible((prev) => !prev);
   };
   const isLinkActive = (linkPath) => {
