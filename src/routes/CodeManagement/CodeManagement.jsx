@@ -566,106 +566,28 @@ const CodeManagement = () => {
         </ContainerCard>
         <ContainerCard>
         <div className="flex w-full flex-col gap-[10px]">
-        <div className="grid grid-cols-3 gap-4 items-center">
-        <DetailForm 
-          label="Code Type" 
-          value={formValues.codeType} 
-          inputType="select" 
-          onChange={handleInputChange} 
-          name="codeType" 
-          disabled={disabled} 
-          optionSelect={[
-          { value: "", label: "" },
-          { value: "Code Group", label: "Code Group", disabled:disabledCodeGroup },
-          { value: "Code", label: "Code", disabled:disabledCode },
-        ]}
-        />
+        <div className="grid grid-cols-3 gap-4">
 
-        <DetailForm 
-          label="Code Name (ENG)" 
-          value={formValues.eng || ''} 
-          inputType="text" 
-          onChange={handleInputChange} 
-          name="eng" 
-          required={isRequired} 
-          disabled={disabled} 
-        />
+        <div className="flex flex-col gap-4">
+          <DetailForm label="Code Type" value={formValues.codeType} inputType="select" onChange={handleInputChange} name="codeType" disabled={disabled} optionSelect={[{ value: "", label: "" }, { value: "Code Group", label: "Code Group", disabled: disabledCodeGroup }, { value: "Code", label: "Code", disabled: disabledCode }]} />
+          <DetailForm label="Group Code" value={formValues.upper_code || ''} inputType="text" onChange={handleInputChange} name="upper_code" required={isRequired} disabled={disabledCodeGroup} maxLength={6} />
+          <DetailForm label="Code" value={formValues.lower_code || ''} inputType="text" onChange={handleInputChange} name="lower_code" required={isRequired} disabled={disabledCode} maxLength={6} />
+        </div>
 
-        <DetailForm 
-          label="Sort Order" 
-          value={formValues.sort_order || ''} 
-          inputType="number" 
-          onChange={handleInputChange} 
-          name="sort_order" 
-          disabled={disabled} 
-        />
 
-        <DetailForm 
-          label="Group Code" 
-          value={formValues.upper_code || ''} 
-          inputType="text" 
-          onChange={handleInputChange} 
-          name="upper_code" 
-          required={isRequired} 
-          disabled={disabledCodeGroup} 
-          maxLength={6}
-        />
+        <div className="flex flex-col gap-4">
+          <DetailForm label="Code Name (ENG)" value={formValues.eng || ''} inputType="text" onChange={handleInputChange} name="eng" required={isRequired} disabled={disabled} />
+          <DetailForm label="Code Name (IND)" value={formValues.ind || ''} inputType="text" onChange={handleInputChange} name="ind" required={isRequired} disabled={disabled} />
+          <DetailForm label="Usage" value={formValues.usage || ''} inputType="select" onChange={handleInputChange} name="usage" required={isRequired} disabled={disabled} optionSelect={commonListData?.["002"] ? [{ value: "", label: "" }, ...commonListData["002"].code.map((code, index) => ({ value: code, label: commonListData["002"].name[index] }))] : []} />
+        </div>
 
-        <DetailForm 
-          label="Code Name (IND)" 
-          value={formValues.ind || ''} 
-          inputType="text" 
-          onChange={handleInputChange} 
-          name="ind" 
-          required={isRequired} 
-          disabled={disabled} 
-        />
 
-        <DetailForm 
-          label="Description" 
-          value={formValues.description || ''} 
-          inputType="textarea" 
-          onChange={handleInputChange} 
-          name="description" 
-          disabled={disabled} 
-          className="row-span-2" 
-        />
-
-        <DetailForm 
-          label="Code" 
-          value={formValues.lower_code || ''} 
-          inputType="text" 
-          onChange={handleInputChange} 
-          name="lower_code" 
-          required={isRequired} 
-          disabled={disabledCode} 
-          maxLength={6}
-        />
-
-        <DetailForm 
-          label="Usage" 
-          value={formValues.usage || ''} 
-          inputType="select" 
-          onChange={handleInputChange} 
-          name="usage" 
-          required={isRequired} 
-          disabled={disabled}
-          optionSelect={
-                      commonListData?.["002"]
-                        ? [
-                            { value: "", label: ""}, 
-                            ...commonListData["002"].code.map((code, index) => ({
-                              value: code,
-                              label: commonListData["002"].name[index],
-                            })),
-                          ]
-                        : []
-                    } 
-        />
-
+        <div className="flex flex-col gap-4">
+          <DetailForm label="Sort Order" value={formValues.sort_order || ''} inputType="number" onChange={handleInputChange} name="sort_order" disabled={disabled} />
+          <DetailForm label="Description" value={formValues.description || ''} inputType="textarea" onChange={handleInputChange} name="description" disabled={disabled}  className={'flex-grow'} />
+        
+        </div>
       </div>
-
-
         <hr className="border-t border-gray-300" />
         <div className="flex items-center justify-between gap-4 w-full">
         <div className="flex-1">

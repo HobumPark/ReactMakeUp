@@ -8,8 +8,8 @@ const DetailForm = ({ label, inputType, value, className, disabled, onChange, op
   const [selectedOption, setSelectedOption] = useState("");
 
   return (
-    <div className={`flex items-center gap-x-4 ${className}`} >
-      <span className="text-body-2 text-au-neutral-4 py-[9px] w-70 lg:w-50 text-[14px]">
+    <div className={`flex items-start gap-x-4 ${className}`} >
+      <span className="text-body-2 text-au-neutral-4  w-70 lg:w-50 text-[14px]">
         {label}
         {required && <span className="text-[#e31616]">*</span>}
       </span>
@@ -26,7 +26,7 @@ const DetailForm = ({ label, inputType, value, className, disabled, onChange, op
         ) : inputType === "textarea"?(
             <TextArea 
             rows={10} 
-            className={'resize-y w-full'} 
+            className={'w-full h-full'} 
             disabled={disabled}
             value={value}
             name={name}
