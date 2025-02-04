@@ -8,7 +8,7 @@ import BoxLeft from '../../components/BoxLeft/BoxLeft';
 import useAuthorityMgt from '../../hooks/useAuthorityMgt';
 import useCommonCodes from '../../hooks/useCommonCodes';
 import useProgram from '../../hooks/useProgram';
-import { fetchGroupPrograms } from '../../api/program';
+import { fetchGroupPrograms } from '../../api/authority-program';
 import NoticeMessage from '../../plugin/noticemessage/noticemessage';
 
 

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, deleteUser, fetchDetailUser, fetchUserList, updateUser } from "../api/user-mgt";
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
 import { fetchInitialAuthority } from "../api/authority-mgt";
-import { fetchProgramAuthenticated } from "../api/program";
+import { fetchProgramAuthenticated } from "../api/authority-program";
 
 const useAuthorityMgt = ({
   userID = null,

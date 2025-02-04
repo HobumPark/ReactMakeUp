@@ -209,7 +209,7 @@ const CodeManagement = () => {
       queryParams: queryParams  || "deletion=001002",
       onUpdateSuccess: (responseData) => {
         updateCallback()
-        const newCodeId = responseData.id;
+        const newCodeId = responseData?.id;
         setSelectedCode({ id: newCodeId });
         const row = tbRef.current.getRow(newCodeId);
         row && row.select();
@@ -217,6 +217,12 @@ const CodeManagement = () => {
       onDeleteSuccess: reloadCallback,
       onCreateSuccess: reloadCallback,
     });
+
+
+    useEffect(() => {
+      console.log(selectedCode.id);
+      
+    }, [selectedCode]);
     
     const { commonListData } = useCommonCodes({ optionParams });
     

@@ -18,7 +18,6 @@ export const fetchGroupPrograms = async (groupCode) => {
     return await reqGet(url)
 };
 
-
 export const assignData = async (groupCode,assignData) => {
   const url = `${URLS.BACK_DSH}${APIS.groupProgram(groupCode)}`; 
   return await reqPost(url, assignData); 

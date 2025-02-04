@@ -47,4 +47,15 @@ export const APIS = {
   programAuthenticated: (filterParams) => `/programs/authenticated-user-language?${filterParams}`,
   upperProgram: '/programs/upper-programs',
   groupProgram: (groupCode) => `/authority/groups/${groupCode}/programs`,
+  programList: (filterParams) => `/programs?${filterParams}`,
+  detailProgram: (programID) =>
+    `/programs/${programID}`,
+  createUpperProgram: '/programs',
+  createLowerProgram: '/programs/lower',
+  updateUpperProgram: (programID) =>
+    `/programs/${programID}`,
+  updateLowerProgram: (programID) =>
+    `/programs/lower/${programID}`,
+  deleteProgram: (programID) =>
+    `/programs/${programID}`,
 }
