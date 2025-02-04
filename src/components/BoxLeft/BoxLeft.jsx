@@ -7,26 +7,12 @@ import Select from "../Select/Select";
 const BoxLeft = ({
   labelSelect,
   children,
-  disableConfirmButton = false,
-  confirmButtonLabel = "Confirm",
-  disableResetButton = false,
-  resetButtonLabel = "Restore Default",
-  onReset = () => {},
+  confirmButtonState,
+  restoreButtonState,
+  onClickRestore,
+  onClickConfirm
 }) => {
-  const [searchInput, setSearchInput] = useState("");
 
-  const handleSearchInput = (event) => {
-    const keyInput = event.key;
-    const target = event.target;
-    if (keyInput === "Enter") {
-      onSearch(target.value);
-    }
-  };
-
-  const handleReset = (e) => {
-    setSearchInput(``);
-    onReset();
-  };
   return (
     <div className="flex gap-4 justify-between">
       <div className="w-32 flex items-center gap-2">
@@ -37,8 +23,8 @@ const BoxLeft = ({
       </div>
 
       <div className="flex gap-4 ml-auto">
-        {!disableConfirmButton && <Button label={confirmButtonLabel} customButton="btn-search" />}
-        {!disableResetButton && <Button label={resetButtonLabel} customButton="btn-reset" />}
+       <Button label="confirm" customButton="btn-search" disabled={confirmButtonState} onClick={() => onClickConfirm()} />
+       <Button label="Restore Default" customButton="btn-reset" disabled={restoreButtonState} onClick={() => onClickRestore()} />
       </div>
     </div>
 

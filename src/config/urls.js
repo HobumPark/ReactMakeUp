@@ -43,4 +43,8 @@ export const APIS = {
     `/codes/lower/${codeID}`,
   deleteCode: (codeID) =>
     `/codes/${codeID}`,
-};
+  initialAuthority: (filterParams) => `/authority/groups?${filterParams}`,
+  programAuthenticated: (filterParams) => `/programs/authenticated-user-language?${filterParams}`,
+  upperProgram: '/programs/upper-programs',
+  groupProgram: (groupCode) => `/authority/groups/${groupCode}/programs`,
+}

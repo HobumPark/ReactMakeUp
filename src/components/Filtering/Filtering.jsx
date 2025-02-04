@@ -59,6 +59,7 @@ const Filtering = ({
     setSearchInput("");
     setSelectedRadio("001002");
     setSelectedRadioUsage("All")
+    onReset();
   };
   const handleSearchButtonClick = () => {
     onSearch(searchInput, selectedRadio,);
