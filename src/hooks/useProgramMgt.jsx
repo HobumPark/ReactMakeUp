@@ -66,7 +66,7 @@ const useProgramMgt = ({
     const updateUpperProgramMutation = useMutation({
       mutationFn: (programData) => updateUpperProgram(programData),
       onSuccess: (responseData) => {
-        new NoticeMessage(`:: msg > update success`, {
+        new NoticeMessage(`Successfully updated.`, {
           callback() {
             queryClient.invalidateQueries(["programListData", queryParams]);
             onUpdateSuccess(responseData);
@@ -81,7 +81,7 @@ const useProgramMgt = ({
     const updateLowerProgramMutation = useMutation({
       mutationFn: (programData) => updateLowerProgram(programData),
       onSuccess: () => {
-        new NoticeMessage(`:: msg > update success`, {
+        new NoticeMessage(`Successfully updated.`, {
           callback() {
             queryClient.invalidateQueries(["programListData", queryParams]);
             onUpdateSuccess();

@@ -10,7 +10,8 @@ const BoxLeft = ({
   confirmButtonState,
   restoreButtonState,
   onClickRestore,
-  onClickConfirm
+  onClickConfirm,
+  disableConfirmButton
 }) => {
 
   return (
@@ -23,8 +24,10 @@ const BoxLeft = ({
       </div>
 
       <div className="flex gap-4 ml-auto">
+      {!disableConfirmButton && (
        <Button label="confirm" customButton="btn-search" disabled={confirmButtonState} onClick={() => onClickConfirm()} />
-       <Button label="Restore Default" customButton="btn-reset" disabled={restoreButtonState} onClick={() => onClickRestore()} />
+      )}
+       <Button label="Restore Default" customButton={disableConfirmButton ? "btn-search" : "btn-reset"}  disabled={restoreButtonState} onClick={() => onClickRestore()} />
       </div>
     </div>
 

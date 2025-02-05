@@ -161,7 +161,6 @@ const AuthorityManagement = () => {
     const tbRefInit = useRef(null);
     const tbRefStandby = useRef(null);
     const tbRefAssign = useRef(null);
-
     const [groupName, setGroupName] = useState('');
     const [hasChanged, setHasChanged] = useState('');
     const [programs, setPrograms] = useState([]);
@@ -206,8 +205,8 @@ const AuthorityManagement = () => {
           restore:true,
         }));
       },
-  
     })
+
     const { commonListData } = useCommonCodes({ optionParams });
 
     const optionsInit = {
@@ -215,14 +214,15 @@ const AuthorityManagement = () => {
       pagination: true,
       movableRows: false,
       resizableRows: false,
-      paginationSize: 10,
+      paginationSize: 5,
       rowHeight: 41,
       selectableRows: 1,
       selectableRowsCheck: (row) => {
         return !row.getElement().classList.contains("tabulator-selected");
       },
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${initialAuthority?.length || 0} Results</div>`,
     };
+
     const optionsAssign = {
       height: '270px',
       placeholder:'No Data',
@@ -230,10 +230,9 @@ const AuthorityManagement = () => {
       movableRows: false,
       resizableRows: false,
       layout: "fitColumns",
-      index: "code_id",
       rowHeight: 41,
       selectableRows: true,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${programsAssign?.length || 0} Results</div>`,
    };
    const optionsStandby = {
       debugInvalidOptions: true,
@@ -243,7 +242,7 @@ const AuthorityManagement = () => {
       layout: "fitColumns",
       rowHeight: 41,
       selectableRows: true,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ programs?.length || 0} Results</div>`,
     };
 
           
@@ -277,16 +276,13 @@ const AuthorityManagement = () => {
       }
     }, []);
     
-
-    const handleRowSelectedAssign = useCallback((row) => {
+    const handleRowSelectedAssign = useCallback((row, a,b,c) => {
       setSelectedRowAssign(row)
     }, []);
 
-    const handleRowSelectedStandBy = useCallback((row) => {
+    const handleRowSelectedStandBy = useCallback((row, a,b,c) => {
       setSelectedRowStandby(row)
     }, []);
-    
-
 
     const handleOnChangeInputSelect = useCallback(({ target }) => {
       const { value } = target;
@@ -296,9 +292,10 @@ const AuthorityManagement = () => {
     const handleSearchInit = useCallback(
      (inputVal = null) => {
           const resultInput = inputVal ? `input=${inputVal}` : "";
-          const resultSelectCode = selectedIsCodeGroup
-          ? `&is_used=${selectedIsCodeGroup}`
-          : "";
+          const resultSelectCode =
+            selectedIsCodeGroup && selectedIsCodeGroup !== "All"
+              ? `&is_used=${selectedIsCodeGroup}`
+              : "";
           const result = resultInput + resultSelectCode;
           setQueryParams(result); 
         },
@@ -430,7 +427,7 @@ const AuthorityManagement = () => {
 
         setSelectedRowAssign((prev) => {
           const prevAssign = Array.isArray(prev) ? prev : [];
-          return [...prevAssign, ...selectedRowStandby]; 
+          return [...prevAssign, ...selectedRowStandby];
         });
         
         setSelectedRowStandby([]);
@@ -483,6 +480,7 @@ const AuthorityManagement = () => {
     
     const handleRestore = () => {
       setProgramsAssign(initialProgramsAssign);
+      setHasChanged(false);
       setButtonState((prevState) => ({
         ...prevState,
         confirm:true,
@@ -561,8 +559,9 @@ const AuthorityManagement = () => {
             </BoxLeft>
             </div>
             <ReactTabulator
+                key={programsAssign?.length}
                 className="container-tabullator"
-                data={programsAssign || []}
+                data={programsAssign}
                 columns={columnAssign}
                 layout={"fitColumns"}
                 options={optionsAssign}
@@ -574,6 +573,7 @@ const AuthorityManagement = () => {
                 rowDblClick: handleDblAssignClick,
                 tableBuilt: () => {
                     if (selectedCode?.group_code) {
+                      console.log("CCCCCCCCCCCCC", programsAssign, selectedRowAssign)
                       tbRefAssign.current.selectRow(selectedRowAssign.map(p => p.id))
                     }
                 },
@@ -623,8 +623,9 @@ const AuthorityManagement = () => {
                 rowSelectionChanged: handleRowSelectedStandBy,
                 rowDblClick: handleDblStandbyClick,
                 tableBuilt: () => {
-                    console.log(selectedCode, selectedRowAssign, selectedRowStandby)
+                    // console.log(selectedCode, selectedRowAssign, selectedRowStandby)
                     if (selectedCode?.group_code) {
+                      console.log("BBBBBBBBBBBBB", programs,selectedRowStandby)
                       tbRefStandby.current.selectRow(selectedRowStandby.map(p => p.id))
                     }
                 },

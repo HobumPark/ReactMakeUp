@@ -58,4 +58,7 @@ export const APIS = {
     `/programs/lower/${programID}`,
   deleteProgram: (programID) =>
     `/programs/${programID}`,
+  initialAuthorityUser: (filterParams) => `/authority/groups/users?${filterParams}`,
+  authorityUserAssignInfo: (groupCode) => `/authority/groups/${groupCode}/users`,
+  authorityUserInfo: (groupCode) => `/authority/groups/${groupCode}`,
 }

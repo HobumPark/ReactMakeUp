@@ -104,6 +104,7 @@ const ProgramManagement = () => {
   const [isRequired, setIsRequired] = useState(true);
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);  
+  const [newId, setNewId] = useState('');
 
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;
@@ -225,7 +226,11 @@ const ProgramManagement = () => {
         row && row.select();
       },
       onDeleteSuccess: reloadCallback,
-      onCreateSuccess: reloadCallback,
+      onCreateSuccess: (responseData) => {
+        reloadCallback();
+        const newUserId = responseData.id;
+        setNewId(newUserId);
+      },
     });
 
     const { commonListData } = useCommonCodes({ optionParams });
@@ -434,8 +439,8 @@ const ProgramManagement = () => {
           setFormValues((prevValues) => ({
             ...prevValues,
             programType: "Program",
-            upper_program: detailProgramData.upper_program
-          }));
+            upper_program: detailProgramData[0].upper_program
+          }));  
           setHasChangesUpdate(false);
           enableRegisterButtons();
           setIsNewClicked(true);
@@ -459,6 +464,7 @@ const ProgramManagement = () => {
 
   const handleRegistButtonClick = () => {
     if (selectedProgram?.id){  
+      console.log(formValues)
       createLowerProgram(formValues);
     }else{
       createUpperProgram(formValues);
@@ -574,7 +580,11 @@ const ProgramManagement = () => {
                 if (selectedProgram?.id) {
                   const row = tbRef.current.getRow(selectedProgram?.id);
                   row && row.select();
-                }
+                } else if (newId){
+                    const row = tbRef.current.getRow(newId);
+                    tbRef.current.scrollToRow(row, "bottom", true);
+                    tbRef.current.selectRow(newId);
+              }
               },
             }}
           />

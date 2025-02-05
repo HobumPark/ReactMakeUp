@@ -65,7 +65,7 @@ const useCodeMgt = ({
     const updateUpperCodeMutation = useMutation({
       mutationFn: (codeData) => updateUpperCode(codeData),
       onSuccess: (responseData) => {
-        new NoticeMessage(`:: msg > update success`, {
+        new NoticeMessage(`Successfully updated.`, {
           callback() {
             queryClient.invalidateQueries(["codeListData", queryParams]);
             onUpdateSuccess(responseData);
@@ -80,7 +80,7 @@ const useCodeMgt = ({
     const updateLowerCodeMutation = useMutation({
       mutationFn: (codeData) => updateLowerCode(codeData),
       onSuccess: () => {
-        new NoticeMessage(`:: msg > update success`, {
+        new NoticeMessage(`Successfully updated.`, {
           callback() {
             queryClient.invalidateQueries(["codeListData", queryParams]);
             onUpdateSuccess();

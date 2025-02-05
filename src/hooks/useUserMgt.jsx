@@ -62,7 +62,7 @@ const useUserMgt = ({
     const updateUserMutation = useMutation({
       mutationFn: (userData) => updateUser(userData),
       onSuccess: () => {
-        new NoticeMessage(`:: msg > update success`, {
+        new NoticeMessage(`Successfully updated.`, {
           callback() {
             queryClient.invalidateQueries(["usersListData", queryParams]);
             onUpdateSuccess();

@@ -82,6 +82,7 @@ const UserManagement = () => {
   const [isRequired, setIsRequired] = useState(false);
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);
+  const [newId, setNewId] = useState('');
 
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;
@@ -195,11 +196,8 @@ const createCallback = () => {
 };
 
 const updateCallback = () => {
-  enableInitialButtons();
-  emptyDetail();
+  enableUPDATEButtons();
   setIsRequired(false);
-  setDisabledForm(true);
-  setDisabledId(true);
   setHasChangesUpdate(false);
 };
 
@@ -211,12 +209,18 @@ const updateCallback = () => {
   const { usersListData, detailUserData, deleteUser, detailUserError, createUser, updateUser} = useUserMgt({
     userID: selectedUser?.id,
     queryParams: queryParams  || "deletion=001002",
-    onUpdateSuccess: updateCallback,
+    onUpdateSuccess: (responseData) =>{
+      updateCallback();
+      const newUserId = responseData?.id;
+      setSelectedUser({ id: newUserId });
+      const row = tbRef.current.getRow(newUserId);
+      row && row.select();
+    } ,
     onDeleteSuccess: reloadCallback,
     onCreateSuccess: (responseData) => {
       createCallback();
       const newUserId = responseData.id;
-      tbRef.current.getRow(newUserId);   
+      setNewId(newUserId); 
     },
 
   });
@@ -238,6 +242,7 @@ const updateCallback = () => {
       })),
     ]
   : [];
+
   
   const optionsTabulator = {
     debugInvalidOptions: true,
@@ -467,6 +472,7 @@ const updateCallback = () => {
       { label: "Updated Time", value: detailUserData.updated_time },
     ]
   : [];
+  
   return (
     <>
         <section className='wrap'>
@@ -501,8 +507,12 @@ const updateCallback = () => {
                 if (selectedUser?.id) {
                   const row = tbRef.current.getRow(selectedUser?.id);
                   row && row.select();
-                }
-              },
+                } else if (newId){
+                    const row = tbRef.current.getRow(newId);
+                    tbRef.current.scrollToRow(row, "bottom", true);
+                    tbRef.current.selectRow(newId);
+              }
+              }
             }}
           />
         </ContainerCard>

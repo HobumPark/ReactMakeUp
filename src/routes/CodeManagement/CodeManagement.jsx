@@ -97,6 +97,7 @@ const CodeManagement = () => {
     const [isRequired, setIsRequired] = useState(true);
     const hasChangesUpdateRef = useRef(hasChangesUpdate);
     const hasChangesCreateRef = useRef(hasChangesCreate);
+    const [newId, setNewId] = useState('');
 
     useEffect(() => {
       hasChangesUpdateRef.current = hasChangesUpdate;
@@ -215,7 +216,12 @@ const CodeManagement = () => {
         row && row.select();
       },
       onDeleteSuccess: reloadCallback,
-      onCreateSuccess: reloadCallback,
+      onCreateSuccess: (responseData) => {
+        reloadCallback();
+        const newUserId = responseData.id;
+        setNewId(newUserId);
+        
+      }
     });
 
 
@@ -565,7 +571,11 @@ const CodeManagement = () => {
                 if (selectedCode?.id) {
                   const row = tbRef.current.getRow(selectedCode?.id);
                   row && row.select();
-                }
+                }  else if (newId){
+                    const row = tbRef.current.getRow(newId);
+                    tbRef.current.scrollToRow(row, "bottom", true);
+                    tbRef.current.selectRow(newId);
+              }
               },
             }}
           />
