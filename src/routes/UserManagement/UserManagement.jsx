@@ -83,22 +83,22 @@ const UserManagement = () => {
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);
   const [newId, setNewId] = useState('');
+  const optionsDate = {
+    autoClose: true,
+    locale: localeEn,
+    position: 'top center',
+    onSelect: (date) => {
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        birth: date.formattedDate , 
+      }));
+    },
+  };
+  new AirDatepicker('[name="birth"]', optionsDate);
 
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;
     hasChangesCreateRef.current = hasChangesCreate;
-    const optionsDate = {
-      autoClose: true,
-      locale: localeEn,
-      position: 'top center',
-      onSelect: (date) => {
-        setFormValues((prevValues) => ({
-          ...prevValues,
-          birth: date.formattedDate , // Set the selected date
-        }));
-      },
-    };
-    new AirDatepicker('[name="birth"]', optionsDate);
   }, [hasChangesUpdate, hasChangesCreate]);
 
   const [formValues, setFormValues] = useState({

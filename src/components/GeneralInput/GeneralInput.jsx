@@ -5,30 +5,31 @@ import React, {
   useEffect,
   useImperativeHandle,
 } from "react";
+import calendar from "../../assets/icon/icon_calendar.svg"
 
 const GeneralInput = forwardRef(
   (
     { 
-  customInput, 
-  inputFormStyle,
-  type, 
-  placeholder, 
-  readonly,
-  value,
-  id,
-  name,
-  maxLength,
-  pattern = "",
-  rightIconStyle,
-  rightIcon, 
-  disabled,
-  onKeyUp = () => {},
-  onChange = () => {},
-}, ref) => {
+      customInput, 
+      inputFormStyle,
+      type, 
+      placeholder, 
+      readonly,
+      value,
+      id,
+      name,
+      maxLength,
+      pattern = "",
+      rightIconStyle,
+      rightIcon, 
+      disabled,
+      isDob,
+      onKeyUp = () => {},
+      onChange = () => {},
+    }, ref) => {
   const inputRef = useRef();
   
   const [inputValue, setInputValue] = useState(value);
-
   const handleInputChange = (event) => {
     if (pattern) {
       if (pattern.test(event.target.value)) {
@@ -51,21 +52,47 @@ const GeneralInput = forwardRef(
   }));
 
   return (
-    <div className={customInput}>
-      <input
-        ref={inputRef}
-        type={type}
-        placeholder={placeholder}
-        value={inputValue}
-        onKeyUp={onKeyUp}
-        onChange={handleInputChange}
-        className={`input ${inputFormStyle} `}
-        maxLength={maxLength}
-        id={id}
-        name={name}
-        readOnly={readonly}
-        disabled={disabled}
-      />
+    <>
+      {isDob ? (
+
+      <div className="relative">
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder={placeholder}
+          className="input pl-4 pr-10 w-full" 
+          value={inputValue}
+          id={id}
+          maxLength={maxLength}
+          disabled={disabled}
+          onKeyUp={onKeyUp}
+          onChange={handleInputChange}
+        />
+        <img
+          src={calendar}
+          alt="icon"
+          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+          style={{ filter: 'brightness(0.6)' }}
+        />
+      </div>
+
+
+      ) : (
+        <div className={customInput}>
+          <input
+            ref={inputRef}
+            type={type}
+            placeholder={placeholder}
+            value={inputValue}
+            onKeyUp={onKeyUp}
+            onChange={handleInputChange}
+            className={`input ${inputFormStyle}`}
+            maxLength={maxLength}
+            id={id}
+            name={name}
+            readOnly={readonly}
+            disabled={disabled}
+          />
           {rightIcon && (
             <img
               src={rightIcon}
@@ -73,7 +100,9 @@ const GeneralInput = forwardRef(
               className={rightIconStyle}
             />
           )}
-    </div>
+        </div>
+      )}
+    </>
   );
 });
 

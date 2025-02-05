@@ -47,12 +47,12 @@ const PasswordInput =  forwardRef(({
   }));  
 
   return (
-    <div className={customInput}>
+    <div className={`relative ${customInput}`}>
       <input
         ref={inputRef} 
         type="password"
         placeholder={placeholder}
-        className='input'
+        className="input pr-10"
         value={inputValue}
         id={id}
         maxLength={maxLength}

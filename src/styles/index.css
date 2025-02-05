@@ -322,24 +322,64 @@ input[type="radio"]:focus, input[type="checkbox"]:focus{
   }
   
 	  
-	.custom-radio .radio-mark:after {
+.custom-radio .radio-mark:after {
 		top: 2px;
 		left: 2px;
 		width: 10px;
 		height: 10px;
 		border-radius: 50%;
 		background: #135a78;
-	}
-	.filter_elements {
+}
+.filter_elements {
 		display: flex;
 		gap: 10px;
 		align-items: center;
 		min-width: 0; 
 		width: 100%; 
 		flex-wrap: nowrap; 
-	  }
+}
 	  
-	
+/* Modal */
+.modal-close {
+	width: 29px;
+	height: 29px;
+	cursor: pointer;
+  }
+  
+
+.modal-close {
+  padding: 5px;
+  background-color: var(--blueprimary-500);
+  border-radius: 2px;
+}
+.modal-close > img {
+  filter: invert(1);
+}
+
+/* Modal */
+	  
+._boxBtnForgot {
+	width: 100%;
+	display: flex;
+	margin-top: 40px;
+	justify-content: flex-end;
+  }
+  
+  .button-forgot {
+	background: var(--blueprimary-500);
+	border-radius: 8px;
+	border: none;
+	padding: 18px 23px;
+	outline: none;
+	color: var(--neutral-50);
+	font-weight: bold;
+	font-size: 16px;
+	cursor: pointer;
+  }
+  
+  .button-forgot:hover {
+	filter: brightness(90%);
+  }
 
 select {
 	-webkit-appearance: none;  

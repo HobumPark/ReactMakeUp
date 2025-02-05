@@ -8,6 +8,9 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import Common from "../../utils/standard";
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
+import ModalForgotPasswprd from "../../components/Modal/ModalForgotPassword/ModalForgotPassword";
+import ModalForgotPassword from "../../components/Modal/ModalForgotPassword/ModalForgotPassword";
+import useCommonCodes from "../../hooks/useCommonCodes";
 
 
 function SignIn() {
@@ -19,6 +22,7 @@ function SignIn() {
     password: "",
     remember_me: true,
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { handleLogin, getIsLogin } = useAuth({
     onLoginFail: (err) => {
       new NoticeMessage(err?.message);
@@ -83,8 +87,27 @@ function SignIn() {
     
     handleLogin(loginPayload); 
   };
+
+  const { commonListData } = useCommonCodes('upper-code=ORG');
+  const optionORG = commonListData
+  ? [
+      { value: "", label: "" }, 
+      ...commonListData.code.map((code, index) => ({
+        value: code,
+        label: commonListData.name[index],
+      })),
+    ]
+  : [];
+
+  const options = [
+    { label: "Option 1", value: "option1" },
+    { label: "Option 2", value: "option2" },
+    { label: "Option 3", value: "option3" },
+];
+
   
   return (
+    <>
     <div className={classes.wrapperSignIn}>
       <section className={classes._containerLogIn}>
         <img
@@ -128,7 +151,7 @@ function SignIn() {
         </div>
 
         <div className={classes._btnSend}>
-          <span className="_modalForgot" id="modalForgot">
+          <span className="_modalForgot" id="modalForgot" onClick={() => setIsModalOpen(true)}>
             Forgot Password?
           </span>
           <Button
@@ -142,7 +165,14 @@ function SignIn() {
       <div className={classes._boxTitle}>
         <h1 className="h-1">“Empowering Smart Mobility, Enforcing Safer Roads”</h1>
       </div>
+      <ModalForgotPassword
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      optionsSelect = {options}/>
     </div>
+
+
+    </>
   );
 }
 

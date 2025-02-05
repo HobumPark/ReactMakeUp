@@ -44,7 +44,6 @@ const DetailForm = ({ label, inputType, value, className, disabled, onChange, op
             readonly={readonly}
         />
         )}
-
     </div>
   );
 };
