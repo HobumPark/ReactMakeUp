@@ -94,7 +94,14 @@ const UserManagement = () => {
       }));
     },
   };
-  new AirDatepicker('[name="birth"]', optionsDate);
+  useEffect(() => {
+    const datepicker = new AirDatepicker('[name="birth"]', optionsDate);
+  
+    // Cleanup the date picker instance when the component unmounts
+    return () => {
+      datepicker.destroy();
+    };
+  }, []); 
 
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;
