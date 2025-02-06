@@ -22,7 +22,7 @@ const router = createBrowserRouter([
    },
    {
     path: "system-management",
-    element: <ProtectedRoutes />, // Menambahkan proteksi di sini
+    element: <ProtectedRoutes />, 
     children: [
       {
         path: "user",

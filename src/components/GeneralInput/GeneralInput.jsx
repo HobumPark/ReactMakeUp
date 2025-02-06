@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useImperativeHandle,
 } from "react";
-import calendar from "../../assets/icon/icon_calendar.svg"
+import calendar from "../../assets/icon/calendar.png"
 
 const GeneralInput = forwardRef(
   (
@@ -60,7 +60,7 @@ const GeneralInput = forwardRef(
           ref={inputRef}
           type="text"
           placeholder={placeholder}
-          className="input pl-4 pr-10 w-full" 
+          className={`input pl-4 pr-10 w-full ${inputFormStyle}` }
           value={inputValue}
           id={id}
           maxLength={maxLength}
@@ -72,7 +72,7 @@ const GeneralInput = forwardRef(
           src={calendar}
           alt="icon"
           className="absolute right-3 top-1/2 transform -translate-y-1/2"
-          style={{ filter: 'brightness(0.6)' }}
+          // style={{ filter: 'brightness(0.6)' }}
         />
       </div>
 

@@ -276,11 +276,11 @@ const AuthorityManagement = () => {
       }
     }, []);
     
-    const handleRowSelectedAssign = useCallback((row, a,b,c) => {
+    const handleRowSelectedAssign = useCallback((row) => {
       setSelectedRowAssign(row)
     }, []);
 
-    const handleRowSelectedStandBy = useCallback((row, a,b,c) => {
+    const handleRowSelectedStandBy = useCallback((row) => {
       setSelectedRowStandby(row)
     }, []);
 
@@ -396,6 +396,7 @@ const AuthorityManagement = () => {
         setSelectedRowAssign([]);
         
       } else {
+        setHasChanged(false);
         new NoticeMessage("There is no data selected. Please make selection.")
       }
     };
@@ -445,7 +446,7 @@ const AuthorityManagement = () => {
           setProgramsAssign((prevProgramsAssign) => {
             return [...(prevProgramsAssign || []), rowData];  
           });
-          setSelectedRowAssign(rowData); 
+          setSelectedRowAssign([rowData]); 
           setButtonState((prevState) => ({
             ...prevState,
             confirm:false,
@@ -468,7 +469,7 @@ const AuthorityManagement = () => {
         setPrograms((prevPrograms) => {
           return [...(prevPrograms || []), rowData];  
         });
-        setSelectedRowAssign(rowData); 
+        setSelectedRowStandby([rowData]); 
         setButtonState((prevState) => ({
           ...prevState,
           confirm:false,
@@ -548,8 +549,8 @@ const AuthorityManagement = () => {
         <ContainerCard  >
         <div className="mb-5"> 
             <BoxLeft
-                onSearch={'test'}
-                onReset={'test'}
+                // onSearch={'test'}
+                // onReset={'test'}
                 labelSelect={groupName || 'Tim'}
                 confirmButtonState={buttonState.confirm}
                 restoreButtonState={buttonState.restore}

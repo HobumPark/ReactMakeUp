@@ -356,6 +356,62 @@ input[type="radio"]:focus, input[type="checkbox"]:focus{
   filter: invert(1);
 }
 
+.input-modal-forgot {
+	font-size: 16px;
+	height: 48px;
+}
+
+.modal-background.modal-open {
+    opacity: 1;
+    visibility: visible;
+    background: rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease-in-out;
+}
+.modal-background {
+    display: flex;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+    visibility: hidden;
+    opacity: 0;
+    color: var(--green1);
+    background-color: rgba(0, 0, 0, 0.5);
+	z-index: 9999;
+}
+.modal-box {
+    background: var(--neutral-050);
+    /* padding: 36px; */
+    border-radius: 12px;
+    width: 40%;
+}
+
+
+/* CSS untuk transisi fade */
+.fade-enter {
+	opacity: 0;
+  }
+  
+  .fade-enter-active {
+	opacity: 1;
+	transition: opacity 300ms ease-in;
+  }
+  
+  .fade-exit {
+	opacity: 1;
+  }
+  
+  .fade-exit-active {
+	opacity: 0;
+	transition: opacity 300ms ease-out;
+  }
+  
+
 /* Modal */
 	  
 ._boxBtnForgot {

@@ -9,6 +9,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const PasswordInput =  forwardRef(({ 
   customInput, 
+  inputFormStyle,
   type = "text", 
   placeholder, 
   value,
@@ -52,7 +53,7 @@ const PasswordInput =  forwardRef(({
         ref={inputRef} 
         type="password"
         placeholder={placeholder}
-        className="input pr-10"
+        className={`input pr-10 ${inputFormStyle}`}
         value={inputValue}
         id={id}
         maxLength={maxLength}

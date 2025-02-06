@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
 import useUserMgt from "../../hooks/useUserMgt";
+import ModalProfileManagement from "../Modal/ModalProfileManagement/ModalProfileManagement";
 ;
 
 const ProtectedRoutes = () => {
@@ -16,14 +17,21 @@ const ProtectedRoutes = () => {
   }
 
   return (
+    <>
+    
     <div className="wrapper">
+    
          <Sidebar userInfo={{ username: detailUserData?.account_id, job: detailUserData?.job_position }} />
       <div className="article-content-right">
         
           <Outlet />
       
       </div>
+     
+
     </div>
+ 
+    </>
   );
 };
 

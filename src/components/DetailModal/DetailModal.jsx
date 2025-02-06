@@ -21,7 +21,7 @@ const DetailModal = ({ label, inputType, value, className, disabled, onChange, o
       disabled={disabled}
       onChange={onChange}
       disableEmptyOption={true}
-      className="w-full"
+      className="w-full input-modal-forgot"
     />
   ) : inputType === "password" ? (
     <PasswordInput
@@ -33,6 +33,7 @@ const DetailModal = ({ label, inputType, value, className, disabled, onChange, o
       onChange={onChange}
       maxLength={maxLength}
       readonly={readonly}
+      inputFormStyle='input-modal-forgot'
     />
   ) : (
     <GeneralInput
@@ -40,12 +41,13 @@ const DetailModal = ({ label, inputType, value, className, disabled, onChange, o
       name={name}
       value={value}
       required={required}
-      customInput="flex flex-col gap-2 w-full"
+      customInput="flex flex-col gap-2 w-full " 
       disabled={disabled}
       onChange={onChange}
       maxLength={maxLength}
       readonly={readonly}
       isDob={isDob}
+      inputFormStyle={'input-modal-forgot'}
     />
   )}
 </div>

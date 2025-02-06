@@ -7,6 +7,7 @@ import dropdownArrow from '../../assets/icon/dropdown-arrow-grey.svg'
 import { Link, useLocation } from 'react-router-dom';
 import NoticeMessage from '../../plugin/noticemessage/noticemessage';
 import useAuth from '../../hooks/useAuth';
+import ModalProfileManagement from '../Modal/ModalProfileManagement/ModalProfileManagement';
 
 const Sidebar = ({ userInfo }) => {
   const { handleLogout } = useAuth();
@@ -78,6 +79,7 @@ const Sidebar = ({ userInfo }) => {
 
   return (
     <>
+     <ModalProfileManagement/>
       <section className={classes.navbar} id="nav">
         <div className={classes['box-title-header']}>
           <div className={classes['box-selection']}>

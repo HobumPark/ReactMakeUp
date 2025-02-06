@@ -57,14 +57,14 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
       }`}
     >
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}></div>
-      <div className="bg-white rounded-xl w-[48%] p-[16px] shadow-lg relative z-10 transition-transform duration-300 transform scale-95">
+      <div className="bg-white rounded-xl w-[48%] shadow-lg relative z-10 transition-transform duration-300 transform scale-95" style={{ padding: "48px" }}>
         <div className="flex items-center justify-between w-full">
           <span className="font-semibold text-[29px]">Forgot Password?</span>
           <div className="modal-close cursor-pointer" onClick={onClose}>
             <img src={closeIcon} alt="Close" />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 mt-4">
           <div className="flex flex-col gap-4">
             <DetailModal
               label="User ID"

@@ -61,4 +61,5 @@ export const APIS = {
   initialAuthorityUser: (filterParams) => `/authority/groups/users?${filterParams}`,
   authorityUserAssignInfo: (groupCode) => `/authority/groups/${groupCode}/users`,
   authorityUserInfo: (groupCode) => `/authority/groups/${groupCode}`,
+  createAuthority: '/authority/groups'
 }

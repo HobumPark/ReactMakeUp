@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import Common from "../../utils/standard";
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
-import ModalForgotPasswprd from "../../components/Modal/ModalForgotPassword/ModalForgotPassword";
 import ModalForgotPassword from "../../components/Modal/ModalForgotPassword/ModalForgotPassword";
 import useCommonCodes from "../../hooks/useCommonCodes";
 
@@ -16,6 +15,7 @@ import useCommonCodes from "../../hooks/useCommonCodes";
 function SignIn() {
   const navigate = useNavigate();
   const idInputRef = useRef(null);
+  const [optionParams] = useState("upper-code=ORG");
   const pwInputRef = useRef(null);
   const [accountInfo, setAccountInfo] = useState({
     identifier: "",
@@ -88,22 +88,18 @@ function SignIn() {
     handleLogin(loginPayload); 
   };
 
-  const { commonListData } = useCommonCodes('upper-code=ORG');
-  const optionORG = commonListData
+  const { commonListData } = useCommonCodes({ optionParams });
+  console.log(commonListData)
+  const optionORG = commonListData?.["ORG"]
   ? [
-      { value: "", label: "" }, 
-      ...commonListData.code.map((code, index) => ({
+      { value: "", label: "All", code: "All" }, 
+      ...commonListData["ORG"].code.map((code, index) => ({
         value: code,
-        label: commonListData.name[index],
+        label: commonListData["ORG"].name[index],
+        code: code,
       })),
     ]
   : [];
-
-  const options = [
-    { label: "Option 1", value: "option1" },
-    { label: "Option 2", value: "option2" },
-    { label: "Option 3", value: "option3" },
-];
 
   
   return (
@@ -168,7 +164,7 @@ function SignIn() {
       <ModalForgotPassword
       isOpen={isModalOpen}
       onClose={() => setIsModalOpen(false)}
-      optionsSelect = {options}/>
+      optionsSelect = {optionORG}/>
     </div>
 
 

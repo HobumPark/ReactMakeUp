@@ -1,5 +1,5 @@
 import { URLS, APIS } from "../config/urls";  
-import { reqGet, reqPost } from "../utils/request"; 
+import { reqDelete, reqGet, reqPost, reqPut } from "../utils/request"; 
 
 
 // ? [GET] Authenticated
@@ -16,4 +16,20 @@ export const fetchAuthorityUserAssign = async (groupCode) => {
 export const fetchAuthorityUserInfo = async (groupCode) => {
   const url = `${URLS.BACK_DSH}${APIS.authorityUserInfo(groupCode)}`;
   return await reqGet(url)
+};
+
+export const deleteAuthorityUserInfo = async (groupCode) => {
+  const url = `${URLS.BACK_DSH}${APIS.authorityUserInfo(groupCode)}`;
+  return await reqDelete(url)
+};
+
+export const updateAuthorityUserAssign = async (groupCode,assignData) => {
+  const url = `${URLS.BACK_DSH}${APIS.authorityUserAssignInfo(groupCode)}`;
+  return await reqPut(url,assignData)
+};
+
+
+export const updateAuthorityUserInfo = async (groupCode, assignData) => {
+  const url = `${URLS.BACK_DSH}${APIS.authorityUserInfo(groupCode)}`;
+  return await reqPut(url, assignData)
 };

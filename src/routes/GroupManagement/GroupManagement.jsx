@@ -1,22 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Sidebar from '../../components/Sidebar/Sidebar';
 import ContainerCard from '../../components/ContainerCard/ContainerCard';
 import Filtering from '../../components/Filtering/Filtering';
 import { ReactTabulator } from 'react-tabulator';
 import DetailForm from '../../components/DetailForm/DetailForm';
-import Button from '../../components/Button/Button';
 import LogList from '../../components/LogList/LogList';
 import ButtonGroup from '../../components/ButtonGroup/ButtonGroup';
 import Select from '../../components/Select/Select';
 import ContainerSlide from '../../components/ContainerSlide/ContainerSlide';
 import BoxLeft from '../../components/BoxLeft/BoxLeft';
 import useAuthorityMgt from '../../hooks/useAuthorityMgt';
-import useProgram from '../../hooks/useProgram';
 import useCommonCodes from '../../hooks/useCommonCodes';
 import NoticeMessage from '../../plugin/noticemessage/noticemessage';
-import useUserMgt from '../../hooks/useUserMgt';
 import useUserAuthority from '../../hooks/useUserAuthority';
-import { faL } from '@fortawesome/free-solid-svg-icons';
 
 
 // tabulator top
@@ -99,6 +94,44 @@ const columnStandby = [
   },
 ]
 
+const columnAssign = [
+  {
+    formatter: "rowSelection",
+    titleFormatter: "rowSelection",
+    width: "60",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+  },
+  {
+    title: "User ID",
+    field: "account_id",
+    width: "120",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "Name",
+    field: "name",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "ID",
+    field: "id",
+    width: "100",
+    visible: false,
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+]
+
 
 const GroupManagement = () => {
     const tbRefInit = useRef(null);
@@ -110,20 +143,30 @@ const GroupManagement = () => {
     const [disabledLog, setDisabledLog] = useState(true);
     const [selectedIsCodeGroup, setSelectedIsCodeGroup]  = useState("")
     const [users, setUsers] = useState([]);
+    const [usersAssign, setUsersAssign] = useState([]);
+    const [initialUsersAssign, setInitialUsersAssign] = useState([]);
     const [selectedPosition, setSelectedPosition]  = useState("")
+    const [selectedRowAssign, setSelectedRowAssign] = useState(null);
+    const [selectedRowStandby, setSelectedRowStandby] = useState(null);
     const [optionParams] = useState("upper-code=002&upper-code=021");
     const [groupName, setGroupName] = useState('');
     const [queryParamsUser, setQueryParamsUser] = useState("");
     const [selectedCode, setSelectedCode] = useState({
         group_code: '',
+        id:''
     });
     //Change state
     const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
     const [hasChangesCreate, setHasChangesCreate] = useState(false);
+    const [isNewClicked, setIsNewClicked] = useState(false);
+    const [newId, setNewId] = useState('');
+
     const hasChangedRef = useRef(hasChanged);
+    const newClickedRef = useRef(isNewClicked);
     useEffect(() => {
       hasChangedRef.current = hasChanged;
-    }, [hasChanged]);
+      newClickedRef.current = isNewClicked;
+    }, [hasChanged,isNewClicked]);
      //Button 
      const [buttonState, setButtonState] = useState({
        confirm: true,
@@ -133,7 +176,7 @@ const GroupManagement = () => {
        restore: true,
        arrow:true
      });
-     const [isNewClicked, setIsNewClicked] = useState(false);
+
  
      const disableAllButtons = () => {
        setButtonState({
@@ -162,6 +205,8 @@ const GroupManagement = () => {
          cancel: false,
          delete: false,
          create: false,
+         arrow: false,
+         restore: false
        }));
      };
  
@@ -182,31 +227,67 @@ const GroupManagement = () => {
       setDisabled(true);
       setDisabledLog(true);
       setHasChangesUpdate(false);
-      setSelectedCode({ id: null });
+      setSelectedCode({ group_code: null });
       setIsNewClicked(false);
       setHasChangesCreate(false);
+      setHasChangesUpdate(false);
+      setHasChanged(false);
+      setSelectedRowAssign([]);
+      setSelectedRowStandby([]);
+      setUsers(userAuthenticated)
     };
-    const { userAuthenticated, authorityUserInfo, authorityUserAssign } = useUserAuthority({
+
+    const createCallback = () => {
+      enableInitialButtons();
+      emptyDetail();
+      setDisabled(true);
+      setHasChangesCreate(false);
+      setHasChanged(false);
+      setIsNewClicked(false);
+      setSelectedCode({group_code:null})
+    }
+    const updateCallback = () => {
+      enableUPDATEButtons();
+      setHasChangesUpdate(false);
+      setHasChanged(false);
+    };
+
+    const { userAuthenticated, authorityUserInfo, authorityUserAssign, deleteAuthorityUser, UpdateAuthorityUser, createAuthority} = useUserAuthority({
       id: selectedCode?.group_code,
       queryParams: queryParamsUser,
+      onDeleteSuccess: reloadCallback,
+      onCreateSuccess: (responseData) => {
+        createCallback();
+        const newUserId = responseData.group_id;
+        setNewId(newUserId); 
+      },
+      onUpdateSuccess: (responseData) =>{
+        updateCallback();
+        const newUserId = responseData[0]?.group_id || responseData?.group_id;
+        setSelectedCode({ group_code: newUserId });
+        // const row = tbRefInit.current.getRow(selectedCode.group_code);
+        // row && row.select();
+      } 
     });
     const { initialAuthority } = useAuthorityMgt({
       id: selectedCode?.group_code,
       queryParams: queryParams,
     })
 
+
+
     const { commonListData } = useCommonCodes({ optionParams });
 
     const [formValues, setFormValues] = useState({
       group_name:'',
-      is_used:'',
+      usage:'',
       description:''
       });  
 
     const emptyDetail = () => {
     setFormValues({
       group_name:'',
-      is_used:'',
+      usage:'',
       description:''
     });
   };
@@ -221,7 +302,7 @@ const GroupManagement = () => {
       selectableRowsCheck: (row) => {
         return !row.getElement().classList.contains("tabulator-selected");
       },
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${initialAuthority?.length || 0} Results</div>`,
     };
     const optionsAssign = {
       height: '270px',
@@ -230,10 +311,9 @@ const GroupManagement = () => {
       movableRows: false,
       resizableRows: false,
       layout: "fitColumns",
-      index: "code_id",
       rowHeight: 41,
       selectableRows: true,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ usersAssign?.length || 0} Results</div>`,
    };
 
    const optionsStandby = {
@@ -246,10 +326,28 @@ const GroupManagement = () => {
       selectableRows: true,
       footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ users?.length || 0} Results</div>`,
     };
-    
-      useEffect(() => {
+
+  useEffect(() => {
+      setUsersAssign(authorityUserAssign)
+      setInitialUsersAssign(authorityUserAssign)
+  }, [selectedCode, authorityUserAssign]); 
+
+  useEffect(() => {
         setUsers(userAuthenticated); 
-      }, [userAuthenticated]);
+  }, [userAuthenticated]);
+
+  useEffect(() => {
+      if (Array.isArray(userAuthenticated) && Array.isArray(usersAssign)) {
+        const filteredUsers = userAuthenticated.filter((user) => {
+          return !usersAssign.some((assignedUser) => assignedUser.id === user.id);
+        });
+    
+        if (filteredUsers?.length !== users?.length) {
+          setUsers(filteredUsers);
+        }
+      }
+  }, [usersAssign, userAuthenticated]);  
+  
     const optionsRadioFilterUsage = commonListData?.["002"]
     ? [
         { value: "All", label: "All", code: "All" }, 
@@ -276,6 +374,16 @@ const GroupManagement = () => {
       setSelectedIsCodeGroup(value);
     }, []);
 
+    const handleRestore = () => {
+      setUsersAssign(initialUsersAssign);
+      setHasChanged(false);
+      setSelectedRowAssign(selectedRowStandby);
+      setSelectedRowStandby(selectedRowAssign);
+      if (isNewClicked){
+        setUsers(userAuthenticated)
+        setSelectedRowStandby([]);
+      }
+    }
     const handleSearchInit = useCallback(
      (inputVal = null) => {
           const resultInput = inputVal ? `input=${inputVal}` : "";
@@ -295,8 +403,7 @@ const GroupManagement = () => {
       const rowData = row.getData(); 
       const groupCode = rowData.group_code;
       const groupName = rowData.group_name;
-      setSelectedCode({group_code:groupCode})
-      
+
       const updateGroupData = () => {
         setDisabled(false);
         enableUPDATEButtons();
@@ -304,8 +411,8 @@ const GroupManagement = () => {
         setSelectedCode({ group_code: groupCode });
         setButtonState((prevState) => ({ ...prevState, arrow: false, confirm:true, restore:false}));
         setDisabledLog(false);
-        // setSelectedRowAssign([]);
-        // setSelectedRowStandby([]);
+        setSelectedRowAssign([]);
+        setSelectedRowStandby([]);
       };
     
       if (hasChangedRef.current) {
@@ -324,8 +431,193 @@ const GroupManagement = () => {
         updateGroupData(); 
       }
     }, []);
+        useEffect(() => {console.log("ASSIGN",selectedRowAssign)}, [selectedRowAssign])
+        useEffect(() => {console.log("STANDBY",selectedRowStandby)}, [selectedRowStandby])
+      const handleRowSelectedAssign = useCallback((row) => {
+        setSelectedRowAssign(row)
+      }, []);
+  
+      const handleRowSelectedStandBy = useCallback((row) => {
+        setSelectedRowStandby(row)
+      }, []);  
+
+    const handleLeftButton = () => {
+      if (selectedRowAssign && selectedRowAssign.length > 0) {
+        setHasChanged(true);
+        if (isNewClicked){
+          setButtonState((prevState) => ({
+            ...prevState,
+            confirm:true,
+            restore:false,
+            arrow: false,
+            create: false
+          }));
+        }else{
+          setButtonState((prevState) => ({
+            ...prevState,
+            confirm:false,
+            restore:false,
+            arrow: false,
+            create:true
+          }));
+        }
     
+        const selectedIds = selectedRowAssign.map((user) => user.id);
     
+        setUsersAssign((prev) => {
+          const updatedAssign = prev.filter((user) => !selectedIds.includes(user.id));
+          return updatedAssign;
+        });
+    
+        setUsers((prev) => {
+          const existingIds = new Set(prev?.map((user) => user.id));
+          const newUsers = (Array.isArray(selectedRowAssign) ? selectedRowAssign : [selectedRowAssign])
+            .filter((user) => !existingIds.has(user.id));
+        
+          const updatedUsers = [...prev, ...newUsers];
+          return updatedUsers;
+        });
+        setSelectedRowStandby((prev) => {
+          const prevStandby = Array.isArray(prev) ? prev : [];
+          return [...prevStandby, ...selectedRowAssign]; 
+        });
+        
+        setSelectedRowAssign([]);
+        
+      } else {
+        new NoticeMessage("There is no data selected. Please make selection.")
+      }
+    };
+ 
+
+    const handleRightButton = () => {
+      if (selectedRowStandby && selectedRowStandby.length > 0) {
+        setHasChanged(true);
+        if (isNewClicked){
+          setButtonState((prevState) => ({
+            ...prevState,
+            confirm:true,
+            restore:false,
+            arrow: false,
+            create: false
+          }));
+        }else{
+          setButtonState((prevState) => ({
+            ...prevState,
+            confirm:false,
+            restore:false,
+            arrow: false,
+            create:true
+          }));
+        }
+
+        const selectedIds = selectedRowStandby.map((user) => user.id);
+    
+        setUsers((prev) => {
+          const updatedUsers = prev.filter((user) => !selectedIds.includes(user.id));
+          return updatedUsers;
+        });
+    
+        setUsersAssign((prev = []) => {
+          const existingIds = new Set(prev.map((user) => user.id)); 
+          const newUsersAssign = (Array.isArray(selectedRowStandby) ? selectedRowStandby : [selectedRowStandby])
+            .filter((user) => !existingIds.has(user.id));
+          
+          const updatedAssign = [...prev, ...newUsersAssign];
+        
+          return updatedAssign;
+        });
+        
+        
+
+        setSelectedRowAssign((prev) => {
+          const prevAssign = Array.isArray(prev) ? prev : [];
+          return [...prevAssign, ...selectedRowStandby];
+        });
+        
+        setSelectedRowStandby([]);
+      }
+      else {
+        new NoticeMessage("There is no data selected. Please make selection.")
+      }
+    };
+
+    const handleDblStandbyClick = (e, row) => {
+      if (row) {
+        setHasChanged(true);
+        const rowData = row.getData();
+        console.log(selectedCode);
+        
+        if ( selectedCode?.group_code || newClickedRef.current) {
+          setUsers((prevUsers) => prevUsers.filter((user) => user.id !== rowData.id));
+          setUsersAssign((prevUsersAssign) => {
+            return [...(prevUsersAssign || []), rowData];  
+          });
+          setSelectedRowAssign([rowData]); 
+          if (newClickedRef.current){
+            setButtonState((prevState) => ({
+              ...prevState,
+              confirm:true,
+              restore:false,
+              arrow: false,
+              create: false
+            }));
+          }else if(selectedCode.group_code){
+            setButtonState((prevState) => ({
+              ...prevState,
+              confirm:false,
+              restore:false,
+              arrow: false,
+              create:false
+            }));
+          }
+            else{
+            setButtonState((prevState) => ({
+              ...prevState,
+              confirm:true,
+              restore:true,
+              arrow: true,
+              create:false
+            }));
+          }
+        } else {
+          setHasChanged(false);
+          new NoticeMessage('No group selected. Please select a group.')
+        }
+      }
+    };
+    
+    const handleDblAssignClick = (e, row) => {
+      if (row) {
+        setHasChanged(true);
+        const rowData = row.getData();
+        setUsersAssign((prevUsersAssign) => 
+          prevUsersAssign.filter((user) => user.id !== rowData.id)
+        );
+
+        setUsers((prevUsers) => {
+          return [...(prevUsers || []), rowData];  
+        });
+        setSelectedRowStandby([rowData]); 
+        if (isNewClicked){
+          setButtonState((prevState) => ({
+            ...prevState,
+            confirm:true,
+            restore:false,
+            arrow: false,
+            create: false
+          }));
+        }else{
+          setButtonState((prevState) => ({
+            ...prevState,
+            confirm:false,
+            restore:false,
+            arrow: false,
+            create:false
+          }));
+        }
+      }
+    };
     
     const handleInputChange = (e) => {
       const { name, value } = e.target;
@@ -340,7 +632,7 @@ const GroupManagement = () => {
         setHasChangesUpdate(true); 
       }
 
-      if (selectedCode?.id){
+      if (selectedCode?.group_code){
         if(!isNewClicked){
           setHasChangesUpdate(true);
         }
@@ -369,53 +661,103 @@ const GroupManagement = () => {
   };
 
   const handleCancelButtonClick = () => {
-            if (hasChangesUpdate){
-              const message = new NoticeMessage(
-                "Changes you made may not be saved, would you like to continue?",
-                {
-                  mode: "confirm",
-                }
-              );
-              message.confirmClicked().then(() => {
-                setHasChangesUpdate(false);
-              });
-            }
-            
-        if(isNewClicked){
-              if(hasChangesCreate){
-              const message = new NoticeMessage(
-                "Changes you made may not be saved, would you like to continue?",
-                {
-                  mode: "confirm",
-                }
-              );
-              message.confirmClicked().then(() => {
-                emptyDetail();
-                setIsNewClicked(false);
-                setDisabled(true);
-                enableInitialButtons();
-                setHasChangesCreate(false);
-              });
-            }
-            else{
-              emptyDetail();
-              setIsNewClicked(false);
-              setDisabled(true);
-              enableInitialButtons();
-              setHasChangesCreate(false);
-              setSelectedCode({id:null})
-            }
-          } else {
-            reloadCallback()
-          }
-          };
-  const handleNewButtonClick = () => {
-            if (selectedCode?.id){
-              tbRefInit.current.deselectRow();
-              emptyDetail();
+    if(selectedCode.group_code){
+      if (hasChangesUpdate || hasChanged){
+        const message = new NoticeMessage(
+        "Changes you made may not be saved, would you like to continue?",
+              {
+                mode: "confirm",
+              }
+          );
+          message.confirmClicked().then(() => {
+              setDisabled(false);
+              setHasChanged(false);
+              handleRestore();
+              setSelectedRowAssign([]);
+              setSelectedRowStandby([]);
               setHasChangesUpdate(false);
-              enableRegisterButtons();
-              setIsNewClicked(true);
+              setUsersAssign([]);
+              setUsers(userAuthenticated);
+              setFormValues((prevValues) => ({
+                ...prevValues, 
+                group_name: authorityUserInfo[0]?.group_name,
+                usage: authorityUserInfo[0]?.is_used,
+                description: authorityUserInfo[0]?.description
+              }));
+            });
+        } 
+       else {
+          reloadCallback()
+        }
+    }        else if(isNewClicked){
+      if(hasChangesCreate || hasChanged){
+      const message = new NoticeMessage(
+        "Changes you made may not be saved, would you like to continue?",
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        emptyDetail();
+        setIsNewClicked(false);
+        setDisabled(true);
+        enableInitialButtons();
+        setHasChangesCreate(false);
+        setHasChanged(false);
+        setSelectedRowAssign([]);
+        setSelectedRowStandby([]);
+        setUsers(userAuthenticated);
+        setUsersAssign([]);
+        tbRefAssign.current.deselectRow();
+        tbRefStandby.current.deselectRow();
+      });
+    }
+    else{
+      emptyDetail();
+      setHasChanged(false);
+      setIsNewClicked(false);
+      setDisabled(true);
+      enableInitialButtons();
+      setHasChangesCreate(false);
+      setSelectedCode({group_code:null})
+    }
+  }else {
+      reloadCallback()
+      setHasChanged(false);
+    }
+
+   };
+
+  const handleNewButtonClick = () => {
+            if (selectedCode?.group_code){
+              if (hasChanged || hasChangesUpdate){
+                const message = new NoticeMessage(
+                  "Changes you made may not be saved, would you like to continue?",
+                  {
+                    mode: "confirm",
+                  }
+                );
+                message.confirmClicked().then(() => {
+                  tbRefInit.current.deselectRow();
+                  emptyDetail();
+                  setHasChangesUpdate(false);
+                  enableRegisterButtons();
+                  setIsNewClicked(true);
+                  setSelectedCode({group_code:null})
+                  setUsersAssign(initialUsersAssign)
+                  setUsers(userAuthenticated)
+                });
+              }else{
+                tbRefInit.current.deselectRow();
+                emptyDetail();
+                setHasChangesUpdate(false);
+                enableRegisterButtons();
+                setIsNewClicked(true);
+                setSelectedCode({group_code:null})
+                setUsersAssign(initialUsersAssign)
+                setUsers(userAuthenticated)
+              }
+
             } else { 
               tbRefInit.current.deselectRow();
               emptyDetail();
@@ -425,12 +767,25 @@ const GroupManagement = () => {
               setHasChangesUpdate(false);
             }
   };
-    
+
+  
   const handleRegistButtonClick = () => {
+    console.log(formValues);
     
+    createAuthority(formValues);
   }
   const handleConfirmButtonClick = () => {
-       
+    const assignDataAssign = {
+      group_name: formValues.group_name,      
+      description: formValues.description,    
+      usage: formValues.usage,              
+      user_id: Array.isArray(usersAssign) ? usersAssign.map(item => item.id) : []  
+    };
+    const assignDataInfo = formValues;
+    console.log(assignDataAssign);
+    console.log(assignDataInfo)
+    
+    UpdateAuthorityUser({assignDataAssign, assignDataInfo} )
   }
   const handleDeleteButtonClick = () => {
         
@@ -441,7 +796,7 @@ const GroupManagement = () => {
           }
         );
         message.confirmClicked().then(() => {
-          // deleteProgram(selectedProgram?.id); 
+          deleteAuthorityUser(selectedCode?.group_code); 
         });
         
   };
@@ -451,7 +806,7 @@ const GroupManagement = () => {
       setFormValues((prevValues) => ({
         ...prevValues, 
         group_name: authorityUserInfo[0]?.group_name,
-        is_used: authorityUserInfo[0]?.is_used,
+        usage: authorityUserInfo[0]?.is_used,
         description: authorityUserInfo[0]?.description
       }));
     }
@@ -504,10 +859,15 @@ const GroupManagement = () => {
             events={{
               rowSelected: handleRowInitSelected,
               tableBuilt: () => {
-                if (selectedCode?.code_id) {
-                  const row = tbRefInit.current.getRow(selectedCode?.code_id);
+                console.log(selectedCode.group_code)
+                if (selectedCode?.group_code) {
+                  const row = tbRefInit.current.getRow(selectedCode?.group_code);
                   row && row.select();
-                }
+                }else if (newId){
+                    const row = tbRefInit.current.getRow(newId);
+                    tbRefInit.current.scrollToRow(row, "bottom", true);
+                    tbRefInit.current.selectRow(newId);
+              }
               },
             }}
           />
@@ -518,27 +878,30 @@ const GroupManagement = () => {
         <div className="mb-5"> 
             <BoxLeft
                 disableConfirmButton={true}
-                onReset={'test'}
+                onClickRestore={handleRestore}
                 restoreButtonState={buttonState.restore}
-            >
-            </BoxLeft>
+                labelSelect={groupName || ''}
+            />
             </div>
             <ReactTabulator
+                key={usersAssign?.length}
                 className="container-tabullator"
-                data={[]}
-                columns={columnsHistory}
+                data={usersAssign || []}
+                columns={columnAssign}
                 layout={"fitColumns"}
                 options={optionsAssign}
                 onRef={(r) => {
                   tbRefAssign.current = r.current;
                 }}
                 events={{
-                // rowSelected: handleRowSelected,
+                rowSelectionChanged: handleRowSelectedAssign,
+                rowDblClick: handleDblAssignClick,
                 tableBuilt: () => {
-                    if (selectedCode?.code_id) {
-                    const row = tbRefAssign.current.getRow(selectedCode?.code_id);
-                    row && row.select();
-                    }
+                   if(selectedRowAssign){
+                    tbRefAssign.current.selectRow(selectedRowAssign.map(p => p.id))
+                   }
+                     
+                  
                 },
                 }}
             />
@@ -546,7 +909,11 @@ const GroupManagement = () => {
         </ContainerCard>
       </div>
       <div className="flex-shrink-0 min-w-0">
-        <ContainerSlide buttonState={buttonState.arrow}/>
+        <ContainerSlide 
+        buttonState={buttonState.arrow}
+        onClickLeft={handleLeftButton}
+        onClickRight={handleRightButton} 
+        />
       </div>
       <div className="flex-1 min-w-0">
         <ContainerCard>
@@ -566,6 +933,7 @@ const GroupManagement = () => {
             </Filtering>
             </div>
             <ReactTabulator
+                key={users?.length}
                 className="container-tabullator"
                 data={users || []}
                 columns={columnStandby}
@@ -575,12 +943,14 @@ const GroupManagement = () => {
                   tbRefStandby.current = r.current;
                 }}
                 events={{
-                // rowSelected: handleRowSelected,
+                rowSelectionChanged: handleRowSelectedStandBy,
+                rowDblClick: handleDblStandbyClick,
                 tableBuilt: () => {
-                    if (selectedCode?.code_id) {
-                    const row = tbRefStandby.current.getRow(selectedCode?.code_id);
-                    row && row.select();
-                    }
+                   if(selectedRowStandby){
+                    tbRefStandby.current.selectRow(selectedRowStandby.map(p => p.id))
+                   }
+                      
+                  
                 },
                 }}
             />
@@ -601,8 +971,8 @@ const GroupManagement = () => {
         />
             <DetailForm
               label={"Usage"}
-              name="is_used"
-              value={formValues.is_used} 
+              name="usage"
+              value={formValues.usage} 
               inputType={'select'}
               onChange={handleInputChange}
               required={true} 
