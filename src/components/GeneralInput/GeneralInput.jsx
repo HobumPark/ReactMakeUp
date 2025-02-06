@@ -66,6 +66,7 @@ const GeneralInput = forwardRef(
           maxLength={maxLength}
           disabled={disabled}
           onKeyUp={onKeyUp}
+          name={name}
           onChange={handleInputChange}
         />
         <img

@@ -826,7 +826,7 @@ const GroupManagement = () => {
     <>
         <section className='wrap'>
           <div className='header-title'>
-            <h3>SYSTEM</h3>
+            <h3>System Management</h3>
             <h3>&gt;</h3>
             <h3>Group Management</h3>
           </div>

@@ -9,13 +9,14 @@ import NoticeMessage from '../../plugin/noticemessage/noticemessage';
 import useAuth from '../../hooks/useAuth';
 import ModalProfileManagement from '../Modal/ModalProfileManagement/ModalProfileManagement';
 
-const Sidebar = ({ userInfo }) => {
+const Sidebar = ({ userInfo, commonData }) => {
   const { handleLogout } = useAuth();
   const [isActive, setIsActive] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [time, setTime] = useState(""); 
   const [date, setDate] = useState("");
   const location = useLocation();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -75,13 +76,10 @@ const Sidebar = ({ userInfo }) => {
       handleLogout();
     });
   };  
-  console.log(userInfo);
-  
-
 
   return (
     <>
-     <ModalProfileManagement/>
+    
       <section className={classes.navbar} id="nav">
         <div className={classes['box-title-header']}>
           <div className={classes['box-selection']}>
@@ -89,11 +87,11 @@ const Sidebar = ({ userInfo }) => {
           </div>
 
           <div className={classes['box-logout']}>
-            <div className={`${classes.spacesProfile} ${classes._modalProp}`}>
+            <div className={`${classes.spacesProfile} ${classes._modalProp}`} onClick={() => setIsModalOpen(true)}>
               <img src={imgUser} className={classes["img-user"]} alt="User" />
               <div className={classes["name-user"]}>
-                <span id="user-name">{userInfo?.username}</span>
-                <p id="user-position">{userInfo?.job}</p>
+                <span id="user-name">{userInfo?.account_id}</span>
+                <p id="user-position">{userInfo?.job_position}</p>
               </div>
             </div>
             <div className={classes["title-languange-logout"]}>
@@ -144,6 +142,7 @@ const Sidebar = ({ userInfo }) => {
           </div>
         </div>
       </section>
+      <ModalProfileManagement isModalOpen={isModalOpen}  setIsModalOpen={setIsModalOpen} userInfo={userInfo} commonData={commonData}/>
     </>
   );
 };

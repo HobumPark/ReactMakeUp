@@ -1,3 +1,4 @@
+
 // ! Warning: The DEBUG changes may cause issues with the production server.
 const isDebugMode = import.meta.env.DEV;
 export const DEBUG = isDebugMode;
@@ -61,5 +62,6 @@ export const APIS = {
   initialAuthorityUser: (filterParams) => `/authority/groups/users?${filterParams}`,
   authorityUserAssignInfo: (groupCode) => `/authority/groups/${groupCode}/users`,
   authorityUserInfo: (groupCode) => `/authority/groups/${groupCode}`,
-  createAuthority: '/authority/groups'
+  createAuthority: '/authority/groups',
+  forgotPassword: '/forgot-password'
 }

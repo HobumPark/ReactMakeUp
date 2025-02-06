@@ -52,6 +52,7 @@ const PasswordInput =  forwardRef(({
       <input
         ref={inputRef} 
         type="password"
+        name={name}
         placeholder={placeholder}
         className={`input pr-10 ${inputFormStyle}`}
         value={inputValue}

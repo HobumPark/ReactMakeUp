@@ -90,7 +90,7 @@ const UserManagement = () => {
     onSelect: (date) => {
       setFormValues((prevValues) => ({
         ...prevValues,
-        birth: date.formattedDate , 
+        birth: date.formattedDate, 
       }));
     },
   };

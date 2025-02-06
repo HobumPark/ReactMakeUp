@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
 import useUserMgt from "../../hooks/useUserMgt";
-import ModalProfileManagement from "../Modal/ModalProfileManagement/ModalProfileManagement";
-;
+import useCommonCodes from "../../hooks/useCommonCodes";
 
 const ProtectedRoutes = () => {
   const isLogin = localStorage.getItem("isLogin") || sessionStorage.getItem("isLogin");
@@ -11,6 +10,9 @@ const ProtectedRoutes = () => {
   const { detailUserData} = useUserMgt({
     userID: user_id,
   });
+
+  const [optionParams, setOptionParams] = useState("upper-code=021&upper-code=ORG");
+  const { commonListData } = useCommonCodes({ optionParams });
 
   if (!isLogin) {
     return <Navigate to="/" />;
@@ -21,7 +23,7 @@ const ProtectedRoutes = () => {
     
     <div className="wrapper">
     
-         <Sidebar userInfo={{ username: detailUserData?.account_id, job: detailUserData?.job_position }} />
+         <Sidebar userInfo={detailUserData} commonData={commonListData}/>
       <div className="article-content-right">
         
           <Outlet />

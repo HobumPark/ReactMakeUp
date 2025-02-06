@@ -1,23 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import closeIcon from "../../../assets/icon/close-icon.svg";
 import DetailModal from "../../DetailModal/DetailModal";
 import Button from "../../Button/Button";
+import 'air-datepicker/air-datepicker.css';
+import localeEn from 'air-datepicker/locale/en.js'; 
+import AirDatepicker from "air-datepicker";
+import Common from '../../../utils/standard';
+import { formatDateToYYYYMMDD } from "../../../utils/date";
+import useAuth from "../../../hooks/useAuth";
+import NoticeMessage from "../../../plugin/noticemessage/noticemessage";
 
 
 const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
   const [formData, setFormData] = useState({
-    account_id: "",
+    user_id: "",
     name: "",
     birth: "",
-    organization: "",
+    org: "",
     email: "",
-    position: "",
-    phone_no: "",
-    password: "",
-    no_hash_password: "",
-    confirmPassword: "", 
+    phone: "",
+    new_pass: "", 
+    co_pass: "",
+    // e_password: "", //Hash 
+    // eco_password:"" //Hash
   });
-
+  const optionsDate = {
+    autoClose: true,
+    locale: localeEn,
+    position: 'top center',
+    onSelect: (date) => {
+      setFormData((prevValues) => ({
+        ...prevValues,
+        birth: date.formattedDate, 
+      }));
+    },
+  };
+  useEffect(() => {
+    if (isOpen) {
+      const inputElement = document.querySelector('[name="birth"]');
+      if (inputElement && !inputElement._airDatepicker) {
+        new AirDatepicker(inputElement, optionsDate);
+      }
+    }
+  }, [isOpen]);
+  
+  const { handleForgotPassword } = useAuth({
+    onResetFail: (err) => {
+      new NoticeMessage(err?.message);
+    },
+  });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,27 +56,21 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
 
   const handleSubmit = async () => {
 
-    if (formData.no_hash_password !== formData.confirmPassword) {
-      console.log('error ');
-      
-    }
-
-    const hashedPassword = Common.SHA256(formValues.password);
-
     const dataToSend = {
-      account_id: formData.account_id,
+      user_id: formData.user_id,
       name: formData.name,
-      birth: formData.birth,
-      organization: formData.organization,
+      birth: formatDateToYYYYMMDD(formData.birth),
+      org: formData.org,
       email: formData.email,
-      position: formData.position,
-      phone_no: formData.phone_no,
-      password: hashedPassword,
-      no_hash_password: formData.no_hash_password, 
+      phone: formData.phone,
+      new_pass: formData.new_pass, 
+      co_pass: formData.co_pass,
+      e_password: Common.SHA256(formData.new_pass.trim()), //Hash 
+      eco_password:Common.SHA256(formData.co_pass.trim()) //Hash 
     };
 
     console.log("Form Data to Send:", dataToSend);
-
+    handleForgotPassword(dataToSend)
 }
 
   if (!isOpen) return null;
@@ -69,31 +94,35 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
             <DetailModal
               label="User ID"
               inputType="text"
-              name="account_id"
-              value={formData.account_id}
+              name={"user_id"}
+              value={formData.user_id}
               onChange={handleChange}
+              modalType={'forgot'}
             />
             <DetailModal
               label="Name"
               inputType="text"
-              name="name"
+              name={"name"}
               value={formData.name}
               onChange={handleChange}
+              modalType={'forgot'}
             />
             <DetailModal
               label="Date Of Birth"
               inputType="text"
-              name="birth"
+              name={"birth"}
               value={formData.birth}
               isDob={true}
               onChange={handleChange}
+              modalType={'forgot'}
             />
             <DetailModal
               label="Phone Number"
               inputType="number"
-              name="phone_no"
-              value={formData.phone_no}
+              name={"phone"}
+              value={formData.phone}
               onChange={handleChange}
+              modalType={'forgot'}
             />
           </div>
 
@@ -102,37 +131,37 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
               label="Organization"
               inputType="select"
               optionSelect={optionsSelect}
-              name="organization"
-              value={formData.organization}
+              name={"org"}
+              value={formData.org}
               onChange={handleChange}
+              modalType={'forgot'}
             />
             <DetailModal
               label="Email"
               inputType="text"
-              name="email"
+              name={"email"}
               value={formData.email}
               onChange={handleChange}
+              modalType={'forgot'}
             />
-            {/* <DetailModal
-              label="Position"
-              inputType="text"
-              name="position"
-              value={formData.position}
-              onChange={handleChange}
-            /> */}
+
             <DetailModal
               label="New Password"
               inputType="password"
-              name="no_hash_password"
-              value={formData.no_hash_password}
+              name={"new_pass"}
+              value={formData.new_pass}
               onChange={handleChange}
+              maxLength={20}
+              modalType={'forgot'}
             />
             <DetailModal
               label="Confirm Password"
               inputType="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
+              name={"co_pass"}
+              value={formData.co_pass}
               onChange={handleChange}
+              maxLength={20}
+              modalType={'forgot'}
             />
           </div>
         </div>

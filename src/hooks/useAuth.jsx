@@ -4,8 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { URLS, APIS } from "../config/urls.js";
 import { reqGet, reqPost, reqPut } from "../utils/request.js";
+import NoticeMessage from "../plugin/noticemessage/noticemessage.js";
 
-const useAuth = ({ onLoginFail = () => {} } = {}) => {
+const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {} } = {}) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -45,11 +46,27 @@ const useAuth = ({ onLoginFail = () => {} } = {}) => {
     } 
     return false;
   };
+  
+  const handleForgotPassword = async (accountDT) => {
+    const requestURL = `${URLS.BACK_DSH}${APIS.forgotPassword}`;
+    return reqPost(requestURL, accountDT)
+    .then((data) => {
+      new NoticeMessage(`Update Success`, {
+        callback() {
+          location.reload();
+        }
+      })
+    })
+    .catch((err) => {
+      onResetFail(err);
+    });
+  }
 
   return {
     getIsLogin,
     handleLogin,
     handleLogout,
+    handleForgotPassword
   };
 };
 

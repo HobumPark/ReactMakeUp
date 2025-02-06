@@ -1,4 +1,5 @@
 import { useState } from "react";
+import DetailModal from "../../../DetailModal/DetailModal";
 
 const UpdatePassword = (isActive =true) => {
 
@@ -13,6 +14,26 @@ const UpdatePassword = (isActive =true) => {
                     Reset Password
                 </span>
         </div>
+        <div className="flex flex-col gap-4">
+        <DetailModal
+              label="Current Password"
+              inputType="password"
+              name={"account_id"}
+              modalType={'profile'}
+            />
+            <DetailModal
+              label="New Password"
+              inputType="password"
+              name={"name"}
+              modalType={'profile'}
+            />
+            <DetailModal
+              label="Confirm Password"
+              inputType="password"
+              name={"birth"}
+              modalType={'profile'}
+            />
+            </div>
 
     </div>
   );
