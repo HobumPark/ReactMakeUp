@@ -67,7 +67,7 @@ const Sidebar = ({ userInfo }) => {
     return location.pathname.includes(linkPath);
   };
   const handleLogoutButton = () => {
-    let checkLogout = new NoticeMessage(":: msg > logout confirm", {
+    let checkLogout = new NoticeMessage("Are you sure you want to log out?", {
       mode: "confirm",
     });
   
@@ -75,6 +75,8 @@ const Sidebar = ({ userInfo }) => {
       handleLogout();
     });
   };  
+  console.log(userInfo);
+  
 
 
   return (
