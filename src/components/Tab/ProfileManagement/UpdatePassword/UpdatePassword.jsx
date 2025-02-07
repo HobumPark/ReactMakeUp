@@ -65,8 +65,6 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
   };
   
 
-  
-  
   const handleSubmit = async () => {
     const updatedFormData = {
       ...formData,
