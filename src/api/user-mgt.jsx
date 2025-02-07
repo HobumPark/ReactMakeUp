@@ -14,7 +14,7 @@ export const fetchDetailUser = async (userID) => {
       userID
     )}`;
     return await reqGet(url);
-  };
+};
 
 export const deleteUser = async (userID) => {
     const url = `${URLS.BACK_DSH}${APIS.deleteUser(userID)}`;
@@ -30,3 +30,5 @@ export const updateUser = async (userData) => {
   const url = `${URLS.BACK_DSH}${APIS.updateUser}`; 
   return await reqPut(url, userData); 
 };
+
+

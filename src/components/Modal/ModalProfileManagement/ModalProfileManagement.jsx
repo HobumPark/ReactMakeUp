@@ -54,7 +54,7 @@ const ModalProfileManagement = ({isModalOpen , setIsModalOpen, userInfo, commonD
           {activeTab === "profile" && <UpdateProfile userInfo={userInfo} commonData={commonData} />}
         </div>
         <div className={`fade ${activeTab === "password" ? "fade-enter-active" : "fade-exit-active"}`}>
-          {activeTab === "password" && <UpdatePassword />}
+          {activeTab === "password" && <UpdatePassword userInfo={userInfo.account_id} />}
         </div>
       </div>
       </div>

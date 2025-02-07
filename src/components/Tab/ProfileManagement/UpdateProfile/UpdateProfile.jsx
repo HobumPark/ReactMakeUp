@@ -1,32 +1,40 @@
 import { useEffect, useState } from "react";
 import DetailModal from "../../../DetailModal/DetailModal";
+import Button from "../../../Button/Button";
+import useAuth from "../../../../hooks/useAuth";
+import NoticeMessage from "../../../../plugin/noticemessage/noticemessage";
 
 const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
+  const [isDisabled, setIsDisabled] = useState(true);
   const [formData, setFormData] = useState({
     account_id: "",
     name: "",
-    birth: "",
     organization: "",
     email: "",
     position: "",
     phone_no: "",
   });
 
+  const { handleUpdateProfile } = useAuth({
+    onSuccessUpdate: () => {
+      setIsDisabled(true);
+    },
+  });
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-  };
-
+    setIsDisabled(false);
+    };
+ 
   useEffect(() => {
     if (userInfo) {
       setFormData((prev) => ({
         ...prev,
         account_id: userInfo?.account_id,
         name: userInfo?.name,
-        birth: userInfo?.birth,
         organization: userInfo?.organization,
         email: userInfo?.email,
         position: userInfo?.position,
@@ -35,6 +43,11 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
       }));
     }
   }, [userInfo]);
+
+  const handleSubmit = async () => {
+    console.log("Form Data to Send:", formData);
+    handleUpdateProfile(formData)
+}
 
     const tabClass = isActive
   ? "flex flex-col pt-[20px] bg-transparent rounded-[4px] bg-[#135a78]"
@@ -119,7 +132,7 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
             <DetailModal
               label="Email"
               inputType="text"
-              name={"no_hash_password"}
+              name={"email"}
               modalType={'profile'}
               value={formData.email}
               onChange={handleChange}
@@ -127,6 +140,17 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
 
           </div>
         </div>
+
+        <div className="flex justify-end mt-12">
+          <Button
+            label="Save"
+            customButton="btn-search"
+            disabled={isDisabled}
+            onClick={handleSubmit}
+          />
+        </div>
+
+
 
     </div>
   );

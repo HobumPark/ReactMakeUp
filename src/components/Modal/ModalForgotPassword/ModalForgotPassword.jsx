@@ -65,7 +65,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
       phone: formData.phone,
       new_pass: formData.new_pass, 
       co_pass: formData.co_pass,
-      e_password: Common.SHA256(formData.new_pass.trim()), //Hash 
+      epassword: Common.SHA256(formData.new_pass.trim()), //Hash 
       eco_password:Common.SHA256(formData.co_pass.trim()) //Hash 
     };
 

@@ -6,7 +6,7 @@ import { URLS, APIS } from "../config/urls.js";
 import { reqGet, reqPost, reqPut } from "../utils/request.js";
 import NoticeMessage from "../plugin/noticemessage/noticemessage.js";
 
-const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {} } = {}) => {
+const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpdate = () => {} } = {}) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -51,7 +51,7 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {} } = {}) => {
     const requestURL = `${URLS.BACK_DSH}${APIS.forgotPassword}`;
     return reqPost(requestURL, accountDT)
     .then((data) => {
-      new NoticeMessage(`Update Success`, {
+      new NoticeMessage(`Successfully updated.`, {
         callback() {
           location.reload();
         }
@@ -62,11 +62,47 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {} } = {}) => {
     });
   }
 
+  const handleUpdateProfile = async (accountDT) => {
+    const requestURL = `${URLS.BACK_DSH}${APIS.updateProfileByUser}`;
+
+    return reqPut(requestURL, accountDT)
+    .then((data) => {
+      new NoticeMessage(`Successfully updated.`, {
+        callback() {
+          onSuccessUpdate();
+        }
+      })
+    })
+    .catch((err) => {
+      onResetFail(err);
+    });
+  }
+  
+
+  const handleUpdatePassword = async (accountDT) => {
+    const requestURL = `${URLS.BACK_DSH}${APIS.updateProfilePassword}`;
+
+    return reqPut(requestURL, accountDT)
+    .then((data) => {
+      new NoticeMessage(`Successfully updated.`, {
+        callback() {
+          onSuccessUpdate();
+        }
+      })
+    })
+    .catch((err) => {
+      onResetFail(err);
+    });
+  }
+
+
   return {
     getIsLogin,
     handleLogin,
     handleLogout,
-    handleForgotPassword
+    handleForgotPassword, 
+    handleUpdateProfile,
+    handleUpdatePassword
   };
 };
 

@@ -89,7 +89,7 @@ function SignIn() {
   };
 
   const { commonListData } = useCommonCodes({ optionParams });
-  console.log(commonListData)
+
   const optionORG = commonListData?.["ORG"]
   ? [
       { value: "", label: "All", code: "All" }, 

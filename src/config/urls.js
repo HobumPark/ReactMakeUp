@@ -63,5 +63,7 @@ export const APIS = {
   authorityUserAssignInfo: (groupCode) => `/authority/groups/${groupCode}/users`,
   authorityUserInfo: (groupCode) => `/authority/groups/${groupCode}`,
   createAuthority: '/authority/groups',
-  forgotPassword: '/forgot-password'
+  forgotPassword: '/forgot-password',
+  updateProfileByUser :'/users/update-user',
+  updateProfilePassword: '/users/update-password'
 }
