@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import DetailModal from "../../../DetailModal/DetailModal";
 import Button from "../../../Button/Button";
-import useAuth from "../../../../hooks/useAuth";
 import Common from '../../../../utils/standard';
 import NoticeMessage from "../../../../plugin/noticemessage/noticemessage";
+import useUserMgt from "../../../../hooks/useUserMgt";
 
 const UpdatePassword = ({isActive =true , userInfo}) => {
   const [isDisabled, setIsDisabled] = useState(true);
@@ -18,8 +18,8 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
     }
   );
 
-  const { handleUpdatePassword } = useAuth({
-    onSuccessUpdate: () => {
+  const { updateProfilePassword } = useUserMgt({
+    onUpdateSuccess: () => {
       setIsDisabled(true);
       setIsRequired(false);
       setFormData({
@@ -29,6 +29,7 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
         no_hash_confirm_password_update: "",
         current_password_sha256: "",
         confirm_password_update_sha256: "",
+
       }); 
       
     },
@@ -38,6 +39,7 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
   });
 
   useEffect(() => {
+
   }, [formData]);
   
 
@@ -46,7 +48,7 @@ const handleChange = (e) => {
 
   setFormData((prev = {}) => {
     const updatedFormData = {
-      ...prev, // Jika prev tidak null, gunakan datanya
+      ...prev, 
       [name]: value,
     };
 
@@ -68,7 +70,7 @@ const handleChange = (e) => {
       confirm_password_update_sha256: Common.SHA256(formData.no_hash_confirm_password_update.trim()),
     };
     console.log("Form Data to Send:", updatedFormData);
-    handleUpdatePassword(updatedFormData)
+    updateProfilePassword(updatedFormData)
 }
   
 console.log(formData);

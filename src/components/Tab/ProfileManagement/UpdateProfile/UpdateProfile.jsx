@@ -3,6 +3,7 @@ import DetailModal from "../../../DetailModal/DetailModal";
 import Button from "../../../Button/Button";
 import useAuth from "../../../../hooks/useAuth";
 import NoticeMessage from "../../../../plugin/noticemessage/noticemessage";
+import useUserMgt from "../../../../hooks/useUserMgt";
 
 const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
   const [isDisabled, setIsDisabled] = useState(true);
@@ -15,8 +16,8 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
     phone_no: "",
   });
 
-  const { handleUpdateProfile } = useAuth({
-    onSuccessUpdate: () => {
+  const { updateUserProfile } = useUserMgt({
+    onUpdateSuccess: () => {
       setIsDisabled(true);
     },
   });
@@ -46,7 +47,7 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
 
   const handleSubmit = async () => {
     console.log("Form Data to Send:", formData);
-    handleUpdateProfile(formData)
+    updateUserProfile(formData)
 }
 
     const tabClass = isActive

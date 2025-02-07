@@ -62,38 +62,6 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
     });
   }
 
-  const handleUpdateProfile = async (accountDT) => {
-    const requestURL = `${URLS.BACK_DSH}${APIS.updateProfileByUser}`;
-
-    return reqPut(requestURL, accountDT)
-    .then((data) => {
-      new NoticeMessage(`Successfully updated.`, {
-        callback() {
-          onSuccessUpdate();
-        }
-      })
-    })
-    .catch((err) => {
-      onResetFail(err);
-    });
-  }
-  
-
-  const handleUpdatePassword = async (accountDT) => {
-    const requestURL = `${URLS.BACK_DSH}${APIS.updateProfilePassword}`;
-
-    return reqPut(requestURL, accountDT)
-    .then((data) => {
-      new NoticeMessage(`Successfully updated.`, {
-        callback() {
-          onSuccessUpdate();
-        }
-      })
-    })
-    .catch((err) => {
-      onResetFail(err);
-    });
-  }
 
 
   return {
@@ -101,8 +69,6 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
     handleLogin,
     handleLogout,
     handleForgotPassword, 
-    handleUpdateProfile,
-    handleUpdatePassword
   };
 };
 

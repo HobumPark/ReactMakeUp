@@ -31,4 +31,17 @@ export const updateUser = async (userData) => {
   return await reqPut(url, userData); 
 };
 
+export const updateProfile = async (userData) => {
+  const url = `${URLS.BACK_DSH}${APIS.updateProfileByUser}`; 
+  return await reqPut(url, userData); 
+}
+
+export const updateProfilePassword = async (userData) => {
+  const url = `${URLS.BACK_DSH}${APIS.updateProfilePassword}`; 
+  return await reqPut(url, userData); 
+}
+
+
+
+
 

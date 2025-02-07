@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createUser, deleteUser, fetchDetailUser, fetchUserList, updateUser } from "../api/user-mgt";
+import { createUser, deleteUser, fetchDetailUser, fetchUserList, updateProfile, updateProfilePassword, updateUser } from "../api/user-mgt";
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
 
 const useUserMgt = ({
@@ -75,6 +75,39 @@ const useUserMgt = ({
       },
     });
 
+    const updateUserProfileMutation = useMutation({
+      mutationFn: (userData) => updateProfile(userData),
+      onSuccess: () => {
+        new NoticeMessage(`Successfully updated.`, {
+          callback() {
+            queryClient.invalidateQueries(["detailUserData", userID]);
+            onUpdateSuccess();
+            
+          }
+        });
+      },
+      onError: (err) => {
+        console.error("Error updating user:", err);
+      },
+    });
+
+    const updateUserPasswordMutation = useMutation({
+      mutationFn: (userData) => updateProfilePassword(userData),
+      onSuccess: () => {
+        new NoticeMessage(`Successfully updated.`, {
+          callback() {
+            queryClient.invalidateQueries(["detailUserData", userID]);
+            onUpdateSuccess();
+            
+          }
+        });
+      },
+      onError: (err) => {
+        console.error("Error updating user:", err);
+      },
+    });
+
+
 
   return {
     usersListData,
@@ -82,6 +115,8 @@ const useUserMgt = ({
     deleteUser: deleteUserMutation.mutate,
     createUser: createUserMutation.mutate,
     updateUser: updateUserMutation.mutate,
+    updateUserProfile: updateUserProfileMutation.mutate,
+    updateProfilePassword: updateUserPasswordMutation.mutate,
     usersListError,
     detailUserError,
     isLoadingUsers,
