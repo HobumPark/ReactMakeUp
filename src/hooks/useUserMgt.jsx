@@ -8,6 +8,7 @@ const useUserMgt = ({
   onDeleteSuccess = () => {},
   onCreateSuccess = () => {},
   onUpdateSuccess = () => {},
+  onResetFail = () => {},
 }) => {
   const queryClient = useQueryClient();
   // Query to fetch users list
@@ -103,7 +104,7 @@ const useUserMgt = ({
         });
       },
       onError: (err) => {
-        console.error("Error updating user:", err);
+        onResetFail(err);
       },
     });
 

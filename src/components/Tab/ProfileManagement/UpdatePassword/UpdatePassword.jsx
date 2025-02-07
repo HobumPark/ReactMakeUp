@@ -43,23 +43,27 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
   }, [formData]);
   
 
-const handleChange = (e) => {
-  const { name, value } = e.target;
-
-  setFormData((prev = {}) => {
-    const updatedFormData = {
-      ...prev, 
-      [name]: value,
-    };
-
-    const isFormEmpty = Object.values(updatedFormData).every((val) => !val);
-    
-    setIsDisabled(isFormEmpty);
-    setIsRequired(!isFormEmpty);
-
-    return updatedFormData;
-  });
-};
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+  
+    setFormData((prev) => {
+      const updatedFormData = { ...prev, [name]: value };
+  
+      const fieldsToCheck = [
+        updatedFormData.current_password,
+        updatedFormData.no_hash_password_update,
+        updatedFormData.no_hash_confirm_password_update
+      ];
+  
+      const isFormEmpty = fieldsToCheck.every((val) => !val?.trim()); 
+  
+      setIsDisabled(isFormEmpty);
+      setIsRequired(!isFormEmpty);
+  
+      return updatedFormData;
+    });
+  };
+  
 
   
   
