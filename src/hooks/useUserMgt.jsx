@@ -88,7 +88,7 @@ const useUserMgt = ({
         });
       },
       onError: (err) => {
-        console.error("Error updating user:", err);
+        onResetFail(err);
       },
     });
 

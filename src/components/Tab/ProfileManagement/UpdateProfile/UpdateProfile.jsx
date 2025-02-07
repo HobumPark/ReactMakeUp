@@ -20,6 +20,9 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
     onUpdateSuccess: () => {
       setIsDisabled(true);
     },
+    onResetFail: (err) => {
+      new NoticeMessage(err?.message)
+    }
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
