@@ -220,10 +220,10 @@ const ProgramManagement = () => {
       queryParams: queryParams  || "deletion=001002",
       onUpdateSuccess: (responseData) => {
         updateCallback()
-        const newProgramId = responseData?.id;
-        setSelectedProgram({ id: newProgramId });
-        const row = tbRef.current.getRow(newProgramId);
-        row && row.select();
+        // const newProgramId = responseData?.id;
+        // setSelectedProgram({ id: newProgramId });
+        // const row = tbRef.current.getRow(newProgramId);
+        // row && row.select();
       },
       onDeleteSuccess: reloadCallback,
       onCreateSuccess: (responseData) => {

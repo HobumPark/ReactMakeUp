@@ -34,7 +34,7 @@ const ModalProfileManagement = ({isModalOpen , setIsModalOpen, userInfo, commonD
            onClick={() => setActiveTab("profile")}>
             <span>
             <li className={`text-[#6b7280] text-[20px] list-none ${activeTab === "profile" ? activeTabClass : "font-medium"}`}>
-                Profile
+                {t('profile > profile')}
             </li>
             </span>
             <div className={`${activeTab === "profile" ? devider : ""}`}/>
@@ -43,7 +43,7 @@ const ModalProfileManagement = ({isModalOpen , setIsModalOpen, userInfo, commonD
         onClick={() => setActiveTab("password")}>
             <span>
             <li className={`text-[#6b7280] text-[20px] list-none ${activeTab === "password" ? activeTabClass : "font-medium"}`}>
-                Password
+                {t('user > password')}
             </li>
             </span>
             <div className={`${activeTab === "password" ? devider : ""}`}/>

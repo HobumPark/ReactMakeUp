@@ -289,7 +289,7 @@ const updateCallback = () => {
     paginationSize: 10,
     selectableRows: 1,
     rowHeight: 41,
-    footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${usersListData?.length || 0} Results</div>`,
+    footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${storedTranslations['cmn > total']} ${usersListData?.length || 0} ${storedTranslations['cmn > results']}</div>`,
     selectableRowsCheck: (row) => {
       return !row.getElement().classList.contains("tabulator-selected");
     },
@@ -520,7 +520,7 @@ const updateCallback = () => {
 
           <ContainerCard justifyContent='flex-end'>
             <Filtering 
-            placeholder="ID / Name / Email / Phone No."
+            placeholder={t('cmn > id') + ' / ' + t('user > name') + ' / ' + t('user > email') + ' / ' + t('user > phone no')}
             onSearch={handleSearch}
             optionsRadioFilter={optionsRadioFilter}
             />

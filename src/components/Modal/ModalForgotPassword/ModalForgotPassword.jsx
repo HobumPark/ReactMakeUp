@@ -84,7 +84,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}></div>
       <div className="bg-white rounded-xl w-[48%] shadow-lg relative z-10 transition-transform duration-300 transform scale-95" style={{ padding: "48px" }}>
         <div className="flex items-center justify-between w-full">
-          <span className="font-semibold text-[29px]">Forgot Password?</span>
+          <span className="font-semibold text-[29px]">비밀번호를 잊으셨나요?</span>
           <div className="modal-close cursor-pointer" onClick={onClose}>
             <img src={closeIcon} alt="Close" />
           </div>
@@ -92,7 +92,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div className="flex flex-col gap-4">
             <DetailModal
-              label="User ID"
+              label="아이디"
               inputType="text"
               name={"user_id"}
               value={formData.user_id}
@@ -100,7 +100,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
               modalType={'forgot'}
             />
             <DetailModal
-              label="Name"
+              label="이름"
               inputType="text"
               name={"name"}
               value={formData.name}
@@ -108,7 +108,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
               modalType={'forgot'}
             />
             <DetailModal
-              label="Date Of Birth"
+              label="생일"
               inputType="text"
               name={"birth"}
               value={formData.birth}
@@ -117,7 +117,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
               modalType={'forgot'}
             />
             <DetailModal
-              label="Phone Number"
+              label="전화번호"
               inputType="number"
               name={"phone"}
               value={formData.phone}
@@ -128,7 +128,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
 
           <div className="flex flex-col gap-4">
             <DetailModal
-              label="Organization"
+              label="조직"
               inputType="select"
               optionSelect={optionsSelect}
               name={"org"}
@@ -137,7 +137,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
               modalType={'forgot'}
             />
             <DetailModal
-              label="Email"
+              label="이메일"
               inputType="text"
               name={"email"}
               value={formData.email}
@@ -146,7 +146,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
             />
 
             <DetailModal
-              label="New Password"
+              label="새 비밀번호"
               inputType="password"
               name={"new_pass"}
               value={formData.new_pass}
@@ -155,7 +155,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
               modalType={'forgot'}
             />
             <DetailModal
-              label="Confirm Password"
+              label="비밀번호 확인"
               inputType="password"
               name={"co_pass"}
               value={formData.co_pass}
@@ -169,7 +169,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
 
         <div className="_boxBtnForgot">
           <Button
-            label="Create New Password"
+            label="새로운 비밀번호 생성"
             customButton="button-forgot"
             onClick={handleSubmit}
           />

@@ -210,10 +210,10 @@ const CodeManagement = () => {
       queryParams: queryParams  || "deletion=001002",
       onUpdateSuccess: (responseData) => {
         updateCallback()
-        const newCodeId = responseData?.id;
-        setSelectedCode({ id: newCodeId });
-        const row = tbRef.current.getRow(newCodeId);
-        row && row.select();
+        // const newCodeId = responseData?.id;
+        // setSelectedCode({ id: newCodeId });
+        // const row = tbRef.current.getRow(newCodeId);
+        // row && row.select();
       },
       onDeleteSuccess: reloadCallback,
       onCreateSuccess: (responseData) => {
@@ -466,6 +466,8 @@ const CodeManagement = () => {
     if (selectedCode?.id){
       createLowerCode(formValues);
     }else{
+      console.log(formValues);
+      
       createUpperCode(formValues);
     }
   }

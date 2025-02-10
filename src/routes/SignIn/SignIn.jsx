@@ -116,7 +116,7 @@ function SignIn() {
           <GeneralInput
             ref={idInputRef}
             customInput={classes._inputUser}
-            placeholder="User ID"
+            placeholder="유저 아이디"
             value={accountInfo.identifier.trim()}
             type={'text'}
             onKeyUp={handleOnKeyID}
@@ -132,7 +132,7 @@ function SignIn() {
             <PasswordInput
               ref={pwInputRef}
               customInput={classes._inputPassword}
-              placeholder="Password"
+              placeholder="비밀번호"
               onKeyUp={handleOnKeyPW}
               maxLength={20}
               value={accountInfo.password.trim()}
@@ -148,10 +148,10 @@ function SignIn() {
 
         <div className={classes._btnSend}>
           <span className="_modalForgot" id="modalForgot" onClick={() => setIsModalOpen(true)}>
-            Forgot Password?
+          비밀번호를 잊으셨나요?
           </span>
           <Button
-            label="Sign in"
+            label="로그인"
             customButton={classes.btnlogin}
             onClick={onLogin}
           />
