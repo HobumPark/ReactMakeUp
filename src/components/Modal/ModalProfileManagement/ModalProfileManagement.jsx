@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 
 const ModalProfileManagement = ({isModalOpen , setIsModalOpen, userInfo, commonData }) => {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
   
     const [activeTab, setActiveTab] = useState("profile");
     const tabClass = 'flex flex-col items-center justify-center w-full h-[40px] relative text-center text-[#f1f2f4] border-b border-[#6b7280]'

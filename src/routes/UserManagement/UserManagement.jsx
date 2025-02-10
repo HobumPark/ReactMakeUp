@@ -14,11 +14,17 @@ import localeEn from 'air-datepicker/locale/en.js';
 import { faL } from '@fortawesome/free-solid-svg-icons';
 import Common from '../../utils/standard';
 import { formatDateToDDMMYYYY, formatDateToMMDDYYYY } from '../../utils/date';
+import { useTranslation } from 'react-i18next';
+
+
+const UserManagement = () => {
+  const { t, i18n} = useTranslation();
+  const storedTranslations = JSON.parse(localStorage.getItem('translations')) || {};
 
 // tabulator top
 const columnsHistory = [
   {
-    title: "No",
+    title: storedTranslations['211002'],
     formatter: "rownum",
     width: 60,
     hozAlign: "center",
@@ -27,7 +33,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title: "User ID",
+    title: storedTranslations['user > id'],
     field: "account_id",
     widthGrow: 1,
     hozAlign: "center",
@@ -36,7 +42,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title: "Name",
+    title:storedTranslations['user > name'],
     field: "name",
     widthGrow: 1,
     hozAlign: "center",
@@ -45,7 +51,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title: "Email",
+    title:storedTranslations['user > email'],
     field: "email",
     widthGrow: 2,
     hozAlign: "center",
@@ -54,7 +60,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title: "Phone No.",
+    title:storedTranslations['user > phone no'],
     field: "phone_no",
     widthGrow: 1,
     hozAlign: "center",
@@ -63,7 +69,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title: "Position",
+    title: storedTranslations['021'],
     field: "position",
     widthGrow: 2,
     hozAlign: "center",
@@ -73,7 +79,7 @@ const columnsHistory = [
   },
 ];
 
-const UserManagement = () => {
+
   const tbRef = useRef(null);
   const [disabledForm, setDisabledForm] = useState(true);
   const [disabledId, setDisabledId] = useState(true);
@@ -217,13 +223,18 @@ const updateCallback = () => {
     userID: selectedUser?.id,
     queryParams: queryParams  || "deletion=001002",
     onUpdateSuccess: (responseData) =>{
-      updateCallback();
-      const newUserId = responseData?.id;
-      setSelectedUser({ id: newUserId });
-      const row = tbRef.current.getRow(newUserId);
-      row && row.select();
+      updateCallback(); 
     } ,
-    onDeleteSuccess: reloadCallback,
+    onDeleteSuccess: () => {
+      enableInitialButtons();
+      tbRef.current.deselectRow();
+      setIsRequired(false);
+      emptyDetail();
+      setDisabledForm(true);
+      setDisabledId(true);
+      setHasChangesUpdate(false);
+      setSelectedUser({ id: null });
+    },
     onCreateSuccess: (responseData) => {
       createCallback();
       const newUserId = responseData.id;
@@ -234,14 +245,14 @@ const updateCallback = () => {
 
   useEffect(() => {
     if (detailUserError) {
-      new NoticeMessage('Failed to load data. Please reload the page.')
+      new NoticeMessage(t('msg > load data fail'))
     }
   }, [detailUserError]);
   
   const { commonListData } = useCommonCodes({ optionParams });
   const optionsRadioFilter = commonListData?.["001"]
   ? [
-      { value: "All", label: "All", code: "All" }, 
+      { value: "All", label: t('cmn > all'), code: "All" }, 
       ...commonListData["001"].code.map((code, index) => ({
         value: code,
         label: commonListData["001"].name[index],
@@ -249,7 +260,21 @@ const updateCallback = () => {
       })),
     ]
   : [];
-
+  const languageTabulator = () => {
+    let datalanguage = {
+      pagination: {
+        first:  storedTranslations['cmn > first page'], //text for the first page button
+        first_title:storedTranslations['cmn > first page'], //tooltip text for the first page button
+        last:storedTranslations['cmn > last page'],
+        last_title: storedTranslations['cmn > last page'],
+        prev: storedTranslations['cmn > page before'],
+        prev_title: storedTranslations['cmn > page before'],
+        next: storedTranslations['cmn > next page'],
+        next_title: storedTranslations['cmn > next page'],
+      },
+    }
+    return datalanguage
+  }
   
   const optionsTabulator = {
     debugInvalidOptions: true,
@@ -257,6 +282,10 @@ const updateCallback = () => {
     movableRows: false,
     resizableRows: false,
     index: "id",
+    locale: "ko",
+    langs: {
+      ko: languageTabulator(),
+    },
     paginationSize: 10,
     selectableRows: 1,
     rowHeight: 41,
@@ -269,7 +298,7 @@ const updateCallback = () => {
   const handleRowSelected = useCallback((row) => {
     if(hasChangesCreateRef.current || hasChangesUpdateRef.current){
       const message = new NoticeMessage(
-        "Changes you made may not be saved, would you like to continue?",
+        t('msg > flush confirm'),
         {
           mode: "confirm",
         }
@@ -329,7 +358,7 @@ const updateCallback = () => {
   const handleNewButtonClick = () => {
     if(hasChangesCreate || hasChangesUpdate){
       const message = new NoticeMessage(
-        "Changes you made may not be saved, would you like to continue?",
+        t('msg > flush confirm'),
         {
           mode: "confirm",
         }
@@ -383,7 +412,7 @@ const updateCallback = () => {
   const handleCancelButtonClick = () => {
     if (hasChangesUpdate){
       const message = new NoticeMessage(
-        "Changes you made may not be saved, would you like to continue?",
+        t('msg > flush confirm'),
         {
           mode: "confirm",
         }
@@ -409,7 +438,7 @@ const updateCallback = () => {
     else if(isNewClicked){
       if(hasChangesCreate){
       const message = new NoticeMessage(
-        "Changes you made may not be saved, would you like to continue?",
+        t('msg > flush confirm'),
         {
           mode: "confirm",
         }
@@ -441,7 +470,7 @@ const updateCallback = () => {
   const handleDeleteButtonClick = () => {
     
     const message = new NoticeMessage(
-      "Are you sure you want to delete this data?",
+      t('msg > delete confirm'),
       {
         mode: "confirm",
       }
@@ -473,10 +502,10 @@ const updateCallback = () => {
 
   const logs = detailUserData
   ? [
-      { label: "Registered By", value: detailUserData.registered_by },
-      { label: "Registered Time", value: detailUserData.registered_time },
-      { label: "Updated By", value: detailUserData.updated_by },
-      { label: "Updated Time", value: detailUserData.updated_time },
+      { label: t('cmn > registered by'), value: detailUserData.registered_by },
+      { label: t('cmn > registered time'), value: detailUserData.registered_time },
+      { label: t('cmn > updated by'), value: detailUserData.updated_by },
+      { label: t('cmn > updated time'), value: detailUserData.updated_time },
     ]
   : [];
   
@@ -484,9 +513,9 @@ const updateCallback = () => {
     <>
         <section className='wrap'>
           <div className='header-title'>
-            <h3>System Management</h3>
+            <h3>{t('SYSTEM')}</h3>
             <h3>&gt;</h3>
-            <h3>User Management</h3>
+            <h3>{t('SYSTEM-USER')}</h3>
           </div>
 
           <ContainerCard justifyContent='flex-end'>
@@ -527,7 +556,7 @@ const updateCallback = () => {
         <div className="flex w-full flex-col gap-[10px]">
             <div className="grid grid-cols-3 gap-x-[40px] gap-y-[10px]">
               <DetailForm
-                label={"ID"}
+                label={t('profile > id')}
                 value={formValues.account_id || ''}
                 inputType={"text"}
                 onChange={handleInputChange}
@@ -536,7 +565,7 @@ const updateCallback = () => {
                 required={true}
               />
               <DetailForm
-                label={"E-mail"}
+                label={t('profile > email')}
                 value={formValues.email || ''}
                 inputType={"text"}
                 onChange={handleInputChange}
@@ -544,7 +573,7 @@ const updateCallback = () => {
                 disabled={disabledForm}
               />
               <DetailForm
-                label={"Phone No."}
+                label={t('profile > phone')}
                 value={formValues.phone_no || ''}
                 inputType={"number"}
                 onChange={handleInputChange}
@@ -552,7 +581,7 @@ const updateCallback = () => {
                 disabled={disabledForm}
               />
               <DetailForm
-                label={"Name"}
+                label={t('profile > name')}
                 value={formValues.name || ''}
                 inputType={"text"}
                 onChange={handleInputChange}
@@ -561,7 +590,7 @@ const updateCallback = () => {
                 required={true}
               />
               <DetailForm
-                label={"New Password"}
+                label={t('profile > new password')}
                 value={formValues.password || ''} 
                 inputType={"password"}
                 onChange={handleInputChange}
@@ -570,7 +599,7 @@ const updateCallback = () => {
                 required={isRequired}
               />
               <DetailForm
-                label={"Organization"}
+                label={t('user > organization')}
                 value={formValues.organization || ''}
                 inputType={"select"}
                 onChange={handleInputChange}
@@ -590,7 +619,7 @@ const updateCallback = () => {
                     }
               />
               <DetailForm
-                label={"Date of Birth"}
+                label={t('profile > birth')}
                 value={formValues.birth || ''}
                 inputType={"text"}
                 onChange={handleInputChange}
@@ -599,7 +628,7 @@ const updateCallback = () => {
                 required={true}
               />
               <DetailForm
-                label={"Confirm Password"}
+                label={t('profile > confirm password')}
                 value={formValues.confirmation}
                 inputType={"password"}
                 onChange={handleInputChange}
@@ -608,7 +637,7 @@ const updateCallback = () => {
                 required={isRequired}
               />
               <DetailForm
-                label={"Position"}
+                label={t('021')}
                 value={formValues.position || ''}
                 inputType={"select"}
                 onChange={handleInputChange}

@@ -8,9 +8,13 @@ import { Link, useLocation } from 'react-router-dom';
 import NoticeMessage from '../../plugin/noticemessage/noticemessage';
 import useAuth from '../../hooks/useAuth';
 import ModalProfileManagement from '../Modal/ModalProfileManagement/ModalProfileManagement';
+import { useTranslation } from 'react-i18next';
+import Common from '../../utils/standard';
+import i18n from '../../utils/i18n';
 
 
 const Sidebar = ({ userInfo, commonData }) => {
+  const { t } = useTranslation();
   const { handleLogout } = useAuth();
   const [isActive, setIsActive] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -21,20 +25,18 @@ const Sidebar = ({ userInfo, commonData }) => {
 
 
   useEffect(() => {
+    const langSource = Common.getDTPLangSource(i18n.language);
+    console.log(langSource);
+    
+
     const updateDateTime = () => {
       const now = new Date();
       const hours = now.getHours().toString().padStart(2, "0");
       const minutes = now.getMinutes().toString().padStart(2, "0");
       const seconds = now.getSeconds().toString().padStart(2, "0");
-      const days = [
-        "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
-      ];
-      const months = [
-        "January", "February", "March", "April", "May", "June", "July", "August",
-        "September", "October", "November", "December",
-      ];
-      const dayName = days[now.getDay()];
-      const monthName = months[now.getMonth()];
+
+      const dayName = langSource.days[now.getDay()];
+      const monthName = langSource.months[now.getMonth()];
       const day = now.getDate();
       const year = now.getFullYear();
 
@@ -46,14 +48,14 @@ const Sidebar = ({ userInfo, commonData }) => {
     const intervalId = setInterval(updateDateTime, 1000);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [i18n.language]);
 
   const links = [
-    { id: "code", label: "Code Management", path: "/system-management/code" },
-    { id: "group", label: "Group Management", path: "/system-management/group" },
-    { id: "user", label: "User Management", path: "/system-management/user" },
-    { id: "program", label: "Program Management", path: "/system-management/program" },
-    { id: "authority", label: "Authority Management", path: "/system-management/authority" },
+    { id: "code", label: t('SYSTEM-CODE'), path: "/system-management/code" },
+    { id: "group", label: t('SYSTEM-GROUP'), path: "/system-management/group" },
+    { id: "user", label: t('SYSTEM-USER'), path: "/system-management/user" },
+    { id: "program", label: t('SYSTEM-PROGRAM'), path: "/system-management/program" },
+    { id: "authority", label: t('SYSTEM-AUTHORITY'), path: "/system-management/authority" },
   ];
 
   const handleLinkClick = (id) => {
@@ -70,7 +72,7 @@ const Sidebar = ({ userInfo, commonData }) => {
     return location.pathname.includes(linkPath);
   };
   const handleLogoutButton = () => {
-    let checkLogout = new NoticeMessage("Are you sure you want to log out?", {
+    let checkLogout = new NoticeMessage(t('msg > logout confirm'), {
       mode: "confirm",
     });
   
@@ -97,7 +99,7 @@ const Sidebar = ({ userInfo, commonData }) => {
               </div>
             </div>
             <div className={classes["title-languange-logout"]}>
-              <span className={classes["languange"]} id="user-language">ENG</span>
+              <span className={classes["languange"]} id="user-language">KOR</span>
                 <img src={logoutIcon} alt="Logout" className={classes.logout} onClick={handleLogoutButton} />
 
             </div>
@@ -117,7 +119,7 @@ const Sidebar = ({ userInfo, commonData }) => {
                 id="title-system-management"
                 onClick={toggleVisibility}
               >
-                System
+               {t('SYSTEM')}
                 <img
                   className={classes["menu-dropdown"]}
                   src={dropdownArrow}

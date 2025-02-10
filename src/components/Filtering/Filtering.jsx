@@ -4,6 +4,7 @@ import Button from "../Button/Button";
 import Magnifier from "../../assets/icon/icon-search.svg";
 import Frame from "../../assets/icon/Frame.png";
 import RadioFilter from "../RadioFilter/RadioFilter"; 
+import { useTranslation } from "react-i18next";
 
 const Filtering = ({
   labelSelect,
@@ -12,10 +13,7 @@ const Filtering = ({
   placeholder,
   disableSearchButton = false,
   disableFiltering = false,
-  searchButtonLabel = "Search",
-  filteringButtonLabel = "Filtering",
   disableResetButton = false,
-  resetButtonLabel = "Reset",
   isSearchOnInput = false,
   optionsRadioFilter,
   optionsRadioFilterUsage,
@@ -27,6 +25,7 @@ const Filtering = ({
   const [selectedRadio, setSelectedRadio] = useState("001002"); 
   const [selectedRadioUsage, setSelectedRadioUsage] = useState("All"); 
   const [isRadioFilterVisible, setIsRadioFilterVisible] = useState(false);
+  const {t} = useTranslation();
 
   const handleSearchInput = (event) => {
     const keyInput = event.key;
@@ -40,7 +39,7 @@ const Filtering = ({
     if (event.target && event.target.value) {
       const selectedValue = event.target.value;
       setSelectedRadio(selectedValue);
-      if (selectedValue === "All") {
+      if (selectedValue === t('cmn > all')) {
         setSelectedRadio(null);
       }
     } 
@@ -49,7 +48,7 @@ const Filtering = ({
     if (event.target && event.target.value) {
       const selectedValue = event.target.value;
       setSelectedRadioUsage(selectedValue);
-      if (selectedValue === "All") {
+      if (selectedValue === t('cmn > all')) {
         setSelectedRadioUsage(null);
       }
     } 
@@ -92,10 +91,10 @@ const Filtering = ({
               onChange={(e) => setSearchInput(e.target.value)}
             />
           )}
-          {!disableSearchButton && <Button label={searchButtonLabel} customButton="btn-search" onClick={handleSearchButtonClick}/>}
-          {!disableResetButton && <Button label={resetButtonLabel} customButton="btn-reset" onClick={handleReset} />}
+          {!disableSearchButton && <Button label={t('cmn > search')} customButton="btn-search" onClick={handleSearchButtonClick}/>}
+          {!disableResetButton && <Button label={t('cmn > reset')} customButton="btn-reset" onClick={handleReset} />}
           {!disableFiltering && (
-            <Button label={filteringButtonLabel} customButton={`flex ${isRadioFilterVisible ? "btn-filter-active" : "btn-reset"}`} isImage={Frame} onClick={toggleRadioFilter} />
+            <Button label={t('cmn > filtering')} customButton={`flex ${isRadioFilterVisible ? "btn-filter-active" : "btn-reset"}`} isImage={Frame} onClick={toggleRadioFilter} />
           )}
         </div>
       </div>
@@ -104,7 +103,7 @@ const Filtering = ({
         {isUsage && (
           <RadioFilter
             name="Usage"
-            label="Usage"
+            label={t('002')}
             options={optionsRadioFilterUsage}
             value={selectedRadioUsage}
             onRadioChange={handleRadioUsageChange}
@@ -112,7 +111,7 @@ const Filtering = ({
       )}
           <RadioFilter
             name="Deleted"
-            label="Deleted"
+            label={t('001')}
             options={optionsRadioFilter}
             value={selectedRadio}
             onRadioChange={handleRadioChange}

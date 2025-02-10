@@ -4,8 +4,10 @@ import Button from "../../../Button/Button";
 import Common from '../../../../utils/standard';
 import NoticeMessage from "../../../../plugin/noticemessage/noticemessage";
 import useUserMgt from "../../../../hooks/useUserMgt";
+import { useTranslation } from "react-i18next";
 
 const UpdatePassword = ({isActive =true , userInfo}) => {
+  const { t } = useTranslation();
   const [isDisabled, setIsDisabled] = useState(true);
   const [isRequired, setIsRequired] = useState(false);
   
@@ -34,7 +36,7 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
       
     },
     onResetFail:(err) =>{
-      new NoticeMessage(err?.message)
+      new NoticeMessage(t(err?.message))
     }
   });
 
@@ -75,7 +77,6 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
     updateProfilePassword(updatedFormData)
 }
   
-console.log(formData);
 
     const tabClass = isActive
   ? "flex flex-col pt-[20px] bg-transparent rounded-[4px] bg-[#135a78]"

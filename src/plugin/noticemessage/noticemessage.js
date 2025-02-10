@@ -1,4 +1,6 @@
 import './noticemessage.css';
+import i18n from 'i18next';
+
 
 let noti_id = 0;
 /* NoticeMessage v1.0.0 Zeki Jo 2022.06.17 */
@@ -210,7 +212,7 @@ export default class NoticeMessage {
     const nm_footer_close = document.createElement("button");
     nm_footer_close.className = "nm_footer_btns nm_focus btn-md primary fill";
     nm_footer_close.id = "nm_footer_close";
-    nm_footer_close.textContent = "Close";
+    nm_footer_close.textContent = i18n.t('msg > confirm');
     if (this._locale) {
       nm_footer_close.dataset.i18n = `msg > confirm`;
     }
@@ -224,7 +226,7 @@ export default class NoticeMessage {
     const nm_footer_confirm = document.createElement("button");
     nm_footer_confirm.className = "nm_footer_btns nm_focus btn-md primary fill";
     nm_footer_confirm.id = "nm_footer_confirm";
-    nm_footer_confirm.textContent = "Confirm";
+    nm_footer_confirm.textContent = i18n.t('msg > confirm');
     if (this._locale) {
       nm_footer_confirm.dataset.i18n = `msg > confirm`;
     }
@@ -233,7 +235,7 @@ export default class NoticeMessage {
     const nm_footer_close = document.createElement("button");
     nm_footer_close.className = "nm_footer_btns btn-md primary no-fill";
     nm_footer_close.id = "nm_footer_close";
-    nm_footer_close.textContent = "Close";
+    nm_footer_close.textContent = i18n.t('msg > close');
     if (this._locale) {
       nm_footer_close.dataset.i18n = `msg > close`;
     }
@@ -247,7 +249,7 @@ export default class NoticeMessage {
     const nm_footer_prompt = document.createElement("button");
     nm_footer_prompt.className = "nm_footer_btns nm_focus";
     nm_footer_prompt.id = "nm_footer_prompt";
-    nm_footer_prompt.textContent = "Confirm";
+    nm_footer_prompt.textContent = i18n.t('msg > confirm');
     if (this._locale) {
       nm_footer_prompt.dataset.i18n = `msg > confirm`;
     }
@@ -256,7 +258,7 @@ export default class NoticeMessage {
     const nm_footer_close = document.createElement("button");
     nm_footer_close.className = "nm_footer_btns";
     nm_footer_close.id = "nm_footer_close";
-    nm_footer_close.textContent = "Close";
+    nm_footer_close.textContent = i18n.t('msg > close');
     if (this._locale) {
       nm_footer_close.dataset.i18n = `msg > close`;
     }

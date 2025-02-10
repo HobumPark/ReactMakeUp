@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, deleteUser, fetchDetailUser, fetchUserList, updateProfile, updateProfilePassword, updateUser } from "../api/user-mgt";
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
+import { useTranslation } from "react-i18next";
 
 const useUserMgt = ({
   userID = null,
@@ -11,6 +12,7 @@ const useUserMgt = ({
   onResetFail = () => {},
 }) => {
   const queryClient = useQueryClient();
+  const {t} = useTranslation();
   // Query to fetch users list
   const { data: usersListData, error: usersListError, isLoading: isLoadingUsers } = useQuery({
     queryKey: ["usersListData", queryParams],
@@ -31,7 +33,7 @@ const useUserMgt = ({
   const deleteUserMutation = useMutation({
     mutationFn: (userID) => deleteUser(userID),
     onSuccess: () => {
-      new NoticeMessage(`Delete Success`, {
+      new NoticeMessage(t('msg > delete success'), {
         callback() {
           onDeleteSuccess();
           queryClient.invalidateQueries(["usersListData", queryParams]);
@@ -39,7 +41,7 @@ const useUserMgt = ({
       });
     },
     onError: (err) => {
-      console.error("Error deleting user:", err);
+      new NoticeMessage(t(err.message))
     },
   });
 
@@ -47,7 +49,7 @@ const useUserMgt = ({
     const createUserMutation = useMutation({
       mutationFn: (userData) => createUser(userData),
       onSuccess: (responseData) => {
-        new NoticeMessage(`Data is succesfully registered.`, {
+        new NoticeMessage(t('msg > registration success'), {
           callback() {
             queryClient.invalidateQueries(["usersListData", queryParams]);
             onCreateSuccess(responseData);
@@ -56,30 +58,31 @@ const useUserMgt = ({
       },
       onError: (err) => {
         console.error("Error creating user:", err);
-        new NoticeMessage(`${err.message}`)
+        new NoticeMessage(t(err.message))
       },
     });
 
     const updateUserMutation = useMutation({
       mutationFn: (userData) => updateUser(userData),
-      onSuccess: () => {
-        new NoticeMessage(`Successfully updated.`, {
+      onSuccess: (responseData) => {
+        new NoticeMessage(t('msg > update success'), {
           callback() {
             queryClient.invalidateQueries(["usersListData", queryParams]);
-            onUpdateSuccess();
+            onUpdateSuccess(responseData);
             
           }
         });
       },
       onError: (err) => {
         console.error("Error updating user:", err);
+        new NoticeMessage(t(err.message))
       },
     });
 
     const updateUserProfileMutation = useMutation({
       mutationFn: (userData) => updateProfile(userData),
       onSuccess: () => {
-        new NoticeMessage(`Successfully updated.`, {
+        new NoticeMessage(t('msg > update success'), {
           callback() {
             queryClient.invalidateQueries(["detailUserData", userID]);
             onUpdateSuccess();
@@ -95,7 +98,7 @@ const useUserMgt = ({
     const updateUserPasswordMutation = useMutation({
       mutationFn: (userData) => updateProfilePassword(userData),
       onSuccess: () => {
-        new NoticeMessage(`Successfully updated.`, {
+        new NoticeMessage(t('msg > update success'), {
           callback() {
             queryClient.invalidateQueries(["detailUserData", userID]);
             onUpdateSuccess();

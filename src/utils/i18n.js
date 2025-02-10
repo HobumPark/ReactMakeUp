@@ -5,35 +5,67 @@ import { reqGet } from './request';
 
 i18n.use(initReactI18next).init({
   compatibilityJSON: 'v3',
+  keySeparator: false,
   lng: 'kor', 
   fallbackLng: 'kor',
-  interpolation: {
-    escapeValue: false, 
-  },
+  interpolation: { escapeValue: false },
+  initImmediate: false,
+}).then(() => {
+  loadLanguageFromLocalStorage();
 });
 
-const fetchTranslation = async () => {
+const loadLanguageFromLocalStorage = () => {
+  const savedLanguage = localStorage.getItem('userLanguage');
+  if (savedLanguage) {
+    i18n.changeLanguage(savedLanguage);
+    fetchTranslation(savedLanguage);
+  } else {
+    fetchUserLanguage();
+  }
+};
+
+const fetchUserLanguage = async () => {
   try {
-    const url = `${URLS.BACK_DSH}${APIS.language}`; 
-    const response = await reqGet(url); 
+    const url = `${URLS.BACK_DSH}${APIS.userLanguage}`; 
+    const response = await reqGet(url);
 
-    if (response && Array.isArray(response)) {
-      const translations = {};
+    if (response) {
+      localStorage.removeItem('userLanguage');
+      localStorage.setItem('userLanguage', response);
+      i18n.changeLanguage(response); 
+      fetchTranslation(response); 
+    }
+  } catch (error) {
+    console.error('Error fetching user language:', error);
+  }
+};
 
+const fetchTranslation = async (language) => {
+  try {
+    const url1 = `${URLS.BACK_DSH}${APIS.language}`;  // URL for language data
 
-      response.forEach(item => {
+    // Fetch only from the first URL
+    const response1 = await reqGet(url1);
+
+    const translations = {};
+
+    if (response1 && Array.isArray(response1)) {
+      response1.forEach(item => {
         if (item.key && item.value) {
           translations[item.key] = item.value;
         }
       });
-
-      i18n.addResources('kor', 'translation', translations);
     }
+
+    i18n.addResources(language, 'translation', translations);
+
+    // Store translations in localStorage
+    localStorage.removeItem('translations');
+    localStorage.setItem('translations', JSON.stringify(translations));
   } catch (error) {
     console.error('Error fetching translations:', error);
   }
 };
 
-fetchTranslation();
 
 export default i18n;
