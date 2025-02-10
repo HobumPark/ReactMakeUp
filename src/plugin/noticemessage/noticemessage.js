@@ -212,7 +212,7 @@ export default class NoticeMessage {
     const nm_footer_close = document.createElement("button");
     nm_footer_close.className = "nm_footer_btns nm_focus btn-md primary fill";
     nm_footer_close.id = "nm_footer_close";
-    nm_footer_close.textContent = i18n.t('msg > confirm');
+    nm_footer_close.textContent = i18n.t('msg > confirm') !== 'msg > confirm' ? i18n.t('msg > confirm') : '확인';
     if (this._locale) {
       nm_footer_close.dataset.i18n = `msg > confirm`;
     }
@@ -226,7 +226,7 @@ export default class NoticeMessage {
     const nm_footer_confirm = document.createElement("button");
     nm_footer_confirm.className = "nm_footer_btns nm_focus btn-md primary fill";
     nm_footer_confirm.id = "nm_footer_confirm";
-    nm_footer_confirm.textContent = i18n.t('msg > confirm');
+    nm_footer_confirm.textContent = i18n.t('msg > confirm') !== 'msg > confirm' ? i18n.t('msg > confirm') : '확인';
     if (this._locale) {
       nm_footer_confirm.dataset.i18n = `msg > confirm`;
     }
@@ -249,7 +249,7 @@ export default class NoticeMessage {
     const nm_footer_prompt = document.createElement("button");
     nm_footer_prompt.className = "nm_footer_btns nm_focus";
     nm_footer_prompt.id = "nm_footer_prompt";
-    nm_footer_prompt.textContent = i18n.t('msg > confirm');
+    nm_footer_prompt.textContent = i18n.t('msg > confirm') !== 'msg > confirm' ? i18n.t('msg > confirm') : '확인';
     if (this._locale) {
       nm_footer_prompt.dataset.i18n = `msg > confirm`;
     }

@@ -1,39 +1,37 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { URLS, APIS } from "../config/urls";
-import { reqGet } from './request'; 
+import { APIS, URLS } from '../config/urls';
+import { reqGet } from './request';
 
 i18n.use(initReactI18next).init({
   compatibilityJSON: 'v3',
   keySeparator: false,
-  lng: 'kor', 
+  lng: 'kor',
   fallbackLng: 'kor',
   interpolation: { escapeValue: false },
-  initImmediate: false,
-}).then(() => {
-  loadLanguageFromLocalStorage();
+  initImmediate: false, 
 });
 
-const loadLanguageFromLocalStorage = () => {
+const initializeLanguage = async () => {
   const savedLanguage = localStorage.getItem('userLanguage');
+
   if (savedLanguage) {
     i18n.changeLanguage(savedLanguage);
-    fetchTranslation(savedLanguage);
+    await fetchTranslation(savedLanguage);
   } else {
-    fetchUserLanguage();
+    await fetchUserLanguage();
   }
 };
 
 const fetchUserLanguage = async () => {
   try {
-    const url = `${URLS.BACK_DSH}${APIS.userLanguage}`; 
+    const url = `${URLS.BACK_DSH}${APIS.userLanguage}`;
     const response = await reqGet(url);
 
     if (response) {
-      localStorage.removeItem('userLanguage');
       localStorage.setItem('userLanguage', response);
-      i18n.changeLanguage(response); 
-      fetchTranslation(response); 
+      i18n.changeLanguage(response);
+      await fetchTranslation(response);
     }
   } catch (error) {
     console.error('Error fetching user language:', error);
@@ -42,9 +40,7 @@ const fetchUserLanguage = async () => {
 
 const fetchTranslation = async (language) => {
   try {
-    const url1 = `${URLS.BACK_DSH}${APIS.language}`;  // URL for language data
-
-    // Fetch only from the first URL
+    const url1 = `${URLS.BACK_DSH}${APIS.language}`;
     const response1 = await reqGet(url1);
 
     const translations = {};
@@ -59,13 +55,12 @@ const fetchTranslation = async (language) => {
 
     i18n.addResources(language, 'translation', translations);
 
-    // Store translations in localStorage
-    localStorage.removeItem('translations');
     localStorage.setItem('translations', JSON.stringify(translations));
   } catch (error) {
     console.error('Error fetching translations:', error);
   }
 };
 
-
 export default i18n;
+export { initializeLanguage };
+

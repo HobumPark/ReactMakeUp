@@ -19,12 +19,12 @@ import { useTranslation } from 'react-i18next';
 
 const UserManagement = () => {
   const { t, i18n} = useTranslation();
-  const storedTranslations = JSON.parse(localStorage.getItem('translations')) || {};
+  const storedTranslations = JSON.parse(localStorage.getItem('translations'));
 
 // tabulator top
 const columnsHistory = [
   {
-    title: storedTranslations['211002'],
+    title: storedTranslations?.['211002'],
     formatter: "rownum",
     width: 60,
     hozAlign: "center",
@@ -33,7 +33,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title: storedTranslations['user > id'],
+    title: storedTranslations?.['user > id'],
     field: "account_id",
     widthGrow: 1,
     hozAlign: "center",
@@ -42,7 +42,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title:storedTranslations['user > name'],
+    title:storedTranslations?.['user > name'],
     field: "name",
     widthGrow: 1,
     hozAlign: "center",
@@ -51,7 +51,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title:storedTranslations['user > email'],
+    title:storedTranslations?.['user > email'],
     field: "email",
     widthGrow: 2,
     hozAlign: "center",
@@ -60,7 +60,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title:storedTranslations['user > phone no'],
+    title:storedTranslations?.['user > phone no'],
     field: "phone_no",
     widthGrow: 1,
     hozAlign: "center",
@@ -69,7 +69,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title: storedTranslations['021'],
+    title: storedTranslations?.['021'],
     field: "position",
     widthGrow: 2,
     hozAlign: "center",
@@ -263,14 +263,14 @@ const updateCallback = () => {
   const languageTabulator = () => {
     let datalanguage = {
       pagination: {
-        first:  storedTranslations['cmn > first page'], //text for the first page button
-        first_title:storedTranslations['cmn > first page'], //tooltip text for the first page button
-        last:storedTranslations['cmn > last page'],
-        last_title: storedTranslations['cmn > last page'],
-        prev: storedTranslations['cmn > page before'],
-        prev_title: storedTranslations['cmn > page before'],
-        next: storedTranslations['cmn > next page'],
-        next_title: storedTranslations['cmn > next page'],
+        first:  storedTranslations?.['cmn > first page'], //text for the first page button
+        first_title:storedTranslations?.['cmn > first page'], //tooltip text for the first page button
+        last:storedTranslations?.['cmn > last page'],
+        last_title: storedTranslations?.['cmn > last page'],
+        prev: storedTranslations?.['cmn > page before'],
+        prev_title: storedTranslations?.['cmn > page before'],
+        next: storedTranslations?.['cmn > next page'],
+        next_title: storedTranslations?.['cmn > next page'],
       },
     }
     return datalanguage
@@ -289,7 +289,7 @@ const updateCallback = () => {
     paginationSize: 10,
     selectableRows: 1,
     rowHeight: 41,
-    footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${storedTranslations['cmn > total']} ${usersListData?.length || 0} ${storedTranslations['cmn > results']}</div>`,
+    footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${storedTranslations?.['cmn > total']} ${usersListData?.length || 0} ${storedTranslations?.['cmn > results']}</div>`,
     selectableRowsCheck: (row) => {
       return !row.getElement().classList.contains("tabulator-selected");
     },
