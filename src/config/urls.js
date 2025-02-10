@@ -24,6 +24,7 @@ if (DEBUG) {
 export { URLS };
 
 export const APIS = {
+  language:'/common/authenticated-user/languages',
   login: "/authentication/login",
   logout:"/authentication/logout",
   usersList: (filterParams) => `/users?${filterParams}`,

@@ -11,6 +11,7 @@ import CodeManagement from './routes/CodeManagement/CodeManagement.jsx';
 import AuthorityManagement from './routes/AuthorityManagement/AuthorityManagement.jsx';
 import GroupManagement from './routes/GroupManagement/GroupManagement.jsx';
 import ProtectedRoutes from './components/ProtectedRoute/ProtectedRoute.jsx';
+import "./utils/i18n.js";
 
 
 const queryClient = new QueryClient();

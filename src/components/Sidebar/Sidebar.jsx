@@ -9,6 +9,7 @@ import NoticeMessage from '../../plugin/noticemessage/noticemessage';
 import useAuth from '../../hooks/useAuth';
 import ModalProfileManagement from '../Modal/ModalProfileManagement/ModalProfileManagement';
 
+
 const Sidebar = ({ userInfo, commonData }) => {
   const { handleLogout } = useAuth();
   const [isActive, setIsActive] = useState(false);
@@ -17,6 +18,7 @@ const Sidebar = ({ userInfo, commonData }) => {
   const [date, setDate] = useState("");
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   useEffect(() => {
     const updateDateTime = () => {

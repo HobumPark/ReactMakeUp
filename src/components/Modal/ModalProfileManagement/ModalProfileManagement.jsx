@@ -2,9 +2,11 @@ import { useState } from "react";
 import closeIcon from "../../../assets/icon/close-icon.svg"
 import UpdatePassword from "../../Tab/ProfileManagement/UpdatePassword/UpdatePassword";
 import UpdateProfile from "../../Tab/ProfileManagement/UpdateProfile/UpdateProfile";
+import { useTranslation } from "react-i18next";
 
 
 const ModalProfileManagement = ({isModalOpen , setIsModalOpen, userInfo, commonData }) => {
+  const { t } = useTranslation();
   
     const [activeTab, setActiveTab] = useState("profile");
     const tabClass = 'flex flex-col items-center justify-center w-full h-[40px] relative text-center text-[#f1f2f4] border-b border-[#6b7280]'
@@ -16,7 +18,7 @@ const ModalProfileManagement = ({isModalOpen , setIsModalOpen, userInfo, commonD
     <div className="modal-box ">
     <div className="bg-[#d0dee4] rounded-lg p-2.5">
     <div className="h-[37px] bg-[#135A78] flex items-center px-4 w-full justify-between rounded-t-md">
-     <span className="text-[16px] text-[#ffffff] font-bold">Profile Management</span>
+     <span className="text-[16px] text-[#ffffff] font-bold"> {t('profile > profile management')}</span>
      <div className="w-6 h-6 cursor-pointer"  onClick={() => setIsModalOpen(false)}>
      <img
         src={closeIcon}
