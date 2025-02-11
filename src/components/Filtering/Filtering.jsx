@@ -7,6 +7,8 @@ import RadioFilter from "../RadioFilter/RadioFilter";
 import { useTranslation } from "react-i18next";
 
 const Filtering = ({
+  customWidthSelect,
+  customWidthInput,
   labelSelect,
   children,
   disableSearchInput = false,
@@ -71,7 +73,7 @@ const Filtering = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-4 justify-between items-center">
-        <div className="w-32 flex items-center gap-2">
+      <div className={`${customWidthSelect ? `${customWidthSelect}` : "w-70"} flex items-center gap-4`}>
           <span className="text-body-2 text-au-neutral-4 py-[9px] flex-grow whitespace-nowrap">
             {labelSelect}
           </span>
@@ -81,11 +83,9 @@ const Filtering = ({
         <div className="flex gap-[12px] ml-auto items-center">
           {!disableSearchInput && (
             <GeneralInput
-              customInput={"wrapper-icon"}
-              inputFormStyle={"input-search"}
+              customInput={`${customWidthInput ? `${customWidthInput}` : "w-[400px]"} `}
               placeholder={placeholder}
-              rightIcon={Magnifier}
-              rightIconStyle={"icon"}
+              isSearch={true}
               value={searchInput}
               onKeyDown={handleSearchInput} 
               onChange={(e) => setSearchInput(e.target.value)}

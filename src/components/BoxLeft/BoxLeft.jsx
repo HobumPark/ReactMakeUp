@@ -3,6 +3,7 @@ import GeneralInput from "../GeneralInput/GeneralInput";
 import Button from "../Button/Button";
 import Magnifier from "../../assets/icon/icon-search.svg"
 import Select from "../Select/Select";
+import { useTranslation } from "react-i18next";
 
 const BoxLeft = ({
   labelSelect,
@@ -13,7 +14,7 @@ const BoxLeft = ({
   onClickConfirm,
   disableConfirmButton
 }) => {
-
+  const {t} = useTranslation();
   return (
     <div className="flex gap-4 justify-between">
       <div className="w-32 flex items-center gap-2">
@@ -25,9 +26,9 @@ const BoxLeft = ({
 
       <div className="flex gap-4 ml-auto">
       {!disableConfirmButton && (
-       <Button label="confirm" customButton="btn-search" disabled={confirmButtonState} onClick={() => onClickConfirm()} />
+       <Button label={t('cmn > confirm')}customButton="btn-search" disabled={confirmButtonState} onClick={() => onClickConfirm()} />
       )}
-       <Button label="Restore Default" customButton={disableConfirmButton ? "btn-search" : "btn-reset"}  disabled={restoreButtonState} onClick={() => onClickRestore()} />
+       <Button label={t('cmn > reset table')} customButton={disableConfirmButton ? "btn-search" : "btn-reset"}  disabled={restoreButtonState} onClick={() => onClickRestore()} />
       </div>
     </div>
 

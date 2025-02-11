@@ -10,154 +10,157 @@ import useCommonCodes from '../../hooks/useCommonCodes';
 import useProgram from '../../hooks/useProgram';
 import { fetchGroupPrograms } from '../../api/authority-program';
 import NoticeMessage from '../../plugin/noticemessage/noticemessage';
+import { useTranslation } from 'react-i18next';
 
-
-// tabulator top
-
-const columnInit = [
-  {
-    title: "No",
-    formatter: "rownum",
-    width: 60,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Group Name",
-    field: "group_name",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Group ID",
-    field: "group_code",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Team",
-    field: "description",
-    widthGrow: 2,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Usage",
-    field: "usage",
-    widthGrow: 2,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-];
-
-const columnAssign = [
-  {
-    formatter: "rowSelection",
-    titleFormatter: "rowSelection",
-    width: 60,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-  },
-  {
-    title: "Program Group",
-    field: "upper_program",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Program",
-    field: "lower_program",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "id",
-    field: "id",
-    width: "100",
-    resizable: false,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    visible: false,
-  },
-  {
-    title: "Program Name (ENG)",
-    field: "program_name",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-];
-
-const columnStandby = [
-  {
-    formatter: "rowSelection",
-    titleFormatter: "rowSelection",
-    width: 60,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-  },
-  {
-    title: "Program Group",
-    field: "upper_program",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Program",
-    field: "lower_program",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "id",
-    field: "id",
-    width: "100",
-    resizable: false,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    visible: false,
-  },
-  {
-    title: "Program Name (ENG)",
-    field: "program_name",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-];
 
 
 const AuthorityManagement = () => {
+  const { t } = useTranslation();
+  const totalText = t('cmn > total');
+  const resultText = t('cmn > results');
+  // tabulator top
+
+  const columnInit = [
+    {
+      title: t('211002'),
+      formatter: "rownum",
+      width: 60,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('authority > name'),
+      field: "group_name",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "Group ID",
+      field: "group_code",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('cmn > team'),
+      field: "description",
+      widthGrow: 2,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('002'),
+      field: "usage",
+      widthGrow: 2,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+  ];
+
+  const columnAssign = [
+    {
+      formatter: "rowSelection",
+      titleFormatter: "rowSelection",
+      width: 60,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+    },
+    {
+      title: t('program > upper program'),
+      field: "upper_program",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('program > id'),
+      field: "lower_program",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "id",
+      field: "id",
+      width: "100",
+      resizable: false,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      visible: false,
+    },
+    {
+      title: t('program > program name'),
+      field: "program_name",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+  ];
+
+  const columnStandby = [
+    {
+      formatter: "rowSelection",
+      titleFormatter: "rowSelection",
+      width: 60,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+    },
+    {
+      title: t('program > upper program'),
+      field: "upper_program",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('program > id'),
+      field: "lower_program",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "id",
+      field: "id",
+      width: "100",
+      resizable: false,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      visible: false,
+    },
+    {
+      title: t('program > program name'),
+      field: "program_name",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+  ];
     const tbRefInit = useRef(null);
     const tbRefStandby = useRef(null);
     const tbRefAssign = useRef(null);
@@ -208,6 +211,22 @@ const AuthorityManagement = () => {
     })
 
     const { commonListData } = useCommonCodes({ optionParams });
+    const languageTabulator = () => {
+      let datalanguage = {
+        pagination: {
+          first:  t('cmn > first page'), //text for the first page button
+          first_title: t('cmn > first page'), //tooltip text for the first page button
+          last: t('cmn > last page'),
+          last_title: t('cmn > last page'),
+          prev: t('cmn > page before'),
+          prev_title: t('cmn > page before'),
+          next: t('cmn > next page'),
+          next_title: t('cmn > next page'),
+        },
+      }
+      return datalanguage
+    }
+
 
     const optionsInit = {
       debugInvalidOptions: true,
@@ -215,24 +234,28 @@ const AuthorityManagement = () => {
       movableRows: false,
       resizableRows: false,
       paginationSize: 5,
+      locale: "ko",
+      langs: {
+        ko: languageTabulator(),
+      },
       rowHeight: 41,
       selectableRows: 1,
       selectableRowsCheck: (row) => {
         return !row.getElement().classList.contains("tabulator-selected");
       },
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${initialAuthority?.length || 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${totalText} ${initialAuthority?.length || 0} ${resultText}</div>`,
     };
 
     const optionsAssign = {
       height: '270px',
-      placeholder:'No Data',
+      placeholder:t('msg > no data'),
       debugInvalidOptions: true,
       movableRows: false,
       resizableRows: false,
       layout: "fitColumns",
       rowHeight: 41,
       selectableRows: true,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${programsAssign?.length || 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${totalText} ${programsAssign?.length || 0} ${resultText}</div>`,
    };
    const optionsStandby = {
       debugInvalidOptions: true,
@@ -242,7 +265,7 @@ const AuthorityManagement = () => {
       layout: "fitColumns",
       rowHeight: 41,
       selectableRows: true,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ programs?.length || 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${totalText} ${ programs?.length || 0} ${resultText}</div>`,
     };
 
           
@@ -261,7 +284,7 @@ const AuthorityManagement = () => {
     
       if (hasChangedRef.current) {
         const message = new NoticeMessage(
-          "Changes you made may not be saved, would you like to continue?",
+          t('msg > flush confirm'),
           {
             mode: "confirm",
           }
@@ -327,7 +350,7 @@ const AuthorityManagement = () => {
 
     const optionsRadioFilterUsage = commonListData?.["002"]
     ? [
-        { value: "All", label: "All", code: "All" }, 
+        { value: "All", label: t('cmn > all') , code: "All" }, 
         ...commonListData["002"].code.map((code, index) => ({
           value: code,
           label: commonListData["002"].name[index],
@@ -397,7 +420,7 @@ const AuthorityManagement = () => {
         
       } else {
         setHasChanged(false);
-        new NoticeMessage("There is no data selected. Please make selection.")
+         new NoticeMessage(t('msg > data not selected'))
       }
     };
  
@@ -434,7 +457,7 @@ const AuthorityManagement = () => {
         setSelectedRowStandby([]);
       }
       else {
-        new NoticeMessage("There is no data selected. Please make selection.")
+        new NoticeMessage(t('msg > data not selected'))
       }
     };
 
@@ -454,7 +477,7 @@ const AuthorityManagement = () => {
             arrow: false,
           }));
         } else {
-          new NoticeMessage('No group selected. Please select a group.')
+          new NoticeMessage(t('osmsp13 > group not selected'))
         }
       }
     };
@@ -502,17 +525,17 @@ const AuthorityManagement = () => {
     <>
         <section className='wrap'>
           <div className='header-title'>
-            <h3>System Management</h3>
+            <h3>{t('SYSTEM')}</h3>
             <h3>&gt;</h3>
-            <h3>Authority Management</h3>
+            <h3>{t('SYSTEM-AUTHORITY')}</h3>
           </div>
 
           <ContainerCard>
             <Filtering 
-            placeholder="Group Name / Description"
+            placeholder={t('authority > name') + ' / ' + t('cmn > description')}
             onSearch={handleSearchInit}
             onReset={handleResetInit}
-            labelSelect={'Usage'}
+            labelSelect={t('002')}
             disableFiltering={true}
             >
                 <Select 
@@ -551,7 +574,7 @@ const AuthorityManagement = () => {
             <BoxLeft
                 // onSearch={'test'}
                 // onReset={'test'}
-                labelSelect={groupName || 'Tim'}
+                labelSelect={groupName || t('cmn > team')}
                 confirmButtonState={buttonState.confirm}
                 restoreButtonState={buttonState.restore}
                 onClickRestore={handleRestore}
@@ -593,18 +616,20 @@ const AuthorityManagement = () => {
         <ContainerCard>
             <div className="mb-5"> 
             <Filtering
-                placeholder="Group Name / Description"
+                placeholder={t('cmn > search')}
                 onSearch={handleSearchStandby}
                 onReset={handleResetStandby}
-                labelSelect={'Upper Program'}
+                labelSelect={t('program > group program')}
                 disableFiltering={true}
+                customWidthInput={'w-[250px]'}
+                customWidthSelect={'w-[260px]'}
             >
                 <Select
                   className={'custom-select'}
                   value={selectedUpperProgram}
                   onChange={handleOnChangeInputSelectProgram}
                   options={[
-                        { label: "All", value: "" }, 
+                        { label: t('cmn > all'), value: "" }, 
                         ...(upperProgram ? upperProgram.map(item => ({ label: item.upper, value: item.upper })) : [])
                     ]}
                 />

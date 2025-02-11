@@ -9,90 +9,91 @@ import Select from '../../components/Select/Select';
 import useProgramMgt from '../../hooks/useProgramMgt';
 import useCommonCodes from '../../hooks/useCommonCodes';
 import NoticeMessage from '../../plugin/noticemessage/noticemessage';
-
-
-// tabulator top
-const columnsHistory = [
-  {
-    title: "No",
-    formatter: "rownum",
-    width: 60,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "ID",
-    field: "id",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    sorter: "alphanum",
-    headerSort: false,
-    resizable: false,
-    visible: false,
-  },
-  {
-    title: "Program Group",
-    field: "upper_program",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Program",
-    field: "lower_program",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Program Name (ENG)",
-    field: "eng",
-    widthGrow: 2,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-    formatter: function (cell) {
-      const data = cell.getRow().getData();
-      return data.lower_program
-        ? "　└　" + cell.getValue()
-        : cell.getValue();
-    },
-  },
-  {
-    title: "Program Name (IND)",
-    field: "ind",
-    widthGrow: 2,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-    formatter: function (cell) {
-      const data = cell.getRow().getData();
-      return data.lower_program
-        ? "　└　" + cell.getValue()
-        : cell.getValue();
-    },
-  },
-  {
-    title: "Sort Order",
-    field: "sort_order",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-];
+import { useTranslation } from 'react-i18next';
 
 
 const ProgramManagement = () => {
+  const { t } = useTranslation();
+  // tabulator top
+  const columnsHistory = [
+    {
+      title: t('211002'),
+      formatter: "rownum",
+      width: 60,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "ID",
+      field: "id",
+      hozAlign: "center",
+      headerHozAlign: "center",
+      sorter: "alphanum",
+      headerSort: false,
+      resizable: false,
+      visible: false,
+    },
+    {
+      title: t('program > upper program'),
+      field: "upper_program",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('program > id'),
+      field: "lower_program",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('program > eng name'),
+      field: "eng",
+      widthGrow: 2,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+      formatter: function (cell) {
+        const data = cell.getRow().getData();
+        return data.lower_program
+          ? "　└　" + cell.getValue()
+          : cell.getValue();
+      },
+    },
+    {
+      title: t('program > ind name'),
+      field: "ind",
+      widthGrow: 2,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+      formatter: function (cell) {
+        const data = cell.getRow().getData();
+        return data.lower_program
+          ? "　└　" + cell.getValue()
+          : cell.getValue();
+      },
+    },
+    {
+      title: t('program > sort order'),
+      field: "sort_order",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+  ];
+
   const tbRef = useRef(null);
     //Disabled
   const [disabled, setDisabled] = useState(true);
@@ -237,7 +238,7 @@ const ProgramManagement = () => {
 
     const optionsRadioFilterDeleted = commonListData?.["001"]
     ? [
-        { value: "All", label: "All", code: "All" }, 
+        { value: "All", label: t('cmn > all'), code: "All" }, 
         ...commonListData["001"].code.map((code, index) => ({
           value: code,
           label: commonListData["001"].name[index],
@@ -248,7 +249,7 @@ const ProgramManagement = () => {
 
     const optionsRadioFilterUsage = commonListData?.["002"]
     ? [
-        { value: "All", label: "All", code: "All" }, 
+        { value: "All", label: t('cmn > all'), code: "All" }, 
         ...commonListData["002"].code.map((code, index) => ({
           value: code,
           label: commonListData["002"].name[index],
@@ -257,16 +258,35 @@ const ProgramManagement = () => {
       ]
     : [];
 
+    const languageTabulator = () => {
+      let datalanguage = {
+        pagination: {
+          first:  t('cmn > first page'), //text for the first page button
+          first_title: t('cmn > first page'), //tooltip text for the first page button
+          last: t('cmn > last page'),
+          last_title: t('cmn > last page'),
+          prev: t('cmn > page before'),
+          prev_title: t('cmn > page before'),
+          next: t('cmn > next page'),
+          next_title: t('cmn > next page'),
+        },
+      }
+      return datalanguage
+    }
     const optionsTabulator = {
       debugInvalidOptions: true,
       pagination: true,
       movableRows: false,
       resizableRows: false,
+      locale: "ko",
+      langs: {
+        ko: languageTabulator(),
+      },
       index: "id",
       paginationSize: 10,
       selectableRows: 1,
       rowHeight: 41,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${programListData?.length || 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${t('cmn > total')} ${programListData?.length || 0} ${t('cmn > results')}</div>`,
       selectableRowsCheck: (row) => {
         return !row.getElement().classList.contains("tabulator-selected");
       },
@@ -275,7 +295,7 @@ const ProgramManagement = () => {
     const handleRowSelected = useCallback((row) => {
     if(hasChangesCreateRef.current || hasChangesUpdateRef.current){
       const message = new NoticeMessage(
-        "Changes you made may not be saved, would you like to continue?",
+        t('msg > flush confirm'),
         {
           mode: "confirm",
         }
@@ -376,7 +396,7 @@ const ProgramManagement = () => {
           const resultInput = inputVal ? `input=${inputVal}` : "";
           const resultRadio = radioVal && radioVal !== "All" ? `&deletion=${radioVal}` : `&deletion=001002`;
           const resultRadioUsageVal = radioUsageVal && radioUsageVal !== "All" ? `&usage=${radioUsageVal}` : "";
-          const resultSelectCode = selectedIsProgramGroup
+          const resultSelectCode = selectedIsProgramGroup && selectedIsProgramGroup !== "All"
           ? `&upper_program=${selectedIsProgramGroup}`
           : "";
           const result = resultInput + resultRadio +resultRadioUsageVal + resultSelectCode;
@@ -388,7 +408,7 @@ const ProgramManagement = () => {
       const handleCancelButtonClick = () => {
         if (hasChangesUpdate){
           const message = new NoticeMessage(
-            "Changes you made may not be saved, would you like to continue?",
+            t('msg > flush confirm'),
             {
               mode: "confirm",
             }
@@ -401,7 +421,7 @@ const ProgramManagement = () => {
        if(isNewClicked){
           if(hasChangesCreate){
           const message = new NoticeMessage(
-            "Changes you made may not be saved, would you like to continue?",
+            t('msg > flush confirm'),
             {
               mode: "confirm",
             }
@@ -481,7 +501,7 @@ const ProgramManagement = () => {
   const handleDeleteButtonClick = () => {
     
     const message = new NoticeMessage(
-      "Are you sure you want to delete this data?",
+      t('msg > delete confirm'),
       {
         mode: "confirm",
       }
@@ -491,6 +511,9 @@ const ProgramManagement = () => {
     });
     
   };
+  const handleReset= () => {
+    setSelectedIsProgramGroup('All')
+};
   useEffect(() => {
    }, [selectedProgram, formValues]); 
 
@@ -515,10 +538,10 @@ const ProgramManagement = () => {
   
   const logs = detailProgramData && Array.isArray(detailProgramData) 
     ? [
-        { label: "Registered By", value: detailProgramData[0]?.registered_by },
-        { label: "Registered Time", value: detailProgramData[0]?.registered_time },
-        { label: "Updated By", value: detailProgramData[0]?.updated_by },
-        { label: "Updated Time", value: detailProgramData[0]?.updated_time },
+        { label: t('cmn > registered by'), value: detailProgramData[0]?.registered_by },
+        { label: t('cmn > registered time'), value: detailProgramData[0]?.registered_time },
+        { label: t('cmn > updated by'), value: detailProgramData[0]?.updated_by },
+        { label: t('cmn > updated time'), value: detailProgramData[0]?.updated_time },
       ]
     : [];
   
@@ -527,17 +550,17 @@ const ProgramManagement = () => {
 <>
         <section className='wrap'>
           <div className='header-title'>
-            <h3>SYSTEM</h3>
+            <h3>{t('SYSTEM')}</h3>
             <h3>&gt;</h3>
-            <h3>Program Management</h3>
+            <h3>{t('SYSTEM-PROGRAM')}</h3>
           </div>
 
           <ContainerCard justifyContent='flex-end'>
             <Filtering 
-            placeholder="Program / Program Name / URL"
+            placeholder={t('program > id') + ' / ' + t('program > program name') + ' / ' + t('program > url link') + ' / ' + t('program > description')}
             onSearch={handleSearch}
-            onReset={'test'}
-            labelSelect={'Program Group'}
+            onReset={handleReset}
+            labelSelect={t('program > upper program')}
             optionsRadioFilter={optionsRadioFilterDeleted}
             optionsRadioFilterUsage ={optionsRadioFilterUsage}
             isUsage ={true}
@@ -549,7 +572,7 @@ const ProgramManagement = () => {
                   options={
                     programListSelect
                       ? [
-                          { value: "", label: "All" },  
+                          { value: "", label: t('cmn > all') },  
                           ...programListSelect
                             .filter(item => item.upper_program === item.id) 
                             .map(item => ({
@@ -593,7 +616,7 @@ const ProgramManagement = () => {
         <div className="flex w-full flex-col gap-[10px]">
             <div className="grid grid-cols-3 gap-x-[40px] gap-y-[10px]">
               <DetailForm
-                label={"Program Type"}
+                label={t('program > program type')}
                 value={formValues.programType}
                 inputType={'select'}
                 onChange={handleInputChange}
@@ -601,11 +624,11 @@ const ProgramManagement = () => {
                 disabled={disabled} 
                 optionSelect={
                   [{ value: "", label: "" },
-                  { value: "Program Group", label: "Program Group", disabled: disabledProgramGroup },
-                   { value: "Program", label: "Program", disabled: disabledProgram }]}
+                  { value: "Program Group", label: t('program > upper program'), disabled: disabledProgramGroup },
+                   { value: "Program", label: t('program > id'), disabled: disabledProgram }]}
                 />
               <DetailForm
-                label={"Program Name (ENG)"}
+                label={t('program > eng name')}
                 value={formValues.eng || ''}
                 inputType={'text'}
                 onChange={handleInputChange}
@@ -613,7 +636,7 @@ const ProgramManagement = () => {
                 name="eng"
                 disabled={disabled}/>
               <DetailForm
-                label={"Usage"}
+                label={t('cmn > usage')}
                 name="usage"
                 value={formValues.usage || ''} 
                 inputType={'select'}
@@ -628,7 +651,7 @@ const ProgramManagement = () => {
                   }))
                 ] : []} />
                <DetailForm
-                label={"Program Group"}
+                label={t('program > upper program')}
                 value={formValues.upper_program || ''}
                 inputType={'text'}
                 onChange={handleInputChange}
@@ -637,7 +660,7 @@ const ProgramManagement = () => {
                 disabled={disabledProgramGroup}  />
 
               <DetailForm
-                label={"Program Name (IND)"}
+                label={t('program > ind name')}
                 value={formValues.ind || ''}
                 inputType={'text'}
                 onChange={handleInputChange}
@@ -646,7 +669,7 @@ const ProgramManagement = () => {
                 disabled={disabled}/>
 
               <DetailForm
-                label={"Sort Order"}
+                label={t('program > sort order')}
                 value={formValues.sort_order || ''}
                 inputType={'number'}
                 onChange={handleInputChange}
@@ -654,7 +677,7 @@ const ProgramManagement = () => {
                 disabled={disabled}/>
                 
               <DetailForm
-                label={"Program"}
+                label={t('program > id')}
                 value={formValues.lower_program || ''}
                 inputType={'text'}
                 onChange={handleInputChange}
@@ -663,7 +686,7 @@ const ProgramManagement = () => {
                 disabled={disabledProgram} 
                 />
               <DetailForm
-                label={"URL Link"}
+                label={t('program > url link')}
                 value={formValues.link_url || ''}
                 inputType={'text'}
                 onChange={handleInputChange}
@@ -671,7 +694,7 @@ const ProgramManagement = () => {
                 disabled={disabled}/>
 
               <DetailForm
-                label={"Description"}
+                label={t('program > description')}
                 value={formValues.description || ''}
                 onChange={handleInputChange}
                 name={"description"}

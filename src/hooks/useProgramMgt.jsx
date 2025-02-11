@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
 import { createLowerProgram, createUpperProgram, deleteProgram, fetchDetailProgram, fetchProgramList, updateLowerProgram, updateUpperProgram } from "../api/program-mgt";
+import { useTranslation } from "react-i18next";
 
 const useProgramMgt = ({
   programID = null,
@@ -10,6 +11,7 @@ const useProgramMgt = ({
   onUpdateSuccess = () => {},
 }) => {
   const queryClient = useQueryClient();
+  const {t} = useTranslation();
 
   const { data: programListData,  } = useQuery({
     queryKey: ["programListData", queryParams],
@@ -34,7 +36,7 @@ const useProgramMgt = ({
   const createUpperProgramMutation = useMutation({
       mutationFn: (programData) => createUpperProgram(programData),
       onSuccess: (responseData) => {
-        new NoticeMessage(`Data is succesfully registered.`, {
+        new NoticeMessage(t('msg > registration success'), {
           callback() {
             queryClient.invalidateQueries(["programListData", queryParams]);
             onCreateSuccess(responseData);
@@ -43,14 +45,14 @@ const useProgramMgt = ({
       },
       onError: (err) => {
         console.error("Error creating:", err);
-        new NoticeMessage(`${err.message}`)
+        new NoticeMessage(t(err.message))
       },
   }); 
 
   const createLowerProgramMutation = useMutation({
         mutationFn: (programData) => createLowerProgram(programData),
         onSuccess: (responseData) => {
-          new NoticeMessage(`Data is succesfully registered.`, {
+          new NoticeMessage(t('msg > registration success'), {
             callback() {
               queryClient.invalidateQueries(["programListData", queryParams]);
               onCreateSuccess(responseData);
@@ -59,14 +61,14 @@ const useProgramMgt = ({
         },
         onError: (err) => {
           console.error("Error creating user:", err);
-          new NoticeMessage(`${err.message}`)
+          new NoticeMessage(t(err.message))
         },
     });  
 
     const updateUpperProgramMutation = useMutation({
       mutationFn: (programData) => updateUpperProgram(programData),
       onSuccess: (responseData) => {
-        new NoticeMessage(`Successfully updated.`, {
+        new NoticeMessage(t('msg > update success'), {
           callback() {
             queryClient.invalidateQueries(["programListData", queryParams]);
             onUpdateSuccess(responseData);
@@ -75,13 +77,14 @@ const useProgramMgt = ({
       },
       onError: (err) => {
         console.error("Error updating program:", err);
+        new NoticeMessage(t(err.message))
       },
     });
 
     const updateLowerProgramMutation = useMutation({
       mutationFn: (programData) => updateLowerProgram(programData),
       onSuccess: () => {
-        new NoticeMessage(`Successfully updated.`, {
+        new NoticeMessage(t('msg > update success'), {
           callback() {
             queryClient.invalidateQueries(["programListData", queryParams]);
             onUpdateSuccess();
@@ -90,13 +93,14 @@ const useProgramMgt = ({
       },
       onError: (err) => {
         console.error("Error updating program:", err);
+        new NoticeMessage(t(err.message))
       },
     });
 
   const deleteProgramMutation = useMutation({
     mutationFn: (programID) => deleteProgram(programID),
     onSuccess: () => {
-      new NoticeMessage(`Delete Success`, {
+      new NoticeMessage(t('msg > delete success'), {
         callback() {
           onDeleteSuccess();
           queryClient.invalidateQueries(["programListData", queryParams]);
@@ -105,6 +109,7 @@ const useProgramMgt = ({
     },
     onError: (err) => {
       console.error("Error deleting user:", err);
+      new NoticeMessage(t(err.message))
     },
   });
 

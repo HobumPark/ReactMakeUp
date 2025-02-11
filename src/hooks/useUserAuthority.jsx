@@ -3,6 +3,7 @@ import NoticeMessage from "../plugin/noticemessage/noticemessage";
 import { deleteAuthorityUserInfo, fetchAuthorityUserAssign, fetchAuthorityUserInfo, fetchUserAuthenticated, updateAuthorityUserAssign, updateAuthorityUserInfo } from "../api/authority-user";
 import { createAuthority } from "../api/authority-program";
 import { createElement } from "react";
+import { useTranslation } from "react-i18next";
 
 const useUserAuthority = ({
   id = null,
@@ -11,6 +12,7 @@ const useUserAuthority = ({
   onCreateSuccess = () => {},
   onUpdateSuccess = () => {},
 }) => {
+  const {t} = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: userAuthenticated } = useQuery({
@@ -39,7 +41,7 @@ const useUserAuthority = ({
     const deleteAuthorityUserInfoMutation = useMutation({
       mutationFn: (groupCode) => deleteAuthorityUserInfo(groupCode),
       onSuccess: () => {
-        new NoticeMessage(`Delete Success`, {
+        new NoticeMessage(t('msg > delete success'), {
           callback() {
             onDeleteSuccess();
             queryClient.invalidateQueries(["authorityUserAssign", id]);
@@ -48,7 +50,7 @@ const useUserAuthority = ({
         });
       },
       onError: (err) => {
-        console.error("Error deleting user:", err);
+        new NoticeMessage(t(err.message))
       },
     });
 
@@ -57,7 +59,7 @@ const useUserAuthority = ({
       mutationFn: (data) => createAuthority(data),
       onSuccess: (responseData) => {console.log(responseData);
       
-        new NoticeMessage(`Data is succesfully registered.`, {
+        new NoticeMessage(t('msg > registration success'), {
           callback() {
             queryClient.invalidateQueries(["userAuthenticated", queryParams]);
             onCreateSuccess(responseData);
@@ -66,7 +68,7 @@ const useUserAuthority = ({
       },
       onError: (err) => {
         console.error("Error creating:", err);
-        new NoticeMessage(`${err.message}`)
+        new NoticeMessage(t(err.message))
       },
     });
 
@@ -90,7 +92,7 @@ const useUserAuthority = ({
       },
       
       onSuccess:(responseData) =>{
-        new NoticeMessage(`Successfully updated.`, {
+        new NoticeMessage(t('msg > update success'), {
           callback() {
             queryClient.invalidateQueries(["initialData", queryParams]);
             onUpdateSuccess(responseData);
@@ -98,7 +100,7 @@ const useUserAuthority = ({
         });
       },
       onError:(err) => {
-        console.log(err);
+        new NoticeMessage(t(err.message))
       }   
     })
 

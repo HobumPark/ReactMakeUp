@@ -12,17 +12,6 @@ i18n.use(initReactI18next).init({
   initImmediate: false, 
 });
 
-const initializeLanguage = async () => {
-  const savedLanguage = localStorage.getItem('userLanguage');
-
-  if (savedLanguage) {
-    i18n.changeLanguage(savedLanguage);
-    await fetchTranslation(savedLanguage);
-  } else {
-    await fetchUserLanguage();
-  }
-};
-
 const fetchUserLanguage = async () => {
   try {
     const url = `${URLS.BACK_DSH}${APIS.userLanguage}`;
@@ -30,6 +19,8 @@ const fetchUserLanguage = async () => {
 
     if (response) {
       localStorage.setItem('userLanguage', response);
+      console.log(response);
+      
       i18n.changeLanguage(response);
       await fetchTranslation(response);
     }
@@ -62,5 +53,5 @@ const fetchTranslation = async (language) => {
 };
 
 export default i18n;
-export { initializeLanguage };
+export { fetchUserLanguage };
 

@@ -12,128 +12,131 @@ import useAuthorityMgt from '../../hooks/useAuthorityMgt';
 import useCommonCodes from '../../hooks/useCommonCodes';
 import NoticeMessage from '../../plugin/noticemessage/noticemessage';
 import useUserAuthority from '../../hooks/useUserAuthority';
-
-
-// tabulator top
-
-const columnsHistory = [
-  {
-    title: "No",
-    formatter: "rownum",
-    width: 60,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Group Group",
-    field: "group_code",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-    visible:false
-  },
-  {
-    title: "Group Name",
-    field: "group_name",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Usage",
-    field: "usage",
-    widthGrow: 2,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-];
-
-const columnStandby = [
-  {
-    formatter: "rowSelection",
-    titleFormatter: "rowSelection",
-    width: "60",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-  },
-  {
-    title: "User ID",
-    field: "account_id",
-    width: "120",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Name",
-    field: "name",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "ID",
-    field: "id",
-    width: "100",
-    visible: false,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-]
-
-const columnAssign = [
-  {
-    formatter: "rowSelection",
-    titleFormatter: "rowSelection",
-    width: "60",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-  },
-  {
-    title: "User ID",
-    field: "account_id",
-    width: "120",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Name",
-    field: "name",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "ID",
-    field: "id",
-    width: "100",
-    visible: false,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-]
+import { useTranslation } from 'react-i18next';
 
 
 const GroupManagement = () => {
+   const { t } = useTranslation();
+   const totalText = t('cmn > total');
+   const resultText = t('cmn > results');
+
+   // tabulator top
+
+  const columnsHistory = [
+    {
+      title: t('211002'),
+      formatter: "rownum",
+      width: 60,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "Group Group",
+      field: "group_code",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+      visible:false
+    },
+    {
+      title: t('user > group name'),
+      field: "group_name",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('002'),
+      field: "usage",
+      widthGrow: 2,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+  ];
+
+  const columnStandby = [
+    {
+      formatter: "rowSelection",
+      titleFormatter: "rowSelection",
+      width: "60",
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+    },
+    {
+      title: t('user > account id'),
+      field: "account_id",
+      width: "120",
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('user > name'),
+      field: "name",
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "ID",
+      field: "id",
+      width: "100",
+      visible: false,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+  ]
+
+  const columnAssign = [
+    {
+      formatter: "rowSelection",
+      titleFormatter: "rowSelection",
+      width: "60",
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+    },
+    {
+      title: t('user > account id'),
+      field: "account_id",
+      width: "120",
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: t('user > name'),
+      field: "name",
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "ID",
+      field: "id",
+      width: "100",
+      visible: false,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+  ]
     const tbRefInit = useRef(null);
     const tbRefStandby = useRef(null);
     const tbRefAssign = useRef(null);
@@ -285,12 +288,29 @@ const GroupManagement = () => {
       });  
 
     const emptyDetail = () => {
-    setFormValues({
-      group_name:'',
-      usage:'',
-      description:''
-    });
-  };
+      setFormValues({
+        group_name:'',
+        usage:'',
+        description:''
+      });
+    };
+
+    const languageTabulator = () => {
+      let datalanguage = {
+        pagination: {
+          first:  t('cmn > first page'), //text for the first page button
+          first_title: t('cmn > first page'), //tooltip text for the first page button
+          last: t('cmn > last page'),
+          last_title: t('cmn > last page'),
+          prev: t('cmn > page before'),
+          prev_title: t('cmn > page before'),
+          next: t('cmn > next page'),
+          next_title: t('cmn > next page'),
+        },
+      }
+      return datalanguage
+    }
+
     const optionsInit = {
       debugInvalidOptions: true,
       pagination: true,
@@ -298,22 +318,26 @@ const GroupManagement = () => {
       resizableRows: false,
       paginationSize: 5,
       rowHeight: 41,
+      locale: "ko",
+      langs: {
+        ko: languageTabulator(),
+      },
       selectableRows: 1,
       selectableRowsCheck: (row) => {
         return !row.getElement().classList.contains("tabulator-selected");
       },
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${initialAuthority?.length || 0} Results</div>`,
-    };
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${totalText} ${initialAuthority?.length || 0} ${resultText}</div>`,
+      };
     const optionsAssign = {
       height: '270px',
-      placeholder:'No Data',
+      placeholder:t('msg > no data'),
       debugInvalidOptions: true,
       movableRows: false,
       resizableRows: false,
       layout: "fitColumns",
       rowHeight: 41,
       selectableRows: true,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ usersAssign?.length || 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${totalText} ${ usersAssign?.length || 0} ${resultText}</div>`,
    };
 
    const optionsStandby = {
@@ -324,7 +348,7 @@ const GroupManagement = () => {
       layout: "fitColumns",
       rowHeight: 41,
       selectableRows: true,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${ users?.length || 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${totalText} ${ users?.length || 0} ${resultText}</div>`,
     };
 
   useEffect(() => {
@@ -350,7 +374,7 @@ const GroupManagement = () => {
   
     const optionsRadioFilterUsage = commonListData?.["002"]
     ? [
-        { value: "All", label: "All", code: "All" }, 
+        { value: "All", label: t('cmn > all'), code: "All" }, 
         ...commonListData["002"].code.map((code, index) => ({
           value: code,
           label: commonListData["002"].name[index],
@@ -360,7 +384,7 @@ const GroupManagement = () => {
     : [];
     const optionsRadioFilterPosition = commonListData?.["021"]
     ? [
-        { value: "All", label: "All", code: "All" }, 
+        { value: "All", label: t('cmn > all'), code: "All" }, 
         ...commonListData["021"].code.map((code, index) => ({
           value: code,
           label: commonListData["021"].name[index],
@@ -417,7 +441,7 @@ const GroupManagement = () => {
     
       if (hasChangedRef.current) {
         const message = new NoticeMessage(
-          "Changes you made may not be saved, would you like to continue?",
+          t('msg > delete confirm'),
           {
             mode: "confirm",
           }
@@ -431,9 +455,11 @@ const GroupManagement = () => {
         updateGroupData(); 
       }
     }, []);
-        useEffect(() => {console.log("ASSIGN",selectedRowAssign)}, [selectedRowAssign])
-        useEffect(() => {console.log("STANDBY",selectedRowStandby)}, [selectedRowStandby])
-      const handleRowSelectedAssign = useCallback((row) => {
+
+        // useEffect(() => {console.log("ASSIGN",selectedRowAssign)}, [selectedRowAssign])
+        // useEffect(() => {console.log("STANDBY",selectedRowStandby)}, [selectedRowStandby])
+     
+        const handleRowSelectedAssign = useCallback((row) => {
         setSelectedRowAssign(row)
       }, []);
   
@@ -485,7 +511,7 @@ const GroupManagement = () => {
         setSelectedRowAssign([]);
         
       } else {
-        new NoticeMessage("There is no data selected. Please make selection.")
+        new NoticeMessage(t('msg > group not selected'))
       }
     };
  
@@ -538,7 +564,7 @@ const GroupManagement = () => {
         setSelectedRowStandby([]);
       }
       else {
-        new NoticeMessage("There is no data selected. Please make selection.")
+        new NoticeMessage(t('msg > group not selected'))
       }
     };
 
@@ -582,7 +608,7 @@ const GroupManagement = () => {
           }
         } else {
           setHasChanged(false);
-          new NoticeMessage('No group selected. Please select a group.')
+          new NoticeMessage(t('msg > group not selected'))
         }
       }
     };
@@ -664,7 +690,7 @@ const GroupManagement = () => {
     if(selectedCode.group_code){
       if (hasChangesUpdate || hasChanged){
         const message = new NoticeMessage(
-        "Changes you made may not be saved, would you like to continue?",
+          t('msg > flush confirm'),
               {
                 mode: "confirm",
               }
@@ -692,7 +718,7 @@ const GroupManagement = () => {
     }        else if(isNewClicked){
       if(hasChangesCreate || hasChanged){
       const message = new NoticeMessage(
-        "Changes you made may not be saved, would you like to continue?",
+        t('msg > flush confirm'),
         {
           mode: "confirm",
         }
@@ -732,7 +758,7 @@ const GroupManagement = () => {
             if (selectedCode?.group_code){
               if (hasChanged || hasChangesUpdate){
                 const message = new NoticeMessage(
-                  "Changes you made may not be saved, would you like to continue?",
+                  t('msg > flush confirm'),
                   {
                     mode: "confirm",
                   }
@@ -790,7 +816,7 @@ const GroupManagement = () => {
   const handleDeleteButtonClick = () => {
         
     const message = new NoticeMessage(
-          "Are you sure you want to delete this data?",
+      t('msg > delete confirm'),
           {
             mode: "confirm",
           }
@@ -814,10 +840,10 @@ const GroupManagement = () => {
 
   const logs = authorityUserInfo && Array.isArray(authorityUserInfo) 
   ? [
-      { label: "Registered By", value: authorityUserInfo[0]?.registered_by },
-      { label: "Registered Time", value: authorityUserInfo[0]?.registered_time },
-      { label: "Updated By", value: authorityUserInfo[0]?.updated_by },
-      { label: "Updated Time", value: authorityUserInfo[0]?.updated_time },
+      { label: t('cmn > registered by'), value: authorityUserInfo[0]?.registered_by },
+      { label: t('cmn > registered time'), value: authorityUserInfo[0]?.registered_time },
+      { label: t('cmn > updated by'), value: authorityUserInfo[0]?.updated_by },
+      { label: t('cmn > updated time'), value: authorityUserInfo[0]?.updated_time },
     ]
   : [];
 
@@ -826,17 +852,17 @@ const GroupManagement = () => {
     <>
         <section className='wrap'>
           <div className='header-title'>
-            <h3>System Management</h3>
+            <h3>{t('SYSTEM')}</h3>
             <h3>&gt;</h3>
-            <h3>Group Management</h3>
+            <h3>{t('SYSTEM-GROUP')}</h3>
           </div>
 
           <ContainerCard>
             <Filtering 
-            placeholder="Group Name / Description"
+            placeholder={t('authority > name') + ' / ' + t('code > description')}
             onSearch={handleSearchInit}
             onReset={handleResetInit}
-            labelSelect={'Usage'}
+            labelSelect={t('002')}
             disableFiltering={true}
             >
                 <Select 
@@ -919,11 +945,13 @@ const GroupManagement = () => {
         <ContainerCard>
             <div className="mb-5"> 
             <Filtering
-                placeholder="Group Name"
+                placeholder={t('authority > name')}
                 onSearch={handleSearchStandby}
                 onReset={handleResetStandby}
-                labelSelect={'Position'}
+                labelSelect={t('021')}
                 disableFiltering={true}
+                customWidthInput={'w-[250px]'}
+                customWidthSelect={'w-[260px]'}
             >
                 <Select 
                   options={optionsRadioFilterPosition}      
@@ -961,7 +989,7 @@ const GroupManagement = () => {
         <div className="flex w-full flex-col gap-[10px] ">
             <div className="grid grid-cols-3 gap-x-[40px] gap-y-[10px] h-[85px]">
             <DetailForm
-            label={"Group Name"}
+            label={t('user > group name')}
             value={formValues.group_name}
             onChange={handleInputChange}
             name={"group_name"}
@@ -970,7 +998,7 @@ const GroupManagement = () => {
             disabled={disabled}
         />
             <DetailForm
-              label={"Usage"}
+              label={t('code > usage')}
               name="usage"
               value={formValues.usage} 
               inputType={'select'}
@@ -985,7 +1013,7 @@ const GroupManagement = () => {
                   }))
               ] : []} />
          <DetailForm
-            label={"Description"}
+            label={t('code > description')}
             value={formValues.description}
             onChange={handleInputChange}
             name={"description"}

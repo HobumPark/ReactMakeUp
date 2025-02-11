@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, deleteUser, fetchDetailUser, fetchUserList, updateUser } from "../api/user-mgt";
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
 import { assignData, fetchGroupPrograms, fetchProgramAuthenticated, fetchUpperProgram } from "../api/authority-program";
+import { useTranslation } from "react-i18next";
 
 const useProgram = ({
   id = null,
@@ -11,6 +12,7 @@ const useProgram = ({
   onUpdateSuccess = () => {},
 }) => {
   const queryClient = useQueryClient();
+  const {t} = useTranslation();
 
   const { data: programAuthenticated } = useQuery({
     queryKey: ["programAuthenticated", queryParams],
@@ -36,7 +38,7 @@ const useProgram = ({
   const assignAuthorityMutation = useMutation({
     mutationFn: (codeData) => assignData(id,codeData),
     onSuccess: (responseData) => {
-        new NoticeMessage(`Data is succesfully registered.`, {
+        new NoticeMessage(t('msg > registration success'), {
             callback() {
               queryClient.invalidateQueries(["groupProgramsData", id]);
               onCreateSuccess(responseData);
@@ -45,7 +47,7 @@ const useProgram = ({
     },
     onError: (err) => {
         console.error("Error creating:", err);
-        new NoticeMessage(`${err.message}`)
+        new NoticeMessage(t(err.message))
     },
    });    
 

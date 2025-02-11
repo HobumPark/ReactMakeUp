@@ -4,8 +4,10 @@ import Button from "../../../Button/Button";
 import useAuth from "../../../../hooks/useAuth";
 import NoticeMessage from "../../../../plugin/noticemessage/noticemessage";
 import useUserMgt from "../../../../hooks/useUserMgt";
+import { useTranslation } from "react-i18next";
 
 const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
+  const { t } = useTranslation();
   const [isDisabled, setIsDisabled] = useState(true);
   const [formData, setFormData] = useState({
     account_id: "",
@@ -61,13 +63,13 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
     <div className={tabClass}>
         <div className="w-full flex flex-col gap-[15px]">
                 <span className="text-[20px] font-[700] text-[#6b7280]">
-                    User Profile
+                   {t('cmn > user profile')}
                 </span>
         </div>
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div className="flex flex-col gap-4">
             <DetailModal
-              label="Name"
+              label={t('user > name')}
               inputType="text"
               name={"name"}
               modalType={'profile'}
@@ -75,7 +77,7 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
               onChange={handleChange}
             />
             <DetailModal
-              label="User ID"
+              label={t('user > account id')}
               inputType="text"
               name={"account_id"}
               modalType={'profile'}
@@ -83,7 +85,7 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
               onChange={handleChange}
             />
             <DetailModal
-              label="Organization"
+              label={t('user > organization')}
               inputType="select"
               name={"organization"}
               modalType={'profile'}
@@ -105,7 +107,7 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
 
           <div className="flex flex-col gap-4">
             <DetailModal
-              label="Position"
+              label={t('021')}
               inputType="select"
               name={"position"}
               modalType={'profile'}
@@ -125,7 +127,7 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
 
             />
             <DetailModal
-              label="Phone No."
+              label={t('user > phone no')}
               inputType="number"
               name={"phone_no"}
               modalType={'profile'}
@@ -134,7 +136,7 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
             />
 
             <DetailModal
-              label="Email"
+              label={t('profile > email')}
               inputType="text"
               name={"email"}
               modalType={'profile'}
@@ -147,7 +149,7 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
 
         <div className="flex justify-end mt-12">
           <Button
-            label="Save"
+            label={t('cmn > save')}
             customButton="btn-search"
             disabled={isDisabled}
             onClick={handleSubmit}

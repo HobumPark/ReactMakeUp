@@ -26,7 +26,7 @@ const Sidebar = ({ userInfo, commonData }) => {
 
   useEffect(() => {
     const langSource = Common.getDTPLangSource(i18n.language);
-    console.log(langSource);
+    console.log(i18n.language);
     
 
     const updateDateTime = () => {

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLowerCode, createUpperCode, deleteCode, fetchCodeList, fetchDetailCode, updateLowerCode, updateUpperCode } from "../api/code-mgt";
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
+import { useTranslation } from "react-i18next";
 
 const useCodeMgt = ({
   codeID = null,
@@ -10,6 +11,7 @@ const useCodeMgt = ({
   onUpdateSuccess = () => {},
 }) => {
   const queryClient = useQueryClient();
+  const {t} = useTranslation();
   // Query to fetch users list
   const { data: codeListData, error: usersListError, isLoading: isLoadingUsers } = useQuery({
     queryKey: ["codeListData", queryParams],
@@ -33,7 +35,7 @@ const useCodeMgt = ({
   const createUpperCodeMutation = useMutation({
       mutationFn: (codeData) => createUpperCode(codeData),
       onSuccess: (responseData) => {
-        new NoticeMessage(`Data is succesfully registered.`, {
+        new NoticeMessage(t('msg > registration success'), {
           callback() {
             queryClient.invalidateQueries(["codeListData", queryParams]);
             onCreateSuccess(responseData);
@@ -42,14 +44,14 @@ const useCodeMgt = ({
       },
       onError: (err) => {
         console.error("Error creating user:", err);
-        new NoticeMessage(`${err.message}`)
+        new NoticeMessage(t(err.message))
       },
   }); 
 
   const createLowerCodeMutation = useMutation({
         mutationFn: (codeData) => createLowerCode(codeData),
         onSuccess: (responseData) => {
-          new NoticeMessage(`Data is succesfully registered.`, {
+          new NoticeMessage(t('msg > registration success'), {
             callback() {
               queryClient.invalidateQueries(["codeListData", queryParams]);
               onCreateSuccess(responseData);
@@ -58,14 +60,14 @@ const useCodeMgt = ({
         },
         onError: (err) => {
           console.error("Error creating user:", err);
-          new NoticeMessage(`${err.message}`)
+          new NoticeMessage(t(err.message))
         },
     });  
 
     const updateUpperCodeMutation = useMutation({
       mutationFn: (codeData) => updateUpperCode(codeData),
       onSuccess: (responseData) => {
-        new NoticeMessage(`Successfully updated.`, {
+        new NoticeMessage(t('msg > update success'), {
           callback() {
             queryClient.invalidateQueries(["codeListData", queryParams]);
             onUpdateSuccess(responseData);
@@ -74,13 +76,14 @@ const useCodeMgt = ({
       },
       onError: (err) => {
         console.error("Error updating code:", err);
+        new NoticeMessage(t(err.message))
       },
     });
 
     const updateLowerCodeMutation = useMutation({
       mutationFn: (codeData) => updateLowerCode(codeData),
       onSuccess: () => {
-        new NoticeMessage(`Successfully updated.`, {
+        new NoticeMessage(t('msg > update success'), {
           callback() {
             queryClient.invalidateQueries(["codeListData", queryParams]);
             onUpdateSuccess();
@@ -89,13 +92,14 @@ const useCodeMgt = ({
       },
       onError: (err) => {
         console.error("Error updating code:", err);
+        new NoticeMessage(t(err.message))
       },
     });
 
   const deleteCodeMutation = useMutation({
     mutationFn: (codeID) => deleteCode(codeID),
     onSuccess: () => {
-      new NoticeMessage(`Delete Success`, {
+      new NoticeMessage(t('msg > delete success'), {
         callback() {
           onDeleteSuccess();
           queryClient.invalidateQueries(["codeListData", queryParams]);
@@ -103,7 +107,7 @@ const useCodeMgt = ({
       });
     },
     onError: (err) => {
-      console.error("Error deleting user:", err);
+      new NoticeMessage(t(err.message))
     },
   });
 

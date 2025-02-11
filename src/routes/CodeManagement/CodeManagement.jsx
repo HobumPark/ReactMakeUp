@@ -9,83 +9,87 @@ import Select from '../../components/Select/Select';
 import useCodeMgt from '../../hooks/useCodeMgt';
 import useCommonCodes from '../../hooks/useCommonCodes';
 import NoticeMessage from '../../plugin/noticemessage/noticemessage';
-
-
-// tabulator top
-
-const columnsHistory = [
-  {
-    title: "No",
-    formatter: "rownum",
-    width: 60,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "ID",
-    field: "id",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-    visible: false,
-  },
-  {
-    title: "Code Group",
-    field: "upper_code",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Code",
-    field: "lower_code",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "Code Name (ENG)",
-    field: "eng",
-    widthGrow: 2,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-    formatter: function (cell) {
-      const data = cell.getRow().getData();
-      return data.lower_code
-        ? "　└　" + cell.getValue()
-        : cell.getValue();
-    },
-  },
-  {
-    title: "Code Name (IND)",
-    field: "ind",
-    widthGrow: 2,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-    formatter: function (cell) {
-      const data = cell.getRow().getData();
-      return data.lower_code
-        ? "　└　" + cell.getValue()
-        : cell.getValue();
-    },
-  },
-];
+import { useTranslation } from 'react-i18next';
 
 
 
 const CodeManagement = () => {
+    const { t } = useTranslation();
+    const storedTranslations = JSON.parse(localStorage.getItem('translations'));
+    
+    // tabulator top
+
+    const columnsHistory = [
+      {
+        title: t('211002'),
+        formatter: "rownum",
+        width: 60,
+        hozAlign: "center",
+        headerHozAlign: "center",
+        headerSort: false,
+        resizable: false,
+      },
+      {
+        title: t('user > id'),
+        field: "id",
+        widthGrow: 1,
+        hozAlign: "center",
+        headerHozAlign: "center",
+        headerSort: false,
+        resizable: false,
+        visible: false,
+      },
+      {
+        title: t('code > code group'),
+        field: "upper_code",
+        widthGrow: 1,
+        hozAlign: "center",
+        headerHozAlign: "center",
+        headerSort: false,
+        resizable: false,
+      },
+      {
+        title: t('code > code'),
+        field: "lower_code",
+        widthGrow: 1,
+        hozAlign: "center",
+        headerHozAlign: "center",
+        headerSort: false,
+        resizable: false,
+      },
+      {
+        title: t('code > ENG name'),
+        field: "eng",
+        widthGrow: 2,
+        hozAlign: "center",
+        headerHozAlign: "center",
+        headerSort: false,
+        resizable: false,
+        formatter: function (cell) {
+          const data = cell.getRow().getData();
+          return data.lower_code
+            ? "　└　" + cell.getValue()
+            : cell.getValue();
+        },
+      },
+      {
+        title: t('code > IND name'),
+        field: "ind",
+        widthGrow: 2,
+        hozAlign: "center",
+        headerHozAlign: "center",
+        headerSort: false,
+        resizable: false,
+        formatter: function (cell) {
+          const data = cell.getRow().getData();
+          return data.lower_code
+            ? "　└　" + cell.getValue()
+            : cell.getValue();
+        },
+      },
+    ];
+
+
     const tbRef = useRef(null);
     //Disabled
     const [disabled, setDisabled] = useState(true);
@@ -234,7 +238,7 @@ const CodeManagement = () => {
     
     const optionsRadioFilterDeleted = commonListData?.["001"]
     ? [
-        { value: "All", label: "All", code: "All" }, 
+        { value: "All", label: t('cmn > all'), code: "All" }, 
         ...commonListData["001"].code.map((code, index) => ({
           value: code,
           label: commonListData["001"].name[index],
@@ -244,12 +248,13 @@ const CodeManagement = () => {
     : [];
   useEffect(() => {
     if (detailCodeError) {
-      new NoticeMessage('Failed to load data. Please reload the page.')
+      new NoticeMessage(t('msg > load data fail'))
     }
   }, [detailCodeError]);
+
     const optionsRadioFilterUsage = commonListData?.["002"]
     ? [
-        { value: "All", label: "All", code: "All" }, 
+        { value: "All", label: t('cmn > all'), code: "All" }, 
         ...commonListData["002"].code.map((code, index) => ({
           value: code,
           label: commonListData["002"].name[index],
@@ -258,16 +263,37 @@ const CodeManagement = () => {
       ]
     : [];
 
+    const languageTabulator = () => {
+      let datalanguage = {
+        pagination: {
+          first:  t('cmn > first page'), //text for the first page button
+          first_title: t('cmn > first page'), //tooltip text for the first page button
+          last: t('cmn > last page'),
+          last_title: t('cmn > last page'),
+          prev: t('cmn > page before'),
+          prev_title: t('cmn > page before'),
+          next: t('cmn > next page'),
+          next_title: t('cmn > next page'),
+        },
+      }
+      return datalanguage
+    }
+
+
     const optionsTabulator = {
       debugInvalidOptions: true,
       pagination: true,
       movableRows: false,
       resizableRows: false,
+      locale: "ko",
+      langs: {
+        ko: languageTabulator(),
+      },
       index: "id",
       paginationSize: 10,
       selectableRows: 1,
       rowHeight: 41,
-      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">Total ${codeListData?.length || 0} Results</div>`,
+      footerElement: `<div id="footer-bottom" style="padding: 0 20px 0 0; text-align: right;">${t('cmn > total')} ${codeListData?.length || 0} ${t('cmn > results')}</div>`,
       selectableRowsCheck: (row) => {
         return !row.getElement().classList.contains("tabulator-selected");
       },
@@ -276,7 +302,7 @@ const CodeManagement = () => {
     const handleRowSelected = useCallback((row) => {
     if(hasChangesCreateRef.current || hasChangesUpdateRef.current){
       const message = new NoticeMessage(
-        "Changes you made may not be saved, would you like to continue?",
+        t('msg > flush confirm'),
         {
           mode: "confirm",
         }
@@ -376,7 +402,7 @@ const CodeManagement = () => {
           const resultInput = inputVal ? `input=${inputVal}` : "";
           const resultRadio = radioVal && radioVal !== "All" ? `&deletion=${radioVal}` : `&deletion=001002`;
           const resultRadioUsageVal = radioUsageVal && radioUsageVal !== "All" ? `&usage=${radioUsageVal}` : "";
-          const resultSelectCode = selectedIsCodeGroup
+          const resultSelectCode = selectedIsCodeGroup && selectedIsCodeGroup !== "All"
           ? `&upper_code=${selectedIsCodeGroup}`
           : "";
           const result = resultInput + resultRadio +resultRadioUsageVal + resultSelectCode;
@@ -388,7 +414,7 @@ const CodeManagement = () => {
       const handleCancelButtonClick = () => {
         if (hasChangesUpdate){
           const message = new NoticeMessage(
-            "Changes you made may not be saved, would you like to continue?",
+            t('msg > flush confirm'),
             {
               mode: "confirm",
             }
@@ -401,7 +427,7 @@ const CodeManagement = () => {
        if(isNewClicked){
           if(hasChangesCreate){
           const message = new NoticeMessage(
-            "Changes you made may not be saved, would you like to continue?",
+            t('msg > flush confirm'),
             {
               mode: "confirm",
             }
@@ -482,7 +508,7 @@ const CodeManagement = () => {
   const handleDeleteButtonClick = () => {
     
     const message = new NoticeMessage(
-      "Are you sure you want to delete this data?",
+      t('msg > delete confirm'),
       {
         mode: "confirm",
       }
@@ -492,6 +518,9 @@ const CodeManagement = () => {
     });
     
   };
+  const handleReset= () => {
+    setSelectedIsCodeGroup('All')
+};
   useEffect(() => {
    }, [selectedCode, formValues]); 
   useEffect(() => {
@@ -512,26 +541,27 @@ const CodeManagement = () => {
 
   const logs = detailCodeData
   ? [
-      { label: "Registered By", value: detailCodeData.registered_by },
-      { label: "Registered Time", value: detailCodeData.registered_time },
-      { label: "Updated By", value: detailCodeData.updated_by },
-      { label: "Updated Time", value: detailCodeData.updated_time },
+      { label: t('cmn > registered by'), value: detailCodeData.registered_by },
+      { label: t('cmn > registered time'), value: detailCodeData.registered_time },
+      { label: t('cmn > updated by'), value: detailCodeData.updated_by },
+      { label: t('cmn > updated time'), value: detailCodeData.updated_time },
     ]
   : [];
   return (
     <>
         <section className='wrap'>
           <div className='header-title'>
-            <h3>System Management</h3>
+            <h3>{t('SYSTEM')}</h3>
             <h3>&gt;</h3>
-            <h3>Code Management</h3>
+            <h3>{t('SYSTEM-CODE')}</h3>
           </div>
 
           <ContainerCard>
             <Filtering 
-            placeholder="Group Code / Code Name / Description"
+            placeholder={t('user > group code') + ' / ' + t('code > code') + ' / ' + t('code > code name') + ' / ' + t('code > description')}
             onSearch={handleSearch}
-            labelSelect={'Code Group'}
+            onReset={handleReset}
+            labelSelect={t('code > code group')}
             optionsRadioFilter={optionsRadioFilterDeleted}
             optionsRadioFilterUsage ={optionsRadioFilterUsage}
             isUsage ={true}
@@ -543,7 +573,7 @@ const CodeManagement = () => {
                   options={
                     codeListSelect
                       ? [
-                          { value: "", label: "All" },  
+                          { value: "All", label: t('cmn > all') },  
                           ...codeListSelect
                             .filter(item => item.upper_code === item.id) 
                             .map(item => ({
@@ -587,22 +617,22 @@ const CodeManagement = () => {
         <div className="grid grid-cols-3 gap-4">
 
         <div className="flex flex-col gap-4">
-          <DetailForm label="Code Type" value={formValues.codeType} inputType="select" onChange={handleInputChange} name="codeType" disabled={disabled} optionSelect={[{ value: "", label: "" }, { value: "Code Group", label: "Code Group", disabled: disabledCodeGroup }, { value: "Code", label: "Code", disabled: disabledCode }]} />
-          <DetailForm label="Group Code" value={formValues.upper_code || ''} inputType="text" onChange={handleInputChange} name="upper_code" required={isRequired} disabled={disabledCodeGroup} maxLength={6} />
-          <DetailForm label="Code" value={formValues.lower_code || ''} inputType="text" onChange={handleInputChange} name="lower_code" required={isRequired} disabled={disabledCode} maxLength={6} />
+          <DetailForm label={t('code > code type')} value={formValues.codeType} inputType="select" onChange={handleInputChange} name="codeType" disabled={disabled} optionSelect={[{ value: "", label: "" }, { value: 'Code Group', label: t('code > code group'), disabled: disabledCodeGroup }, { value: "Code", label: t('code > code'), disabled: disabledCode }]} />
+          <DetailForm label={t('code > code group')} value={formValues.upper_code || ''} inputType="text" onChange={handleInputChange} name="upper_code" required={isRequired} disabled={disabledCodeGroup} maxLength={6} />
+          <DetailForm label={t('code > code')} value={formValues.lower_code || ''} inputType="text" onChange={handleInputChange} name="lower_code" required={isRequired} disabled={disabledCode} maxLength={6} />
         </div>
 
 
         <div className="flex flex-col gap-4">
-          <DetailForm label="Code Name (ENG)" value={formValues.eng || ''} inputType="text" onChange={handleInputChange} name="eng" required={isRequired} disabled={disabled} />
-          <DetailForm label="Code Name (IND)" value={formValues.ind || ''} inputType="text" onChange={handleInputChange} name="ind" required={isRequired} disabled={disabled} />
-          <DetailForm label="Usage" value={formValues.usage || ''} inputType="select" onChange={handleInputChange} name="usage" required={isRequired} disabled={disabled} optionSelect={commonListData?.["002"] ? [{ value: "", label: "" }, ...commonListData["002"].code.map((code, index) => ({ value: code, label: commonListData["002"].name[index] }))] : []} />
+          <DetailForm label={t('code > ENG name')} value={formValues.eng || ''} inputType="text" onChange={handleInputChange} name="eng" required={isRequired} disabled={disabled} />
+          <DetailForm label={t('code > IND name')} value={formValues.ind || ''} inputType="text" onChange={handleInputChange} name="ind" required={isRequired} disabled={disabled} />
+          <DetailForm label={t('code > usage')} value={formValues.usage || ''} inputType="select" onChange={handleInputChange} name="usage" required={isRequired} disabled={disabled} optionSelect={commonListData?.["002"] ? [{ value: "", label: "" }, ...commonListData["002"].code.map((code, index) => ({ value: code, label: commonListData["002"].name[index] }))] : []} />
         </div>
 
 
         <div className="flex flex-col gap-4">
-          <DetailForm label="Sort Order" value={formValues.sort_order || ''} inputType="number" onChange={handleInputChange} name="sort_order" disabled={disabled} />
-          <DetailForm label="Description" value={formValues.description || ''} inputType="textarea" onChange={handleInputChange} name="description" disabled={disabled}  className={'flex-grow'} />
+          <DetailForm label={t('code > sort order')} value={formValues.sort_order || ''} inputType="number" onChange={handleInputChange} name="sort_order" disabled={disabled} />
+          <DetailForm label={t('code > description')} value={formValues.description || ''} inputType="textarea" onChange={handleInputChange} name="description" disabled={disabled}  className={'flex-grow'} />
         
         </div>
       </div>

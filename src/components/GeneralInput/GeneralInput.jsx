@@ -5,7 +5,8 @@ import React, {
   useEffect,
   useImperativeHandle,
 } from "react";
-import calendar from "../../assets/icon/calendar.png"
+import calendar from "../../assets/icon/calendar.png";
+import searchIcon from "../../assets/icon/icon-search.svg"; // Pastikan pathnya benar
 
 const GeneralInput = forwardRef(
   (
@@ -24,6 +25,7 @@ const GeneralInput = forwardRef(
       rightIcon, 
       disabled,
       isDob,
+      isSearch, // Tambahkan properti isSearch
       onKeyUp = () => {},
       onChange = () => {},
     }, ref) => {
@@ -54,30 +56,47 @@ const GeneralInput = forwardRef(
   return (
     <>
       {isDob ? (
-
-      <div className="relative">
-        <input
-          ref={inputRef}
-          type="text"
-          placeholder={placeholder}
-          className={`input pl-4 pr-10 w-full ${inputFormStyle}` }
-          value={inputValue}
-          id={id}
-          maxLength={maxLength}
-          disabled={disabled}
-          onKeyUp={onKeyUp}
-          name={name}
-          onChange={handleInputChange}
-        />
-        <img
-          src={calendar}
-          alt="icon"
-          className="absolute right-3 top-1/2 transform -translate-y-1/2"
-          // style={{ filter: 'brightness(0.6)' }}
-        />
-      </div>
-
-
+        <div className="relative ">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder={placeholder}
+            className={`input pl-4 pr-10 w-full ${inputFormStyle}`}
+            value={inputValue}
+            id={id}
+            maxLength={maxLength}
+            disabled={disabled}
+            onKeyUp={onKeyUp}
+            name={name}
+            onChange={handleInputChange}
+          />
+          <img
+            src={calendar}
+            alt="icon"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2"
+          />
+        </div>
+      ) : isSearch ? ( 
+        <div className={`relative ${customInput}`}>
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder={placeholder}
+            className={`input pl-4 pr-10 w-full ${inputFormStyle}`}
+            value={inputValue}
+            id={id}
+            maxLength={maxLength}
+            disabled={disabled}
+            onKeyUp={onKeyUp}
+            name={name}
+            onChange={handleInputChange}
+          />
+          <img
+            src={searchIcon} 
+            alt="search icon"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2"
+          />
+        </div>
       ) : (
         <div className={customInput}>
           <input

@@ -86,12 +86,12 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
     <div className={tabClass}>
         <div className="w-full flex flex-col gap-[15px]">
                 <span className="text-[20px] font-[700] text-[#6b7280]">
-                    Reset Password
+                    {t('cmn > user password')}
                 </span>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 mt-4">
         <DetailModal
-              label="Current Password"
+              label={t('user > current password')}
               inputType="password"
               name={"current_password"}
               modalType={'profile'}
@@ -101,7 +101,7 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
 
             />
             <DetailModal
-              label="New Password"
+              label={t('profile > new password')}
               inputType="password"
               name={"no_hash_password_update"}
               modalType={'profile'}
@@ -110,7 +110,7 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
               onChange={handleChange}
             />
             <DetailModal
-              label="Confirm Password"
+              label={t('profile > confirm password')}
               inputType="password"
               name={"no_hash_confirm_password_update"}
               modalType={'profile'}
@@ -121,7 +121,7 @@ const UpdatePassword = ({isActive =true , userInfo}) => {
             </div>
             <div className="flex justify-end mt-12">
           <Button
-            label="Save"
+            label={t('cmn > confirm')}
             customButton="btn-search"
             disabled={isDisabled}
             onClick={handleSubmit}

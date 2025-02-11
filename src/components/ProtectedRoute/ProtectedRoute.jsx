@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
 import useUserMgt from "../../hooks/useUserMgt";
 import useCommonCodes from "../../hooks/useCommonCodes";
-import { initializeLanguage } from '../../utils/i18n';
+import { fetchUserLanguage } from '../../utils/i18n';
 
 const ProtectedRoutes = () => {
   const isLogin = localStorage.getItem("isLogin") || sessionStorage.getItem("isLogin");
@@ -22,7 +22,7 @@ const ProtectedRoutes = () => {
 
   useEffect(() => {
     const initLang = async () => {
-      await initializeLanguage(); 
+      await fetchUserLanguage(); 
       setIsLanguageReady(true);
     };
 

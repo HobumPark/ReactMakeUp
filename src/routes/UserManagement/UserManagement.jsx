@@ -18,13 +18,13 @@ import { useTranslation } from 'react-i18next';
 
 
 const UserManagement = () => {
-  const { t, i18n} = useTranslation();
+  const { t } = useTranslation();
   const storedTranslations = JSON.parse(localStorage.getItem('translations'));
 
 // tabulator top
 const columnsHistory = [
   {
-    title: storedTranslations?.['211002'],
+    title: t('211002'),
     formatter: "rownum",
     width: 60,
     hozAlign: "center",
@@ -33,7 +33,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title: storedTranslations?.['user > id'],
+    title: t('user > id'),
     field: "account_id",
     widthGrow: 1,
     hozAlign: "center",
@@ -42,7 +42,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title:storedTranslations?.['user > name'],
+    title:t('user > name'),
     field: "name",
     widthGrow: 1,
     hozAlign: "center",
@@ -51,7 +51,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title:storedTranslations?.['user > email'],
+    title:t('user > email'),
     field: "email",
     widthGrow: 2,
     hozAlign: "center",
@@ -60,7 +60,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title:storedTranslations?.['user > phone no'],
+    title:t('user > phone no'),
     field: "phone_no",
     widthGrow: 1,
     hozAlign: "center",
@@ -69,7 +69,7 @@ const columnsHistory = [
     resizable: false,
   },
   {
-    title: storedTranslations?.['021'],
+    title: t('021'),
     field: "position",
     widthGrow: 2,
     hozAlign: "center",
@@ -263,14 +263,14 @@ const updateCallback = () => {
   const languageTabulator = () => {
     let datalanguage = {
       pagination: {
-        first:  storedTranslations?.['cmn > first page'], //text for the first page button
-        first_title:storedTranslations?.['cmn > first page'], //tooltip text for the first page button
-        last:storedTranslations?.['cmn > last page'],
-        last_title: storedTranslations?.['cmn > last page'],
-        prev: storedTranslations?.['cmn > page before'],
-        prev_title: storedTranslations?.['cmn > page before'],
-        next: storedTranslations?.['cmn > next page'],
-        next_title: storedTranslations?.['cmn > next page'],
+        first: t('cmn > first page'), //text for the first page button
+        first_title:t('cmn > first page'), //tooltip text for the first page button
+        last:t('cmn > last page'),
+        last_title: t('cmn > last page'),
+        prev: t('cmn > page before'),
+        prev_title: t('cmn > page before'),
+        next: t('cmn > next page'),
+        next_title: t('cmn > next page'),
       },
     }
     return datalanguage

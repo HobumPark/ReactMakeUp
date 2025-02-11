@@ -115,7 +115,7 @@ button.btn-search {
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
-	padding: 9px 12px;
+	padding: 8px 12px;
 }
 
 
@@ -273,7 +273,7 @@ input[type="radio"]:focus, input[type="checkbox"]:focus{
 	
   }
 
-  .type_name {
+.type_name {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -284,59 +284,60 @@ input[type="radio"]:focus, input[type="checkbox"]:focus{
 	background-color: #C5C6C9;
 	font-size: 14px;
 	color: var(--black-500);
-  }
-  .types .custom-radio {
+}
+.types .custom-radio {
 	display: flex;
 	gap: 7px;
 	align-items: center;
-  }
+}
   
-  .custom-radio {
+.custom-radio {
 	position: relative;
 	display: inline-block;
 	padding-left: 10px;
 	user-select: none;
 	cursor: pointer;
-  }
+}
   
-  .custom-radio label {
+.custom-radio label {
 	font-weight: 700;
 	color: var(--black-500);
 	margin: 0;
-  }
-  .custom-radio input:checked~.filtering_text {
+}
+.custom-radio input:checked~.filtering_text {
     font-weight: 500;
 }
-  .filtering_text {
-	color: var(--black-500);
+.filtering_text {
+    color: var(--black-500);
 	font-weight: 400;
-		font-size: 14px;
-	}
-	.custom-radio input:checked~.radio-mark:after {
-		display: block;
-	}
+	font-size: 14px;
+}
+.custom-radio input:checked~.radio-mark:after {
+	display: block;
+}
 
 .radio-custom .radio-mark {
 	border: none !important; 
 	background-color: transparent !important; 
-  }
-  
+}
+
+
 	  
 .custom-radio .radio-mark:after {
-		top: 2px;
-		left: 2px;
-		width: 10px;
-		height: 10px;
-		border-radius: 50%;
-		background: #135a78;
+	top: 2px;
+	left: 2px;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #135a78;
 }
 .filter_elements {
-		display: flex;
-		gap: 10px;
-		align-items: center;
-		min-width: 0; 
-		width: 100%; 
-		flex-wrap: nowrap; 
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	min-width: 0; 
+	width: 100%; 
+	flex-wrap: nowrap; 
 }
 	  
 /* Modal */
@@ -344,7 +345,7 @@ input[type="radio"]:focus, input[type="checkbox"]:focus{
 	width: 29px;
 	height: 29px;
 	cursor: pointer;
-  }
+}
   
 
 .modal-close {
@@ -479,11 +480,18 @@ input, select {
 }
 input[type='checkbox'] {
     margin: 0;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     accent-color: var(--blueprimary-500);
     /* outline: 1px solid #C5C6C9; */
     border: none !important;
+}
+
+input[type='radio'] {
+    margin: 0;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--blueprimary-500);
 }
 
 .custom-select {
@@ -502,10 +510,16 @@ textarea {
 
 .input-search {
 	width: 100%;
+	max-width: 50000px;
 	padding: 12px 50px 12px 12px; 
 	box-sizing: border-box;
 	position: relative;
 }
+
+.input-search-full {
+	padding: 12px 100px 12px 12px !important; 
+}
+
 
 .wrapper-icon {
 	position: relative;  
@@ -1889,5 +1903,12 @@ textarea {
 	box-shadow: inset 3px 4px 4px rgba(131, 131, 131, 0.25);
 	border-radius: 0px 0px 5px 0px;
   }
+
+
+.tabulator .tabulator-header .tabulator-col:first-child {
+    text-align: center !important;
+    padding-left: 24px !important;
+}
+
   /* Custom Scroll setting (End) */
   /* --------------------------- */
