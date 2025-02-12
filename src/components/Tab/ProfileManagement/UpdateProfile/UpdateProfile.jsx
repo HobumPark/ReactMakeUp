@@ -128,9 +128,10 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
             />
             <DetailModal
               label={t('user > phone no')}
-              inputType="number"
+              inputType="text"
               name={"phone_no"}
               modalType={'profile'}
+              pattern={/^[0-9]*$/} 
               value={formData.phone_no}
               onChange={handleChange}
             />

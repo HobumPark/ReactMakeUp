@@ -4,7 +4,7 @@ import PasswordInput from "../PasswordInput/PasswordInput";
 import Select from "../Select/Select";
 import TextArea from "../TextArea/TextArea";
 
-const DetailForm = ({ label, inputType, value, className, disabled, onChange, optionSelect = [], required,name, maxLength, readonly  }) => {
+const DetailForm = ({ label, inputType, value, className, disabled, onChange, optionSelect = [], required,name, maxLength, readonly, pattern  }) => {
   const [selectedOption, setSelectedOption] = useState("");
 
   return (
@@ -42,6 +42,7 @@ const DetailForm = ({ label, inputType, value, className, disabled, onChange, op
             onChange={onChange}  
             maxLength={maxLength} 
             readonly={readonly}
+            pattern={pattern}
         />
         )}
     </div>

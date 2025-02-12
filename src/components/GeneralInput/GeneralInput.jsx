@@ -25,7 +25,7 @@ const GeneralInput = forwardRef(
       rightIcon, 
       disabled,
       isDob,
-      isSearch, // Tambahkan properti isSearch
+      isSearch,
       onKeyUp = () => {},
       onChange = () => {},
     }, ref) => {
@@ -33,15 +33,21 @@ const GeneralInput = forwardRef(
   
   const [inputValue, setInputValue] = useState(value);
   const handleInputChange = (event) => {
+    const { value } = event.target;
+  
     if (pattern) {
-      if (pattern.test(event.target.value)) {
-        setInputValue(event.target.value);
+      if (pattern.test(value)) {
+        setInputValue(value);  
+      }else{
+        return;
       }
     } else {
-      setInputValue(event.target.value);
+      setInputValue(value);  
     }
-    onChange(event);
+    
+    onChange(event);  
   };
+  
 
   useEffect(() => {
     const val = value || "";
@@ -109,6 +115,7 @@ const GeneralInput = forwardRef(
             className={`input ${inputFormStyle}`}
             maxLength={maxLength}
             id={id}
+            pattern={pattern}
             name={name}
             readOnly={readonly}
             disabled={disabled}

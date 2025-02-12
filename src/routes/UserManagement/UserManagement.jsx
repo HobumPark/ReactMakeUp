@@ -575,7 +575,8 @@ const updateCallback = () => {
               <DetailForm
                 label={t('profile > phone')}
                 value={formValues.phone_no || ''}
-                inputType={"number"}
+                inputType={"text"}
+                pattern={/^[0-9]*$/} 
                 onChange={handleInputChange}
                 name={"phone_no"}
                 disabled={disabledForm}
@@ -595,6 +596,7 @@ const updateCallback = () => {
                 inputType={"password"}
                 onChange={handleInputChange}
                 name={"password"}
+                maxLength={20}
                 disabled={disabledForm}
                 required={isRequired}
               />
@@ -635,6 +637,7 @@ const updateCallback = () => {
                 name={"confirmation"}
                 disabled={disabledForm}
                 required={isRequired}
+                maxLength={20}
               />
               <DetailForm
                 label={t('021')}

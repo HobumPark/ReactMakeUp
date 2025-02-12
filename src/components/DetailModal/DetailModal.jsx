@@ -6,7 +6,7 @@ import 'air-datepicker/air-datepicker.css';
 import localeEn from 'air-datepicker/locale/en.js'; 
 import AirDatepicker from "air-datepicker";
 
-const DetailModal = ({ label, inputType, value, className, disabled, onChange, optionSelect = [], required,name, maxLength, readonly, isDob, modalType }) => {
+const DetailModal = ({ label, inputType, value, className, disabled, onChange, optionSelect = [], required,name, maxLength, readonly, isDob, modalType, pattern }) => {
 
   const [selectedOption, setSelectedOption] = useState("");
 
@@ -52,6 +52,7 @@ const DetailModal = ({ label, inputType, value, className, disabled, onChange, o
       maxLength={maxLength}
       readonly={readonly}
       isDob={isDob}
+      pattern={pattern}
       inputFormStyle= {modalType === 'forgot' ? 'input-modal-forgot' : ''}
     />
   )}

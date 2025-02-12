@@ -118,7 +118,8 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
             />
             <DetailModal
               label="전화번호"
-              inputType="number"
+              inputType="text"
+              pattern={/^[0-9]*$/} 
               name={"phone"}
               value={formData.phone}
               onChange={handleChange}
