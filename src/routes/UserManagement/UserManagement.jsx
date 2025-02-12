@@ -11,6 +11,8 @@ import useCommonCodes from '../../hooks/useCommonCodes';
 import AirDatepicker from 'air-datepicker';
 import 'air-datepicker/air-datepicker.css';
 import localeEn from 'air-datepicker/locale/en.js'; 
+import localeKo from 'air-datepicker/locale/ko.js'; 
+import localeId from 'air-datepicker/locale/id.js'; 
 import { faL } from '@fortawesome/free-solid-svg-icons';
 import Common from '../../utils/standard';
 import { formatDateToDDMMYYYY, formatDateToMMDDYYYY } from '../../utils/date';
@@ -18,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 
 const UserManagement = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const storedTranslations = JSON.parse(localStorage.getItem('translations'));
 
 // tabulator top
@@ -26,7 +28,7 @@ const columnsHistory = [
   {
     title: t('211002'),
     formatter: "rownum",
-    width: 60,
+    width: 65,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -89,25 +91,35 @@ const columnsHistory = [
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);
   const [newId, setNewId] = useState('');
-  const optionsDate = {
-    autoClose: true,
-    locale: localeEn,
-    position: 'top center',
-    onSelect: (date) => {
-      setFormValues((prevValues) => ({
-        ...prevValues,
-        birth: date.formattedDate, 
-      }));
-    },
-  };
+
   useEffect(() => {
+    let locale;
+    if (i18n.language === "eng") {
+      locale = localeEn;
+    } else if (i18n.language === "ind") {
+      locale = localeId;
+    } else {
+      locale = localeKo; 
+    }
+
+    const optionsDate = {
+      autoClose: true,
+      locale: locale,
+      position: "top center",
+      onSelect: (date) => {
+        setFormValues((prevValues) => ({
+          ...prevValues,
+          birth: date.formattedDate,
+        }));
+      },
+    };
+
     const datepicker = new AirDatepicker('[name="birth"]', optionsDate);
-  
-    // Cleanup the date picker instance when the component unmounts
+
     return () => {
       datepicker.destroy();
     };
-  }, []); 
+  }, [i18n.language]);
 
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;

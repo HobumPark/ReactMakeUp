@@ -3,7 +3,7 @@ import closeIcon from "../../../assets/icon/close-icon.svg";
 import DetailModal from "../../DetailModal/DetailModal";
 import Button from "../../Button/Button";
 import 'air-datepicker/air-datepicker.css';
-import localeEn from 'air-datepicker/locale/en.js'; 
+import localeKo from 'air-datepicker/locale/ko.js'; 
 import AirDatepicker from "air-datepicker";
 import Common from '../../../utils/standard';
 import { formatDateToYYYYMMDD } from "../../../utils/date";
@@ -26,7 +26,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
   });
   const optionsDate = {
     autoClose: true,
-    locale: localeEn,
+    locale: localeKo,
     position: 'top center',
     onSelect: (date) => {
       setFormData((prevValues) => ({

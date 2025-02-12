@@ -23,7 +23,7 @@ const CodeManagement = () => {
       {
         title: t('211002'),
         formatter: "rownum",
-        width: 60,
+        width: 65,
         hozAlign: "center",
         headerHozAlign: "center",
         headerSort: false,
