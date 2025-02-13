@@ -164,6 +164,7 @@ const AuthorityManagement = () => {
     const tbRefInit = useRef(null);
     const tbRefStandby = useRef(null);
     const tbRefAssign = useRef(null);
+    const searchRef = useRef(null);
     const [groupName, setGroupName] = useState('');
     const [hasChanged, setHasChanged] = useState('');
     const [programs, setPrograms] = useState([]);
@@ -184,6 +185,12 @@ const AuthorityManagement = () => {
     useEffect(() => {
       hasChangedRef.current = hasChanged;
     }, [hasChanged]);
+
+    useEffect(() => {
+      if (searchRef.current) {
+            searchRef.current.focus();
+      }
+    }, []);
 
     //Button 
     const [buttonState, setButtonState] = useState({
@@ -537,6 +544,7 @@ const AuthorityManagement = () => {
             onReset={handleResetInit}
             labelSelect={t('002')}
             disableFiltering={true}
+            searchRef={searchRef}
             >
                 <Select 
                 value={selectedIsCodeGroup}

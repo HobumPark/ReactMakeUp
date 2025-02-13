@@ -95,6 +95,9 @@ const ProgramManagement = () => {
   ];
 
   const tbRef = useRef(null);
+  const searchRef = useRef(null);
+  const programRef = useRef(null);
+  const programGroupRef = useRef(null);  
     //Disabled
   const [disabled, setDisabled] = useState(true);
   const [disabledProgram, setDisabledProgram] = useState(true);
@@ -106,21 +109,35 @@ const ProgramManagement = () => {
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);  
   const [newId, setNewId] = useState('');
+  const [isNewClicked, setIsNewClicked] = useState(false);
 
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;
     hasChangesCreateRef.current = hasChangesCreate;
   }, [hasChangesUpdate, hasChangesCreate]); 
 
-    //params  
+  useEffect(() => {
+    if (searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, []);
+
+
+  useEffect(() => {
+    if (!disabledProgramGroup && programGroupRef.current) {
+      programGroupRef.current.focus();
+    } else if (!disabledProgram && programRef.current || isNewClicked) {
+      programRef.current.focus();
+    }
+  }, [disabledProgramGroup, disabledProgram, isNewClicked]); 
+
+  //params  
   const [queryParams, setQueryParams] = useState("");
   const [selectedIsProgramGroup, setSelectedIsProgramGroup]  = useState("")
   const [optionParams, setOptionParams] = useState("upper-code=001&upper-code=002");
   const [selectedProgram, setSelectedProgram] = useState({
         id: null,
     });
-
-
 
   const [formValues, setFormValues] = useState({
     upper_program: null,
@@ -159,7 +176,7 @@ const ProgramManagement = () => {
       delete: true,
       create: false,
     });
-    const [isNewClicked, setIsNewClicked] = useState(false);
+    
 
     const disableAllButtons = () => {
       setButtonState({
@@ -564,6 +581,7 @@ const ProgramManagement = () => {
             optionsRadioFilter={optionsRadioFilterDeleted}
             optionsRadioFilterUsage ={optionsRadioFilterUsage}
             isUsage ={true}
+            searchRef={searchRef}
             >
               <Select 
                   value={selectedIsProgramGroup}
@@ -657,6 +675,7 @@ const ProgramManagement = () => {
                 onChange={handleInputChange}
                 required={isRequired}
                 name={"upper_program"}
+                formRef={programGroupRef}
                 disabled={disabledProgramGroup}  />
 
               <DetailForm
@@ -684,6 +703,7 @@ const ProgramManagement = () => {
                 name={"lower_program"}
                 required={isRequired} 
                 disabled={disabledProgram} 
+                formRef={programRef}
                 />
               <DetailForm
                 label={t('program > url link')}

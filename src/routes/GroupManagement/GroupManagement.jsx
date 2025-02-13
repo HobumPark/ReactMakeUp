@@ -138,6 +138,8 @@ const GroupManagement = () => {
     },
   ]
     const tbRefInit = useRef(null);
+    const searchRef = useRef(null);
+    const groupRef = useRef(null);
     const tbRefStandby = useRef(null);
     const tbRefAssign = useRef(null);
     const [queryParams, setQueryParams] = useState("");
@@ -166,10 +168,25 @@ const GroupManagement = () => {
 
     const hasChangedRef = useRef(hasChanged);
     const newClickedRef = useRef(isNewClicked);
+
     useEffect(() => {
       hasChangedRef.current = hasChanged;
       newClickedRef.current = isNewClicked;
     }, [hasChanged,isNewClicked]);
+
+    useEffect(() => {
+      if (searchRef.current) {
+        searchRef.current.focus();
+      }
+    }, []);
+
+    useEffect(() => {
+      if (isNewClicked && groupRef.current) {
+        groupRef.current.focus();
+      }
+    }, [isNewClicked]);
+
+
      //Button 
      const [buttonState, setButtonState] = useState({
        confirm: true,
@@ -859,6 +876,7 @@ const GroupManagement = () => {
 
           <ContainerCard>
             <Filtering 
+            searchRef={searchRef}
             placeholder={t('authority > name') + ' / ' + t('code > description')}
             onSearch={handleSearchInit}
             onReset={handleResetInit}
@@ -989,6 +1007,7 @@ const GroupManagement = () => {
         <div className="flex w-full flex-col gap-[10px] ">
             <div className="grid grid-cols-3 gap-x-[40px] gap-y-[10px] h-[85px]">
             <DetailForm
+            formRef={groupRef}
             label={t('user > group name')}
             value={formValues.group_name}
             onChange={handleInputChange}

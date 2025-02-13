@@ -91,6 +91,9 @@ const CodeManagement = () => {
 
 
     const tbRef = useRef(null);
+    const searchRef = useRef(null);
+    const codeRef = useRef(null);
+    const codeGroupRef = useRef(null);
     //Disabled
     const [disabled, setDisabled] = useState(true);
     const [disabledCode, setDisabledCode] = useState(true);
@@ -102,11 +105,27 @@ const CodeManagement = () => {
     const hasChangesUpdateRef = useRef(hasChangesUpdate);
     const hasChangesCreateRef = useRef(hasChangesCreate);
     const [newId, setNewId] = useState('');
+    const [isNewClicked, setIsNewClicked] = useState(false);
 
     useEffect(() => {
       hasChangesUpdateRef.current = hasChangesUpdate;
       hasChangesCreateRef.current = hasChangesCreate;
     }, [hasChangesUpdate, hasChangesCreate]);
+
+    useEffect(() => {
+      if (searchRef.current) {
+        searchRef.current.focus();
+      }
+    }, []);
+
+    useEffect(() => {
+      if (!disabledCodeGroup && codeGroupRef.current) {
+        codeGroupRef.current.focus();
+      } else if (!disabledCode && codeRef.current || isNewClicked) {
+        codeRef.current.focus();
+      }
+    }, [disabledCodeGroup, disabledCode, isNewClicked]); 
+
     //params  
     const [queryParams, setQueryParams] = useState("");
     const [selectedIsCodeGroup, setSelectedIsCodeGroup]  = useState("")
@@ -152,7 +171,7 @@ const CodeManagement = () => {
       delete: true,
       create: false,
     });
-    const [isNewClicked, setIsNewClicked] = useState(false);
+
 
     const disableAllButtons = () => {
       setButtonState({
@@ -558,6 +577,7 @@ const CodeManagement = () => {
 
           <ContainerCard>
             <Filtering 
+            searchRef={searchRef}
             placeholder={t('user > group code') + ' / ' + t('code > code') + ' / ' + t('code > code name') + ' / ' + t('code > description')}
             onSearch={handleSearch}
             onReset={handleReset}
@@ -618,8 +638,8 @@ const CodeManagement = () => {
 
         <div className="flex flex-col gap-4">
           <DetailForm label={t('code > code type')} value={formValues.codeType} inputType="select" onChange={handleInputChange} name="codeType" disabled={disabled} optionSelect={[{ value: "", label: "" }, { value: 'Code Group', label: t('code > code group'), disabled: disabledCodeGroup }, { value: "Code", label: t('code > code'), disabled: disabledCode }]} />
-          <DetailForm label={t('code > code group')} value={formValues.upper_code || ''} inputType="text" onChange={handleInputChange} name="upper_code" required={isRequired} disabled={disabledCodeGroup} maxLength={6} />
-          <DetailForm label={t('code > code')} value={formValues.lower_code || ''} inputType="text" onChange={handleInputChange} name="lower_code" required={isRequired} disabled={disabledCode} maxLength={6} />
+          <DetailForm label={t('code > code group')} value={formValues.upper_code || ''} inputType="text" onChange={handleInputChange} name="upper_code" required={isRequired} disabled={disabledCodeGroup} maxLength={6} formRef={codeGroupRef}/>
+          <DetailForm label={t('code > code')} value={formValues.lower_code || ''} inputType="text" onChange={handleInputChange} name="lower_code" required={isRequired} disabled={disabledCode} maxLength={6} formRef={codeRef} />
         </div>
 
 
