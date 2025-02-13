@@ -83,6 +83,9 @@ const columnsHistory = [
 
 
   const tbRef = useRef(null);
+  const searchRef = useRef(null);
+  const idRef = useRef(null);
+  const nameRef = useRef(null);
   const [disabledForm, setDisabledForm] = useState(true);
   const [disabledId, setDisabledId] = useState(true);
   const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
@@ -91,6 +94,21 @@ const columnsHistory = [
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);
   const [newId, setNewId] = useState('');
+  const [isNewClicked, setIsNewClicked] = useState(false);
+
+  useEffect(() => {
+    if (searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!disabledForm && nameRef.current && disabledId) {
+      nameRef.current.focus();
+    } else if (!disabledId && idRef.current && isNewClicked){
+      idRef.current.focus();
+    }
+  }, [disabledForm, disabledId, isNewClicked]); 
 
   useEffect(() => {
     let locale;
@@ -161,7 +179,7 @@ const [buttonState, setButtonState] = useState({
   create: false,
 });
 
-const [isNewClicked, setIsNewClicked] = useState(false);
+
 
 const disableAllButtons = () => {
   setButtonState({
@@ -335,7 +353,6 @@ const updateCallback = () => {
       enableUPDATEButtons();
       setIsNewClicked(false);
     }
-
   }, []);
   
   const handleInputChange = (e) => {
@@ -532,6 +549,7 @@ const updateCallback = () => {
 
           <ContainerCard justifyContent='flex-end'>
             <Filtering 
+            searchRef={searchRef}
             placeholder={t('cmn > id') + ' / ' + t('user > name') + ' / ' + t('user > email') + ' / ' + t('user > phone no')}
             onSearch={handleSearch}
             optionsRadioFilter={optionsRadioFilter}
@@ -575,6 +593,7 @@ const updateCallback = () => {
                 name={"account_id"}
                 disabled={disabledId}
                 required={true}
+                formRef={idRef}
               />
               <DetailForm
                 label={t('profile > email')}
@@ -601,6 +620,7 @@ const updateCallback = () => {
                 name={"name"}
                 disabled={disabledForm}
                 required={true}
+                formRef={nameRef}
               />
               <DetailForm
                 label={t('profile > new password')}

@@ -4,9 +4,8 @@ import PasswordInput from "../PasswordInput/PasswordInput";
 import Select from "../Select/Select";
 import TextArea from "../TextArea/TextArea";
 
-const DetailForm = ({ label, inputType, value, className, disabled, onChange, optionSelect = [], required,name, maxLength, readonly, pattern  }) => {
+const DetailForm = ({ label, inputType, value, className, disabled, onChange, optionSelect = [], required,name, maxLength, readonly, pattern, formRef }) => {
   const [selectedOption, setSelectedOption] = useState("");
-
   return (
     <div className={`flex items-start gap-x-4 ${className}`} >
       <span className="text-body-2 text-au-neutral-4  w-70 lg:w-50 text-[14px]">
@@ -33,6 +32,7 @@ const DetailForm = ({ label, inputType, value, className, disabled, onChange, op
             onChange={onChange} />
         ) : (
         <GeneralInput
+            ref={formRef}
             type={inputType}
             name={name}
             value={value}

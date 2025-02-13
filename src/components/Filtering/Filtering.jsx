@@ -7,6 +7,7 @@ import RadioFilter from "../RadioFilter/RadioFilter";
 import { useTranslation } from "react-i18next";
 
 const Filtering = ({
+  searchRef,
   customWidthSelect,
   customWidthInput,
   labelSelect,
@@ -83,6 +84,7 @@ const Filtering = ({
         <div className="flex gap-[12px] ml-auto items-center">
           {!disableSearchInput && (
             <GeneralInput
+              ref={searchRef}
               customInput={`${customWidthInput ? `${customWidthInput}` : "w-[400px]"} `}
               placeholder={placeholder}
               isSearch={true}
