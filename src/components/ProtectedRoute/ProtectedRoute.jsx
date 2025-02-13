@@ -4,8 +4,10 @@ import Sidebar from "../Sidebar/Sidebar";
 import useUserMgt from "../../hooks/useUserMgt";
 import useCommonCodes from "../../hooks/useCommonCodes";
 import { fetchUserLanguage } from '../../utils/i18n';
+import { useTranslation } from "react-i18next";
 
 const ProtectedRoutes = () => {
+  const { i18n } = useTranslation();
   const isLogin = localStorage.getItem("isLogin") || sessionStorage.getItem("isLogin");
   const user_id = localStorage.getItem("user_id");
   const { detailUserData} = useUserMgt({
@@ -19,11 +21,19 @@ const ProtectedRoutes = () => {
     return <Navigate to="/" />;
   }
   const [isLanguageReady, setIsLanguageReady] = useState(false);
+  const titleMap = {
+    eng: "Management Page",
+    kor: "관리 페이지",
+    ind: "Halaman Manajemen",
+  };
+
 
   useEffect(() => {
     const initLang = async () => {
       await fetchUserLanguage(); 
       setIsLanguageReady(true);
+      const title = titleMap[i18n.language]
+      document.title = title;
     };
 
     initLang();
