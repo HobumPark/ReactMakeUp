@@ -621,7 +621,7 @@ const AuthorityManagement = () => {
                 onReset={handleResetStandby}
                 labelSelect={t('program > group program')}
                 disableFiltering={true}
-                customWidthInput={'w-[250px]'}
+                customWidthInput={'w-[220px]'}
                 customWidthSelect={'w-[260px]'}
             >
                 <Select

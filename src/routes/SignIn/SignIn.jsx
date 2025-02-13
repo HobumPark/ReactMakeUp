@@ -92,7 +92,7 @@ function SignIn() {
 
   const optionORG = commonListData?.["ORG"]
   ? [
-      { value: "", label: "All", code: "All" }, 
+      { value: "", label: "전체", code: "All" }, 
       ...commonListData["ORG"].code.map((code, index) => ({
         value: code,
         label: commonListData["ORG"].name[index],

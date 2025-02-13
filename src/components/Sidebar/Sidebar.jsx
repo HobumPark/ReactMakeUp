@@ -22,13 +22,12 @@ const Sidebar = ({ userInfo, commonData }) => {
   const [date, setDate] = useState("");
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [language, setLanguage] = useState("");
 
 
   useEffect(() => {
     const langSource = Common.getDTPLangSource(i18n.language);
-    console.log(i18n.language);
-    
-
+    setLanguage(i18n.language.toLocaleUpperCase());
     const updateDateTime = () => {
       const now = new Date();
       const hours = now.getHours().toString().padStart(2, "0");
@@ -99,7 +98,7 @@ const Sidebar = ({ userInfo, commonData }) => {
               </div>
             </div>
             <div className={classes["title-languange-logout"]}>
-              <span className={classes["languange"]} id="user-language">KOR</span>
+              <span className={classes["languange"]} id="user-language">{language}</span>
                 <img src={logoutIcon} alt="Logout" className={classes.logout} onClick={handleLogoutButton} />
 
             </div>

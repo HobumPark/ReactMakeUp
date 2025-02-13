@@ -950,8 +950,8 @@ const GroupManagement = () => {
                 onReset={handleResetStandby}
                 labelSelect={t('021')}
                 disableFiltering={true}
-                customWidthInput={'w-[250px]'}
-                customWidthSelect={'w-[260px]'}
+                customWidthInput={'w-[220px]'}
+                customWidthSelect={'w-[200px]'}
             >
                 <Select 
                   options={optionsRadioFilterPosition}      
