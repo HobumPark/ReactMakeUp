@@ -11,7 +11,7 @@ const ContainerCard = ({
   backgroundColor = '#ffffff',
   padding = '20px',
   color = 'var(--black)',
-  gap = '10px',
+  gap = '20px',
   className
 }) => {
   return (
