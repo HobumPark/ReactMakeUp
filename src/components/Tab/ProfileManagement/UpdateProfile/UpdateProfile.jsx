@@ -23,7 +23,7 @@ const UpdateProfile = ({isActive = true, userInfo, commonData}) => {
       setIsDisabled(true);
     },
     onResetFail: (err) => {
-      new NoticeMessage(err?.message)
+      new NoticeMessage(t(err?.message))
     }
   });
   const handleChange = (e) => {

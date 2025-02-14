@@ -22,7 +22,7 @@ const AuthorityManagement = () => {
 
   const columnInit = [
     {
-      title: t('211002'),
+      title: 'No',
       formatter: "rownum",
       width: 65,
       hozAlign: "center",

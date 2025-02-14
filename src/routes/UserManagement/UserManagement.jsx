@@ -26,7 +26,7 @@ const UserManagement = () => {
 // tabulator top
 const columnsHistory = [
   {
-    title: t('211002'),
+    title: 'No',
     formatter: "rownum",
     width: 65,
     hozAlign: "center",

@@ -51,7 +51,7 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
     const requestURL = `${URLS.BACK_DSH}${APIS.forgotPassword}`;
     return reqPost(requestURL, accountDT)
     .then((data) => {
-      new NoticeMessage(`Successfully updated.`, {
+      new NoticeMessage(`성공적으로 업데이트하였습니다.`, {
         callback() {
           location.reload();
         }
