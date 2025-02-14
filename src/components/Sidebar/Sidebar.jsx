@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { NavLink } from "react-router-dom";
 import classes from './Sidebar.module.css'; 
 import mainLogo from '../../assets/icon/main-logo.svg'
 import imgUser from '../../assets/icon/img-user.svg'
@@ -49,13 +50,34 @@ const Sidebar = ({ userInfo, commonData }) => {
     return () => clearInterval(intervalId);
   }, [i18n.language]);
 
+
+  const categories = [
+    { name: "system", label: t("SYSTEM") },
+    { name: "asset", label: "Asset Management" },
+    { name: "site", label: "Site Management" },
+  ]
+
   const links = [
-    { id: "code", label: t('SYSTEM-CODE'), path: "/system-management/code" },
-    { id: "group", label: t('SYSTEM-GROUP'), path: "/system-management/group" },
-    { id: "user", label: t('SYSTEM-USER'), path: "/system-management/user" },
-    { id: "program", label: t('SYSTEM-PROGRAM'), path: "/system-management/program" },
-    { id: "authority", label: t('SYSTEM-AUTHORITY'), path: "/system-management/authority" },
+    { id: "code", label: t('SYSTEM-CODE'), path: "/system-management/code", category: "system", },
+    { id: "group", label: t('SYSTEM-GROUP'), path: "/system-management/group", category: "system", },
+    { id: "user", label: t('SYSTEM-USER'), path: "/system-management/user", category: "system", },
+    { id: "program", label: t('SYSTEM-PROGRAM'), path: "/system-management/program", category: "system", },
+    { id: "authority", label: t('SYSTEM-AUTHORITY'), path: "/system-management/authority", category: "system", },
+
+    {id: "box", label: "Box", path: "/asset-management/box", category: "asset"},
+    {id: "detector", label: "Detector", path: "/asset-management/detector", category: "asset"},
+    {id: "facility", label: "Facility", path: "/asset-management/facility", category: "asset"},
+
+
+    {id: "site", label: "Site", path: "/site-management/site", category: "site"},
+    {id: "crosswalk", label: "Crosswalk", path: "/site-management/crosswalk", category: "site"}
   ];
+
+  const [openMenu, setOpenMenu] = useState("system");
+
+  const toggleVisibility = (menu) => {
+    setOpenMenu((prevMenu) => (prevMenu === menu ? null : menu));
+  };
 
   const handleLinkClick = (id) => {
     setIsActive(prevState => !prevState);
@@ -64,9 +86,9 @@ const Sidebar = ({ userInfo, commonData }) => {
   const toggleActive = () => {
     setIsActive(prevState => !prevState);
   };
-  const toggleVisibility = () => {
-    setIsVisible((prev) => !prev);
-  };
+  // const toggleVisibility = () => {
+  //   setIsVisible((prev) => !prev);
+  // };
   const isLinkActive = (linkPath) => {
     return location.pathname.includes(linkPath);
   };
@@ -112,7 +134,45 @@ const Sidebar = ({ userInfo, commonData }) => {
 
         <div className={classes["box-selection-toggle"]}>
           <div className={classes["box-toggle-dropdown"]}>
-            <div className={classes["box-system-management"]}>
+          <div className={classes["box-system-management"]}>
+              {categories.map((category) => (
+                <div key={category.name}>
+                  <span
+                    className={`${classes["title-system-management"]} ${
+                      openMenu === category.name ? classes.active : ""
+                    }`}
+                    onClick={() => toggleVisibility(category.name)}
+                  >
+                    {category.label}
+                    <img
+                      className={classes["menu-dropdown"]}
+                      src={dropdownArrow}
+                      alt="Dropdown"
+                    />
+                  </span>
+                  {openMenu === category.name && (
+                    <div className={classes["content-system-management"]}>
+                      {links
+                        .filter((link) => link.category === category.name)
+                        .map((link) => (
+                          <NavLink
+                            key={link.id}
+                            to={link.path}
+                            className={`${classes.link} ${
+                              isLinkActive(link.path) ? classes.active : ""
+                            }`}
+                          >
+                            <li className={classes["list-system-management"]}>
+                              {link.label}
+                            </li>
+                          </NavLink>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {/* <div className={classes["box-system-management"]}>
               <span
                 className={`${classes["title-system-management"]} ${isVisible ? classes.active : ''}`}
                 id="title-system-management"
@@ -141,7 +201,7 @@ const Sidebar = ({ userInfo, commonData }) => {
                 ))}
               </div>
             )}
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
