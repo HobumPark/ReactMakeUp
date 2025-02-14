@@ -5,6 +5,7 @@ import useUserMgt from "../../hooks/useUserMgt";
 import useCommonCodes from "../../hooks/useCommonCodes";
 import { fetchUserLanguage } from '../../utils/i18n';
 import { useTranslation } from "react-i18next";
+import useAuth from "../../hooks/useAuth";
 
 const ProtectedRoutes = () => {
   const { i18n } = useTranslation();
@@ -13,6 +14,8 @@ const ProtectedRoutes = () => {
   const { detailUserData} = useUserMgt({
     userID: user_id,
   });
+
+  const { checkStatus } = useAuth({});
 
   const [optionParams, setOptionParams] = useState("upper-code=021&upper-code=ORG");
   const { commonListData } = useCommonCodes({ optionParams });
@@ -27,16 +30,17 @@ const ProtectedRoutes = () => {
     ind: "Halaman Manajemen",
   };
 
+  const initLang = async () => {
+    await fetchUserLanguage(); 
+    setIsLanguageReady(true);
+    const title = titleMap[i18n.language]
+    document.title = title;
+  };
+
 
   useEffect(() => {
-    const initLang = async () => {
-      await fetchUserLanguage(); 
-      setIsLanguageReady(true);
-      const title = titleMap[i18n.language]
-      document.title = title;
-    };
-
     initLang();
+    checkStatus();
   }, []);
 
 

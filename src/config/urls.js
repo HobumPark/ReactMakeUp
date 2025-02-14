@@ -24,6 +24,7 @@ if (DEBUG) {
 export { URLS };
 
 export const APIS = {
+  checkStatus:'/authentication/check-status',
   userLanguage:'/common/authenticated-user/language-preference',
   language:'/common/authenticated-user/languages',
   programLanguage:'/common/authenticated-user/programs',

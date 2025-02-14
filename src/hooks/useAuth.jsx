@@ -62,9 +62,19 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
     });
   }
 
+  const checkStatus = async () => {
+    const requestURL = `${URLS.BACK_DSH}${APIS.checkStatus}`;
+    return reqGet(requestURL)
+      .catch(() => {
+        navigate("/");
+      });
+  };
+ 
+
 
 
   return {
+    checkStatus,
     getIsLogin,
     handleLogin,
     handleLogout,
