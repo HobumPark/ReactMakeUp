@@ -103,14 +103,6 @@ const columnsHistory = [
   }, []);
 
   useEffect(() => {
-    if (!disabledForm && nameRef.current && disabledId) {
-      nameRef.current.focus();
-    } else if (!disabledId && idRef.current && isNewClicked){
-      idRef.current.focus();
-    }
-  }, [disabledForm, disabledId, isNewClicked]); 
-
-  useEffect(() => {
     let locale;
     if (i18n.language === "eng") {
       locale = localeEn;
@@ -353,6 +345,11 @@ const updateCallback = () => {
       enableUPDATEButtons();
       setIsNewClicked(false);
     }
+    requestAnimationFrame(() => {
+      if (nameRef.current) {
+        nameRef.current.focus();
+      }
+    }); 
   }, []);
   
   const handleInputChange = (e) => {
@@ -414,6 +411,11 @@ const updateCallback = () => {
       setDisabledForm(false); 
       setHasChangesUpdate(false);
     }
+    requestAnimationFrame(() => {
+      if (idRef.current) {
+        idRef.current.focus();
+      }
+    }); 
   };
   const handleRegistButtonClick = () => {
 

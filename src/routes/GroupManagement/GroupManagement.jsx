@@ -450,7 +450,8 @@ const GroupManagement = () => {
         enableUPDATEButtons();
         setGroupName(groupName);
         setSelectedCode({ group_code: groupCode });
-        setButtonState((prevState) => ({ ...prevState, arrow: false, confirm:true, restore:false}));
+        setButtonState((prevState) => ({ ...prevState, arrow: false, confirm:true, restore:false, create: false}));
+        setIsNewClicked(false);
         setDisabledLog(false);
         setSelectedRowAssign([]);
         setSelectedRowStandby([]);

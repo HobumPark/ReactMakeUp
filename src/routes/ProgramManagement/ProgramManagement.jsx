@@ -330,6 +330,11 @@ const ProgramManagement = () => {
             ...prevValues,
             programType: "Program",
           }));
+          requestAnimationFrame(() => {
+            if (programRef.current) {
+              programRef.current.focus();
+            }
+          }); 
           
         } else if (rowData.lower_program == null){
           setDisabledProgramGroup(false); 
@@ -338,6 +343,11 @@ const ProgramManagement = () => {
             ...prevValues,
             programType: "Program Group",
           }));
+          requestAnimationFrame(() => {
+            if (programGroupRef.current) {
+              programGroupRef.current.focus();
+            }
+          }); 
           
         }
         setHasChangesUpdate(false);
@@ -368,6 +378,11 @@ const ProgramManagement = () => {
           ...prevValues,
           programType: "Program",
         }));
+        requestAnimationFrame(() => {
+          if (programRef.current) {
+            programRef.current.focus();
+          }
+        }); 
         
       } else if (rowData.lower_program == null){
         setDisabledProgramGroup(false); 
@@ -376,6 +391,11 @@ const ProgramManagement = () => {
           ...prevValues,
           programType: "Program Group",
         }));
+        requestAnimationFrame(() => {
+          if (programGroupRef.current) {
+            programGroupRef.current.focus();
+          }
+        }); 
         
       }
     }
@@ -478,6 +498,11 @@ const ProgramManagement = () => {
             programType: "Program",
             upper_program: detailProgramData[0].upper_program
           }));  
+          requestAnimationFrame(() => {
+            if (programRef.current) {
+              programRef.current.focus();
+            }
+          }); 
           setHasChangesUpdate(false);
           enableRegisterButtons();
           setIsNewClicked(true);
@@ -488,6 +513,11 @@ const ProgramManagement = () => {
             ...prevValues,
             programType: "Program Group",
           }));
+          requestAnimationFrame(() => {
+            if (programGroupRef.current) {
+              programGroupRef.current.focus();
+            }
+          }); 
           
           setDisabled(false);
           setDisabledProgramGroup(false);

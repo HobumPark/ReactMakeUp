@@ -118,14 +118,6 @@ const CodeManagement = () => {
       }
     }, []);
 
-    useEffect(() => {
-      if (!disabledCodeGroup && codeGroupRef.current) {
-        codeGroupRef.current.focus();
-      } else if (!disabledCode && codeRef.current || isNewClicked) {
-        codeRef.current.focus();
-      }
-    }, [disabledCodeGroup, disabledCode, isNewClicked]); 
-
     //params  
     const [queryParams, setQueryParams] = useState("");
     const [selectedIsCodeGroup, setSelectedIsCodeGroup]  = useState("")
@@ -339,6 +331,11 @@ const CodeManagement = () => {
             ...prevValues,
             codeType: "Code",
           }));
+          requestAnimationFrame(() => {
+            if (codeRef.current) {
+              codeRef.current.focus();
+            }
+          }); 
           
         } else if (rowData.lower_code == null){
           setDisabledCodeGroup(false); 
@@ -347,6 +344,11 @@ const CodeManagement = () => {
             ...prevValues,
             codeType: "Code Group",
           }));
+          requestAnimationFrame(() => {
+            if (codeGroupRef.current) {
+              codeGroupRef.current.focus();
+            }
+          }); 
           
         }
         setHasChangesUpdate(false);
@@ -376,6 +378,11 @@ const CodeManagement = () => {
           ...prevValues,
           codeType: "Code",
         }));
+        requestAnimationFrame(() => {
+          if (codeRef.current) {
+            codeRef.current.focus();
+          }
+        }); 
         
       } else if (rowData.lower_code == null){
         setDisabledCodeGroup(false); 
@@ -384,9 +391,26 @@ const CodeManagement = () => {
           ...prevValues,
           codeType: "Code Group",
         }));
+        requestAnimationFrame(() => {
+          if (codeGroupRef.current) {
+            codeGroupRef.current.focus();
+          }
+        }); 
         
       }
     }
+
+    requestAnimationFrame(() => {
+      if (!disabledCodeGroup && codeGroupRef.current) {
+        console.log('test');
+        
+        codeGroupRef.current.focus();
+      } else if (!disabledCode && codeRef.current || isNewClicked) {
+        codeRef.current.focus();
+      }
+
+    }); 
+    
     }, []);
 
     const handleInputChange = (e) => {
@@ -489,6 +513,11 @@ const CodeManagement = () => {
           setHasChangesUpdate(false);
           enableRegisterButtons();
           setIsNewClicked(true);
+          requestAnimationFrame(() => {
+            if (codeRef.current) {
+              codeRef.current.focus();
+            }
+          }); 
         } else { 
           tbRef.current.deselectRow();
           emptyDetail();
@@ -504,7 +533,13 @@ const CodeManagement = () => {
           enableRegisterButtons();
           setSelectedCode({ id: null });
           setHasChangesUpdate(false);
+          requestAnimationFrame(() => {
+            if (codeGroupRef.current) {
+              codeGroupRef.current.focus();
+            }
+          }); 
         }
+ 
     };
 
   const handleRegistButtonClick = () => {
