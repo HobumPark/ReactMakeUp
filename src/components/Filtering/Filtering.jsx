@@ -63,6 +63,7 @@ const Filtering = ({
     setSelectedRadioUsage("All")
     onReset();
   };
+
   const handleSearchButtonClick = () => {
     onSearch(searchInput, selectedRadio, selectedRadioUsage);
   };
@@ -89,7 +90,7 @@ const Filtering = ({
               placeholder={placeholder}
               isSearch={true}
               value={searchInput}
-              onKeyDown={handleSearchInput} 
+              onKeyUp={handleSearchInput} 
               onChange={(e) => setSearchInput(e.target.value)}
             />
           )}
