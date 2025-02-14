@@ -662,8 +662,10 @@ const ProgramManagement = () => {
         </ContainerCard>
         <ContainerCard>
         <div className="flex w-full flex-col gap-[10px]">
-            <div className="grid grid-cols-3 gap-x-[40px] gap-y-[10px]">
-              <DetailForm
+
+        <div className="grid grid-cols-3 gap-4">
+        <div className="flex flex-col gap-4">
+             <DetailForm
                 label={t('program > program type')}
                 value={formValues.programType}
                 inputType={'select'}
@@ -675,6 +677,27 @@ const ProgramManagement = () => {
                   { value: "Program Group", label: t('program > upper program'), disabled: disabledProgramGroup },
                    { value: "Program", label: t('program > id'), disabled: disabledProgram }]}
                 />
+               <DetailForm
+                label={t('program > upper program')}
+                value={formValues.upper_program || ''}
+                inputType={'text'}
+                onChange={handleInputChange}
+                required={isRequired}
+                name={"upper_program"}
+                formRef={programGroupRef}
+                disabled={disabledProgramGroup}  />
+              <DetailForm
+                label={t('program > id')}
+                value={formValues.lower_program || ''}
+                inputType={'text'}
+                onChange={handleInputChange}
+                name={"lower_program"}
+                required={isRequired} 
+                disabled={disabledProgram} 
+                formRef={programRef}
+                />                           
+        </div>
+        <div className="flex flex-col gap-4">
               <DetailForm
                 label={t('program > eng name')}
                 value={formValues.eng || ''}
@@ -684,6 +707,23 @@ const ProgramManagement = () => {
                 name="eng"
                 disabled={disabled}/>
               <DetailForm
+                label={t('program > ind name')}
+                value={formValues.ind || ''}
+                inputType={'text'}
+                onChange={handleInputChange}
+                name={"ind"}
+                required={isRequired}
+                disabled={disabled}/>
+              <DetailForm
+                label={t('program > url link')}
+                value={formValues.link_url || ''}
+                inputType={'text'}
+                onChange={handleInputChange}
+                name={"link_url"}
+                disabled={disabled}/>                                
+        </div>
+        <div className="flex flex-col gap-4">
+            <DetailForm
                 label={t('cmn > usage')}
                 name="usage"
                 value={formValues.usage || ''} 
@@ -697,25 +737,7 @@ const ProgramManagement = () => {
                     value: code, 
                     label: commonListData["002"].name[index]
                   }))
-                ] : []} />
-               <DetailForm
-                label={t('program > upper program')}
-                value={formValues.upper_program || ''}
-                inputType={'text'}
-                onChange={handleInputChange}
-                required={isRequired}
-                name={"upper_program"}
-                formRef={programGroupRef}
-                disabled={disabledProgramGroup}  />
-
-              <DetailForm
-                label={t('program > ind name')}
-                value={formValues.ind || ''}
-                inputType={'text'}
-                onChange={handleInputChange}
-                name={"ind"}
-                required={isRequired}
-                disabled={disabled}/>
+                ] : []} /> 
 
               <DetailForm
                 label={t('program > sort order')}
@@ -723,24 +745,6 @@ const ProgramManagement = () => {
                 inputType={'number'}
                 onChange={handleInputChange}
                 name={"sort_order"}
-                disabled={disabled}/>
-                
-              <DetailForm
-                label={t('program > id')}
-                value={formValues.lower_program || ''}
-                inputType={'text'}
-                onChange={handleInputChange}
-                name={"lower_program"}
-                required={isRequired} 
-                disabled={disabledProgram} 
-                formRef={programRef}
-                />
-              <DetailForm
-                label={t('program > url link')}
-                value={formValues.link_url || ''}
-                inputType={'text'}
-                onChange={handleInputChange}
-                name={"link_url"}
                 disabled={disabled}/>
 
               <DetailForm
@@ -750,7 +754,15 @@ const ProgramManagement = () => {
                 name={"description"}
                 inputType={'text'}
                 disabled={disabled}/>
-            </div>
+
+        </div>
+
+
+
+
+
+        </div>
+
         <hr className="border-t border-gray-300" />
         <div className="flex items-center justify-between gap-4 w-full">
         <div className="flex-1">

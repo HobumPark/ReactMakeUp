@@ -442,6 +442,8 @@ const CodeManagement = () => {
 
     const handleSearch = useCallback(
         (inputVal = null, radioVal = null, radioUsageVal = null) => {
+          console.log(radioUsageVal);
+          
           const resultInput = inputVal ? `input=${inputVal}` : "";
           const resultRadio = radioVal && radioVal !== "All" ? `&deletion=${radioVal}` : `&deletion=001002`;
           const resultRadioUsageVal = radioUsageVal && radioUsageVal !== "All" ? `&usage=${radioUsageVal}` : "";
@@ -453,6 +455,8 @@ const CodeManagement = () => {
         },
         [selectedIsCodeGroup]
       );
+      
+      console.log(queryParams);
       
       const handleCancelButtonClick = () => {
         if (hasChangesUpdate){

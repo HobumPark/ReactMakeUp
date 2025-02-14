@@ -64,7 +64,7 @@ const Filtering = ({
     onReset();
   };
   const handleSearchButtonClick = () => {
-    onSearch(searchInput, selectedRadio,);
+    onSearch(searchInput, selectedRadio, selectedRadioUsage);
   };
   
 

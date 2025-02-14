@@ -459,7 +459,7 @@ const updateCallback = () => {
           name: detailUserData.name,
           password: '', 
           organization: detailUserData.organization,
-          birth: detailUserData.dob,
+          birth: formatDateToDDMMYYYY(detailUserData.birth),
           position: detailUserData.position,
         });
         setHasChangesUpdate(false);
@@ -586,8 +586,9 @@ const updateCallback = () => {
         </ContainerCard>
         <ContainerCard>
         <div className="flex w-full flex-col gap-[10px]">
-            <div className="grid grid-cols-3 gap-x-[40px] gap-y-[10px]">
-              <DetailForm
+        <div className="grid grid-cols-3 gap-4">
+        <div className="flex flex-col gap-4">
+        <DetailForm
                 label={t('profile > id')}
                 value={formValues.account_id || ''}
                 inputType={"text"}
@@ -596,23 +597,6 @@ const updateCallback = () => {
                 disabled={disabledId}
                 required={true}
                 formRef={idRef}
-              />
-              <DetailForm
-                label={t('profile > email')}
-                value={formValues.email || ''}
-                inputType={"text"}
-                onChange={handleInputChange}
-                name={"email"}
-                disabled={disabledForm}
-              />
-              <DetailForm
-                label={t('profile > phone')}
-                value={formValues.phone_no || ''}
-                inputType={"text"}
-                pattern={/^[0-9]*$/} 
-                onChange={handleInputChange}
-                name={"phone_no"}
-                disabled={disabledForm}
               />
               <DetailForm
                 label={t('profile > name')}
@@ -624,6 +608,27 @@ const updateCallback = () => {
                 required={true}
                 formRef={nameRef}
               />
+                        <DetailForm
+                label={t('profile > birth')}
+                value={formValues.birth || ''}
+                inputType={"text"}
+                onChange={handleInputChange}
+                name={"birth"}
+                disabled={disabledForm}
+                required={true}
+              />
+
+        </div>
+
+        <div className="flex flex-col gap-4">
+        <DetailForm
+                label={t('profile > email')}
+                value={formValues.email || ''}
+                inputType={"text"}
+                onChange={handleInputChange}
+                name={"email"}
+                disabled={disabledForm}
+              />
               <DetailForm
                 label={t('profile > new password')}
                 value={formValues.password || ''} 
@@ -633,6 +638,27 @@ const updateCallback = () => {
                 maxLength={20}
                 disabled={disabledForm}
                 required={isRequired}
+              />    
+                            <DetailForm
+                label={t('profile > confirm password')}
+                value={formValues.confirmation}
+                inputType={"password"}
+                onChange={handleInputChange}
+                name={"confirmation"}
+                disabled={disabledForm}
+                required={isRequired}
+                maxLength={20}
+              />          
+        </div>
+        <div className="flex flex-col gap-4">
+        <DetailForm
+                label={t('profile > phone')}
+                value={formValues.phone_no || ''}
+                inputType={"text"}
+                pattern={/^[0-9]*$/} 
+                onChange={handleInputChange}
+                name={"phone_no"}
+                disabled={disabledForm}
               />
               <DetailForm
                 label={t('user > organization')}
@@ -655,25 +681,6 @@ const updateCallback = () => {
                     }
               />
               <DetailForm
-                label={t('profile > birth')}
-                value={formValues.birth || ''}
-                inputType={"text"}
-                onChange={handleInputChange}
-                name={"birth"}
-                disabled={disabledForm}
-                required={true}
-              />
-              <DetailForm
-                label={t('profile > confirm password')}
-                value={formValues.confirmation}
-                inputType={"password"}
-                onChange={handleInputChange}
-                name={"confirmation"}
-                disabled={disabledForm}
-                required={isRequired}
-                maxLength={20}
-              />
-              <DetailForm
                 label={t('021')}
                 value={formValues.position || ''}
                 inputType={"select"}
@@ -692,7 +699,11 @@ const updateCallback = () => {
                         : []
                     }
               />
-            </div>
+
+
+        </div>
+
+        </div>
         <hr className="border-t border-gray-300" />
         <div className="flex items-center justify-between gap-4 w-full">
         <div className="flex-1">
