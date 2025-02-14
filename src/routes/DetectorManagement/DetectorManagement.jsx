@@ -9,7 +9,7 @@ import Select from "../../components/Select/Select";
 import GeneralInput from "../../components/GeneralInput/GeneralInput";
 
 
-const boxTabulator = [
+const detectorTabulator = [
   {
     title: "No",
     formatter: "rownum",
@@ -153,7 +153,7 @@ const DetectorManagement = () => {
         <ContainerCard>
           <ReactTabulator
             data={data}
-            columns={boxTabulator}
+            columns={detectorTabulator}
             layout={"fitColumns"}
             className="tabulator-custom w-full "
             //   pagination="local"
