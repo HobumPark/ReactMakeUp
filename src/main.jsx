@@ -11,6 +11,18 @@ import CodeManagement from './routes/CodeManagement/CodeManagement.jsx';
 import AuthorityManagement from './routes/AuthorityManagement/AuthorityManagement.jsx';
 import GroupManagement from './routes/GroupManagement/GroupManagement.jsx';
 import ProtectedRoutes from './components/ProtectedRoute/ProtectedRoute.jsx';
+
+// asset management
+import BoxManagement from './routes/BoxManagement/BoxManagement.jsx';
+import DetectorManagement from './routes/DetectorManagement/DetectorManagement.jsx';
+import FacilityManagement from './routes/FacilityManagement/FacilityManagement.jsx';
+// asset management
+
+// sitemanagement
+import SiteManagement from './routes/SiteManagement/SiteManagement.jsx';
+import CrosswalkManagement from './routes/CrosswalkManagement/CrosswalkManagement.jsx';
+// sitemanagement
+
 import "./utils/i18n.js";
 
 
@@ -45,6 +57,41 @@ const router = createBrowserRouter([
         path: "group",
         element: <GroupManagement></GroupManagement>,
       },
+    ],
+  },
+   {
+    path: "asset-management",
+    element: <ProtectedRoutes />, 
+    children: [
+      {
+        path: "box",
+        element: <BoxManagement></BoxManagement>,
+      },
+      {
+        path: "detector",
+        element: <DetectorManagement></DetectorManagement>,
+      },
+      {
+        path: "facility",
+        element: <FacilityManagement></FacilityManagement>
+      }
+
+    ],
+  },
+   {
+    path: "site-management",
+    element: <ProtectedRoutes />, 
+    children: [
+      {
+        path: "site",
+        element: <SiteManagement></SiteManagement>,
+      },
+      {
+        path: "crosswalk",
+        element: <CrosswalkManagement></CrosswalkManagement>,
+      },
+  
+
     ],
   },
 
