@@ -62,7 +62,7 @@ const GeneralInput = forwardRef(
   return (
     <>
       {isDob ? (
-        <div className="relative ">
+        <div className="relative w-full">
           <input
             ref={inputRef}
             type="text"

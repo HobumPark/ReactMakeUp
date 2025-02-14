@@ -93,6 +93,23 @@
 	
 }
 
+/* font style */
+
+.title2bold {
+	font-weight: 700;
+	font-size: 16px;
+	line-height: 140%;
+	font-style: normal;
+}
+.title3medium {
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 140%;
+	font-style: normal;
+}
+
+/* font style */
+
 body {
   margin: 0;
   padding: 0;
@@ -477,6 +494,7 @@ input, select {
 	font-size: 14px;
 	height: 36px;
 	font-weight: 400;
+	width: 100%;
 }
 input[type='checkbox'] {
     margin: 0;
@@ -643,6 +661,9 @@ textarea {
 /* tabulator style */
 
 /* Tabulator All */
+
+
+
 .tabulator {
 	position: relative;
 	background-color: rgba(255, 255, 255, 0);
@@ -1524,6 +1545,7 @@ textarea {
 	border-right: 0;
 	border-left: 6px solid #666;
 	vertical-align: middle;
+	
   }
   
   .tabulator-row.tabulator-group span {
@@ -1789,6 +1811,7 @@ textarea {
   .tabulator-print-table .tabulator-print-table-group .tabulator-group-toggle {
 	display: inline-block;
   }
+
   
   .tabulator-print-table .tabulator-print-table-group .tabulator-arrow {
 	display: inline-block;
