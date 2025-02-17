@@ -63,17 +63,21 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
   }
 
   const checkStatus = async () => {
-    const requestURL = `${URLS.BACK_DSH}${APIS.checkStatus}`;
-    return reqGet(requestURL)
-      .catch(() => {
+    fetch(`${URLS.BACK_DSH}${APIS.checkStatus}`,{
+      method: "GET",
+      mode: "cors",
+      credentials: "include",
+    })
+    .then(response => {
+      if(!response.ok){
         localStorage.clear();
         sessionStorage.clear();
         queryClient.clear();
-        navigate("/");
-      });
+        location.href = "/";
+      }
+    })
   };
  
-
 
 
   return {
