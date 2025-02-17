@@ -119,7 +119,7 @@ const CodeManagement = () => {
     }, []);
 
     //params  
-    const [queryParams, setQueryParams] = useState("");
+    const [queryParams, setQueryParams] = useState("deletion=001002");
     const [selectedIsCodeGroup, setSelectedIsCodeGroup]  = useState("")
     const [optionParams, setOptionParams] = useState("upper-code=001&upper-code=002");
     const [selectedCode, setSelectedCode] = useState({
@@ -222,7 +222,7 @@ const CodeManagement = () => {
 
     const { codeListData,codeListSelect, detailCodeError, detailCodeData, createUpperCode, createLowerCode, updateUpperCode, updateLowerCode, deleteCode} = useCodeMgt({
       codeID: selectedCode?.id,
-      queryParams: queryParams  || "deletion=001002",
+      queryParams: queryParams,
       onUpdateSuccess: (responseData) => {
         updateCallback()
         // const newCodeId = responseData?.id;
@@ -445,12 +445,14 @@ const CodeManagement = () => {
           console.log(radioUsageVal);
           
           const resultInput = inputVal ? `input=${inputVal}` : "";
-          const resultRadio = radioVal && radioVal !== "All" ? `&deletion=${radioVal}` : `&deletion=001002`;
+          const resultRadio = radioVal && radioVal !== "All" ? `&deletion=${radioVal}` : ``;
           const resultRadioUsageVal = radioUsageVal && radioUsageVal !== "All" ? `&usage=${radioUsageVal}` : "";
           const resultSelectCode = selectedIsCodeGroup && selectedIsCodeGroup !== "All"
           ? `&upper_code=${selectedIsCodeGroup}`
           : "";
           const result = resultInput + resultRadio +resultRadioUsageVal + resultSelectCode;
+          console.log(queryParams);
+          
           setQueryParams(result); 
         },
         [selectedIsCodeGroup]

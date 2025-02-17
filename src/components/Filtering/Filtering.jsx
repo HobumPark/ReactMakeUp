@@ -43,7 +43,7 @@ const Filtering = ({
       const selectedValue = event.target.value;
       setSelectedRadio(selectedValue);
       if (selectedValue === t('cmn > all')) {
-        setSelectedRadio(null);
+        setSelectedRadio('All');
       }
     } 
   };
@@ -52,7 +52,7 @@ const Filtering = ({
       const selectedValue = event.target.value;
       setSelectedRadioUsage(selectedValue);
       if (selectedValue === t('cmn > all')) {
-        setSelectedRadioUsage(null);
+        setSelectedRadioUsage('All');
       }
     } 
   };

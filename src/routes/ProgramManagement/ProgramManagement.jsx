@@ -132,7 +132,7 @@ const ProgramManagement = () => {
   }, [disabledProgramGroup, disabledProgram, isNewClicked]); 
 
   //params  
-  const [queryParams, setQueryParams] = useState("");
+  const [queryParams, setQueryParams] = useState("deletion=001002");
   const [selectedIsProgramGroup, setSelectedIsProgramGroup]  = useState("")
   const [optionParams, setOptionParams] = useState("upper-code=001&upper-code=002");
   const [selectedProgram, setSelectedProgram] = useState({
@@ -235,7 +235,7 @@ const ProgramManagement = () => {
 
     const { programListData ,programListSelect, detailProgramError, detailProgramData, createLowerProgram, createUpperProgram, updateLowerProgram, updateUpperProgram, deleteProgram} = useProgramMgt({
       programID: selectedProgram?.id,
-      queryParams: queryParams  || "deletion=001002",
+      queryParams: queryParams,
       onUpdateSuccess: (responseData) => {
         updateCallback()
         // const newProgramId = responseData?.id;
@@ -431,7 +431,7 @@ const ProgramManagement = () => {
     const handleSearch = useCallback(
         (inputVal = null, radioVal = null, radioUsageVal = null) => {
           const resultInput = inputVal ? `input=${inputVal}` : "";
-          const resultRadio = radioVal && radioVal !== "All" ? `&deletion=${radioVal}` : `&deletion=001002`;
+          const resultRadio = radioVal && radioVal !== "All" ? `&deletion=${radioVal}` : ``;
           const resultRadioUsageVal = radioUsageVal && radioUsageVal !== "All" ? `&usage=${radioUsageVal}` : "";
           const resultSelectCode = selectedIsProgramGroup && selectedIsProgramGroup !== "All"
           ? `&upper_program=${selectedIsProgramGroup}`
