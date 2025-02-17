@@ -4,13 +4,13 @@ import PasswordInput from "../PasswordInput/PasswordInput";
 import Select from "../Select/Select";
 import TextArea from "../TextArea/TextArea";
 
-const DetailForm = ({children, showTitle= true, showInput= true,label, placeholder, inputType, value, className, disabled, onChange, optionSelect = [], required,name, maxLength, readonly, pattern, formRef }) => {
+const DetailForm = ({styleLabel, children, showTitle= true, showInput= true,label, placeholder, inputType, value, className, disabled, onChange, optionSelect = [], required,name, maxLength, readonly, pattern, formRef }) => {
   const [selectedOption, setSelectedOption] = useState("");
   return (
     <div className={`flex items-start gap-x-4 w-full ${className}`} >
       {showTitle && (
         <div className="flex">
-          <span className="title3medium text-au-neutral-4 flex w-[170px]  ">
+          <span className= {`title3medium text-au-neutral-4 flex w-[170px] ${styleLabel} `}>
           {/* <span className="text-body-2 text-au-neutral-4 w-70 lg:w-50 text-[14px]"> */}
         
             {label}

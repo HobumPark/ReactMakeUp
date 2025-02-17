@@ -1,6 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
+@theme {
+	--grid-tamplate-cols : 
+}
 
 :root {
 	--danger-50: #fce8e8;
@@ -95,6 +98,12 @@
 
 /* font style */
 
+.body1bold {
+	font-weight: 700;
+	font-size: 13px;
+	line-height: 140%;
+	font-style: normal;
+}
 .title2bold {
 	font-weight: 700;
 	font-size: 16px;

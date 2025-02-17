@@ -6,7 +6,9 @@ import DetailForm from "../../components/DetailForm/DetailForm";
 import LogList from "../../components/LogList/LogList";
 import ButtonGroup from "../../components/ButtonGroup/ButtonGroup";
 import Select from "../../components/Select/Select";
-
+import GeneralInput from "../../components/GeneralInput/GeneralInput";
+import DynamicForm from "../../components/DynamicForm/DynamicForm";
+import IconDelete from "../../assets/icon/icon-delete-circle.svg";
 const boxTabulator = [
   {
     title: "No",
@@ -18,9 +20,9 @@ const boxTabulator = [
     resizable: false,
   },
   {
-    title: "함체 ID",
-    field: "vesselId",
-    widthGrow: 1,
+    title: "사이트 ID",
+    field: "site_id",
+    WidthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -75,9 +77,9 @@ const boxTabulator = [
 
 const data = [
   {
-    vesselId: "12345",
-    address: "서울시 강남구 삼성동",
+    site_id: "SITE00100",
     name: "삼성역 사거리 교차로",
+    address: "서울시 강남구 삼성동",
     location: "5.55572383 / 5.55572383",
     no_approaches: "4",
     update_date: "2025-01-24 23:10:11",
@@ -104,28 +106,46 @@ const SiteManagement = () => {
     footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
   };
 
+  const logData = [
+    { label: "등록자", value: "김철수" },
+    { label: "등록 시간", value: "02-22-2022 12:02:47 " },
+    { label: "수정자", value: "박철수" },
+    { label: "수정 시간", value: "02-23-2022 12:02:47 " },
+  ];
+
+  const [groupList, setGroupList] = useState([1]);
+
+  const addDynamicGroup = () => {
+    setGroupList([...groupList, groupList.length + 1]); 
+  };
+
+  const deleteDynamicGroup = (index) => {
+    const newGroupList = groupList.filter((_, i) => i !== index); 
+    setGroupList(newGroupList);
+  };
+
   return (
     <>
       <section className="wrap">
         <div className="header-title">
-          <h3>sitemanagement </h3>
+          <h3>사이트 관리</h3>
           <h3>&gt;</h3>
-          <h3>함체</h3>
+          <h3>사이트</h3>
         </div>
 
         <ContainerCard>
           <Filtering
-            labelSelect="매핑 사이트 타입"
+            // labelSelect="매핑 사이트 타입"
             placeholder="명칭 / 시리얼 넘버"
             disableFiltering={true}
           >
-            <Select
+            {/* <Select
               options={options}
-            //   label="Pilih Opsi"
-            //   name="contoh aja coy"
+              //   label="Pilih Opsi"
+              //   name="contoh aja coy"
               value={selectedOption}
               onChange={handleChange}
-            />
+            /> */}
           </Filtering>
         </ContainerCard>
 
@@ -138,6 +158,106 @@ const SiteManagement = () => {
             //   pagination="local"
             options={optionsTabulator}
           />
+        </ContainerCard>
+
+        <ContainerCard className=" flex flex-col">
+          <div className="gap-2.5 flex flex-col">
+            <span className="title2bold ">사이트</span>
+            {/* <hr className="border-t border-gray-300" /> */}
+          </div>
+
+          <div className="box-management-col flex flex-col gap-3">
+            <div className="grid grid-cols-3 gap-[50px]">
+              <DetailForm className="items-center!" label="사이트 ID" />
+
+              <DetailForm
+                className="items-center!"
+                label="명칭"
+                required={true}
+                placeholder="삼성역 사거리 교차로"
+              />
+
+              <DetailForm
+                className="items-center!"
+                label="주소"
+                required={true}
+                placeholder="서울시 강남구 삼성동"
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-[50px]">
+              <div className="flex w-full flex-row gap-x-4">
+                <DetailForm
+                  className="items-center!"
+                  label="위도 / 경도"
+                  required={true}
+                  showInput={false}
+                >
+                  <div className="flex w-full flex-row gap-x-2">
+                    <GeneralInput customInput="w-full" placeholder="5.55555" />
+                    <GeneralInput customInput="w-full" placeholder="5.55555" />
+                  </div>
+                </DetailForm>
+              </div>
+
+              <DetailForm
+                inputType="select"
+                className="items-center!"
+                label="타입"
+                required={true}
+                optionSelect={[
+                  { label: "교차로", value: "교차로" },
+                  { label: "횡단보도", value: "횡단보도" },
+                ]}
+                onChange={(e) => console.log("Selected:", e.target.value)}
+              />
+
+              <DetailForm className="items-center!" label="접근로 수" />
+            </div>
+
+            <div className="grid grid-cols-3 gap-[50px]">
+              <DetailForm
+                className="items-center!"
+                label="매핑 함체"
+                required={true}
+                placeholder="BX01001(ID0001)"
+              />
+            </div>
+
+            <hr className="border-t border-gray-300" />
+
+            <div className="gap-2.5 flex flex-row items-center">
+              <span className="title2bold ">접근로</span>
+              <span
+                className="body1bold px-[20px] py-[3px] bg-[#3D6B85] text-[#FEFEFE] "
+                onClick={addDynamicGroup}
+              >
+                Add +
+              </span>
+              {/* <hr className="border-t border-gray-300" /> */}
+            </div>
+
+            {groupList.map((_, index) => (
+              <div key={index}>
+                <DynamicForm index={index} onDelete={deleteDynamicGroup} />
+              </div>
+            ))}
+
+            <hr className="border-t border-gray-300" />
+            <div className="flex items-center justify-between gap-4 w-full">
+              <div className="flex-1">
+                <LogList logs={logData} />
+              </div>
+              <div className="flex-none">
+                <ButtonGroup
+                  cancelButtonState={false}
+                  confirmButtonState={false}
+                  deleteButtonState={false}
+                  newButtonState={false}
+                />
+              </div>
+            </div>
+          </div>
         </ContainerCard>
       </section>
     </>
