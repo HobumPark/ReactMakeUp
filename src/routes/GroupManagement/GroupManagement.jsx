@@ -480,7 +480,7 @@ const GroupManagement = () => {
     }, []);
   
     const handleRowSelectedStandBy = useCallback((row) => {
-      if ( selectedCode?.group_code || newClickedRef.current) {
+      if ( selectedCode.group_code || newClickedRef.current) {
         setSelectedRowStandby(row)
       } else{
         new NoticeMessage(t('msg > group not selected'))
@@ -488,9 +488,8 @@ const GroupManagement = () => {
         return;
       }
        
-    }, []);  
+    }, [selectedCode]);  
 
-    console.log(tbRefStandby);
     
 
     const handleLeftButton = () => {
@@ -772,6 +771,7 @@ const GroupManagement = () => {
       enableInitialButtons();
       setHasChangesCreate(false);
       setSelectedCode({group_code:null})
+      tbRefStandby.current.deselectRow();
     }
   }else {
       reloadCallback()

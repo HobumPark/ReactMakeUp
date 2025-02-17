@@ -319,7 +319,7 @@ const AuthorityManagement = () => {
         return;
       }
 
-    }, []);
+    }, [selectedCode]);
 
     const handleOnChangeInputSelect = useCallback(({ target }) => {
       const { value } = target;
