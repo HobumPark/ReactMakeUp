@@ -132,7 +132,7 @@ const ProgramManagement = () => {
   }, [disabledProgramGroup, disabledProgram, isNewClicked]); 
 
   //params  
-  const [queryParams, setQueryParams] = useState("deletion=001002");
+  const [queryParams, setQueryParams] = useState("deletion=001002&usage=002001");
   const [selectedIsProgramGroup, setSelectedIsProgramGroup]  = useState("")
   const [optionParams, setOptionParams] = useState("upper-code=001&upper-code=002");
   const [selectedProgram, setSelectedProgram] = useState({

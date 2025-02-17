@@ -474,16 +474,24 @@ const GroupManagement = () => {
       }
     }, []);
 
-        // useEffect(() => {console.log("ASSIGN",selectedRowAssign)}, [selectedRowAssign])
-        // useEffect(() => {console.log("STANDBY",selectedRowStandby)}, [selectedRowStandby])
      
-        const handleRowSelectedAssign = useCallback((row) => {
+    const handleRowSelectedAssign = useCallback((row) => {
         setSelectedRowAssign(row)
-      }, []);
+    }, []);
   
-      const handleRowSelectedStandBy = useCallback((row) => {
+    const handleRowSelectedStandBy = useCallback((row) => {
+      if ( selectedCode?.group_code || newClickedRef.current) {
         setSelectedRowStandby(row)
-      }, []);  
+      } else{
+        new NoticeMessage(t('msg > group not selected'))
+        tbRefStandby.current.deselectRow();
+        return;
+      }
+       
+    }, []);  
+
+    console.log(tbRefStandby);
+    
 
     const handleLeftButton = () => {
       if (selectedRowAssign && selectedRowAssign.length > 0) {

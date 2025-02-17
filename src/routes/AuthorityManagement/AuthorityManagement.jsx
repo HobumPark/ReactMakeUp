@@ -311,7 +311,14 @@ const AuthorityManagement = () => {
     }, []);
 
     const handleRowSelectedStandBy = useCallback((row) => {
-      setSelectedRowStandby(row)
+      if (selectedCode?.group_code) {
+        setSelectedRowStandby(row)
+      } else{
+        new NoticeMessage(t('osmsp13 > group not selected'))
+        tbRefStandby.current.deselectRow();
+        return;
+      }
+
     }, []);
 
     const handleOnChangeInputSelect = useCallback(({ target }) => {

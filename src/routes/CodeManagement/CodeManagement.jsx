@@ -119,7 +119,7 @@ const CodeManagement = () => {
     }, []);
 
     //params  
-    const [queryParams, setQueryParams] = useState("deletion=001002");
+    const [queryParams, setQueryParams] = useState("deletion=001002&usage=002001");
     const [selectedIsCodeGroup, setSelectedIsCodeGroup]  = useState("")
     const [optionParams, setOptionParams] = useState("upper-code=001&upper-code=002");
     const [selectedCode, setSelectedCode] = useState({

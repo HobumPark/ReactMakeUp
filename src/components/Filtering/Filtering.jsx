@@ -26,7 +26,7 @@ const Filtering = ({
 }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedRadio, setSelectedRadio] = useState("001002"); 
-  const [selectedRadioUsage, setSelectedRadioUsage] = useState("All"); 
+  const [selectedRadioUsage, setSelectedRadioUsage] = useState("002001"); 
   const [isRadioFilterVisible, setIsRadioFilterVisible] = useState(false);
   const {t} = useTranslation();
 
