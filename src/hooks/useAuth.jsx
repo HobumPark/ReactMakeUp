@@ -66,6 +66,9 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
     const requestURL = `${URLS.BACK_DSH}${APIS.checkStatus}`;
     return reqGet(requestURL)
       .catch(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        queryClient.clear();
         navigate("/");
       });
   };
