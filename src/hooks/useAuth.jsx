@@ -73,12 +73,10 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
         localStorage.clear();
         sessionStorage.clear();
         queryClient.clear();
-        location.href = "/";
+        navigate("/");
       }
     })
   };
- 
-
 
   return {
     checkStatus,
