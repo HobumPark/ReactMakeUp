@@ -173,22 +173,25 @@ const AuthorityManagement = () => {
     const [selectedRowStandby, setSelectedRowStandby] = useState(null);
     const [queryParams, setQueryParams] = useState("");
     const [queryParamsProgram, setQueryParamsProgram] = useState("");
-    const [selectedIsCodeGroup, setSelectedIsCodeGroup]  = useState("")
-    const [selectedUpperProgram, setSelectedUpperProgram]  = useState("")
+    const [selectedIsCodeGroup, setSelectedIsCodeGroup]  = useState("");
+    const [selectedUpperProgram, setSelectedUpperProgram]  = useState("");
     const [initialProgramsAssign, setInitialProgramsAssign] = useState([]);
+    const [isRowClicked, setIsRowClicked] = useState(false);
     const [optionParams] = useState("upper-code=002");
     const [selectedCode, setSelectedCode] = useState({
         group_code: '',
     });
     
     const hasChangedRef = useRef(hasChanged);
+    const rowClickedRef = useRef(isRowClicked)
     useEffect(() => {
       hasChangedRef.current = hasChanged;
-    }, [hasChanged]);
+      rowClickedRef.current = isRowClicked;
+    }, [hasChanged, isRowClicked]);
 
     useEffect(() => {
       if (searchRef.current) {
-            searchRef.current.focus();
+        searchRef.current.focus();
       }
     }, []);
 
@@ -284,6 +287,7 @@ const AuthorityManagement = () => {
       const updateGroupData = () => {
         setGroupName(groupName);
         setSelectedCode({ group_code: groupCode });
+        setIsRowClicked(true);
         setButtonState((prevState) => ({ ...prevState, arrow: false, confirm:true, restore:true}));
         setSelectedRowAssign([]);
         setSelectedRowStandby([]);
@@ -311,7 +315,7 @@ const AuthorityManagement = () => {
     }, []);
 
     const handleRowSelectedStandBy = useCallback((row) => {
-      if (selectedCode?.group_code) {
+      if (rowClickedRef.current) {
         setSelectedRowStandby(row)
       } else{
         new NoticeMessage(t('osmsp13 > group not selected'))
@@ -319,7 +323,7 @@ const AuthorityManagement = () => {
         return;
       }
 
-    }, [selectedCode]);
+    }, []);
 
     const handleOnChangeInputSelect = useCallback(({ target }) => {
       const { value } = target;

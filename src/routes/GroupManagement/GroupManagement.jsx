@@ -164,15 +164,18 @@ const GroupManagement = () => {
     const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
     const [hasChangesCreate, setHasChangesCreate] = useState(false);
     const [isNewClicked, setIsNewClicked] = useState(false);
+    const [isRowClicked, setIsRowClicked] = useState(false);
     const [newId, setNewId] = useState('');
 
     const hasChangedRef = useRef(hasChanged);
     const newClickedRef = useRef(isNewClicked);
+    const rowClickedRef = useRef(isRowClicked)
 
     useEffect(() => {
       hasChangedRef.current = hasChanged;
       newClickedRef.current = isNewClicked;
-    }, [hasChanged,isNewClicked]);
+      rowClickedRef.current = isRowClicked
+    }, [hasChanged,isNewClicked, isRowClicked]);
 
     useEffect(() => {
       if (searchRef.current) {
@@ -248,6 +251,7 @@ const GroupManagement = () => {
       setDisabledLog(true);
       setHasChangesUpdate(false);
       setSelectedCode({ group_code: null });
+      setIsRowClicked(false);
       setIsNewClicked(false);
       setHasChangesCreate(false);
       setHasChangesUpdate(false);
@@ -265,6 +269,7 @@ const GroupManagement = () => {
       setHasChanged(false);
       setIsNewClicked(false);
       setSelectedCode({group_code:null})
+      setIsRowClicked(false);
     }
     const updateCallback = () => {
       enableUPDATEButtons();
@@ -285,6 +290,7 @@ const GroupManagement = () => {
         updateCallback();
         const newUserId = responseData[0]?.group_id || responseData?.group_id;
         setSelectedCode({ group_code: newUserId });
+        setIsRowClicked(true);
         // const row = tbRefInit.current.getRow(selectedCode.group_code);
         // row && row.select();
       } 
@@ -450,6 +456,7 @@ const GroupManagement = () => {
         enableUPDATEButtons();
         setGroupName(groupName);
         setSelectedCode({ group_code: groupCode });
+        setIsRowClicked(true);
         setButtonState((prevState) => ({ ...prevState, arrow: false, confirm:true, restore:false, create: false}));
         setIsNewClicked(false);
         setDisabledLog(false);
@@ -480,7 +487,7 @@ const GroupManagement = () => {
     }, []);
   
     const handleRowSelectedStandBy = useCallback((row) => {
-      if ( selectedCode.group_code || newClickedRef.current) {
+      if ( rowClickedRef.current || newClickedRef.current) {
         setSelectedRowStandby(row)
       } else{
         new NoticeMessage(t('msg > group not selected'))
@@ -488,7 +495,7 @@ const GroupManagement = () => {
         return;
       }
        
-    }, [selectedCode]);  
+    }, []);  
 
     
 
@@ -759,6 +766,7 @@ const GroupManagement = () => {
         setSelectedRowStandby([]);
         setUsers(userAuthenticated);
         setUsersAssign([]);
+        setIsRowClicked(false);
         tbRefAssign.current.deselectRow();
         tbRefStandby.current.deselectRow();
       });
@@ -771,6 +779,7 @@ const GroupManagement = () => {
       enableInitialButtons();
       setHasChangesCreate(false);
       setSelectedCode({group_code:null})
+      setIsRowClicked(false);
       tbRefStandby.current.deselectRow();
     }
   }else {
@@ -796,6 +805,7 @@ const GroupManagement = () => {
                   enableRegisterButtons();
                   setIsNewClicked(true);
                   setSelectedCode({group_code:null})
+                  setIsRowClicked(false);
                   setUsersAssign(initialUsersAssign)
                   setUsers(userAuthenticated)
                 });
@@ -806,6 +816,7 @@ const GroupManagement = () => {
                 enableRegisterButtons();
                 setIsNewClicked(true);
                 setSelectedCode({group_code:null})
+                setIsRowClicked(false);
                 setUsersAssign(initialUsersAssign)
                 setUsers(userAuthenticated)
               }
@@ -815,6 +826,7 @@ const GroupManagement = () => {
               emptyDetail();
               setDisabled(false);
               setIsNewClicked(true);
+              setIsRowClicked(false);
               enableRegisterButtons();
               setHasChangesUpdate(false);
             }
