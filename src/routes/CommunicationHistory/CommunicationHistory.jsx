@@ -124,6 +124,7 @@ const data = [
 
 const CommunicationHistory = () => {
   const { t, i18n } = useTranslation();
+  
 
   useEffect(() => {
     let locale;
@@ -135,10 +136,13 @@ const CommunicationHistory = () => {
       locale = localeKo;
     }
 
+    const today = new Date();
+
     const optionsDate = {
       autoClose: true,
       locale: locale,
       position: "bottom center",
+      selectedDates: [today],
       onSelect: (date) => {
         setFormValues((prevValues) => ({
           ...prevValues,
@@ -151,6 +155,7 @@ const CommunicationHistory = () => {
       autoClose: true,
       locale: locale,
       position: "bottom center",
+      selectedDates: [today],
       onSelect: (date) => {
         setFormValues((prevValues) => ({
           ...prevValues,
@@ -196,19 +201,17 @@ const CommunicationHistory = () => {
             customWidthSelect="w-[30%]"
           >
             <div className="flex flex-row gap-2 items-center w-full">
-              <DetailForm
-                showTitle={false}
-                inputType={"text"}
-                name={"first-date"}
-                isDob={true}
-              />
-              <span>-</span>
-              <DetailForm
-                showTitle={false}
-                inputType={"text"}
-                name={"second-date"}
-                isDob={true}
-              />
+            <GeneralInput 
+              isDob={true} 
+              inputType = "text"
+              name={"first-date"}
+            />
+            <span>-</span>
+            <GeneralInput 
+              isDob={true} 
+              inputType = "text"
+              name={"second-date"}
+            />
             </div>
           </Filtering>
         </ContainerCard>
