@@ -308,7 +308,6 @@ const updateCallback = () => {
     pagination: true,
     movableRows: false,
     resizableRows: false,
-    paginationCounter: "rows",
     index: "id",
     locale: "ko",
     langs: {
@@ -614,7 +613,7 @@ const updateCallback = () => {
                 required={true}
                 formRef={nameRef}
               />
-                        <DetailForm
+              <DetailForm
                 label={t('profile > birth')}
                 value={formValues.birth || ''}
                 inputType={"text"}

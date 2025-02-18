@@ -4,7 +4,6 @@ const isDebugMode = import.meta.env.DEV;
 export const DEBUG = isDebugMode;
 
 const host = location.protocol + "//" + location.hostname;
-// const host = 'http://192.168.20.200:7120';
 let URLS = {
   FRONT: `${host}`,
   BACK_CORE: `${host}/api/core`,
@@ -69,5 +68,7 @@ export const APIS = {
   createAuthority: '/authority/groups',
   forgotPassword: '/forgot-password',
   updateProfileByUser :'/users/update-user',
-  updateProfilePassword: '/users/update-password'
+  updateProfilePassword: '/users/update-password',
+  boxList: (filterParams) => `/box?${filterParams}`,
+  detectorList: (filterParams) => `/detector?${filterParams}`,
 }

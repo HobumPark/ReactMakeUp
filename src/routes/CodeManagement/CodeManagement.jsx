@@ -15,8 +15,7 @@ import { useTranslation } from 'react-i18next';
 
 const CodeManagement = () => {
     const { t } = useTranslation();
-    const storedTranslations = JSON.parse(localStorage.getItem('translations'));
-    
+
     // tabulator top
 
     const columnsHistory = [
@@ -99,10 +98,12 @@ const CodeManagement = () => {
     const searchRef = useRef(null);
     const codeRef = useRef(null);
     const codeGroupRef = useRef(null);
+
     //Disabled
     const [disabled, setDisabled] = useState(true);
     const [disabledCode, setDisabledCode] = useState(true);
     const [disabledCodeGroup, setDisabledCodeGroup] = useState(true);
+
     //Change state
     const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
     const [hasChangesCreate, setHasChangesCreate] = useState(false);
@@ -262,6 +263,7 @@ const CodeManagement = () => {
         })),
       ]
     : [];
+    
   useEffect(() => {
     if (detailCodeError) {
       new NoticeMessage(t('msg > load data fail'))
@@ -436,8 +438,6 @@ const CodeManagement = () => {
           setHasChangesUpdate(true);
         }
       }
-  
-
     }; 
     
     const handleOnChangeInputSelect = useCallback(({ target }) => {
@@ -456,14 +456,11 @@ const CodeManagement = () => {
           ? `&upper_code=${selectedIsCodeGroup}`
           : "";
           const result = resultInput + resultRadio +resultRadioUsageVal + resultSelectCode;
-          console.log(queryParams);
-          
           setQueryParams(result); 
         },
         [selectedIsCodeGroup]
       );
       
-      console.log(queryParams);
       
       const handleCancelButtonClick = () => {
         if (hasChangesUpdate){
@@ -562,6 +559,7 @@ const CodeManagement = () => {
       createUpperCode(formValues);
     }
   }
+
   const handleConfirmButtonClick = () => {
     if(!formValues.lower_code){
       updateUpperCode(formValues);
@@ -585,9 +583,11 @@ const CodeManagement = () => {
   };
   const handleReset= () => {
     setSelectedIsCodeGroup('All')
-};
+  };
+
   useEffect(() => {
    }, [selectedCode, formValues]); 
+
   useEffect(() => {
     if (detailCodeData) {
       setFormValues((prevValues) => ({

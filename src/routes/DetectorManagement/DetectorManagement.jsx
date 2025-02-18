@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ContainerCard from "../../components/ContainerCard/ContainerCard";
 import Filtering from "../../components/Filtering/Filtering";
 import { ReactTabulator } from "react-tabulator";
@@ -7,12 +7,21 @@ import LogList from "../../components/LogList/LogList";
 import ButtonGroup from "../../components/ButtonGroup/ButtonGroup";
 import Select from "../../components/Select/Select";
 import GeneralInput from "../../components/GeneralInput/GeneralInput";
+import { useFetcher } from "react-router-dom";
+import useCommonCodes from "../../hooks/useCommonCodes";
+import useDetectorMgt from "../../hooks/useDetectorMgt";
+import { useTranslation } from "react-i18next";
 
 
 const detectorTabulator = [
   {
     title: "No",
-    formatter: "rownum",
+    formatter: (cell) => {
+      let row = cell.getRow();
+      let page = row.getTable().getPage();
+      let pageSize = row.getTable().getPageSize();
+      return (page - 1) * pageSize + row.getPosition(true);
+    },
     width: 60,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -38,7 +47,7 @@ const detectorTabulator = [
   },
   {
     title: "시리얼 넘버",
-    field: "serial_number",
+    field: "s_n",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -56,7 +65,7 @@ const detectorTabulator = [
   },
   {
     title: "매핑 사이트",
-    field: "mapping_site",
+    field: "site_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -65,7 +74,7 @@ const detectorTabulator = [
   },
   {
     title: "매핑 접근로",
-    field: "mapping_approach",
+    field: "road_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -74,7 +83,7 @@ const detectorTabulator = [
   },
   {
     title: "업데이트 일시",
-    field: "update_date",
+    field: "updated_time",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -83,46 +92,216 @@ const detectorTabulator = [
   },
 ];
 
-const data = [
-  {
-    detector_id: "000123",
-    name: "DT01001",
-    serial_number: "0222-2222",
-    site_type: "삼성역 사거리 교차로",
-    mapping_site: "삼성역 사거리 교차로",
-    mapping_approach: "북쪽 접근로",
-    update_date: "2025-01-24 23:10:11",
-  },
-];
 
 const DetectorManagement = () => {
+  const { t } = useTranslation();
+  const tbRef = useRef(null);
+  const searchRef = useRef(null);
+  const [disabledForm, setDisabledForm] = useState(true);
+  const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
+  const [hasChangesCreate, setHasChangesCreate] = useState(false);
+  const hasChangesUpdateRef = useRef(hasChangesUpdate);
+  const hasChangesCreateRef = useRef(hasChangesCreate);
+  const [newId, setNewId] = useState('');
+  const [isNewClicked, setIsNewClicked] = useState(false);
 
-    const [selectedOption, setSelectedOption] = useState("");
-    const handleChange = (e) => {
-      setSelectedOption(e.target.value);
-    };
-    const options = [
-      { value: "전체", label: "전체" },
-      { value: "교차로", label: "교차로" },
-      { value: "횡단보도", label: "횡단보도" },
-    ];
+  useFetcher(() => {
+    if (searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, []); 
+
+  //Params 
+  const [selectedOption, setSelectedOption] = useState("");
+  const [queryParams, setQueryParams] = useState("");
+  const [optionParams, setOptionParams] = useState("upper-code=102");
+  const [selectedDetector, setSelectedDetector] = useState({
+    dt_id: null,
+  });
   
-    const optionsTabulator = {
-      pagination: true,
-      paginationSize: 10,
-      rowHeight: 41,
-      movableRows: false,
-      resizableRows: false,
-      footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
-    };
+
+  useEffect(() => {
+    hasChangesUpdateRef.current = hasChangesUpdate;
+    hasChangesCreateRef.current = hasChangesCreate;
+  }, [hasChangesUpdate, hasChangesCreate]);
+
+
+  //Values
+  const [formValues, setFormValues] = useState({
+    detector_id: null,
+    site_id: null,
+    road_id: null, 
+    name: null,
+    description: null,
+    installed_date: null,
+    pic_name: null,
+    pic_phone_number: null,
+    model: null,
+    s_n: null,
+    lat: null,
+    lng: null,
+    manufacturer: null,
+    camera_url: null,
+    ip: null,
+    mac: null
+  });
+
+  const emptyDetail = () => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      detector_id: '',
+      site_id: '',
+      road_id: '', 
+      name: '',
+      description: '',
+      installed_date: '',
+      pic_name: '',
+      pic_phone_number: '',
+      model: '',
+      s_n: '',
+      lat: '',
+      lng: '',
+      manufacturer: '',
+      camera_url: '',
+      ip: '',
+      mac: ''
+    }));
+  };
+
+  //Button 
+  const [buttonState, setButtonState] = useState({
+    confirm: true,
+    cancel: true,
+    delete: true,
+    create: false,
+  });
+
+
+  const disableAllButtons = () => {
+    setButtonState({
+      confirm: true,
+      cancel: true,
+      delete: true,
+      create: true,
+    });
+  };
+
+  const enableInitialButtons = () => {
+    disableAllButtons();
+    setIsNewClicked(false); 
+    setButtonState((prevState) => ({
+      ...prevState,
+      create: false,
+    }));
+  };
+
+  const enableUPDATEButtons = () => {
+    disableAllButtons();
+    setButtonState((prevState) => ({
+      ...prevState,
+      cancel: false,
+      delete: false,
+      create: false,
+    }));
+  };
+
+  const enableRegisterButtons = () => {
+    disableAllButtons();
+    setButtonState((prevState) => ({
+      ...prevState,
+      cancel: false,
+    }));
+  };
+
+
+  const { detectorListData } = useDetectorMgt({
+    dtID: selectedDetector?.dt_id,
+    queryParams: queryParams
+  });
+
+  const data = detectorListData?.data;
+
+  const { commonListData } = useCommonCodes({ optionParams });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;  
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        [name]: value,
+      }));
+    
+    if (isNewClicked) {
+      setHasChangesCreate(true); 
+    } else {
+      setHasChangesUpdate(true); 
+    }
+
+    if (selectedDetector?.dt_id){
+      setHasChangesUpdate(true);
+    }
+  };
+
+  const handleOnChangeInputSelect = useCallback(({ target }) => {
+    const { value } = target;
+    setSelectedOption(value);
+  }, []); 
+
   
-    const logData = [
-      { label: "등록자", value: "김철수" },
-      { label: "등록 시간", value: "02-22-2022 12:02:47 " },
-      { label: "수정자", value: "박철수" },
-      { label: "수정 시간", value: "02-23-2022 12:02:47 " },
+  const languageTabulator = () => {
+    let datalanguage = {
+      pagination: {
+        first:  t('cmn > first page'),
+        first_title: t('cmn > first page'), 
+        last: t('cmn > last page'),
+        last_title: t('cmn > last page'),
+        prev: t('cmn > page before'),
+        prev_title: t('cmn > page before'),
+        next: t('cmn > next page'),
+        next_title: t('cmn > next page'),
+      },
+    }
+    return datalanguage
+  }
+
+  const optionsTabulator = {
+    debugInvalidOptions: true,
+    pagination: true,
+    paginationSize: 10,
+    rowHeight: 41,
+    selectableRows: 1,
+    movableRows: false,
+    resizableRows: false,
+    locale: "ko",
+    langs: {
+      ko: languageTabulator(),
+    },
+    selectableRowsCheck: (row) => {
+      return !row.getElement().classList.contains("tabulator-selected");
+    },
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data?.length} 건</div>`,
+  };
+
+  const handleSearch = useCallback((inputVal = null) => {
+    const resultInput = inputVal ? `input=${inputVal}` : "";
+    const resultSelect = selectedOption && selectedOption !== "All"
+          ? `&site_type=${selectedOption}`
+          : "";
+    const result = resultInput +  resultSelect;
+    setQueryParams(result); 
+    },[selectedOption]);
+
+  const handleReset= () => {
+    setSelectedOption('All');
+  };
+
   
-    ];
+  const logData = [
+    { label: "등록자", value: "김철수" },
+    { label: "등록 시간", value: "02-22-2022 12:02:47 " },
+    { label: "수정자", value: "박철수" },
+    { label: "수정 시간", value: "02-23-2022 12:02:47 " },
+  
+  ];
 
 
   return (
@@ -136,16 +315,27 @@ const DetectorManagement = () => {
 
         <ContainerCard>
           <Filtering
+            searchRef={searchRef}
             labelSelect="매핑 사이트 타입"
             placeholder="명칭 / 시리얼 넘버"
             disableFiltering={true}
+            onReset = {handleReset}
+            onSearch={handleSearch}
           >
             <Select
-              options={options}
-              label="Pilih Opsi"
-              name="contoh aja coy"
               value={selectedOption}
-              onChange={handleChange}
+              onChange={handleOnChangeInputSelect}
+              options={
+                commonListData?.["102"]
+                    ? [
+                        { value: "All", label: t('cmn > all') }, 
+                        ...commonListData["102"].code.map((code, index) => ({
+                          value: code,
+                          label: commonListData["102"].name[index],
+                        })),
+                      ]
+                    : []
+                  }
             />
           </Filtering>
         </ContainerCard>
@@ -164,13 +354,23 @@ const DetectorManagement = () => {
         <ContainerCard className=" flex flex-col">
           <div className="box-management-col flex flex-col gap-3">
             <div className="grid grid-cols-3 gap-[50px]">
-              <DetailForm className="items-center!" label="검지기 ID" placeholder= "00123"/>
+              <DetailForm 
+              className="items-center!" 
+              label="검지기 ID" 
+              value={formValues.detector_id}
+              name={'detector_id'} 
+              disabled={disabledForm}
+              onChange={handleInputChange} 
+              />
 
               <DetailForm
                 className="items-center!"
                 label="명칭"
                 required={true}
-                placeholder="BX01001"
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.name}
+                name={'name'}
               />
             </div>
 
@@ -183,8 +383,20 @@ const DetectorManagement = () => {
                   showInput={false}
                 >
                   <div className="flex w-full flex-row gap-x-2">
-                    <GeneralInput customInput="w-full" placeholder="5.55555" />
-                    <GeneralInput customInput="w-full" placeholder="5.55555" />
+                    <GeneralInput 
+                    customInput="w-full" 
+                    disabled={disabledForm}
+                    onChange={handleInputChange}
+                    value={formValues.lat}
+                    name={'lat'} />
+
+                    <GeneralInput 
+                    customInput="w-full" 
+                    disabled={disabledForm}
+                    onChange={handleInputChange}
+                    value={formValues.lng}
+                    name={'lng'}
+                    />
                   </div>
                 </DetailForm>
               </div>
@@ -192,8 +404,11 @@ const DetectorManagement = () => {
               <DetailForm
                 className="items-center!"
                 label="설치 일시"
-                placeholder="2025.01.20"
                 required={true}
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.installed_date}
+                name={'installed_date'}
               />
 
             </div>
@@ -209,8 +424,10 @@ const DetectorManagement = () => {
                   { label: "사이트 2", value: "site2" },
                   { label: "사이트 3", value: "site3" }
                 ]}
-                value="site1" 
-                onChange={(e) => console.log("Selected:", e.target.value)}
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.site_id}
+                name={'site_id'}
               />
             <DetailForm
                 inputType="select"
@@ -223,7 +440,10 @@ const DetectorManagement = () => {
                   { label: "남쪽 접근로(ROAD003)", value: "site3" }
                 ]}
               
-                onChange={(e) => console.log("Selected:", e.target.value)}
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.road_id}
+                name={'road_id'}
               />
 
             </div>
@@ -233,7 +453,10 @@ const DetectorManagement = () => {
                 className="items-center!"
                 label="담당자"
                 required={true}
-                placeholder="김철수"
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.pic_name}
+                name={'pic_name'}
               />
 
               <DetailForm
@@ -241,7 +464,10 @@ const DetectorManagement = () => {
                 label="담당자 전화번호"
                 required={true}
                 inputType= "number"
-                placeholder="089502606853"
+                value={formValues.pic_phone_number}
+                name={'pic_phone_number'}
+                disabled={disabledForm}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -250,21 +476,30 @@ const DetectorManagement = () => {
                 className="items-center!"
                 label="모델명"
                 required={true}
-                placeholder="ABCD-1234"
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.model}
+                name={'model'}
               />
 
               <DetailForm
                 className="items-center!"
                 label="시리얼 넘버"
                 required={true}
-                placeholder="0222-2222"
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.s_n}
+                name={'sn'}
               />
 
               <DetailForm
                 className="items-center!"
                 label="제조사"
                 required={true}
-                placeholder="비트센싱"
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.manufacturer}
+                name={'manufacturer'}
               />
             </div>
 
@@ -273,21 +508,30 @@ const DetectorManagement = () => {
                 className="items-center!"
                 label="Mac Address"
                 required={true}
-                placeholder="00-1A-2B-3C-4D-5E"
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.mac}
+                name={'mac'}
               />
 
               <DetailForm
                 className="items-center!"
                 label="IP"
                 required={true}
-                placeholder="192.168.1.1"
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.ip}
+                name={'ip'}
               />
 
               <DetailForm
                 className="items-center!"
                 label="카메라 접속 URL"
                 required={true}
-                placeholder="192.168.1.1"
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.camera_url}
+                name={'camera_url'}
               />
             </div>
 
@@ -296,22 +540,26 @@ const DetectorManagement = () => {
                 className=" h-[90px]"
                 inputType="textarea"
                 label="설명"
-                value="해당 장비는 기기들을 관리하는 장비로써....."
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.description}
+                name={'description'}
+
               />
             </div>
 
             <hr className="border-t border-gray-300" />
             <div className="flex items-center justify-between gap-4 w-full">
               <div className="flex-1">
-                <LogList logs={logData} />
+                  {disabledForm ? null : <LogList  logs={logData}/>}
               </div>
               <div className="flex-none">
                 <ButtonGroup
-
-                  cancelButtonState={false}
-                  confirmButtonState={false}
-                  deleteButtonState={false}
-                  newButtonState={false}
+                  isNewClicked={isNewClicked}
+                  cancelButtonState={buttonState.cancel}
+                  confirmButtonState={hasChangesUpdate ? false : buttonState.confirm}
+                  deleteButtonState={buttonState.delete}
+                  newButtonState={hasChangesCreate ? false :buttonState.create}
                 />
               </div>
             </div>

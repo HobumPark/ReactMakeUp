@@ -5,12 +5,7 @@ import { fetchInitialAuthority } from "../api/authority-mgt";
 import { fetchProgramAuthenticated } from "../api/authority-program";
 
 const useAuthorityMgt = ({
-  userID = null,
   queryParams =  "",
-  queryParamsProgram ="",
-  onDeleteSuccess = () => {},
-  onCreateSuccess = () => {},
-  onUpdateSuccess = () => {},
 }) => {
   const queryClient = useQueryClient();
 
@@ -20,8 +15,6 @@ const useAuthorityMgt = ({
     queryFn: () => fetchInitialAuthority(queryParams),
     staleTime: 1000 * 60 * 1,
   });
-
-
 
 
   return {

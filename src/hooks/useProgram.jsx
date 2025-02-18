@@ -7,9 +7,7 @@ import { useTranslation } from "react-i18next";
 const useProgram = ({
   id = null,
   queryParams =  "",
-  onDeleteSuccess = () => {},
   onCreateSuccess = () => {},
-  onUpdateSuccess = () => {},
 }) => {
   const queryClient = useQueryClient();
   const {t} = useTranslation();
