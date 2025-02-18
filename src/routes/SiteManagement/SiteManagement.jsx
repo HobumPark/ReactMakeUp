@@ -113,7 +113,7 @@ const SiteManagement = () => {
     { label: "수정 시간", value: "02-23-2022 12:02:47 " },
   ];
 
-  const [groupList, setGroupList] = useState([1]);
+  const [groupList, setGroupList] = useState([]);
 
   const addDynamicGroup = () => {
     setGroupList([...groupList, groupList.length + 1]); 

@@ -55,6 +55,7 @@ const Sidebar = ({ userInfo, commonData }) => {
     { name: "system", label: t("SYSTEM") },
     { name: "asset", label: "Asset Management" },
     { name: "site", label: "Site Management" },
+    { name: "statistic", label: "Statistic" },
   ]
 
   const links = [
@@ -70,7 +71,12 @@ const Sidebar = ({ userInfo, commonData }) => {
 
 
     {id: "site", label: "Site", path: "/site-management/site", category: "site"},
-    {id: "crosswalk", label: "Crosswalk", path: "/site-management/crosswalk", category: "site"}
+    {id: "crosswalk", label: "Crosswalk", path: "/site-management/crosswalk", category: "site"},
+    
+    
+    {id: "communication-history", label: "communication-history", path: "/statistic/communication-history", category: "statistic"},
+    {id: "communication-statistic", label: "communication-statistic", path: "/statistic/communication-statistic", category: "statistic"},
+    {id: "sudden-event", label: "sudden-event", path: "/statistic/sudden-event", category: "statistic"}
   ];
 
   const [openMenu, setOpenMenu] = useState("system");

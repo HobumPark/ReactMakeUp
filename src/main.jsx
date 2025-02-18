@@ -23,6 +23,12 @@ import SiteManagement from './routes/SiteManagement/SiteManagement.jsx';
 import CrosswalkManagement from './routes/CrosswalkManagement/CrosswalkManagement.jsx';
 // sitemanagement
 
+// statistic
+import CommunicationHistory from './routes/CommunicationHistory/CommunicationHistory.jsx';
+import CommunicationStatistic from './routes/CommunicationStatistic/CommunicationStatistic.jsx';
+import SuddenEvent from './routes/SuddenEvent/SuddenEvent.jsx';
+// statistic
+
 import "./utils/i18n.js";
 
 
@@ -89,6 +95,26 @@ const router = createBrowserRouter([
       {
         path: "crosswalk",
         element: <CrosswalkManagement></CrosswalkManagement>,
+      },
+  
+
+    ],
+  },
+   {
+    path: "statistic",
+    element: <ProtectedRoutes />, 
+    children: [
+      {
+        path: "communication-history",
+        element: <CommunicationHistory></CommunicationHistory>,
+      },
+      {
+        path: "communication-statistic",
+        element: <CommunicationStatistic></CommunicationStatistic>,
+      },
+      {
+        path: "sudden-event",
+        element: <SuddenEvent></SuddenEvent>,
       },
   
 

@@ -1,9 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
-@theme {
-	--grid-tamplate-cols : 
-}
+
 
 :root {
 	--danger-50: #fce8e8;
@@ -95,6 +93,33 @@
 	--blue-filter: invert(76%) sepia(72%) saturate(791%) hue-rotate(159deg) brightness(98%) contrast(88%);
 	
 }
+
+.button.filtering.active:hover, 
+.button.filtering:hover  {
+	opacity: 70%;
+} 
+
+.button.filtering {
+	padding: 9px 25px;
+	border-radius: 3px;
+	border: 1px solid var(--blueprimary-500);
+	background-color: transparent;
+	color: var(--blueprimary-500);
+	font-size: 14px;
+	line-height: 140%;
+	font-weight: 500;
+}
+.button.filtering.active  {
+	padding: 9px 25px;
+	border-radius: 3px;
+	border: 1px solid var(--blueprimary-500);
+	background-color: var(--blueprimary-500);
+	color: var(--neutral-50);
+	font-size: 14px;
+	line-height: 140%;
+	font-weight: 500;
+}
+
 
 /* font style */
 
@@ -671,7 +696,34 @@ textarea {
 
 /* Tabulator All */
 
+/* for icon sort */
 
+.tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-sorter {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 4px;
+}
+
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort="none"] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
+    border-top: none;
+    border-bottom: 6px solid #0D4667 !important;
+}
+
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort="ascending"] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
+    border-top: none;
+    border-bottom: 6px solid #af1e1e !important;
+}
+
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort="descending"] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
+    border-bottom: none;
+    border-top: 6px solid #0D4667 !important;
+    /* color: #c46161; */
+}
+
+/* for icon sort */
 
 .tabulator {
 	position: relative;
