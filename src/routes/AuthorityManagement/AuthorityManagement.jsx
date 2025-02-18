@@ -23,7 +23,12 @@ const AuthorityManagement = () => {
   const columnInit = [
     {
       title: 'No',
-      formatter: "rownum",
+      formatter: (cell) => {
+        let row = cell.getRow();
+        let page = row.getTable().getPage();
+        let pageSize = row.getTable().getPageSize();
+        return (page - 1) * pageSize + row.getPosition(true);
+      },
       width: 65,
       hozAlign: "center",
       headerHozAlign: "center",

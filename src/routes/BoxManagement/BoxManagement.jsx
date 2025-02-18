@@ -7,10 +7,17 @@ import LogList from "../../components/LogList/LogList";
 import ButtonGroup from "../../components/ButtonGroup/ButtonGroup";
 import Select from "../../components/Select/Select";
 import GeneralInput from "../../components/GeneralInput/GeneralInput";
+
+
 const boxTabulator = [
   {
     title: "No",
-    formatter: "rownum",
+    formatter: (cell) => {
+      let row = cell.getRow();
+      let page = row.getTable().getPage();
+      let pageSize = row.getTable().getPageSize();
+      return (page - 1) * pageSize + row.getPosition(true);
+    },
     width: 60,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -22,7 +29,7 @@ const boxTabulator = [
     field: "site_id",
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: false,
+    headerSort:  true,
     resizable: false,
   },
   {
@@ -67,7 +74,7 @@ const boxTabulator = [
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: false,
+    headerSort: true,
     resizable: false,
   },
 ];
@@ -75,6 +82,14 @@ const boxTabulator = [
 const data = [
   {
     site_id: "000123",
+    name: "BX01001",
+    serial_number: "0222-2222",
+    site_type: "교차로",
+    mapping_site: "삼성역 사거리 교차로",
+    update_date: "2025-01-24 23:10:11",
+  },
+  {
+    site_id: "000122",
     name: "BX01001",
     serial_number: "0222-2222",
     site_type: "교차로",
