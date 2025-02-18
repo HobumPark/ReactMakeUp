@@ -13,6 +13,9 @@ import localeKo from 'air-datepicker/locale/ko.js';
 import localeId from 'air-datepicker/locale/id.js'; 
 import AirDatepicker from 'air-datepicker';
 
+import AllStatistic from "../../components/Statistic/AllStatistic/AllStatistic";
+import StatisticByType from "../../components/Statistic/StatisticByType/StatisticByType";
+import StatisticByLane from "../../components/Statistic/StatisticByLane/StatisticByLane";
 
 import Button from "../../components/Button/Button";
 
@@ -35,11 +38,14 @@ const CommunicationStatistic = () => {
       } else {
         locale = localeKo; 
       }
+
+      const today = new Date();
   
       const optionsDate = {
         autoClose: true,
         locale: locale,
         position: "bottom center",
+        selectedDates: [today],
         onSelect: (date) => {
           setFormValues((prevValues) => ({
             ...prevValues,
@@ -52,6 +58,7 @@ const CommunicationStatistic = () => {
         autoClose: true,
         locale: locale,
         position: "bottom center",
+        selectedDates: [today],
         onSelect: (date) => {
           setFormValues((prevValues) => ({
             ...prevValues,
@@ -70,10 +77,22 @@ const CommunicationStatistic = () => {
     }, [i18n.language]);
 
 
+    const [activeTab, setActiveTab] = useState(0);
+
+    const tabs = [
+      { label: "전체 통계 Tab 1", content: <AllStatistic />},
+      { label: "차종별 통계 Tab 2", content: <StatisticByType /> },
+      { label: "차로별 통계 Tab 3", content: <StatisticByLane /> },
+    ]
 
   return (
     <>
-      <section>
+      <section className="wrap">
+
+      <div className="header-title">
+          <h3>소통정보 통계</h3>
+        </div>
+
         <ContainerCard>
           <Filtering placeholder="사이트 / 접근로" disableFiltering={true} customWidthSelect= "w-full">
             <div className="flex w-fit gap-4 flex-row">
@@ -107,22 +126,42 @@ const CommunicationStatistic = () => {
               />
             </div>
             <div className="flex flex-row gap-2 items-center w-full">
-              <DetailForm
-                showTitle = {false}
-                inputType={"text"}
-                name={"first-date"}
-                isDob={true} 
-              />
-              <span>-</span>
-              <DetailForm
-                showTitle = {false}
-                inputType={"text"}
-                name={"second-date"}
-                isDob={true} 
-              />
+            <GeneralInput 
+              isDob={true} 
+              inputType = "text"
+              name={"first-date"}
+            />
+            <span>-</span>
+            <GeneralInput 
+              isDob={true} 
+              inputType = "text"
+              name={"second-date"}
+            />
             </div>
           </Filtering>
         </ContainerCard>
+
+      <div className="w-full">
+      <div className="flex flex-row gap-4 bg-[#E6E6E6]">
+        {tabs.map((tab, index) => (
+          <button
+            key={index}
+            className={`w-fit py-2 text-center  ${
+              activeTab === index
+                ? "bg-[#FEFEFE] text-[#135A78] font-bold px-4 rounded-tl-sm rounded-tr-sm border-t border-l border-r border-[#E6E6E6] text-[14px]"
+                : "border-transparent text-[#6A6A6A] px-4 text-[14px]"
+            }`}
+            onClick={() => setActiveTab(index)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <div className="bg-[#fff] p-[20px] border-r border-l border-b border-[#E6E6E6] rounded-bl-sm rounded-br-sm ">
+        {tabs[activeTab].content}
+      </div>
+    </div>
+
         
       </section>
     </>
