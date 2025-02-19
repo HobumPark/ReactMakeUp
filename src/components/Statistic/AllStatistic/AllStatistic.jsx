@@ -76,7 +76,7 @@ const allStatisticTabulator = [
     resizable: false,
   },
   {
-    title: "",
+    title: "최고속도(km/h)",
     field: "peek_speed",
     widthGrow: 1,
     hozAlign: "center",
@@ -124,7 +124,7 @@ const options = {
     },
     stroke: {
       show: true,
-      curve: "smooth",
+      curve: "straight",
       width: 2,
     },
     xaxis: {
