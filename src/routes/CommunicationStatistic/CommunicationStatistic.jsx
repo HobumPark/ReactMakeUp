@@ -80,9 +80,9 @@ const CommunicationStatistic = () => {
     const [activeTab, setActiveTab] = useState(0);
 
     const tabs = [
-      { label: "전체 통계 Tab 1", content: <AllStatistic />},
-      { label: "차종별 통계 Tab 2", content: <StatisticByType /> },
-      { label: "차로별 통계 Tab 3", content: <StatisticByLane /> },
+      { label: "전체 통계", content: <AllStatistic />},
+      { label: "차종별 통계", content: <StatisticByType /> },
+      { label: "차로별 통계", content: <StatisticByLane /> },
     ]
 
   return (

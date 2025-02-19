@@ -15,6 +15,8 @@ import localeId from "air-datepicker/locale/id.js";
 import AirDatepicker from "air-datepicker";
 import Button from "../../components/Button/Button";
 
+import VideoModal from "../../components/Modal/VideoModal/VideoModal";
+
 import Chart from "react-apexcharts";
 
 const suddenEventTabulator = [
@@ -95,7 +97,7 @@ const suddenEventTabulator = [
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: true,
+    headerSort: false,
     resizable: false,
   },
   {
@@ -104,14 +106,16 @@ const suddenEventTabulator = [
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: true,
+    headerSort: false,
     resizable: false,
     formatter: (cell, formatterParams, onRendered) => {
       return `<img src="${IconPlay}" alt="Play Icon" style="margin: auto; cursor: pointer;" />`;
     },
     cellClick: (e, cell) => {
-      alert("oke coy");
+      window.open('/img-modal', '_blank', 'width=686,height=552');
+
     },
+    
   },
 ];
 
@@ -390,6 +394,8 @@ const SuddenEvent = () => {
           </div>
         </ContainerCard>
       </section>
+
+      {/* <VideoModal/> */}
     </>
   );
 };

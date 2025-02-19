@@ -29,15 +29,23 @@ import CommunicationStatistic from './routes/CommunicationStatistic/Communicatio
 import SuddenEvent from './routes/SuddenEvent/SuddenEvent.jsx';
 // statistic
 
+import VideoModal from './components/Modal/VideoModal/VideoModal.jsx';
+
 import "./utils/i18n.js";
 
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
+  
    {
      path:"/",
      element: <SignIn></SignIn>
+   },
+
+   {
+    path: "/img-modal",
+    element: <VideoModal/>
    },
    {
     path: "system-management",
