@@ -142,13 +142,13 @@ const CommunicationStatistic = () => {
         </ContainerCard>
 
       <div className="w-full">
-      <div className="flex flex-row gap-4 bg-[#E6E6E6]">
+      <div className="flex flex-row gap-4 bg-[#E6E6E6] rounded-tl-lg rounded-tr-lg">
         {tabs.map((tab, index) => (
           <button
             key={index}
             className={`w-fit py-2 text-center  ${
               activeTab === index
-                ? "bg-[#FEFEFE] text-[#135A78] font-bold px-4 rounded-tl-sm rounded-tr-sm border-t border-l border-r border-[#E6E6E6] text-[14px]"
+                ? "bg-[#FEFEFE] text-[#135A78] font-bold px-4 rounded-tl-lg rounded-tr-lg border-t border-l border-r border-[#E6E6E6] text-[14px]"
                 : "border-transparent text-[#6A6A6A] px-4 text-[14px]"
             }`}
             onClick={() => setActiveTab(index)}
@@ -157,7 +157,7 @@ const CommunicationStatistic = () => {
           </button>
         ))}
       </div>
-      <div className="bg-[#fff] p-[20px] border-r border-l border-b border-[#E6E6E6] rounded-bl-sm rounded-br-sm ">
+      <div className="bg-[#fff] p-[20px] border-r border-l border-b border-[#E6E6E6] rounded-bl-[10px] rounded-br-[10px] ">
         {tabs[activeTab].content}
       </div>
     </div>

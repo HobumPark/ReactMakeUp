@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { ReactTabulator } from "react-tabulator";
 
+import Chart from "react-apexcharts";
+
 const allStatisticTabulator = [
   {
     title: "No",
@@ -97,7 +99,80 @@ const data = [
   },
 ];
 
+const options = {
+    chart: {
+      type: "line",
+      zoom: {
+        enabled: false,
+      },
+      fontFamily: "Noto Sans KR",
+      toolbar: {
+        show: false,
+      },
+    },
+    // colors: ["#EA494E", "#FDCA6A", "#439C50"],
+    // markers: {
+    //   size: 1,
+    //   colors: ["#EA494E", "#FDCA6A", "#439C50"],
+    //   strokeColors: ["#EA494E", "#FDCA6A", "#439C50"],
+    // },
+    colors: ["#439C50"],
+    markers: {
+      size: 1,
+      colors: ["#EA494E", "#FDCA6A", "#439C50"],
+      strokeColors: ["#439C50"],
+    },
+    stroke: {
+      show: true,
+      curve: "smooth",
+      width: 2,
+    },
+    xaxis: {
+      categories: ["01-20 12:30", "01-20 12:35", "01-20 12:40", "01-20 12:45", "01-20 12:50"],
+    },
+  };
+
+
+
+
 const AllStatistic = () => {
+
+    const averageWaitTime = [
+        {
+          data: [30, 40, 25, 50, 49, 21],
+        },
+      
+      ];
+
+    const maximumWait= [
+        {
+          data: [30, 40, 25, 50, 49, 21],
+        },
+      
+      ]
+
+    const averageOccupancy= [
+        {
+          data: [30, 40, 25, 50, 49, 21],
+        },
+      
+      ];
+
+    const averageSpeed= [
+        {
+          data: [30, 40, 25, 50, 49, 21],
+        },
+      
+      ];
+
+    const maximumSpeed= [
+        {
+          data: [30, 40, 25, 50, 49, 21],
+        },
+      
+      ];
+    
+
   const optionsTabulator = {
     pagination: true,
     paginationSize: 10,
@@ -117,6 +192,64 @@ const AllStatistic = () => {
           //   pagination="local"
           options={optionsTabulator}
         />
+
+        <section className=" flex! flex-col w-full gap-[20px]">
+            <div className="_chartAllStatistic mt-[40px] w-full grid! grid-cols-3 gap-[20px]">
+        
+            <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
+                <span className="title3bold text-[#545454]">평균 대기길이</span>
+                <Chart
+                    options={options}
+                    series={averageWaitTime}
+                    height={244}
+                    className={"flex !min-h-[0]"}
+                />
+            </div>
+            <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
+            <span className="title3bold text-[#545454]">평균 대기길이</span>
+                <Chart
+                    options={options}
+                    series={maximumWait}
+                    height={244}
+                    className={"flex !min-h-[0]"}
+                />
+            </div>
+            <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
+            <span className="title3bold text-[#545454]">평균 점유율</span>
+                <Chart
+                    options={options}
+                    series={averageOccupancy}
+                    height={244}
+                    className={"flex !min-h-[0]"}
+                />
+            </div>
+            
+
+            </div>
+            <div className="_chartAllStatistic w-full grid! grid-cols-2 gap-[20px]">
+        
+            <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
+                <span className="title3bold text-[#545454]">평균 대기길이</span>
+                <Chart
+                    options={options}
+                    series={averageSpeed}
+                    height={244}
+                    className={"flex !min-h-[0]"}
+                />
+            </div>
+            <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
+            <span className="title3bold text-[#545454]">평균 대기길이</span>
+                <Chart
+                    options={options}
+                    series={maximumSpeed}
+                    height={244}
+                    className={"flex !min-h-[0]"}
+                />
+            </div>
+            </div>
+
+        </section>
+
       </section>
     </>
   );
