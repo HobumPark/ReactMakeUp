@@ -52,6 +52,7 @@ const Sidebar = ({ userInfo, commonData }) => {
 
 
   const categories = [
+    { name: "dashboard", label: "Dashboard" },
     { name: "system", label: t("SYSTEM") },
     { name: "asset", label: "Asset Management" },
     { name: "site", label: "Site Management" },
@@ -59,6 +60,10 @@ const Sidebar = ({ userInfo, commonData }) => {
   ]
 
   const links = [
+    {id: "main-dashboard", label: "sudden-event", path: "/dashboard/main-dashboard", category: "dashboard"},
+
+
+
     { id: "code", label: t('SYSTEM-CODE'), path: "/system-management/code", category: "system", },
     { id: "group", label: t('SYSTEM-GROUP'), path: "/system-management/group", category: "system", },
     { id: "user", label: t('SYSTEM-USER'), path: "/system-management/user", category: "system", },
@@ -78,7 +83,7 @@ const Sidebar = ({ userInfo, commonData }) => {
     {id: "communication-statistic", label: "communication-statistic", path: "/statistic/communication-statistic", category: "statistic"},
     {id: "sudden-event", label: "sudden-event", path: "/statistic/sudden-event", category: "statistic"}
   ];
-
+  
   const [openMenu, setOpenMenu] = useState("system");
 
   const toggleVisibility = (menu) => {

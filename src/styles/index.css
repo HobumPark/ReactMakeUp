@@ -1,8 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
+@theme {
+	--color-text-white: #F0F0F0;
+}
 
-
+@layer components {
+	.bg-db-black {
+	  background-color: #212527;
+	}
+	.bg-header-content {
+		background-color: #31373E;
+	}
+  }
 :root {
 	--danger-50: #fce8e8;
 	--danger-100: #f6b7b7;
@@ -123,9 +133,28 @@
 
 /* font style */
 
+.h5bold {
+	font-weight: 700;
+	font-size: 23px;
+	line-height: 140%;
+	font-style: normal;
+}
+
 .body1bold {
 	font-weight: 700;
 	font-size: 13px;
+	line-height: 140%;
+	font-style: normal;
+}
+.body1medium {
+	font-weight: 500;
+	font-size: 13px;
+	line-height: 140%;
+	font-style: normal;
+}
+.title2 {
+	font-weight: 400;
+	font-size: 16px;
 	line-height: 140%;
 	font-style: normal;
 }
@@ -154,6 +183,8 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  height: auto;
+  min-height: 100vh;
 }
 section {
     display: block;
@@ -715,7 +746,7 @@ textarea {
 
 .tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort="none"] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
     border-top: none;
-    border-bottom: 6px solid #0D4667 !important;
+    border-bottom: 6px solid #af1e1e !important;
 }
 
 .tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort="ascending"] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {

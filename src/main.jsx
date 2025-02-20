@@ -29,6 +29,11 @@ import CommunicationStatistic from './routes/CommunicationStatistic/Communicatio
 import SuddenEvent from './routes/SuddenEvent/SuddenEvent.jsx';
 // statistic
 
+// dashboard
+import MainDashboard from './routes/MainDashboard/MainDashboard.jsx';
+import EquipmentInfoDashboard from './routes/EquipmentInfoDashboard/EquipmentInfoDashboard.jsx';
+// dashboard
+
 import VideoModal from './components/Modal/VideoModal/VideoModal.jsx';
 
 import "./utils/i18n.js";
@@ -124,6 +129,23 @@ const router = createBrowserRouter([
         path: "sudden-event",
         element: <SuddenEvent></SuddenEvent>,
       },
+  
+
+    ],
+  },
+   {
+    path: "dashboard",
+    element: <ProtectedRoutes />, 
+    children: [
+      {
+        path: "main-dashboard",
+        element: <MainDashboard></MainDashboard>,
+      },
+      {
+        path: "equipment-info",
+        element: <EquipmentInfoDashboard></EquipmentInfoDashboard>,
+      },
+    
   
 
     ],

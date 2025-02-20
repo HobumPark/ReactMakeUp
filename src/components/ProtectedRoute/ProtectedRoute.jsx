@@ -43,12 +43,16 @@ const ProtectedRoutes = () => {
     checkStatus();
   }, []);
 
-
+  const isDashboard = location.pathname.startsWith("/dashboard");
+  if (isDashboard) {
+    return isLanguageReady ? <Outlet /> : null;
+  }
+  
   return (
     <>
     
     <div className="wrapper">
-    
+    {/* {!isDashboard && <Sidebar userInfo={detailUserData} commonData={commonListData} />} */}
          <Sidebar userInfo={detailUserData} commonData={commonListData}/>
       <div className="article-content-right">
         
