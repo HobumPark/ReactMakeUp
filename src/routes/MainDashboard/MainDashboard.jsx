@@ -355,7 +355,7 @@ const MainDashboard = () => {
                       <div key={id} className="w-full">
                         <div
                           className="flex flex-row w-full justify-between items-center bg-[#404953] border border-[#455665] py-[8px] px-[10px] rounded-[5px]"
-                          onClick={() => toggleAccordion(id)} // Toggle tiap accordion berdasarkan ID
+                          onClick={() => toggleAccordion(id)} 
                         >
                           <div className="flex flex-row w-full items-center gap-[8px]">
                             <img src={IconArrow} alt="" />
@@ -363,7 +363,7 @@ const MainDashboard = () => {
                           </div>
                           <span className="title3bold text-text-white">{count}</span>
                         </div>
-                        {openSections.includes(id) && ( // Menampilkan konten hanya jika section ini terbuka
+                        {openSections.includes(id) && ( 
                           <div className="flex flex-col gap-[3px] mt-[5px] px-[3px]">
                             {cardData.map(
                               ({
