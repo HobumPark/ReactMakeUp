@@ -3,6 +3,8 @@
 
 @theme {
 	--color-text-white: #F0F0F0;
+	--color-text-danger-500: #ED3131;
+	--color-text-warning-500: #EE9F17;
 }
 
 @layer components {
@@ -131,6 +133,33 @@
 }
 
 
+/* input dashboard */
+
+input.input-db-text:focus {
+	border: .5px solid #FDFDFD;
+	outline: none;
+}
+
+input.input-db-text::placeholder {
+	color: #7A7A7A;
+}
+
+input.input-db-text {
+    background-color: transparent;
+    border: .5px solid #B4B4B4;
+    color: var(--white);
+    padding: 0px 10px;
+	height: 31px;
+	border-radius: 3px;
+	outline: none;
+	color: #F0F0F0;
+	width: 100%;
+	background-image: url(../assets/icon/icon-search.svg);
+	background-repeat: no-repeat;
+	background-position: 96%;
+}
+/* input dashboard */
+
 /* font style */
 
 .h5bold {
@@ -152,6 +181,22 @@
 	line-height: 140%;
 	font-style: normal;
 }
+
+
+.body2 {
+	font-weight: 400;
+	font-size: 12px;
+	line-height: 140%;
+	font-style: normal;
+}
+
+.body2medium {
+	font-weight: 500;
+	font-size: 12px;
+	line-height: 140%;
+	font-style: normal;
+}
+
 .title2 {
 	font-weight: 400;
 	font-size: 16px;
@@ -161,6 +206,13 @@
 .title2bold {
 	font-weight: 700;
 	font-size: 16px;
+	line-height: 140%;
+	font-style: normal;
+}
+
+.title3 {
+	font-weight: 400;
+	font-size: 14px;
 	line-height: 140%;
 	font-style: normal;
 }
@@ -1000,11 +1052,11 @@ textarea {
 	display: none;
   }
   
-  /* Column's Header when set 'frozen' */
-  /* .tabulator .tabulator-header .tabulator-frozen.tabulator-frozen-left { */
-  /* border-right: 2px solid #aaa; */
-  /* display: none; */
-  /* } */
+  
+   /* .tabulator .tabulator-header .tabulator-frozen.tabulator-frozen-left { 
+   border-right: 2px solid #aaa; 
+  display: none; 
+   } */
   
   .tabulator .tabulator-header .tabulator-calcs-holder {
 	box-sizing: border-box;
