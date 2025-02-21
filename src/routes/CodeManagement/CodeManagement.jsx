@@ -472,10 +472,20 @@ const CodeManagement = () => {
           );
           message.confirmClicked().then(() => {
             setHasChangesUpdate(false);
+            setFormValues((prevValues) => ({
+              ...prevValues, 
+              eng: detailCodeData?.eng,
+              ind: detailCodeData?.ind,
+              upper_code: detailCodeData?.upper_code,
+              lower_code: detailCodeData?.lower_code,
+              usage: detailCodeData?.usage,
+              description: detailCodeData?.description,
+              sort_order: detailCodeData?.sort_order,
+            }));
           });
         }
         
-       if(isNewClicked){
+        else if(isNewClicked){
           if(hasChangesCreate){
           const message = new NoticeMessage(
             t('msg > flush confirm'),

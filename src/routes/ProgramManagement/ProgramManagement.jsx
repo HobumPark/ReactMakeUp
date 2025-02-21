@@ -457,10 +457,22 @@ const ProgramManagement = () => {
           );
           message.confirmClicked().then(() => {
             setHasChangesUpdate(false);
+            const firstDetail = detailProgramData[0];
+            setFormValues((prevValues) => ({
+              ...prevValues, 
+              eng: firstDetail?.eng,
+              ind: firstDetail?.ind,
+              upper_program: firstDetail?.upper_program,
+              lower_program: firstDetail?.lower_program,
+              usage: firstDetail?.usage,
+              description: firstDetail?.description,
+              sort_order: firstDetail?.sort_order,
+              link_url: firstDetail?.link_url
+            }));
           });
         }
         
-       if(isNewClicked){
+        else if(isNewClicked){
           if(hasChangesCreate){
           const message = new NoticeMessage(
             t('msg > flush confirm'),
