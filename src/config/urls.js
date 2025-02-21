@@ -70,5 +70,10 @@ export const APIS = {
   updateProfileByUser :'/users/update-user',
   updateProfilePassword: '/users/update-password',
   boxList: (filterParams) => `/box?${filterParams}`,
+  detailBox: (rtuID) =>`/box/${rtuID}`,
+  deleteBox: (rtuID) =>`/box/${rtuID}`,
+  createBox: '/box',
+  updateBox: (rtuID) =>`/box/${rtuID}`,
   detectorList: (filterParams) => `/detector?${filterParams}`,
+  facilityList: (filterParams) => `/facility?${filterParams}`,
 }

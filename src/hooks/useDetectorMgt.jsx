@@ -18,6 +18,14 @@ const useDetectorMgt = ({
     staleTime: 1000 * 60 * 1,
   });
 
+  const { data: detailBoxData} = useQuery({
+    queryKey: ["detailBoxData", dtID],
+    queryFn: () => fetchDetailDetector(dtID),
+    retry: false, 
+    enabled: !!dtID,
+    onError: () => {
+    },
+  });
   return {
     detectorListData,
   };

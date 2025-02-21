@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ContainerCard from "../../components/ContainerCard/ContainerCard";
 import Filtering from "../../components/Filtering/Filtering";
 import { ReactTabulator } from "react-tabulator";
@@ -7,12 +7,20 @@ import LogList from "../../components/LogList/LogList";
 import ButtonGroup from "../../components/ButtonGroup/ButtonGroup";
 import Select from "../../components/Select/Select";
 import GeneralInput from "../../components/GeneralInput/GeneralInput";
+import useCommonCodes from "../../hooks/useCommonCodes";
+import { useTranslation } from "react-i18next";
+import useFacilityMgt from "../../hooks/useFacilityMgt";
 
 
 const facilityTabulator = [
   {
     title: "No",
-    formatter: "rownum",
+    formatter: (cell) => {
+      let row = cell.getRow();
+      let page = row.getTable().getPage();
+      let pageSize = row.getTable().getPageSize();
+      return (page - 1) * pageSize + row.getPosition(true);
+    },
     width: 60,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -38,7 +46,7 @@ const facilityTabulator = [
   },
   {
     title: "유형",
-    field: "type",
+    field: "type_value",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -47,7 +55,7 @@ const facilityTabulator = [
   },
   {
     title: "시리얼 넘버",
-    field: "serial_number",
+    field: "s_n",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -83,7 +91,7 @@ const facilityTabulator = [
   },
   {
     title: "업데이트 일시",
-    field: "update_date",
+    field: "updated_time",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -92,51 +100,219 @@ const facilityTabulator = [
   },
 ];
 
-const data = [
-  {
-    facility_id: "000123",
-    name: "DT01001",
-    type: "전광판",
-    serial_number: "0222-2222",
-    site_type: "삼성역 사거리 교차로",
-    mapping_site: "삼성역 사거리 교차로",
-    mapping_approach: "북쪽 접근로",
-    update_date: "2025-01-24 23:10:11",
-  },
-];
-
-
-
 
 const FacilityManagement = () => {
 
-const [selectedOption, setSelectedOption] = useState("");
-    const handleChange = (e) => {
-      setSelectedOption(e.target.value);
-    };
-    const options = [
-      { value: "전체", label: "전체" },
-      { value: "교차로", label: "교차로" },
-      { value: "횡단보도", label: "횡단보도" },
-    ];
-  
-    const optionsTabulator = {
-      pagination: true,
-      paginationSize: 10,
-      rowHeight: 41,
-      movableRows: false,
-      resizableRows: false,
-      footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
-    };
-  
-    const logData = [
-      { label: "등록자", value: "김철수" },
-      { label: "등록 시간", value: "02-22-2022 12:02:47 " },
-      { label: "수정자", value: "박철수" },
-      { label: "수정 시간", value: "02-23-2022 12:02:47 " },
-  
-    ];
+  const { t } = useTranslation();
+  const tbRef = useRef(null);
+  const searchRef = useRef(null);
+  const [disabledForm, setDisabledForm] = useState(true);
+  const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
+  const [hasChangesCreate, setHasChangesCreate] = useState(false);
+  const hasChangesUpdateRef = useRef(hasChangesUpdate);
+  const hasChangesCreateRef = useRef(hasChangesCreate);
+  const [newId, setNewId] = useState('');
+  const [isNewClicked, setIsNewClicked] = useState(false);
 
+  useEffect(() => {
+    if (searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, []); 
+
+  //Params 
+  const [selectedOption, setSelectedOption] = useState("");
+  const [queryParams, setQueryParams] = useState("");
+  const [optionParams, setOptionParams] = useState("upper-code=221");
+  const [selectedFacility, setSelectedFacility] = useState({
+    fc_id: null,
+  });
+  
+
+  useEffect(() => {
+    hasChangesUpdateRef.current = hasChangesUpdate;
+    hasChangesCreateRef.current = hasChangesCreate;
+  }, [hasChangesUpdate, hasChangesCreate]);
+
+
+  //Values
+  const [formValues, setFormValues] = useState({
+    facility_id: null,
+    site_id: null,
+    road_id: null, 
+    name: null,
+    description: null,
+    installed_date: null,
+    pic_name: null,
+    pic_phone_number: null,
+    model: null,
+    s_n: null,
+    lat: null,
+    lng: null,
+    manufacturer: null,
+    ip: null,
+    mac: null,
+    port: null,
+    type: null
+  });
+
+  const emptyDetail = () => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      facility_id: '',
+      site_id: '',
+      road_id: '', 
+      name: '',
+      description: '',
+      installed_date: '',
+      pic_name: '',
+      pic_phone_number: '',
+      model: '',
+      s_n: '',
+      lat: '',
+      lng: '',
+      manufacturer: '',
+      ip: '',
+      mac: '',
+      port: '',
+      type: ''
+    }));
+  };
+
+  //Button 
+  const [buttonState, setButtonState] = useState({
+    confirm: true,
+    cancel: true,
+    delete: true,
+    create: false,
+  });
+
+
+  const disableAllButtons = () => {
+    setButtonState({
+      confirm: true,
+      cancel: true,
+      delete: true,
+      create: true,
+    });
+  };
+
+  const enableInitialButtons = () => {
+    disableAllButtons();
+    setIsNewClicked(false); 
+    setButtonState((prevState) => ({
+      ...prevState,
+      create: false,
+    }));
+  };
+
+  const enableUPDATEButtons = () => {
+    disableAllButtons();
+    setButtonState((prevState) => ({
+      ...prevState,
+      cancel: false,
+      delete: false,
+      create: false,
+    }));
+  };
+
+  const enableRegisterButtons = () => {
+    disableAllButtons();
+    setButtonState((prevState) => ({
+      ...prevState,
+      cancel: false,
+    }));
+  };
+
+
+  const { facilityListData } = useFacilityMgt({
+    fcID: selectedFacility?.fc_id,
+    queryParams: queryParams
+  });
+
+  const data = facilityListData?.data;
+
+  const { commonListData } = useCommonCodes({ optionParams });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;  
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        [name]: value,
+      }));
+    
+    if (isNewClicked) {
+      setHasChangesCreate(true); 
+    } else {
+      setHasChangesUpdate(true); 
+    }
+
+    if (selectedFacility?.dt_id){
+      setHasChangesUpdate(true);
+    }
+  };
+
+  const handleOnChangeInputSelect = useCallback(({ target }) => {
+    const { value } = target;
+    setSelectedOption(value);
+  }, []); 
+
+  
+  const languageTabulator = () => {
+    let datalanguage = {
+      pagination: {
+        first:  t('cmn > first page'),
+        first_title: t('cmn > first page'), 
+        last: t('cmn > last page'),
+        last_title: t('cmn > last page'),
+        prev: t('cmn > page before'),
+        prev_title: t('cmn > page before'),
+        next: t('cmn > next page'),
+        next_title: t('cmn > next page'),
+      },
+    }
+    return datalanguage
+  }
+
+  const optionsTabulator = {
+    debugInvalidOptions: true,
+    pagination: true,
+    paginationSize: 10,
+    rowHeight: 41,
+    selectableRows: 1,
+    movableRows: false,
+    resizableRows: false,
+    locale: "ko",
+    langs: {
+      ko: languageTabulator(),
+    },
+    selectableRowsCheck: (row) => {
+      return !row.getElement().classList.contains("tabulator-selected");
+    },
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data?.length} 건</div>`,
+  };
+
+  const handleSearch = useCallback((inputVal = null) => {
+    const resultInput = inputVal ? `input=${inputVal}` : "";
+    const resultSelect = selectedOption && selectedOption !== "All"
+          ? `&type=${selectedOption}`
+          : "";
+    const result = resultInput +  resultSelect;
+    setQueryParams(result); 
+    },[selectedOption]);
+
+  const handleReset= () => {
+    setSelectedOption('All');
+  };
+
+  
+  const logData = [
+    { label: "등록자", value: "김철수" },
+    { label: "등록 시간", value: "02-22-2022 12:02:47 " },
+    { label: "수정자", value: "박철수" },
+    { label: "수정 시간", value: "02-23-2022 12:02:47 " },
+  
+  ];
 
   return (
     <section className="wrap">
@@ -148,16 +324,27 @@ const [selectedOption, setSelectedOption] = useState("");
 
     <ContainerCard>
       <Filtering
+        searchRef={searchRef}
         labelSelect="유형"
         placeholder="명칭 / 시리얼 넘버"
         disableFiltering={true}
+        onReset = {handleReset}
+        onSearch={handleSearch}
       >
         <Select
-          options={options}
-          label="Pilih Opsi"
-          name="contoh aja coy"
           value={selectedOption}
-          onChange={handleChange}
+          onChange={handleOnChangeInputSelect}
+          options={
+                commonListData?.["221"]
+                    ? [
+                        { value: "All", label: t('cmn > all') }, 
+                        ...commonListData["221"].code.map((code, index) => ({
+                          value: code,
+                          label: commonListData["221"].name[index],
+                        })),
+                      ]
+                    : []
+                  }
         />
       </Filtering>
     </ContainerCard>
@@ -176,13 +363,23 @@ const [selectedOption, setSelectedOption] = useState("");
     <ContainerCard className=" flex flex-col">
       <div className="box-management-col flex flex-col gap-3">
         <div className="grid grid-cols-3 gap-[50px]">
-          <DetailForm className="items-center!" label="시설물 ID" placeholder= "00123" disabled= "disabled"/>
+          <DetailForm 
+          className="items-center!" 
+          label="시설물 ID" 
+          disabled={disabledForm}
+          onChange={handleInputChange}
+          value={formValues.facility_id}
+          name={'facility_id'}
+          />
 
           <DetailForm
             className="items-center!"
             label="명칭"
             required={true}
-            placeholder="DT01001"
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.name}
+            name={'name'}
           />
 
         <DetailForm
@@ -190,13 +387,15 @@ const [selectedOption, setSelectedOption] = useState("");
             className="items-center!"
             label="유형"
             required={true}
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.type}
+            name={'type'}
             optionSelect={[
               { label: "전광판", value: "전광판" },
               { label: "스피커", value: "스피커" },
            
             ]}
-          
-            onChange={(e) => console.log("Selected:", e.target.value)}
           />
         </div>
 
@@ -209,8 +408,20 @@ const [selectedOption, setSelectedOption] = useState("");
               showInput={false}
             >
               <div className="flex w-full flex-row gap-x-2">
-                <GeneralInput customInput="w-full" placeholder="5.55555" />
-                <GeneralInput customInput="w-full" placeholder="5.55555" />
+                <GeneralInput 
+                customInput="w-full" 
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.lat}
+                name={'lat'}
+                />
+                <GeneralInput 
+                customInput="w-full" 
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.lng}
+                name={'lng'}
+                 />
               </div>
             </DetailForm>
           </div>
@@ -218,8 +429,11 @@ const [selectedOption, setSelectedOption] = useState("");
           <DetailForm
             className="items-center!"
             label="설치 일시"
-            placeholder="2025.01.20"
             required={true}
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.installed_date}
+            name={'installed_date'}
           />
 
         </div>
@@ -235,8 +449,11 @@ const [selectedOption, setSelectedOption] = useState("");
               { label: "사이트 2", value: "site2" },
               { label: "사이트 3", value: "site3" }
             ]}
-            value="site1" 
-            onChange={(e) => console.log("Selected:", e.target.value)}
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.site_id}
+            name={'site_id'}
+
           />
         <DetailForm
             inputType="select"
@@ -249,7 +466,10 @@ const [selectedOption, setSelectedOption] = useState("");
               { label: "남쪽 접근로(ROAD003)", value: "site3" }
             ]}
           
-            onChange={(e) => console.log("Selected:", e.target.value)}
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.road_id}
+            name={'road_id'}
           />
 
         </div>
@@ -259,7 +479,10 @@ const [selectedOption, setSelectedOption] = useState("");
             className="items-center!"
             label="담당자"
             required={true}
-            placeholder="김철수"
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.pic_name}
+            name={'pic_name'}
           />
 
           <DetailForm
@@ -267,7 +490,10 @@ const [selectedOption, setSelectedOption] = useState("");
             label="담당자 전화번호"
             required={true}
             inputType= "number"
-            placeholder="089502606853"
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.pic_phone_number}
+            name={'pic_phone_number'}
           />
         </div>
 
@@ -276,21 +502,30 @@ const [selectedOption, setSelectedOption] = useState("");
             className="items-center!"
             label="모델명"
             required={true}
-            placeholder="ABCD-1234"
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.model}
+            name={'model'}
           />
 
           <DetailForm
             className="items-center!"
             label="시리얼 넘버"
             required={true}
-            placeholder="0222-2222"
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.s_n}
+            name={'s_n'}
           />
 
           <DetailForm
             className="items-center!"
             label="제조사"
             required={true}
-            placeholder="비트센싱"
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.manufacturer}
+            name={'manufacturer'}
           />
         </div>
 
@@ -299,7 +534,10 @@ const [selectedOption, setSelectedOption] = useState("");
             className="items-center!"
             label="Mac Address"
             required={true}
-            placeholder="00-1A-2B-3C-4D-5E"
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.mac}
+            name={'mac'}
           />
 
         <div className="flex w-full flex-row gap-x-4">
@@ -310,9 +548,19 @@ const [selectedOption, setSelectedOption] = useState("");
               showInput={false}
             >
               <div className="flex w-full flex-row gap-x-2 items-center">
-                <GeneralInput customInput="w-full" placeholder="192.168.1.1" />
+                <GeneralInput 
+                customInput="w-full" 
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.ip}
+                name={'ip'} />
                 <span>:</span>
-                <GeneralInput customInput="w-full" placeholder="8080" />
+                <GeneralInput 
+                customInput="w-full" 
+                disabled={disabledForm}
+                onChange={handleInputChange}
+                value={formValues.port}
+                name={'port'} />
               </div>
             </DetailForm>
           </div>
@@ -323,14 +571,17 @@ const [selectedOption, setSelectedOption] = useState("");
             className=" h-[90px]"
             inputType="textarea"
             label="설명"
-      
+            disabled={disabledForm}
+            onChange={handleInputChange}
+            value={formValues.description}
+            name={'description'}
           />
         </div>
 
         <hr className="border-t border-gray-300" />
         <div className="flex items-center justify-between gap-4 w-full">
           <div className="flex-1">
-            <LogList logs={logData} />
+          {disabledForm ? null : <LogList  logs={logData}/>}
           </div>
           <div className="flex-none">
             <ButtonGroup

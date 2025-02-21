@@ -7,7 +7,6 @@ import LogList from "../../components/LogList/LogList";
 import ButtonGroup from "../../components/ButtonGroup/ButtonGroup";
 import Select from "../../components/Select/Select";
 import GeneralInput from "../../components/GeneralInput/GeneralInput";
-import { useFetcher } from "react-router-dom";
 import useCommonCodes from "../../hooks/useCommonCodes";
 import useDetectorMgt from "../../hooks/useDetectorMgt";
 import { useTranslation } from "react-i18next";
@@ -33,7 +32,7 @@ const detectorTabulator = [
     field: "detector_id",
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: false,
+    headerSort: true,
     resizable: false,
   },
   {
@@ -87,7 +86,7 @@ const detectorTabulator = [
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: false,
+    headerSort: true,
     resizable: false,
   },
 ];
@@ -105,7 +104,7 @@ const DetectorManagement = () => {
   const [newId, setNewId] = useState('');
   const [isNewClicked, setIsNewClicked] = useState(false);
 
-  useFetcher(() => {
+  useEffect(() => {
     if (searchRef.current) {
       searchRef.current.focus();
     }

@@ -15,6 +15,7 @@ import 'air-datepicker/air-datepicker.css';
 import localeEn from 'air-datepicker/locale/en.js'; 
 import localeKo from 'air-datepicker/locale/ko.js'; 
 import localeId from 'air-datepicker/locale/id.js'; 
+import NoticeMessage from "../../plugin/noticemessage/noticemessage";
 
 
 const boxTabulator = [
@@ -33,8 +34,8 @@ const boxTabulator = [
     resizable: false,
   },
   {
-    title: "사이트 ID",
-    field: "site_id",
+    title: "함체 ID",
+    field: "remote_terminal_unit_id",
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort:  true,
@@ -60,7 +61,7 @@ const boxTabulator = [
   },
   {
     title: "매핑 사이트 타입",
-    field: "site_type",
+    field: "site_type_value",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -69,7 +70,7 @@ const boxTabulator = [
   },
   {
     title: "매핑 사이트",
-    field: "site_id",
+    field: "site_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -93,6 +94,7 @@ const BoxManagement = () => {
   const tbRef = useRef(null);
   const searchRef = useRef(null);
   const [disabledForm, setDisabledForm] = useState(true);
+  const [disabledId, setDisabledId] = useState(true);
   const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
   const [hasChangesCreate, setHasChangesCreate] = useState(false);
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
@@ -113,6 +115,8 @@ const BoxManagement = () => {
   const [selectedBox, setSelectedBox] = useState({
     rtu_id: null,
   }); 
+
+  const detailBox = ({ ...data }) => data;
 
   useEffect(() => {
     let locale;
@@ -151,8 +155,9 @@ const BoxManagement = () => {
 
   //Values
   const [formValues, setFormValues] = useState({
-    rtu_id: null,
+    remote_terminal_unit_id: null,
     site_id: null,
+    site_name: null,
     name: null,
     description: null,
     installed_date: null,
@@ -172,28 +177,14 @@ const BoxManagement = () => {
   });
 
   const emptyDetail = () => {
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      rtu_id: '',
-      site_id: '',
-      name: '',
-      description: '',
-      installed_date: '',
-      pic_name: '',
-      pic_phone_number: '',
-      model: '',
-      s_n: '',
-      lat: '',
-      lng: '',
-      manufacturer: '',
-      edge1_ip: '',
-      router_ip: '',
-      switch_ip: '',
-      env_board_ip: '',
-      env_board_port: '',
-      env_board_mac: '',
-    }));
+    setFormValues((prevValues) =>
+      Object.keys(prevValues).reduce((acc, key) => {
+        acc[key] = '';
+        return acc;
+      }, {})
+    );
   };
+  
 
   //Button 
   const [buttonState, setButtonState] = useState({
@@ -240,13 +231,23 @@ const BoxManagement = () => {
     }));
   };
 
+  const reloadCallback = () => {
+    enableInitialButtons();
+    tbRef.current.deselectRow();
+    emptyDetail();
+    setDisabledForm(true);
+    setHasChangesUpdate(false);
+    setSelectedBox({ rtu_id: null });
+  };
 
-  const { boxListData } = useBoxMgt({
+  const { boxListData, detailBoxData } = useBoxMgt({
     rtuID: selectedBox?.rtu_id,
     queryParams: queryParams
   });
 
   const data = boxListData?.data;
+  const dataBox = detailBoxData?.data[0];
+  
   const { commonListData } = useCommonCodes({ optionParams });
 
 
@@ -321,13 +322,122 @@ const BoxManagement = () => {
     setSelectedOption('All');
   };
 
-  const logData = [
-    { label: "등록자", value: "김철수" },
-    { label: "등록 시간", value: "02-22-2022 12:02:47 " },
-    { label: "수정자", value: "박철수" },
-    { label: "수정 시간", value: "02-23-2022 12:02:47 " },
+  const handleRowSelected = useCallback((row) => {
+    if(hasChangesCreateRef.current || hasChangesUpdateRef.current){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        const rowData = row.getData();
+        setSelectedBox({
+          rtu_id: rowData.remote_terminal_unit_id,  
+        });
+        setDisabledForm(false);
+        setHasChangesUpdate(false);
+        setIsNewClicked(false);
+      });
+    } else {
+      const rowData = row.getData();
+      setSelectedBox({
+        rtu_id: rowData.remote_terminal_unit_id,  
+      });
+      setDisabledForm(false);
+      enableUPDATEButtons();
+      setIsNewClicked(false);
+    }
+  }, []);
 
-  ];
+  const handleNewButtonClick = () => {
+    if(hasChangesCreate || hasChangesUpdate){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        tbRef.current.deselectRow();
+        emptyDetail();
+        setIsNewClicked(true);
+        enableRegisterButtons();
+        setSelectedBox({ rtu_id: null });
+        setDisabledForm(false);
+        setHasChangesUpdate(false);
+      });
+    } else{
+      tbRef.current.deselectRow();
+      emptyDetail();
+      setIsNewClicked(true);
+      enableRegisterButtons();
+      setSelectedBox({ rtu_id: null });
+      setDisabledForm(false); 
+      setHasChangesUpdate(false);
+    }
+
+  };
+
+
+  const handleCancelButtonClick = () => {
+    if (hasChangesUpdate){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        setDisabledForm(false);
+        setFormValues(detailBox(dataBox));
+        setHasChangesUpdate(false);
+      });
+    }
+    
+    else if(isNewClicked){
+      if(hasChangesCreate){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        emptyDetail();
+        setIsNewClicked(false);
+        setDisabledForm(true);
+        enableInitialButtons();
+        setHasChangesCreate(false);
+      });
+    }
+    else{
+      emptyDetail();
+      setIsNewClicked(false);
+      setDisabledForm(true);
+      enableInitialButtons();
+      setHasChangesCreate(false);
+    }
+  }   else {
+    reloadCallback()
+  }
+  };
+
+  useEffect(() => {
+    if (dataBox) {
+      setFormValues(detailBox(dataBox));
+    }
+  }, [dataBox]);
+   
+
+  const logData = dataBox
+  ? [
+      { label: t('cmn > registered by'), value: dataBox.registered_by },
+      { label: t('cmn > registered time'), value: dataBox.registered_time },
+      { label: t('cmn > updated by'), value: dataBox.updated_by },
+      { label: t('cmn > updated time'), value: dataBox.updated_time },
+    ]
+  : [];
 
   return (
     <>
@@ -373,6 +483,22 @@ const BoxManagement = () => {
             className="tabulator-custom w-full "
             //   pagination="local"
             options={optionsTabulator}
+            onRef={(r) => {
+              tbRef.current = r.current;
+            }}
+            events={{
+              rowSelected: handleRowSelected,
+              tableBuilt: () => {
+                if (selectedBox?.rtu_id) {
+                  const row = tbRef.current.getRow(selectedBox?.rtu_id);
+                  row && row.select();
+                } else if (newId){
+                    const row = tbRef.current.getRow(newId);
+                    tbRef.current.scrollToRow(row, "bottom", true);
+                    tbRef.current.selectRow(newId);
+              }
+              }
+            }}
           />
         </ContainerCard>
 
@@ -387,9 +513,9 @@ const BoxManagement = () => {
               <DetailForm 
               className="items-center!" 
               label="함체 ID" 
-              value={formValues.rtu_id} 
-              name='rtu_id'
-              disabled={disabledForm}
+              value={formValues.remote_terminal_unit_id} 
+              name='remote_terminal_unit_id'
+              disabled={disabledId}
               onChange={handleInputChange}
               />
 
@@ -430,6 +556,7 @@ const BoxManagement = () => {
               />
 
               <DetailForm
+                inputType={'select'}
                 className="items-center!"
                 label="매핑 사이트"
                 required={true}
@@ -587,6 +714,8 @@ const BoxManagement = () => {
               </div>
               <div className="flex-none">
                 <ButtonGroup
+                  onClickNew={handleNewButtonClick}
+                  onClickCancel={handleCancelButtonClick}
                   isNewClicked={isNewClicked}
                   cancelButtonState={buttonState.cancel}
                   confirmButtonState={hasChangesUpdate ? false : buttonState.confirm}
