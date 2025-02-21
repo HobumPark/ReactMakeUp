@@ -9,6 +9,8 @@ import Select from "../../components/Select/Select";
 import GeneralInput from "../../components/GeneralInput/GeneralInput";
 import DynamicForm from "../../components/DynamicForm/DynamicForm";
 import IconDelete from "../../assets/icon/icon-delete-circle.svg";
+import useSiteMgt from '../../hooks/useSiteMgt';
+
 const boxTabulator = [
   {
     title: "No",
@@ -75,6 +77,7 @@ const boxTabulator = [
   },
 ];
 
+//sample data
 const data = [
   {
     site_id: "SITE00100",
@@ -86,7 +89,17 @@ const data = [
   },
 ];
 
+
 const SiteManagement = () => {
+
+
+  const [queryParams, setQueryParams] = useState("");
+  const { siteListData, } = useSiteMgt({
+    queryParams: queryParams  || "",
+  });
+  console.log('siteListData')
+  console.log(siteListData)
+
   const [selectedOption, setSelectedOption] = useState("");
   const handleChange = (e) => {
     setSelectedOption(e.target.value);
@@ -240,7 +253,7 @@ const SiteManagement = () => {
 
         <ContainerCard>
           <ReactTabulator
-            data={data}
+            data={siteListData?.data || []}
             columns={boxTabulator}
             layout={"fitColumns"}
             className="tabulator-custom w-full "
