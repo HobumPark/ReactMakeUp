@@ -1,13 +1,15 @@
 .ol-overlaycontainer-stopevent {
-    margin-left: 30% !important;
+    margin-left: 21% !important;
     position: absolute !important;
 }
 
-._contentCardList::-webkit-scrollbar {
+._contentCardList::-webkit-scrollbar ,
+._containerCardEvntList::-webkit-scrollbar {
     width: 5px;
     
 }
-._contentCardList::-webkit-scrollbar-thumb{
+._contentCardList::-webkit-scrollbar-thumb,
+._containerCardEvntList::-webkit-scrollbar-thumb{
     background-color: #555758;
     border-radius: 5px;
 }

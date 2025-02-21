@@ -30,6 +30,13 @@ import IconHeavyTruck from "../../assets/icon/icon-db-heavy-truck.svg";
 import IconUnknown from "../../assets/icon/icon-db-unknown.svg";
 import IconArrow from "../../assets/icon/icon-db-arrow-down.svg";
 
+import LegendCrosswalk from "../../assets/icon/icon-top-crosswalk.svg"
+import LegendIntersection from "../../assets/icon/icon-top-intersection.svg"
+import LegendSpeaker from "../../assets/icon/icon-top-speaker.svg"
+import LegendSignal from "../../assets/icon/icon-top-signal.svg"
+import LegendBox from "../../assets/icon/icon-top-box.svg"
+import LegendBillboard from "../../assets/icon/icon-top-billboard.svg"
+
 const MainDashboard = () => {
   const [selectedButtons, setSelectedButtons] = useState({
     button1: false,
@@ -40,6 +47,22 @@ const MainDashboard = () => {
     setSelectedButtons((prev) => ({
       ...prev,
       [button]: !prev[button], // Toggle select/unselect for each button
+    }));
+  };
+
+  const [selectBtnEvent, setselectBtnEvent] = useState({
+    btnEvent1: false,
+    btnEvent2: false,
+    btnEvent3: false,
+    btnEvent4: false,
+    btnEvent5: false,
+    btnEvent6: false,
+  });
+
+  const handleBtnEventList = (button) => {
+    setselectBtnEvent((prev) => ({
+      ...prev,
+      [button]: !prev[button],
     }));
   };
 
@@ -206,7 +229,7 @@ const MainDashboard = () => {
   const accordionData = [
     {
       id: 1,
-      title: "북 (6차선) / 남(6차선)",
+      title: "횡단보도",
       subtitle: "제 2자유로 방면",
       count: 400,
       cardData: [
@@ -214,19 +237,19 @@ const MainDashboard = () => {
           id: "ACCID0001",
           title: "북 (6차선) / 남(6차선)",
           subtitle: "제 2자유로 방면",
-          borderStyle: "border-red-500",
+          borderStyle: "border-[#ED3131]",
         },
         {
           id: "ACCID0002",
           title: "동 (4차선) / 서(4차선)",
           subtitle: "제 3자유로 방면",
-          borderStyle: "border-green-500",
+          borderStyle: "border-[#ED3131]",
         },
       ],
     },
     {
       id: 2,
-      title: "동 (4차선) / 서(4차선)",
+      title: "횡단보도",
       subtitle: "제 3자유로 방면",
       count: 250,
       cardData: [
@@ -234,19 +257,19 @@ const MainDashboard = () => {
           id: "ACCID0003",
           title: "남 (3차선) / 북(3차선)",
           subtitle: "제 1자유로 방면",
-          borderStyle: "border-blue-500",
+          borderStyle: "border-[#EE9F17]",
         },
         {
           id: "ACCID0004",
           title: "북 (6차선) / 남(6차선)",
           subtitle: "제 2자유로 방면",
-          borderStyle: "border-yellow-500",
+          borderStyle: "border-[#EE9F17]",
         },
       ],
     },
     {
       id: 3,
-      title: "남 (3차선) / 북(3차선)",
+      title: "Palangkaraya",
       subtitle: "제 1자유로 방면",
       count: 150,
       cardData: [
@@ -254,13 +277,13 @@ const MainDashboard = () => {
           id: "ACCID0005",
           title: "남 (3차선) / 북(3차선)",
           subtitle: "제 1자유로 방면",
-          borderStyle: "border-purple-500",
+          borderStyle: "border-[#EE9F17]",
         },
         {
           id: "ACCID0006",
           title: "동 (4차선) / 서(4차선)",
           subtitle: "제 3자유로 방면",
-          borderStyle: "border-teal-500",
+          borderStyle: "border-[#EE9F17]",
         },
       ],
     },
@@ -270,7 +293,57 @@ const MainDashboard = () => {
     <>
       <section className="w-full h-screen overflow-hidden flex flex-col">
         <Header />
+        {/* ini maps ya */}
         <div ref={mapRef} className="w-full h-full relative">
+        {/* ini maps ya */}
+
+        <div className="_legendTop absolute z-10 w-max h-[31px] top-[25px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-[4px] overflow-hidden">
+          <div className="flex gap-[30px] h-full">
+          <div className="bg-[#fff] w-fit h-full flex rounded-[4px]">
+                <div className="flex items-center bg-[#212527] min-w-[60px] justify-center">
+                  <span className="title3bold text-text-white text-center">SITE</span>
+                </div>
+                <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
+                  <div className="flex flex-row gap-[5px]">
+                  <img src={LegendCrosswalk} alt="" />
+                  <span className="title3 text-[#4B3C3C]">횡단보도</span>
+                  </div>
+                  <div className="flex flex-row gap-[5px]">
+                  <img src={LegendIntersection} alt="" />
+                  <span className="title3 text-[#4B3C3C]">교차로</span>
+                  </div>
+                </div>
+            </div>
+            <div className="bg-[#fff] w-fit h-full flex rounded-[4px] overflow-hidden">
+                <div className="flex items-center bg-[#212527] min-w-[60px] justify-center">
+                  <span className="title3bold text-text-white text-center">시설물</span>
+                </div>
+                <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
+                  <div className="flex flex-row gap-[5px]">
+                  <img src={LegendBillboard} alt="" />
+                  <span className="title3 text-[#4B3C3C]">전광판</span>
+                  <span className="title3 text-[#4B3C3C]">( <span className="text-text-danger-500">3</span> / <span>30</span> )</span>
+                  </div>
+                  <div className="flex flex-row gap-[5px]">
+                  <img src={LegendSpeaker} alt="" />
+                  <span className="title3 text-[#4B3C3C]">전광판</span>
+                  <span className="title3 text-[#4B3C3C]">( <span className="text-text-danger-500">3</span> / <span>30</span> )</span>
+                  </div>
+                  <div className="flex flex-row gap-[5px]">
+                  <img src={LegendSignal} alt="" />
+                  <span className="title3 text-[#4B3C3C]">레이더</span>
+                  <span className="title3 text-[#4B3C3C]">( <span className="text-text-danger-500">3</span> / <span>30</span> )</span>
+                  </div>
+                  <div className="flex flex-row gap-[5px]">
+                  <img src={LegendBox} alt="" />
+                  <span className="title3 text-[#4B3C3C]">함체</span>
+                  <span className="title3 text-[#4B3C3C]">( <span className="text-text-danger-500">3</span> / <span>30</span> )</span>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
           {/* bg-left */}
           <div class="flex flex-col gap-[5px] overflow-hidden p-[10px] top-[10px] left-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
             <div className="_boxTrafficVihacle flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden">
@@ -316,10 +389,10 @@ const MainDashboard = () => {
             <div className="_boxListSite flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden flex-1">
               <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                 <span className="title3bold text-text-white">
-                  사이트 리스트cvb cb
+                  사이트 리스트
                 </span>
               </div>
-              <div className="flex flex-col w-full p-[15px] gap-[15px] overflow-hidden flex-1">
+              <div className="flex flex-col w-full py-[15px] px-[10px] gap-[15px] overflow-hidden flex-1">
                 <div className="grid grid-cols-2 gap-[10px]">
                   <button
                     className={`w-full title3 py-[5px] border ${
@@ -349,21 +422,33 @@ const MainDashboard = () => {
                   />
                 </div>
 
-                <div className="_contentCardList w-full  flex flex-col gap-[8px] overflow-auto h-full">
+                <div className="_contentCardList w-full  flex flex-col gap-[5px] overflow-auto h-full">
                   {accordionData.map(
                     ({ id, title, subtitle, count, cardData }) => (
                       <div key={id} className="w-full">
                         <div
                           className="flex flex-row w-full justify-between items-center bg-[#404953] border border-[#455665] py-[8px] px-[10px] rounded-[5px]"
-                          onClick={() => toggleAccordion(id)} 
+                          onClick={() => toggleAccordion(id)}
                         >
                           <div className="flex flex-row w-full items-center gap-[8px]">
-                            <img src={IconArrow} alt="" />
-                            <span className="title3bold text-text-white">{title}</span>
+                            <img
+                              src={IconArrow}
+                              alt=""
+                              className={`transition-transform duration-300 ${
+                                openSections.includes(id)
+                                  ? "rotate-180"
+                                  : "rotate-0"
+                              }`}
+                            />
+                            <span className="title3bold text-text-white">
+                              {title}
+                            </span>
                           </div>
-                          <span className="title3bold text-text-white">{count}</span>
+                          <span className="title3bold text-text-white">
+                            {count}
+                          </span>
                         </div>
-                        {openSections.includes(id) && ( 
+                        {openSections.includes(id) && (
                           <div className="flex flex-col gap-[3px] mt-[5px] px-[3px]">
                             {cardData.map(
                               ({
@@ -373,6 +458,7 @@ const MainDashboard = () => {
                                 borderStyle,
                               }) => (
                                 <CardList
+                                  type="listSite"
                                   key={cardId}
                                   customCard={borderStyle} // Mengirimkan kelas borderStyle ke CardList
                                   title={title}
@@ -392,7 +478,138 @@ const MainDashboard = () => {
           </div>
 
           {/* bg-right */}
-          <div class="overflow-hidden top-[10px] right-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]"></div>
+          <div class="overflow-hidden top-[10px] p-[10px] right-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+            <div className="_eventListRight flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden h-full">
+              <div className="bg-header-content w-full h-[36px] flex items-center px-[15px] justify-between">
+                <span className="title3bold text-text-white">
+                  이벤트 리스트
+                </span>
+                <span className="title3bold text-text-white">600</span>
+              </div>
+              <div className="flex flex-col w-full py-[15px] px-[10px] gap-[15px] overflow-hidden flex-1">
+                <div className="grid grid-cols-3 gap-[5px]">
+                  <button
+                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
+                      selectBtnEvent.btnEvent1
+                        ? "bg-transparent border-[#135A78] text-text-white"
+                        : "bg-[#135A78] text-text-white border-[#135A78]"
+                    }`}
+                    onClick={() => handleBtnEventList("btnEvent1")}
+                  >
+                    <span className="text-text-white title3">역주행</span>
+                    <span className="text-text-white title2bold">500</span>
+                  </button>
+
+                  <button
+                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
+                      selectBtnEvent.btnEvent2
+                        ? "bg-transparent border-text-danger-500 text-text-danger-500 text-text-white"
+                        : "bg-text-danger-500 text-text-white border-text-danger-500"
+                    }`}
+                    onClick={() => handleBtnEventList("btnEvent2")}
+                  >
+                    <span className="text-text-white title3">정차</span>
+                    <span className="text-text-white title2bold">500</span>
+                  </button>
+
+                  <button
+                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
+                      selectBtnEvent.btnEvent3
+                        ? "bg-transparent border-[#1D7E46]  text-text-white"
+                        : "bg-[#1D7E46] text-text-white border-[#1D7E46]"
+                    }`}
+                    onClick={() => handleBtnEventList("btnEvent3")}
+                  >
+                    <span className="text-text-white title3">정차</span>
+                    <span className="text-text-white title2bold">500</span>
+                  </button>
+
+                  <button
+                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
+                      selectBtnEvent.btnEvent4
+                        ? "bg-transparent border-[#5791AA]  text-text-white"
+                        : "bg-[#5791AA] text-text-white border-[#5791AA]"
+                    }`}
+                    onClick={() => handleBtnEventList("btnEvent4")}
+                  >
+                    <span className="text-text-white title3">보행자</span>
+                    <span className="text-text-white title2bold">500</span>
+                  </button>
+
+                  <button
+                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
+                      selectBtnEvent.btnEvent5
+                        ? "bg-transparent border-[#EE9F17]  text-text-white"
+                        : "bg-[#EE9F17] text-text-white border-[#EE9F17]"
+                    }`}
+                    onClick={() => handleBtnEventList("btnEvent5")}
+                  >
+                    <span className="text-text-white title3">불법 주정차</span>
+                    <span className="text-text-white title2bold">500</span>
+                  </button>
+
+                  <button
+                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
+                      selectBtnEvent.btnEvent6
+                        ? "bg-transparent border-[#F35A19]  text-text-white"
+                        : "bg-[#F35A19] text-text-white border-[#F35A19]"
+                    }`}
+                    onClick={() => handleBtnEventList("btnEvent6")}
+                  >
+                    <span className="text-text-white title3">정지선 위반</span>
+                    <span className="text-text-white title2bold">500</span>
+                  </button>
+                </div>
+
+                <div className="_containerCardEvntList flex flex-col gap-[3px] overflow-auto h-full">
+                  <CardList
+                    type="event"
+                    customCard="border-[#135A78]"
+                    title="삼성역 사거리 교차로 / 시청 방면"
+                    subtitle="승용차 / 진입 / 1차로"
+                    date="2025-01-20 12:30:00"
+                  />
+                  <CardList
+                    type="event"
+                    customCard="border-[#ED3131]"
+                    title="삼성역 사거리 교차로 / 시청 방면"
+                    subtitle="승용차 / 진입 / 1차로"
+                    date="2025-01-20 12:30:00"
+                  />
+                  <CardList
+                    type="event"
+                    customCard="border-[#1D7E46]"
+                    title="삼성역 사거리 교차로 / 시청 방면"
+                    subtitle="승용차 / 진입 / 1차로"
+                    date="2025-01-20 12:30:00"
+                  />
+                  <CardList
+                    type="event"
+                    customCard="border-[#5791AA]"
+                    title="삼성역 사거리 교차로 / 시청 방면"
+                    subtitle="승용차 / 진입 / 1차로"
+                    date="2025-01-20 12:30:00"
+                  />
+                  <CardList
+                    type="event"
+                    customCard="border-[#EE9F17]"
+                    title="삼성역 사거리 교차로 / 시청 방면"
+                    subtitle="승용차 / 진입 / 1차로"
+                    date="2025-01-20 12:30:00"
+                  />
+                  <CardList
+                    type="event"
+                    customCard="border-[#F35A19]"
+                    title="삼성역 사거리 교차로 / 시청 방면"
+                    subtitle="승용차 / 진입 / 1차로"
+                    date="2025-01-20 12:30:00"
+                  />
+                
+                 
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </>
