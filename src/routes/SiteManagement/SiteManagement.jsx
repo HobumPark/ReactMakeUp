@@ -124,6 +124,31 @@ const SiteManagement = () => {
     setGroupList(newGroupList);
   };
 
+  //same with DB table
+  const [formValues, setFormValues] = useState({
+    site_id:'',
+    name:'',
+    address:'',
+    latitude:'',
+    longitude:'',
+    type:'교차로',
+    number_of_access_roads:'',
+    mapping_box:''
+  })
+
+  
+  const handleInputChange = (e) =>{
+    const { name, value } = e.target; 
+    console.log(name)
+    console.log(value)
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+
+    console.log(formValues)
+  }
+
   return (
     <>
       <section className="wrap">
@@ -168,13 +193,20 @@ const SiteManagement = () => {
 
           <div className="box-management-col flex flex-col gap-3">
             <div className="grid grid-cols-3 gap-[50px]">
-              <DetailForm className="items-center!" label="사이트 ID" />
+              <DetailForm 
+              className="items-center!" 
+              label="사이트 ID" 
+              onChange={handleInputChange}
+              name="site_id"
+              />
 
               <DetailForm
                 className="items-center!"
                 label="명칭"
                 required={true}
                 placeholder="삼성역 사거리 교차로"
+                onChange={handleInputChange}
+                name="name"
               />
 
               <DetailForm
@@ -182,6 +214,8 @@ const SiteManagement = () => {
                 label="주소"
                 required={true}
                 placeholder="서울시 강남구 삼성동"
+                onChange={handleInputChange}
+                name="address"
               />
             </div>
 
@@ -194,8 +228,8 @@ const SiteManagement = () => {
                   showInput={false}
                 >
                   <div className="flex w-full flex-row gap-x-2">
-                    <GeneralInput customInput="w-full" placeholder="5.55555" />
-                    <GeneralInput customInput="w-full" placeholder="5.55555" />
+                    <GeneralInput customInput="w-full" placeholder="5.55555" onChange={handleInputChange} name="latitude"/>
+                    <GeneralInput customInput="w-full" placeholder="5.55555" onChange={handleInputChange} name="longitude"/>
                   </div>
                 </DetailForm>
               </div>
@@ -209,10 +243,16 @@ const SiteManagement = () => {
                   { label: "교차로", value: "교차로" },
                   { label: "횡단보도", value: "횡단보도" },
                 ]}
-                onChange={(e) => console.log("Selected:", e.target.value)}
+                //onChange={(e) => console.log("Selected:", e.target.value)}
+                onChange={handleInputChange} name="type"
               />
 
-              <DetailForm className="items-center!" label="접근로 수" />
+              <DetailForm 
+                className="items-center!" 
+                label="접근로 수" 
+                onChange={handleInputChange} 
+                name="number_of_access_roads"
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-[50px]">
@@ -221,6 +261,8 @@ const SiteManagement = () => {
                 label="매핑 함체"
                 required={true}
                 placeholder="BX01001(ID0001)"
+                onChange={handleInputChange} 
+                name="mapping_box"
               />
             </div>
 
