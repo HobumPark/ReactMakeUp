@@ -116,6 +116,21 @@ const SiteManagement = () => {
   const [groupList, setGroupList] = useState([]);
 
   const addDynamicGroup = () => {
+
+    if(siteformValues?.number_of_access_roads){
+
+      const {number_of_access_roads}=siteformValues
+
+        if(groupList.length >= number_of_access_roads){
+          alert('접근로 생성 최대 갯수를 넘을수 없습니다.')
+          return
+        }
+
+    }else{
+      alert('접근로수를 입력하세요!')
+      return
+    }
+    console.log(groupList)
     setGroupList([...groupList, groupList.length + 1]); 
   };
 
@@ -124,29 +139,78 @@ const SiteManagement = () => {
     setGroupList(newGroupList);
   };
 
-  //same with DB table
-  const [formValues, setFormValues] = useState({
+  //site input form values
+  const [siteformValues, setSiteFormValues] = useState({
     site_id:'',
-    name:'',
-    address:'',
-    latitude:'',
-    longitude:'',
-    type:'교차로',
+    site_name:'',
+    site_address:'',
+    site_latitude:'',
+    site_longitude:'',
+    site_type:'교차로',
     number_of_access_roads:'',
     mapping_box:''
   })
 
   
-  const handleInputChange = (e) =>{
+  const handleSiteInputChange = (e) => {
+    const { name, value } = e.target;
+  
+    // If the number_of_access_roads is being changed, reset the dynamic groups
+    if (name === "number_of_access_roads") {
+      setSiteFormValues((prevValues) => ({
+        ...prevValues,
+        [name]: value,
+      }));
+  
+      // Reset the group list whenever the number of access roads changes
+      setGroupList([]); // Reset all dynamic groups
+    } else {
+      setSiteFormValues((prevValues) => ({
+        ...prevValues,
+        [name]: value,
+      }));
+    }
+
+    console.log(siteformValues)
+  };
+
+  //road input form values
+  const [roadformValues, setRoadFormValues] = useState({
+    road_id:'',//접근로 id
+    road_name:'', //접근로 명칭
+    incoming_compass:'북',//진입 방향
+    outgoing_compass:'남서',//진출 방향
+    incoming_lane_cnt:'6',//진입 방향 차선수
+    outgoing_lane_cnt:'6',//진출 방향 차선수
+    incoming_direction_sub1:'',
+    incoming_direction_sub2:'',
+    incoming_direction_sub3:'',
+    incoming_direction_sub4:'',
+    incoming_direction_sub5:'',
+    incoming_direction_sub6:'',
+    crosswalk:'존재',//횡단보도 유무
+    crosswalk_length:'',//횡단보도 길이
+    corsswalk_width:'',//횡단보도 폭
+    traffic_light:'북',//보행자 신호등 유무
+    mapping_detector:'',//매핑 검지기
+    related_site_id1:'',//사이트 id (연관된)
+    related_site_id2:''//사이트 id (연관된)
+  })
+
+  const [maxRoadInputForms,setMaxRoadInputForms]=useState(0)
+  const [curRoadInputForms,setCurRoadInputForms]=useState(0)
+
+  const handleRoadInputChange = (e) =>{
     const { name, value } = e.target; 
     console.log(name)
     console.log(value)
-    setFormValues((prevValues) => ({
+
+    setRoadFormValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }));
 
-    console.log(formValues)
+    console.log(roadformValues)
   }
 
   return (
@@ -196,7 +260,7 @@ const SiteManagement = () => {
               <DetailForm 
               className="items-center!" 
               label="사이트 ID" 
-              onChange={handleInputChange}
+              onChange={handleSiteInputChange}
               name="site_id"
               />
 
@@ -205,8 +269,8 @@ const SiteManagement = () => {
                 label="명칭"
                 required={true}
                 placeholder="삼성역 사거리 교차로"
-                onChange={handleInputChange}
-                name="name"
+                onChange={handleSiteInputChange}
+                name="site_name"
               />
 
               <DetailForm
@@ -214,8 +278,8 @@ const SiteManagement = () => {
                 label="주소"
                 required={true}
                 placeholder="서울시 강남구 삼성동"
-                onChange={handleInputChange}
-                name="address"
+                onChange={handleSiteInputChange}
+                name="site_address"
               />
             </div>
 
@@ -228,8 +292,18 @@ const SiteManagement = () => {
                   showInput={false}
                 >
                   <div className="flex w-full flex-row gap-x-2">
-                    <GeneralInput customInput="w-full" placeholder="5.55555" onChange={handleInputChange} name="latitude"/>
-                    <GeneralInput customInput="w-full" placeholder="5.55555" onChange={handleInputChange} name="longitude"/>
+                    <GeneralInput 
+                        customInput="w-full" 
+                        placeholder="5.55555" 
+                        onChange={handleSiteInputChange} 
+                        name="site_latitude"
+                      />
+                      <GeneralInput 
+                        customInput="w-full" 
+                        placeholder="5.55555" 
+                        onChange={handleSiteInputChange} 
+                        name="site_longitude"
+                      />
                   </div>
                 </DetailForm>
               </div>
@@ -244,13 +318,13 @@ const SiteManagement = () => {
                   { label: "횡단보도", value: "횡단보도" },
                 ]}
                 //onChange={(e) => console.log("Selected:", e.target.value)}
-                onChange={handleInputChange} name="type"
+                onChange={handleSiteInputChange} name="site_type"
               />
 
               <DetailForm 
                 className="items-center!" 
                 label="접근로 수" 
-                onChange={handleInputChange} 
+                onChange={handleSiteInputChange} 
                 name="number_of_access_roads"
               />
             </div>
@@ -261,7 +335,7 @@ const SiteManagement = () => {
                 label="매핑 함체"
                 required={true}
                 placeholder="BX01001(ID0001)"
-                onChange={handleInputChange} 
+                onChange={handleSiteInputChange} 
                 name="mapping_box"
               />
             </div>
@@ -281,7 +355,10 @@ const SiteManagement = () => {
 
             {groupList.map((_, index) => (
               <div key={index}>
-                <DynamicForm index={index} onDelete={deleteDynamicGroup} />
+                <DynamicForm index={index} 
+                onDelete={deleteDynamicGroup} 
+                handleRoadInputChange={handleRoadInputChange}
+                />
               </div>
             ))}
 
