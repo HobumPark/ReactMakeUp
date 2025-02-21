@@ -4,7 +4,9 @@ import "./MainDashboard.css";
 import "ol/ol.css";
 import Map from "ol/Map";
 import View from "ol/View";
+// import { Tile as TileLayer } from "ol/layer";
 import { Tile as TileLayer } from "ol/layer";
+import { XYZ } from "ol/source"; // Untuk menggunakan tile sumber XYZ
 import { OSM } from "ol/source";
 import { fromLonLat } from "ol/proj";
 import Feature from "ol/Feature";
@@ -13,6 +15,8 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Style from "ol/style/Style";
 import Icon from "ol/style/Icon";
+import DbVideoModal from "../../components/Modal/dbVideoModal/dbVideoModal";
+// import DbVideoModal from "../../components/Modal/DbVideoModal/DbVideoModal";
 
 import CardList from "../../components/CardList/CardList";
 
@@ -30,12 +34,20 @@ import IconHeavyTruck from "../../assets/icon/icon-db-heavy-truck.svg";
 import IconUnknown from "../../assets/icon/icon-db-unknown.svg";
 import IconArrow from "../../assets/icon/icon-db-arrow-down.svg";
 
-import LegendCrosswalk from "../../assets/icon/icon-top-crosswalk.svg"
-import LegendIntersection from "../../assets/icon/icon-top-intersection.svg"
-import LegendSpeaker from "../../assets/icon/icon-top-speaker.svg"
-import LegendSignal from "../../assets/icon/icon-top-signal.svg"
-import LegendBox from "../../assets/icon/icon-top-box.svg"
-import LegendBillboard from "../../assets/icon/icon-top-billboard.svg"
+import LegendCrosswalk from "../../assets/icon/icon-top-crosswalk.svg";
+import LegendIntersection from "../../assets/icon/icon-top-intersection.svg";
+import LegendSpeaker from "../../assets/icon/icon-top-speaker.svg";
+import LegendSignal from "../../assets/icon/icon-top-signal.svg";
+import LegendBox from "../../assets/icon/icon-top-box.svg";
+import LegendBillboard from "../../assets/icon/icon-top-billboard.svg";
+
+import IconDefault from "../../assets/icon/icon-default.svg"
+import IconReturn from "../../assets/icon/icon-return.svg"
+import IconRoadMap from "../../assets/icon/icon-road-map.svg"
+import IconDarkMap from "../../assets/icon/icon-dark-map.svg"
+import IconSatelite from "../../assets/icon/icon-satelite-map.svg"
+
+
 
 const MainDashboard = () => {
   const [selectedButtons, setSelectedButtons] = useState({
@@ -67,6 +79,7 @@ const MainDashboard = () => {
   };
 
   const mapRef = useRef(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -79,11 +92,61 @@ const MainDashboard = () => {
           source: new OSM(),
         }),
       ],
+
       view: new View({
         center: fromLonLat([106.8456, -6.2088]),
         zoom: 10,
       }),
     });
+
+    setTimeout(() => {
+      // Ambil elemen kontrol zoom
+      const zoomControl = document.querySelector(".ol-zoom");
+
+      if (zoomControl) {
+        const icons = [
+          {
+            src: IconReturn,
+            title: "return",
+            action: () => alert("Arrow clicked!"),
+          },
+          {
+            src: IconDefault,
+            title: "default",
+            action: () => alert("Home clicked!"),
+          },
+          {
+            src: IconRoadMap,
+            title: "Location Icon",
+            action: () => alert("Location clicked!"),
+          },
+          {
+            src: IconDarkMap,
+            title: "Dark MAp",
+            action: () => alert("Settings clicked!"),
+          },
+          {
+            src: IconSatelite,
+            title: "satelit",
+            action: () => alert("Settings clicked!"),
+          },
+        ];
+
+        icons.forEach((iconData) => {
+          // Buat elemen tombol untuk setiap ikon
+          const newButton = document.createElement("button");
+          newButton.innerHTML = `<img src="${iconData.src}" alt="${iconData.title}" width="20" height="20">`;
+          newButton.className = "custom-icon-button";
+          newButton.title = iconData.title;
+
+          // Tambahkan event click ke masing-masing tombol
+          newButton.onclick = iconData.action;
+
+          // Masukkan ikon ke dalam kontrol zoom
+          zoomControl.appendChild(newButton);
+        });
+      }
+    }, 100);
 
     const iconFeature = new Feature({
       geometry: new Point(fromLonLat([106.8456, -6.2088])), // Lokasi Jakarta
@@ -120,18 +183,29 @@ const MainDashboard = () => {
     olMap.addLayer(vectorLayer);
 
     olMap.on("click", (event) => {
-      const feature = olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
-        return feature;
-      });
+      const feature = olMap.forEachFeatureAtPixel(
+        event.pixel,
+        (feature) => feature
+      );
 
       if (feature) {
-        if (feature === iconFeature) {
-          alert("Icon Crosswalk clicked!");
-        } else if (feature === iconFeature2) {
-          alert("Icon Intersection clicked!");
-        }
+        setShowModal(true); // Tampilkan modal saat ikon diklik
       }
     });
+
+    // olMap.on("click", (event) => {
+    //   const feature = olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
+    //     return feature;
+    //   });
+
+    //   if (feature) {
+    //     if (feature === iconFeature) {
+    //       alert("Icon Crosswalk clicked!");
+    //     } else if (feature === iconFeature2) {
+    //       alert("Icon Intersection clicked!");
+    //     }
+    //   }
+    // });
 
     return () => olMap.setTarget(null);
   }, []);
@@ -295,54 +369,70 @@ const MainDashboard = () => {
         <Header />
         {/* ini maps ya */}
         <div ref={mapRef} className="w-full h-full relative">
-        {/* ini maps ya */}
+          {/* ini maps ya */}
 
-        <div className="_legendTop absolute z-10 w-max h-[31px] top-[25px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-[4px] overflow-hidden">
-          <div className="flex gap-[30px] h-full">
-          <div className="bg-[#fff] w-fit h-full flex rounded-[4px]">
+          <div className="_legendTop absolute z-10 w-max h-[31px] top-[25px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-[4px] overflow-hidden">
+            <div className="flex gap-[30px] h-full">
+              <div className="bg-[#fff] w-fit h-full flex rounded-[4px]">
                 <div className="flex items-center bg-[#212527] min-w-[60px] justify-center">
-                  <span className="title3bold text-text-white text-center">SITE</span>
+                  <span className="title3bold text-text-white text-center">
+                    SITE
+                  </span>
                 </div>
                 <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
                   <div className="flex flex-row gap-[5px]">
-                  <img src={LegendCrosswalk} alt="" />
-                  <span className="title3 text-[#4B3C3C]">횡단보도</span>
+                    <img src={LegendCrosswalk} alt="" />
+                    <span className="title3 text-[#4B3C3C]">횡단보도</span>
                   </div>
                   <div className="flex flex-row gap-[5px]">
-                  <img src={LegendIntersection} alt="" />
-                  <span className="title3 text-[#4B3C3C]">교차로</span>
+                    <img src={LegendIntersection} alt="" />
+                    <span className="title3 text-[#4B3C3C]">교차로</span>
                   </div>
                 </div>
-            </div>
-            <div className="bg-[#fff] w-fit h-full flex rounded-[4px] overflow-hidden">
+              </div>
+              <div className="bg-[#fff] w-fit h-full flex rounded-[4px] overflow-hidden">
                 <div className="flex items-center bg-[#212527] min-w-[60px] justify-center">
-                  <span className="title3bold text-text-white text-center">시설물</span>
+                  <span className="title3bold text-text-white text-center">
+                    시설물
+                  </span>
                 </div>
                 <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
                   <div className="flex flex-row gap-[5px]">
-                  <img src={LegendBillboard} alt="" />
-                  <span className="title3 text-[#4B3C3C]">전광판</span>
-                  <span className="title3 text-[#4B3C3C]">( <span className="text-text-danger-500">3</span> / <span>30</span> )</span>
+                    <img src={LegendBillboard} alt="" />
+                    <span className="title3 text-[#4B3C3C]">전광판</span>
+                    <span className="title3 text-[#4B3C3C]">
+                      ( <span className="text-text-danger-500">3</span> /{" "}
+                      <span>30</span> )
+                    </span>
                   </div>
                   <div className="flex flex-row gap-[5px]">
-                  <img src={LegendSpeaker} alt="" />
-                  <span className="title3 text-[#4B3C3C]">전광판</span>
-                  <span className="title3 text-[#4B3C3C]">( <span className="text-text-danger-500">3</span> / <span>30</span> )</span>
+                    <img src={LegendSpeaker} alt="" />
+                    <span className="title3 text-[#4B3C3C]">전광판</span>
+                    <span className="title3 text-[#4B3C3C]">
+                      ( <span className="text-text-danger-500">3</span> /{" "}
+                      <span>30</span> )
+                    </span>
                   </div>
                   <div className="flex flex-row gap-[5px]">
-                  <img src={LegendSignal} alt="" />
-                  <span className="title3 text-[#4B3C3C]">레이더</span>
-                  <span className="title3 text-[#4B3C3C]">( <span className="text-text-danger-500">3</span> / <span>30</span> )</span>
+                    <img src={LegendSignal} alt="" />
+                    <span className="title3 text-[#4B3C3C]">레이더</span>
+                    <span className="title3 text-[#4B3C3C]">
+                      ( <span className="text-text-danger-500">3</span> /{" "}
+                      <span>30</span> )
+                    </span>
                   </div>
                   <div className="flex flex-row gap-[5px]">
-                  <img src={LegendBox} alt="" />
-                  <span className="title3 text-[#4B3C3C]">함체</span>
-                  <span className="title3 text-[#4B3C3C]">( <span className="text-text-danger-500">3</span> / <span>30</span> )</span>
+                    <img src={LegendBox} alt="" />
+                    <span className="title3 text-[#4B3C3C]">함체</span>
+                    <span className="title3 text-[#4B3C3C]">
+                      ( <span className="text-text-danger-500">3</span> /{" "}
+                      <span>30</span> )
+                    </span>
                   </div>
                 </div>
+              </div>
             </div>
           </div>
-        </div>
 
           {/* bg-left */}
           <div class="flex flex-col gap-[5px] overflow-hidden p-[10px] top-[10px] left-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
@@ -604,12 +694,12 @@ const MainDashboard = () => {
                     subtitle="승용차 / 진입 / 1차로"
                     date="2025-01-20 12:30:00"
                   />
-                
-                 
                 </div>
               </div>
             </div>
           </div>
+
+          {showModal && <DbVideoModal onClose={() => setShowModal(false)} />}
         </div>
       </section>
     </>
