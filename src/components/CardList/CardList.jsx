@@ -1,31 +1,84 @@
 import React, { useState } from "react";
 
-const CardList = ({ customCard,customTitle,customID,customSubtitle,customDate, title, subtitle, date, id }) => {
+const CardList = ({
+  type = "listSite", // Bisa "list" atau "event"
+  customCard,
+  customTitle,
+  customID,
+  customSubtitle,
+  customDate,
+  title,
+  subtitle,
+  date,
+  id,
+}) => {
   const [isClicked, setIsClicked] = useState(false);
-
 
   const handleCardClick = () => {
     setIsClicked(!isClicked);
   };
 
+  const typeStyles = {
+    listSite: "border-l-[4px]  ",
+    event: "border-l-[4px]  ",
+  };
+
   return (
-    <div
-      className={`${
-        customCard
-      } w-full flex flex-col gap-[3px] p-[10px]  rounded-[2px] border-l-[4px] border-red-500 ${
-        isClicked ?  "bg-[#434b56]"  : "bg-[#31363D]"
-      }`}
-      onClick={handleCardClick}
-    >
-      <div className="w-full grid grid-cols-2">
-        <span className={`${customTitle} body2 text-text-white`}>{title}</span>
-        <span className={`${customID} body2 text-text-white text-right`}>{id}</span>
-      </div>
-      <div className="w-full grid grid-cols-2">
-        <span className={`${customSubtitle} title3bold text-text-white`}>{subtitle}</span>
-        <span className={`${customDate} body2 text-text-white text-right`}>{date}</span>
-      </div>
-    </div>
+    <>
+      {type === "event" ? (
+        <div
+          className={`${customCard} w-full flex flex-col gap-[3px] p-[10px] rounded-[2px] ${
+            isClicked ? "bg-[#5B5C5C]" : "bg-[#31363D]"
+          } ${typeStyles.event}`}
+          onClick={handleCardClick}
+        >
+          <div className="w-full grid grid-cols-2">
+            <span
+              className={`title3bold ${customTitle} text-text-white col-span-2`}
+            >
+              [이벤트] {title}
+            </span>
+            {/* <span className={`${customID} body2 text-text-white text-right`}>
+              {id}
+            </span> */}
+          </div>
+          <div className="w-full grid grid-cols-2">
+            <span className={`body2medium ${customSubtitle} text-text-white`}>
+              {subtitle}
+            </span>
+            <span
+              className={`${customDate} caption text-text-white text-right`}
+            >
+              {date}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`${customCard} w-full flex flex-col gap-[3px] p-[10px] rounded-[2px] ${
+            isClicked ? "bg-[#5B5C5C]" : "bg-[#31363D]"
+          } ${typeStyles.listSite}`}
+          onClick={handleCardClick}
+        >
+          <div className="w-full grid grid-cols-2">
+            <span className={`body2 ${customTitle} text-text-white`}>
+              {title}
+            </span>
+            <span className={`${customID} body2 text-text-white text-right`}>
+              {id}
+            </span>
+          </div>
+          <div className="w-full grid grid-cols-2">
+            <span className={`body2medium ${customSubtitle} text-text-white`}>
+              {subtitle}
+            </span>
+            <span className={`${customDate} body2 text-text-white text-right`}>
+              {date}
+            </span>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

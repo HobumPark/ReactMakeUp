@@ -29,6 +29,7 @@ export const APIS = {
   programLanguage:'/common/authenticated-user/programs',
   login: "/authentication/login",
   logout:"/authentication/logout",
+  //user
   usersList: (filterParams) => `/users?${filterParams}`,
   detailUser: (userID) =>
     `/users/${userID}`,
@@ -36,6 +37,7 @@ export const APIS = {
     `/users/${userID}`,
   createUser: '/users',
   updateUser: '/users/update',
+  //code
   codeList: (filterParams) => `/codes?${filterParams}`,
   detailCode: (codeID) =>
     `/codes/${codeID}`,
@@ -51,6 +53,7 @@ export const APIS = {
   programAuthenticated: (filterParams) => `/programs/authenticated-user-language?${filterParams}`,
   upperProgram: '/programs/upper-programs',
   groupProgram: (groupCode) => `/authority/groups/${groupCode}/programs`,
+  //program
   programList: (filterParams) => `/programs?${filterParams}`,
   detailProgram: (programID) =>
     `/programs/${programID}`,
@@ -75,5 +78,7 @@ export const APIS = {
   createBox: '/box',
   updateBox: (rtuID) =>`/box/${rtuID}`,
   detectorList: (filterParams) => `/detector?${filterParams}`,
+  //site
+  siteList:(filterParams) => `/site?${filterParams}`,
   facilityList: (filterParams) => `/facility?${filterParams}`,
 }

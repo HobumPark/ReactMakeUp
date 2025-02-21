@@ -1,13 +1,51 @@
 .ol-overlaycontainer-stopevent {
-    margin-left: 30% !important;
+    margin-left: 21% !important;
     position: absolute !important;
 }
 
-._contentCardList::-webkit-scrollbar {
+._contentCardList::-webkit-scrollbar ,
+._containerCardEvntList::-webkit-scrollbar {
     width: 5px;
     
 }
-._contentCardList::-webkit-scrollbar-thumb{
+._contentCardList::-webkit-scrollbar-thumb,
+._containerCardEvntList::-webkit-scrollbar-thumb{
     background-color: #555758;
     border-radius: 5px;
+}
+
+.ol-control {
+    /* margin-left: 20.7%;
+    margin-top: 0.1%;
+    padding: 0px !important; */
+    border: 1px solid #fff;
+}
+
+.ol-control button {
+    display: block;
+    margin: 1px;
+    padding: 0;
+    color: #fff !important;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: inherit;
+    text-align: center !important;
+    height: 1.375em !important;
+    width: 35px !important;
+    line-height: .4em;
+    background-color: #212527 !important;
+    border: none;
+    border-radius: 2px;
+    align-items: center !important;
+}
+
+.custom-icon-button {
+    display: flex !important;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+}
+
+.ol-control button:hover, .ol-control button:focus {
+    filter: invert(1);
 }

@@ -4,7 +4,7 @@ import ButtonGroup from "../ButtonGroup/ButtonGroup";
 import Select from "../Select/Select";
 import GeneralInput from "../GeneralInput/GeneralInput";
 import IconDelete from "../../assets/icon/icon-delete-circle.svg";
-const DynamicForm = ({ index, onDelete }) => {
+const DynamicForm = ({ index, onDelete, handleRoadInputChange }) => {
   return (
     <>
       <div className="grid grid-cols-3 gap-[50px]">
@@ -22,6 +22,8 @@ const DynamicForm = ({ index, onDelete }) => {
                   className="items-center!"
                   styleLabel="w-[124px]!"
                   label="접근로 ID "
+                  name="road_id"
+                  onChange={handleRoadInputChange}
                 />
               </div>
               <div className="flex w-full flex-row gap-x-4">
@@ -31,6 +33,7 @@ const DynamicForm = ({ index, onDelete }) => {
                   required={true}
                   styleLabel="w-[124px]!"
                   showInput={false}
+                  
                 >
                   <div className="flex w-full flex-row gap-x-2">
                     <DetailForm
@@ -43,7 +46,9 @@ const DynamicForm = ({ index, onDelete }) => {
                         { label: "6", value: "number" },
                         { label: "5", value: "number" },
                       ]}
-                      onChange={(e) => console.log("Selected:", e.target.value)}
+                      //onChange={(e) => console.log("Selected:", e.target.value)}
+                      name="incoming_compass"
+                      onChange={handleRoadInputChange}
                     />
                     <DetailForm
                       inputType="select"
@@ -55,7 +60,9 @@ const DynamicForm = ({ index, onDelete }) => {
                         { label: "6", value: "number" },
                         { label: "5", value: "number" },
                       ]}
-                      onChange={(e) => console.log("Selected:", e.target.value)}
+                      //onChange={(e) => console.log("Selected:", e.target.value)}
+                      name="outgoing_compass"
+                      onChange={handleRoadInputChange}
                     />
                   </div>
                 </DetailForm>
@@ -67,6 +74,8 @@ const DynamicForm = ({ index, onDelete }) => {
                   required={true}
                   styleLabel="w-[124px]!"
                   showInput={false}
+                  name="crosswalk"
+                  onChange={handleRoadInputChange}
                 >
                   <div className="flex w-full flex-row gap-x-2">
                     <DetailForm
@@ -86,6 +95,8 @@ const DynamicForm = ({ index, onDelete }) => {
                 styleLabel="w-[124px]!"
                 label="매핑 검지기"
                 placeholder="DT01001(ID0003)"
+                name="mapping_detector"
+                onChange={handleRoadInputChange}
               />
             </div>
           </div>
@@ -100,6 +111,8 @@ const DynamicForm = ({ index, onDelete }) => {
                   styleLabel=""
                   label="명칭 "
                   placeholder="북쪽 접근로"
+                  name="road_name"
+                  onChange={handleRoadInputChange}
                 />
               </div>
             </div>
@@ -118,7 +131,9 @@ const DynamicForm = ({ index, onDelete }) => {
                       showTitle={false}
                       required={true}
                       optionSelect={[{ label: "북", value: "number" }]}
-                      onChange={(e) => console.log("Selected:", e.target.value)}
+                      //onChange={(e) => console.log("Selected:", e.target.value)}
+                      name="incoming_compass"
+                      onChange={handleRoadInputChange}
                     />
                     <DetailForm
                       inputType="select"
@@ -129,7 +144,9 @@ const DynamicForm = ({ index, onDelete }) => {
                         { label: "남서", value: "number" },
                         // { label: "5", value: "number" },
                       ]}
-                      onChange={(e) => console.log("Selected:", e.target.value)}
+                      //onChange={(e) => console.log("Selected:", e.target.value)}
+                      name="outgoing_compass"
+                      onChange={handleRoadInputChange}
                     />
                   </div>
                 </DetailForm>
@@ -145,12 +162,12 @@ const DynamicForm = ({ index, onDelete }) => {
               showInput={false}
             >
               <div className="flex w-full flex-row gap-x-2">
-                <GeneralInput customInput="w-full" placeholder="좌, 직" />
-                <GeneralInput customInput="w-full" placeholder="좌, 직" />
-                <GeneralInput customInput="w-full" placeholder="좌, 직" />
-                <GeneralInput customInput="w-full" placeholder="좌, 직" />
-                <GeneralInput customInput="w-full" placeholder="좌, 직" />
-                <GeneralInput customInput="w-full" placeholder="좌, 직" />
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub1" onChange={handleRoadInputChange}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub2" onChange={handleRoadInputChange}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub3" onChange={handleRoadInputChange}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub4" onChange={handleRoadInputChange}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub5" onChange={handleRoadInputChange}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub6" onChange={handleRoadInputChange}/>
               </div>
             </DetailForm>
           </div>
@@ -165,8 +182,8 @@ const DynamicForm = ({ index, onDelete }) => {
                   showInput={false}
                 >
                   <div className="flex w-full flex-row gap-x-2">
-                    <GeneralInput customInput="w-full" placeholder="5m" />
-                    <GeneralInput customInput="w-full" placeholder="2.5m" />
+                    <GeneralInput customInput="w-full" placeholder="5m" name="crosswalk_length" onChange={handleRoadInputChange}/>
+                    <GeneralInput customInput="w-full" placeholder="2.5m" name="corsswalk_width" onChange={handleRoadInputChange}/>
                   </div>
                 </DetailForm>
               </div>
@@ -178,6 +195,8 @@ const DynamicForm = ({ index, onDelete }) => {
                   label="보행자 신호등 유무"
                   required={true}
                   showInput={false}
+                  name="traffic_light" 
+                  onChange={handleRoadInputChange}
                 >
                   <div className="flex w-full flex-row gap-x-2">
                     <DetailForm
@@ -197,11 +216,11 @@ const DynamicForm = ({ index, onDelete }) => {
           <div className="grid grid-cols-2 gap-[50px]">
             <div className="flex flex-row items-center gap-[20px]">
               <div className="flex w-full flex-row gap-x-4">
-                <DetailForm className="items-center!" label="사이트 ID" />
+                <DetailForm className="items-center!" label="사이트 ID" name="related_site_id1" onChange={handleRoadInputChange}/>
               </div>
             </div>
             <div className="flex flex-row items-center gap-[20px]">
-              <DetailForm className="items-center!" label="사이트 ID" />
+                <DetailForm className="items-center!" label="사이트 ID" name="related_site_id2" onChange={handleRoadInputChange}/>
             </div>
           </div>
         </div>
