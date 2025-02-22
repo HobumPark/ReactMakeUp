@@ -205,6 +205,12 @@ const SiteManagement = () => {
       }));
     }
 
+    if (isNewClicked) {//new버튼 클릭했을때만
+      setHasChangesCreate(true); 
+    } else {
+      setHasChangesUpdate(true); 
+    }
+
     console.log(siteFormValues)
   };
 
@@ -253,8 +259,9 @@ const SiteManagement = () => {
     const rowData = row.getData();
     console.log(rowData);
     setDisabledForm(false)
-    setIsNewClicked(false);
-
+    setHasChangesUpdate(false)
+    enableUpdateButtons()
+    
     // 바로 폼에 값을 설정하는 방식
     setSiteFormValues({
       site_id: rowData.site_id,
@@ -334,6 +341,16 @@ const SiteManagement = () => {
     });
   };
 
+  const enableUpdateButtons = () => {
+    disableAllButtons();
+    setButtonState((prevState) => ({
+      ...prevState,
+      cancel: false,//disable-false는 활성화
+      delete: false,//disable-false는 활성화
+      create: false,//disable-false는 활성화
+    }));
+  };
+
   const handleNewButtonClick = () => {
       alert('new!')
       setIsNewClicked(true);
@@ -350,10 +367,38 @@ const SiteManagement = () => {
   
   const handleCancelButtonClick = () => {
       alert('cancel!')
+      
+      if (hasChangesUpdate){
+        const message = new NoticeMessage(
+          t('msg > flush confirm'),
+          {
+            mode: "confirm",
+          }
+        );
+        message.confirmClicked().then(() => {
+          alert('취소!')
+          setDisabledForm(false);
+          emptyDetail()
+
+        });
+      }
+      else{
+        setDisabledForm(false);
+        emptyDetail()
+      }
   };
 
   const handleDeleteButtonClick = () => {
       alert('delete!')
+      const message = new NoticeMessage(
+      t('msg > delete confirm'),
+      {
+        mode: "confirm",
+      }
+    );
+    message.confirmClicked().then(() => {
+      alert('삭제 진행!')
+    });
   };
 
 
