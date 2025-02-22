@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import ContainerCard from "../../components/ContainerCard/ContainerCard";
 import Filtering from "../../components/Filtering/Filtering";
 import { ReactTabulator } from "react-tabulator";
@@ -10,6 +10,9 @@ import GeneralInput from "../../components/GeneralInput/GeneralInput";
 import DynamicForm from "../../components/DynamicForm/DynamicForm";
 import IconDelete from "../../assets/icon/icon-delete-circle.svg";
 import useSiteMgt from '../../hooks/useSiteMgt';
+import NoticeMessage from "../../plugin/noticemessage/noticemessage"
+import { useTranslation } from 'react-i18next';
+
 
 const boxTabulator = [
   {
@@ -24,7 +27,7 @@ const boxTabulator = [
   {
     title: "사이트 ID",
     field: "site_id",
-    WidthGrow: 1,
+    WidthGrow: 80,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -49,9 +52,18 @@ const boxTabulator = [
     resizable: false,
   },
   {
-    title: "위도 / 경도",
-    field: "location",
-    widthGrow: 1,
+    title: "위도",
+    field: "lat",
+    widthGrow: 0.5,
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "경도",
+    field: "lng",
+    widthGrow: 0.5,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -59,8 +71,8 @@ const boxTabulator = [
   },
   {
     title: "접근로 수",
-    field: "no_approaches",
-    widthGrow: 1,
+    field: "number_road",
+    widthGrow: 0.5,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -68,7 +80,7 @@ const boxTabulator = [
   },
   {
     title: "업데이트 일시",
-    field: "update_date",
+    field: "updated_time",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -91,7 +103,7 @@ const data = [
 
 
 const SiteManagement = () => {
-
+  const { t, i18n } = useTranslation();
 
   const [queryParams, setQueryParams] = useState("");
   const { siteListData, } = useSiteMgt({
@@ -99,6 +111,7 @@ const SiteManagement = () => {
   });
   console.log('siteListData')
   console.log(siteListData)
+
 
   const [selectedOption, setSelectedOption] = useState("");
   const handleChange = (e) => {
@@ -111,12 +124,16 @@ const SiteManagement = () => {
   ];
 
   const optionsTabulator = {
+    selectableRows: 1,
     pagination: true,
     paginationSize: 10,
     rowHeight: 41,
     movableRows: false,
     resizableRows: false,
     footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
+    selectableRowsCheck:(row)=>{
+      return !row.getElement().classList.contains("tabulator-selected")
+    }
   };
 
   const logData = [
@@ -130,9 +147,9 @@ const SiteManagement = () => {
 
   const addDynamicGroup = () => {
 
-    if(siteformValues?.number_of_access_roads){
+    if(siteFormValues?.number_of_access_roads){
 
-      const {number_of_access_roads}=siteformValues
+      const {number_of_access_roads}=siteFormValues
 
         if(groupList.length >= number_of_access_roads){
           alert('접근로 생성 최대 갯수를 넘을수 없습니다.')
@@ -153,14 +170,14 @@ const SiteManagement = () => {
   };
 
   //site input form values
-  const [siteformValues, setSiteFormValues] = useState({
+  const [siteFormValues, setsiteFormValues] = useState({
     site_id:'',
-    site_name:'',
-    site_address:'',
-    site_latitude:'',
-    site_longitude:'',
+    name:'',
+    address:'',
+    lat:'',
+    lng:'',
     site_type:'교차로',
-    number_of_access_roads:'',
+    number_road:'',
     mapping_box:''
   })
 
@@ -170,7 +187,7 @@ const SiteManagement = () => {
   
     // If the number_of_access_roads is being changed, reset the dynamic groups
     if (name === "number_of_access_roads") {
-      setSiteFormValues((prevValues) => ({
+      setsiteFormValues((prevValues) => ({
         ...prevValues,
         [name]: value,
       }));
@@ -178,14 +195,16 @@ const SiteManagement = () => {
       // Reset the group list whenever the number of access roads changes
       setGroupList([]); // Reset all dynamic groups
     } else {
-      setSiteFormValues((prevValues) => ({
+      setsiteFormValues((prevValues) => ({
         ...prevValues,
         [name]: value,
       }));
     }
 
-    console.log(siteformValues)
+    console.log(siteFormValues)
   };
+
+  const tbRefInit = useRef(null);
 
   //road input form values
   const [roadformValues, setRoadFormValues] = useState({
@@ -226,6 +245,25 @@ const SiteManagement = () => {
     console.log(roadformValues)
   }
 
+  const handleRowSelected = useCallback((row) => {
+    const rowData = row.getData();
+    console.log(rowData);
+    
+    // 바로 폼에 값을 설정하는 방식
+    setsiteFormValues({
+      site_id: rowData.site_id,
+      name: rowData.name,
+      address: rowData.address,
+      lat: rowData.lat,
+      lng: rowData.lng,
+      site_type: rowData.site_type || "교차로",
+      number_road: rowData.number_road,
+      mapping_box: rowData.mapping_box || "",
+    });
+  }, []);
+
+  
+
   return (
     <>
       <section className="wrap">
@@ -259,6 +297,15 @@ const SiteManagement = () => {
             className="tabulator-custom w-full "
             //   pagination="local"
             options={optionsTabulator}
+            onRef={(r) => {
+              tbRefInit.current = r.current;
+            }}
+            events={{
+              rowSelected: handleRowSelected,
+              tableBuilt: () => {
+                console.log('tableBuilt')
+              },
+            }}
           />
         </ContainerCard>
 
@@ -275,6 +322,7 @@ const SiteManagement = () => {
               label="사이트 ID" 
               onChange={handleSiteInputChange}
               name="site_id"
+              value={siteFormValues.site_id || ''}
               />
 
               <DetailForm
@@ -283,7 +331,8 @@ const SiteManagement = () => {
                 required={true}
                 placeholder="삼성역 사거리 교차로"
                 onChange={handleSiteInputChange}
-                name="site_name"
+                name="name"
+                value={siteFormValues.name || ''}
               />
 
               <DetailForm
@@ -292,7 +341,8 @@ const SiteManagement = () => {
                 required={true}
                 placeholder="서울시 강남구 삼성동"
                 onChange={handleSiteInputChange}
-                name="site_address"
+                name="address"
+                value={siteFormValues.address || ''}
               />
             </div>
 
@@ -309,13 +359,15 @@ const SiteManagement = () => {
                         customInput="w-full" 
                         placeholder="5.55555" 
                         onChange={handleSiteInputChange} 
-                        name="site_latitude"
+                        name="lat"
+                        value={siteFormValues.lat || ''}
                       />
                       <GeneralInput 
                         customInput="w-full" 
                         placeholder="5.55555" 
                         onChange={handleSiteInputChange} 
-                        name="site_longitude"
+                        name="lng"
+                        value={siteFormValues.lng || ''}
                       />
                   </div>
                 </DetailForm>
@@ -330,7 +382,6 @@ const SiteManagement = () => {
                   { label: "교차로", value: "교차로" },
                   { label: "횡단보도", value: "횡단보도" },
                 ]}
-                //onChange={(e) => console.log("Selected:", e.target.value)}
                 onChange={handleSiteInputChange} name="site_type"
               />
 
@@ -338,7 +389,8 @@ const SiteManagement = () => {
                 className="items-center!" 
                 label="접근로 수" 
                 onChange={handleSiteInputChange} 
-                name="number_of_access_roads"
+                name="number_road"
+                value={siteFormValues.number_road || ''}
               />
             </div>
 
