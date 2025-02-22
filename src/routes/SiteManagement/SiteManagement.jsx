@@ -13,7 +13,7 @@ import useSiteMgt from '../../hooks/useSiteMgt';
 import NoticeMessage from "../../plugin/noticemessage/noticemessage"
 import { useTranslation } from 'react-i18next';
 
-
+//table set, text
 const boxTabulator = [
   {
     title: "No",
@@ -106,6 +106,8 @@ const SiteManagement = () => {
   const { t, i18n } = useTranslation();
 
   const [queryParams, setQueryParams] = useState("");
+
+  //get site data - API
   const { siteListData, } = useSiteMgt({
     queryParams: queryParams  || "",
   });
@@ -145,6 +147,7 @@ const SiteManagement = () => {
 
   const [groupList, setGroupList] = useState([]);
 
+  //add dynamic input form of road
   const addDynamicGroup = () => {
 
     if(siteFormValues?.number_of_access_roads){
@@ -170,24 +173,25 @@ const SiteManagement = () => {
   };
 
   //site input form values
-  const [siteFormValues, setsiteFormValues] = useState({
+  const [siteFormValues, setSiteFormValues] = useState({
     site_id:'',
     name:'',
     address:'',
     lat:'',
     lng:'',
-    site_type:'교차로',
+    type:'102001',
+    type_value:'Intersection',
     number_road:'',
     mapping_box:''
   })
 
-  
+  // select on change - intersection and crosswalk
   const handleSiteInputChange = (e) => {
     const { name, value } = e.target;
   
     // If the number_of_access_roads is being changed, reset the dynamic groups
-    if (name === "number_of_access_roads") {
-      setsiteFormValues((prevValues) => ({
+    if (name === "number_road") {
+      setSiteFormValues((prevValues) => ({
         ...prevValues,
         [name]: value,
       }));
@@ -195,7 +199,7 @@ const SiteManagement = () => {
       // Reset the group list whenever the number of access roads changes
       setGroupList([]); // Reset all dynamic groups
     } else {
-      setsiteFormValues((prevValues) => ({
+      setSiteFormValues((prevValues) => ({
         ...prevValues,
         [name]: value,
       }));
@@ -248,21 +252,110 @@ const SiteManagement = () => {
   const handleRowSelected = useCallback((row) => {
     const rowData = row.getData();
     console.log(rowData);
-    
+    setDisabledForm(false)
+    setIsNewClicked(false);
+
     // 바로 폼에 값을 설정하는 방식
-    setsiteFormValues({
+    setSiteFormValues({
       site_id: rowData.site_id,
       name: rowData.name,
       address: rowData.address,
       lat: rowData.lat,
       lng: rowData.lng,
-      site_type: rowData.site_type || "교차로",
+      type_value: rowData.type_value || "교차로",
       number_road: rowData.number_road,
       mapping_box: rowData.mapping_box || "",
     });
   }, []);
-
   
+  // select site type - Intersection or Crosswalk
+  const getSiteTypeOptions = () => {
+    if (siteFormValues.type_value === 'Intersection') {
+      console.log('Intersection');
+      return [
+        { label: '교차로', value: '교차로' },
+        { label: '횡단보도', value: '횡단보도' }
+      ];
+    } else if (siteFormValues.type_value === 'Crosswalk') {
+      console.log('Crosswalk');
+      return [
+        { label: '횡단보도', value: '횡단보도' },
+        { label: '교차로', value: '교차로' }
+      ];
+    }
+    return [];
+  };
+    
+  //CRUD Button Group
+  //Button State
+  const [buttonState, setButtonState] = useState({
+    confirm: true,
+    cancel: true,
+    delete: true,
+    create: false,
+  });
+  const tbRef = useRef(null);
+  const searchRef = useRef(null);
+  const idRef = useRef(null);
+  const nameRef = useRef(null);
+  const [disabledForm, setDisabledForm] = useState(true);
+  const [disabledId, setDisabledId] = useState(true);
+  const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
+  const [hasChangesCreate, setHasChangesCreate] = useState(false);
+  const [isRequired, setIsRequired] = useState(false);
+  const hasChangesUpdateRef = useRef(hasChangesUpdate);
+  const hasChangesCreateRef = useRef(hasChangesCreate);
+  const [newId, setNewId] = useState('');
+  const [isNewClicked, setIsNewClicked] = useState(false);
+
+  //empty form data
+  const emptyDetail = () => {
+    setSiteFormValues((prevValues) => ({
+      ...prevValues,
+      site_id:'',
+      name:'',
+      address:'',
+      lat:'',
+      lng:'',
+      type:'102001',
+      type_value:'Intersection',
+      number_road:'',
+      mapping_box:''
+    }));
+  };
+
+  //CRUD Button Group Function
+  const disableAllButtons = () => {
+    setButtonState({
+      confirm: true,
+      cancel: true,
+      delete: true,
+      create: true,
+    });
+  };
+
+  const handleNewButtonClick = () => {
+      alert('new!')
+      setIsNewClicked(true);
+      setDisabledForm(false);
+      emptyDetail()
+  };
+  const handleRegistButtonClick = () => {
+      alert('regist!')
+  }
+
+  const handleConfirmButtonClick = () => {
+      alert('confirm!')
+  }
+  
+  const handleCancelButtonClick = () => {
+      alert('cancel!')
+  };
+
+  const handleDeleteButtonClick = () => {
+      alert('delete!')
+  };
+
 
   return (
     <>
@@ -323,6 +416,7 @@ const SiteManagement = () => {
               onChange={handleSiteInputChange}
               name="site_id"
               value={siteFormValues.site_id || ''}
+              disabled={disabledForm}
               />
 
               <DetailForm
@@ -333,6 +427,7 @@ const SiteManagement = () => {
                 onChange={handleSiteInputChange}
                 name="name"
                 value={siteFormValues.name || ''}
+                disabled={disabledForm}
               />
 
               <DetailForm
@@ -343,6 +438,7 @@ const SiteManagement = () => {
                 onChange={handleSiteInputChange}
                 name="address"
                 value={siteFormValues.address || ''}
+                disabled={disabledForm}
               />
             </div>
 
@@ -361,6 +457,7 @@ const SiteManagement = () => {
                         onChange={handleSiteInputChange} 
                         name="lat"
                         value={siteFormValues.lat || ''}
+                        disabled={disabledForm}
                       />
                       <GeneralInput 
                         customInput="w-full" 
@@ -368,6 +465,7 @@ const SiteManagement = () => {
                         onChange={handleSiteInputChange} 
                         name="lng"
                         value={siteFormValues.lng || ''}
+                        disabled={disabledForm}
                       />
                   </div>
                 </DetailForm>
@@ -378,11 +476,10 @@ const SiteManagement = () => {
                 className="items-center!"
                 label="타입"
                 required={true}
-                optionSelect={[
-                  { label: "교차로", value: "교차로" },
-                  { label: "횡단보도", value: "횡단보도" },
-                ]}
+                optionSelect={getSiteTypeOptions()} // Dynamic options based on site_type
+
                 onChange={handleSiteInputChange} name="site_type"
+                disabled={disabledForm}
               />
 
               <DetailForm 
@@ -391,6 +488,7 @@ const SiteManagement = () => {
                 onChange={handleSiteInputChange} 
                 name="number_road"
                 value={siteFormValues.number_road || ''}
+                disabled={disabledForm}
               />
             </div>
 
@@ -402,6 +500,7 @@ const SiteManagement = () => {
                 placeholder="BX01001(ID0001)"
                 onChange={handleSiteInputChange} 
                 name="mapping_box"
+                disabled={disabledForm}
               />
             </div>
 
@@ -434,10 +533,16 @@ const SiteManagement = () => {
               </div>
               <div className="flex-none">
                 <ButtonGroup
-                  cancelButtonState={false}
-                  confirmButtonState={false}
-                  deleteButtonState={false}
-                  newButtonState={false}
+                  onClickDelete={handleDeleteButtonClick}
+                  onClickNew={handleNewButtonClick}
+                  onClickCancel={handleCancelButtonClick}
+                  onClickRegist={handleRegistButtonClick}
+                  onClickConfirm ={handleConfirmButtonClick}
+                  isNewClicked={isNewClicked}
+                  cancelButtonState={buttonState.cancel}
+                  confirmButtonState={hasChangesUpdate ? false : buttonState.confirm}
+                  deleteButtonState={buttonState.delete}
+                  newButtonState={hasChangesCreate ? false :buttonState.create}
                 />
               </div>
             </div>
