@@ -80,5 +80,7 @@ export const APIS = {
   detectorList: (filterParams) => `/detector?${filterParams}`,
   //site
   siteList:(filterParams) => `/site?${filterParams}`,
+  updateSite: (siteId)=>`/site/${siteId}`,
+  deleteSite: (siteId)=>`/site/${siteId}`,
   facilityList: (filterParams) => `/facility?${filterParams}`,
 }

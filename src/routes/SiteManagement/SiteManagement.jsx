@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import ContainerCard from "../../components/ContainerCard/ContainerCard";
 import Filtering from "../../components/Filtering/Filtering";
 import { ReactTabulator } from "react-tabulator";
@@ -108,7 +108,7 @@ const SiteManagement = () => {
   const [queryParams, setQueryParams] = useState("");
 
   //get site data - API
-  const { siteListData, } = useSiteMgt({
+  const { siteListData, deleteSite, updateSite } = useSiteMgt({
     queryParams: queryParams  || "",
   });
   console.log('siteListData')
@@ -132,7 +132,7 @@ const SiteManagement = () => {
     rowHeight: 41,
     movableRows: false,
     resizableRows: false,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${siteListData?.data.length} 건</div>`,
     selectableRowsCheck:(row)=>{
       return !row.getElement().classList.contains("tabulator-selected")
     }
@@ -182,7 +182,8 @@ const SiteManagement = () => {
     type:'102001',
     type_value:'Intersection',
     number_road:'',
-    mapping_box:''
+    mapping_box:'',
+    description:'description'
   })
 
   // select on change - intersection and crosswalk
@@ -257,10 +258,29 @@ const SiteManagement = () => {
 
   const handleRowSelected = useCallback((row) => {
     const rowData = row.getData();
-    console.log(rowData);
+
+    if(hasChangesCreateRef.current || hasChangesUpdateRef.current){{
+      const message = new NoticeMessage(
+              t('msg > flush confirm'),
+              {
+                mode: "confirm",
+              }
+            );
+            message.confirmClicked().then(() => {
+              //const rowData = row.getData();
+              setDisabledForm(false)
+              setHasChangesUpdate(false)
+              enableUpdateButtons()
+              setIsNewClicked(false);
+            });
+    } 
+  }else {
     setDisabledForm(false)
     setHasChangesUpdate(false)
     enableUpdateButtons()
+    setIsNewClicked(false);
+  }
+  
     
     // 바로 폼에 값을 설정하는 방식
     setSiteFormValues({
@@ -269,22 +289,27 @@ const SiteManagement = () => {
       address: rowData.address,
       lat: rowData.lat,
       lng: rowData.lng,
+      type:'102001',
       type_value: rowData.type_value || "교차로",
       number_road: rowData.number_road,
       mapping_box: rowData.mapping_box || "",
+      description:"description"
     });
+    
   }, []);
   
   // select site type - Intersection or Crosswalk
   const getSiteTypeOptions = () => {
     if (siteFormValues.type_value === 'Intersection') {
       console.log('Intersection');
+
       return [
         { label: '교차로', value: '교차로' },
         { label: '횡단보도', value: '횡단보도' }
       ];
     } else if (siteFormValues.type_value === 'Crosswalk') {
       console.log('Crosswalk');
+
       return [
         { label: '횡단보도', value: '횡단보도' },
         { label: '교차로', value: '교차로' }
@@ -293,6 +318,21 @@ const SiteManagement = () => {
     return [];
   };
     
+  // Use useEffect to trigger the update when type_value changes
+  useEffect(() => {
+    if (siteFormValues.type_value === 'Intersection') {
+      setSiteFormValues((prevValues) => ({
+        ...prevValues,
+        type: '102001',
+      }));
+    } else if (siteFormValues.type_value === 'Crosswalk') {
+      setSiteFormValues((prevValues) => ({
+        ...prevValues,
+        type: '102002',
+      }));
+    }
+  }, [siteFormValues.type_value]); // Dependency array ensures this runs when `type_value` changes
+
   //CRUD Button Group
   //Button State
   const [buttonState, setButtonState] = useState({
@@ -327,7 +367,8 @@ const SiteManagement = () => {
       type:'102001',
       type_value:'Intersection',
       number_road:'',
-      mapping_box:''
+      mapping_box:'',
+      description:'description'
     }));
   };
 
@@ -341,6 +382,15 @@ const SiteManagement = () => {
     });
   };
 
+  const enableInitialButtons = () => {
+    disableAllButtons();
+    setIsNewClicked(false); 
+    setButtonState((prevState) => ({
+      ...prevState,
+      create: false,
+    }));
+  };
+
   const enableUpdateButtons = () => {
     disableAllButtons();
     setButtonState((prevState) => ({
@@ -352,21 +402,42 @@ const SiteManagement = () => {
   };
 
   const handleNewButtonClick = () => {
-      alert('new!')
+      //alert('new!')
       setIsNewClicked(true);
       setDisabledForm(false);
       emptyDetail()
   };
   const handleRegistButtonClick = () => {
-      alert('regist!')
+      //alert('regist!')
   }
 
   const handleConfirmButtonClick = () => {
-      alert('confirm!')
+      //alert('confirm!')
+      const updatedSiteFormValues = {
+        ...siteFormValues
+      }
+      //test sample
+      const testSample = {
+        "name":'aaa',
+        "type":'bbb',
+        "address":'ccc',
+        "lat":12.3,
+        "lng":12.4,
+        "description":"ddd"
+      }
+      alert('변경될값 확인')
+      const siteId = updatedSiteFormValues.site_id
+      console.log('변경될값 확인')
+      console.log(updatedSiteFormValues)
+      console.log(siteId)
+      console.log(testSample)
+
+      updateSite(updatedSiteFormValues)
+      
   }
   
   const handleCancelButtonClick = () => {
-      alert('cancel!')
+      //alert('cancel!')
       
       if (hasChangesUpdate){
         const message = new NoticeMessage(
@@ -376,7 +447,7 @@ const SiteManagement = () => {
           }
         );
         message.confirmClicked().then(() => {
-          alert('취소!')
+          //alert('취소!')
           setDisabledForm(false);
           emptyDetail()
 
@@ -398,9 +469,21 @@ const SiteManagement = () => {
     );
     message.confirmClicked().then(() => {
       alert('삭제 진행!')
+      const siteId=siteFormValues?.site_id
+      deleteSite(siteId)
     });
   };
 
+  const reloadCallback = () => {
+    enableInitialButtons();
+    tbRef.current.deselectRow();
+    setIsRequired(false);
+    emptyDetail();
+    setDisabledForm(true);
+    setDisabledId(true);
+    setHasChangesUpdate(false);
+    setSelectedUser({ id: null });
+  };
 
   return (
     <>
@@ -461,7 +544,7 @@ const SiteManagement = () => {
               onChange={handleSiteInputChange}
               name="site_id"
               value={siteFormValues.site_id || ''}
-              disabled={disabledForm}
+              disabled={true}
               />
 
               <DetailForm

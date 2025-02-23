@@ -196,7 +196,7 @@ const enableInitialButtons = () => {
   }));
 };
 
-const enableUPDATEButtons = () => {
+const enableUpdateButtons = () => {
   disableAllButtons();
   setButtonState((prevState) => ({
     ...prevState,
@@ -236,7 +236,7 @@ const createCallback = () => {
 };
 
 const updateCallback = () => {
-  enableUPDATEButtons();
+  enableUpdateButtons();
   setIsRequired(false);
   setHasChangesUpdate(false);
 };
@@ -347,7 +347,7 @@ const updateCallback = () => {
       });
       setDisabledForm(false);
       setDisabledId(true);
-      enableUPDATEButtons();
+      enableUpdateButtons();
       setIsNewClicked(false);
     }
     requestAnimationFrame(() => {
