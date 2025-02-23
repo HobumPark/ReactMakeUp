@@ -19,3 +19,9 @@
     padding: 6px 10px ;
     border-bottom: 1px solid #4E5C84 !important;
 }
+
+
+/* hide icon zoom  */
+._maps_accessRoad .ol-overlaycontainer-stopevent  {
+    display: none !important;
+}

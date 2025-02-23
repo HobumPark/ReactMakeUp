@@ -1,7 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import "./AccessRoadDashboard.css";
 import { ReactTabulator } from "react-tabulator";
+import Map from "ol/Map";
+import View from "ol/View";
+// import { Tile as TileLayer } from "ol/layer";
+import { Tile as TileLayer } from "ol/layer";
+import { XYZ } from "ol/source"; // Untuk menggunakan tile sumber XYZ
+import { OSM } from "ol/source";
+import { fromLonLat } from "ol/proj";
+import Feature from "ol/Feature";
+import Point from "ol/geom/Point";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import Style from "ol/style/Style";
+import Icon from "ol/style/Icon";
 
 import ImgOneWay from "../../assets/icon/img-one-way.svg";
 
@@ -226,6 +239,129 @@ const AccessRoadDashboard = () => {
     resizableRows: false,
     // footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
   };
+
+  const mapRef = useRef(null);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    // ✅ Inisialisasi peta
+    const olMap = new Map({
+      target: mapRef.current,
+      layers: [
+        new TileLayer({
+          source: new OSM(),
+        }),
+      ],
+
+      view: new View({
+        center: fromLonLat([106.8456, -6.2088]),
+        zoom: 10,
+      }),
+    });
+
+    // setTimeout(() => {
+    //   // Ambil elemen kontrol zoom
+    //   const zoomControl = document.querySelector(".ol-zoom");
+    
+    //   if (zoomControl) {
+    //     // ✅ Hapus semua tombol ikon lama sebelum menambahkan yang baru
+    //     zoomControl.querySelectorAll(".custom-icon-button").forEach((btn) => btn.remove());
+    
+    //     const icons = [
+    //       {
+    //         src: IconReturn,
+    //         title: "return",
+    //         action: () => alert("Arrow clicked!"),
+    //       },
+    //       {
+    //         src: IconDefault,
+    //         title: "default",
+    //         action: () => alert("Home clicked!"),
+    //       },
+    //       {
+    //         src: IconRoadMap,
+    //         title: "Location Icon",
+    //         action: () => alert("Location clicked!"),
+    //       },
+    //       {
+    //         src: IconDarkMap,
+    //         title: "Dark MAp",
+    //         action: () => alert("Settings clicked!"),
+    //       },
+    //       {
+    //         src: IconSatelite,
+    //         title: "satelit",
+    //         action: () => alert("Settings clicked!"),
+    //       },
+    //     ];
+    
+    //     icons.forEach((iconData) => {
+    //       // Buat elemen tombol untuk setiap ikon
+    //       const newButton = document.createElement("button");
+    //       newButton.innerHTML = `<img src="${iconData.src}" alt="${iconData.title}" width="20" height="20">`;
+    //       newButton.className = "custom-icon-button";
+    //       newButton.title = iconData.title;
+    
+    //       // Tambahkan event click ke masing-masing tombol
+    //       newButton.onclick = iconData.action;
+    
+    //       // Masukkan ikon ke dalam kontrol zoom
+    //       zoomControl.appendChild(newButton);
+    //     });
+    //   }
+    // }, 100);
+    
+
+    const iconFeature = new Feature({
+      geometry: new Point(fromLonLat([106.8456, -6.2088])), // Lokasi Jakarta
+    });
+
+    // iconFeature.setStyle(
+    //   new Style({
+    //     image: new Icon({
+    //       src: IconCrosswalk,
+    //       scale: 1,
+    //     }),
+    //   })
+    // );
+
+    const iconFeature2 = new Feature({
+      geometry: new Point(fromLonLat([106.85, -6.21])),
+    });
+
+    // iconFeature2.setStyle(
+    //   new Style({
+    //     image: new Icon({
+    //       src: IconIntersection,
+    //       scale: 1,
+    //     }),
+    //   })
+    // );
+
+    const vectorLayer = new VectorLayer({
+      source: new VectorSource({
+        features: [iconFeature, iconFeature2],
+      }),
+    });
+
+    olMap.addLayer(vectorLayer);
+
+    // olMap.on("click", (event) => {
+    //   const feature = olMap.forEachFeatureAtPixel(
+    //     event.pixel,
+    //     (feature) => feature
+    //   );
+
+    //   if (feature) {
+    //     setShowModal(true); // Tampilkan modal saat ikon diklik
+    //   }
+    // });
+
+
+    return () => olMap.setTarget(null);
+  }, []);
 
   return (
     <>
@@ -484,6 +620,9 @@ const AccessRoadDashboard = () => {
                   <span className="title3bold text-text-white">
                     설치위치 (Installation location)
                   </span>
+                </div>
+                <div className="_containerStatisticInOutTraffice overflow-hidden h-[calc(100%-35px)] ">
+                <div ref={mapRef} className="_maps_accessRoad w-full h-full relative"></div>
                 </div>
               </section>
 
