@@ -61,8 +61,10 @@ const Sidebar = ({ userInfo, commonData }) => {
 
   const links = [
     {id: "main-dashboard", label: "Main dashboard", path: "/dashboard/main-dashboard", category: "dashboard"},
-    {id: "crossroad", label: "Cross-road", path: "/dashboard/crossroad", category: "dashboard"},
+    {id: "crossroad", label: "Cross Road", path: "/dashboard/crossroad", category: "dashboard"},
     {id: "equipment-info", label: "Equipment-info", path: "/dashboard/equipment-info", category: "dashboard"},
+    {id: "accessroad", label: "Access Road", path: "/dashboard/accessroad", category: "dashboard"},
+    {id: "crosswalk", label: "Cross Walk", path: "/dashboard/crosswalk", category: "dashboard"},
 
 
 

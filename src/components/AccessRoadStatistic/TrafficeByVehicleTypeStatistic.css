@@ -1,0 +1,12 @@
+._chartTrafficeByVehicleType .apexcharts-legend-marker {
+    margin-right: 4px;
+  }
+
+  ._chartTrafficeByVehicleType .apexcharts-legend-group  {
+    display: flex;
+    flex-direction: row;
+}
+
+._chartTrafficeByVehicleType  .apexcharts-legend-text {
+    font-size: 11px !important;
+}

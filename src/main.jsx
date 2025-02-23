@@ -31,9 +31,11 @@ import SuddenEvent from './routes/SuddenEvent/SuddenEvent.jsx';
 
 // dashboard
 import MainDashboard from './routes/MainDashboard/MainDashboard.jsx';
-// import CrossWalkDashboard from './routes/CrossWalkDashboard/CrossWalkDashboard.jsx';
 import EquipmentInfoDashboard from './routes/EquipmentInfoDashboard/EquipmentInfoDashboard.jsx';
 import CrossRoadDashboard from './routes/CrossRoadDashboard/CrossRoadDashboard.jsx';
+import CrossWalkDashboard from './routes/CrossWalkDashboard/CrossWalkDashboard.jsx';
+import AccessRoadDashboard from './routes/AccessRoadDashboard/AccessRoadDashboard.jsx';
+
 
 // dashboard
 
@@ -145,12 +147,21 @@ const router = createBrowserRouter([
         element: <MainDashboard></MainDashboard>,
       },
       {
-        path: "equipment-info",
-        element: <EquipmentInfoDashboard></EquipmentInfoDashboard>,
-      },
-      {
         path: "crossroad",
         element: <CrossRoadDashboard></CrossRoadDashboard>,
+      },
+      
+      {
+        path: "accessroad",
+        element: <AccessRoadDashboard></AccessRoadDashboard>,
+      },
+      {
+        path: "crosswalk",
+        element: <CrossWalkDashboard></CrossWalkDashboard>,
+      },
+      {
+        path: "equipment-info",
+        element: <EquipmentInfoDashboard></EquipmentInfoDashboard>,
       },
     
   

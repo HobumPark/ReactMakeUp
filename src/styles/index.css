@@ -253,12 +253,6 @@ input.input-db-text {
 }
 /* input dashboard */
 
-/* font style */
-
-
-
-
-/* font style */
 
 body {
   margin: 0;
@@ -885,7 +879,7 @@ textarea {
 	align-items: center;
 	/* padding: 14px 0; */
 	/* background: var(--bg-header-tabulator); */
-	background: #9CC8DC !important;
+	background: #9CC8DC;
 	/* color: var(--col-header-tabulator); */
 	/* height: 26px; */
 	font-size: 14px;
@@ -1080,12 +1074,6 @@ textarea {
 	z-index: 10;
 	display: none;
   }
-  
-  
-   /* .tabulator .tabulator-header .tabulator-frozen.tabulator-frozen-left { 
-   border-right: 2px solid #aaa; 
-  display: none; 
-   } */
   
   .tabulator .tabulator-header .tabulator-calcs-holder {
 	box-sizing: border-box;
