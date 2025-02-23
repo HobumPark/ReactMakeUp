@@ -31,7 +31,10 @@ import SuddenEvent from './routes/SuddenEvent/SuddenEvent.jsx';
 
 // dashboard
 import MainDashboard from './routes/MainDashboard/MainDashboard.jsx';
+// import CrossWalkDashboard from './routes/CrossWalkDashboard/CrossWalkDashboard.jsx';
 import EquipmentInfoDashboard from './routes/EquipmentInfoDashboard/EquipmentInfoDashboard.jsx';
+import CrossRoadDashboard from './routes/CrossRoadDashboard/CrossRoadDashboard.jsx';
+
 // dashboard
 
 import VideoModal from './components/Modal/VideoModal/VideoModal.jsx';
@@ -144,6 +147,10 @@ const router = createBrowserRouter([
       {
         path: "equipment-info",
         element: <EquipmentInfoDashboard></EquipmentInfoDashboard>,
+      },
+      {
+        path: "crossroad",
+        element: <CrossRoadDashboard></CrossRoadDashboard>,
       },
     
   

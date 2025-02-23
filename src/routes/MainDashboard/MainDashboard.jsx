@@ -24,6 +24,7 @@ import Chart from "react-apexcharts";
 
 import IconCrosswalk from "../../assets/icon/icon-db-crosswalk.svg";
 import IconIntersection from "../../assets/icon/icon-db-intersection.svg";
+
 import IconCar from "../../assets/icon/icon-db-car.svg";
 import IconMotor from "../../assets/icon/icon-db-motorcycles.svg";
 import IconBus from "../../assets/icon/icon-db-bus.svg";
@@ -32,6 +33,7 @@ import IconVan from "../../assets/icon/icon-db-van.svg";
 import IconBicycles from "../../assets/icon/icon-db-bicycles.svg";
 import IconHeavyTruck from "../../assets/icon/icon-db-heavy-truck.svg";
 import IconUnknown from "../../assets/icon/icon-db-unknown.svg";
+
 import IconArrow from "../../assets/icon/icon-db-arrow-down.svg";
 
 import LegendCrosswalk from "../../assets/icon/icon-top-crosswalk.svg";
@@ -102,8 +104,11 @@ const MainDashboard = () => {
     setTimeout(() => {
       // Ambil elemen kontrol zoom
       const zoomControl = document.querySelector(".ol-zoom");
-
+    
       if (zoomControl) {
+        // ✅ Hapus semua tombol ikon lama sebelum menambahkan yang baru
+        zoomControl.querySelectorAll(".custom-icon-button").forEach((btn) => btn.remove());
+    
         const icons = [
           {
             src: IconReturn,
@@ -131,22 +136,23 @@ const MainDashboard = () => {
             action: () => alert("Settings clicked!"),
           },
         ];
-
+    
         icons.forEach((iconData) => {
           // Buat elemen tombol untuk setiap ikon
           const newButton = document.createElement("button");
           newButton.innerHTML = `<img src="${iconData.src}" alt="${iconData.title}" width="20" height="20">`;
           newButton.className = "custom-icon-button";
           newButton.title = iconData.title;
-
+    
           // Tambahkan event click ke masing-masing tombol
           newButton.onclick = iconData.action;
-
+    
           // Masukkan ikon ke dalam kontrol zoom
           zoomControl.appendChild(newButton);
         });
       }
     }, 100);
+    
 
     const iconFeature = new Feature({
       geometry: new Point(fromLonLat([106.8456, -6.2088])), // Lokasi Jakarta

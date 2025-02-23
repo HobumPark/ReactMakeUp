@@ -5,6 +5,8 @@
 	--color-text-white: #F0F0F0;
 	--color-text-danger-500: #ED3131;
 	--color-text-warning-500: #EE9F17;
+	--color-bg-grey-400: #5A5F65;
+	--color-bg-grey-500: #31373E;
 }
 
 @layer components {
@@ -48,6 +50,12 @@
 		line-height: 140%;
 		font-style: normal;
 	}
+	.body2bold {
+		font-weight: 700;
+		font-size: 12px ;
+		line-height: 140%;
+		font-style: normal;
+	}
 	
 	.title2 {
 		font-weight: 400;
@@ -85,6 +93,18 @@
 		font-size: 11px;
 		font-style: normal;
 		font-weight: 400;
+		line-height: 140%; 
+	}
+	.captionmedium {
+		font-size: 11px;
+		font-style: normal;
+		font-weight: 500;
+		line-height: 140%; 
+	}
+	.captionbold {
+		font-size: 11px;
+		font-style: normal;
+		font-weight: 700;
 		line-height: 140%; 
 	}
   }

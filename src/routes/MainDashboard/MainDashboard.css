@@ -5,7 +5,7 @@
 
 ._contentCardList::-webkit-scrollbar ,
 ._containerCardEvntList::-webkit-scrollbar {
-    width: 5px;
+    width: 3px;
     
 }
 ._contentCardList::-webkit-scrollbar-thumb,
