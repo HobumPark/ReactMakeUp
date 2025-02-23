@@ -1,0 +1,14 @@
+._chartTrafficevehicle .apexcharts-legend-text {
+  font-size: 11px !important;
+}
+
+._chartTrafficevehicle .apexcharts-legend-marker {
+  margin-right: 4px;
+}
+._chartTrafficevehicle .apexcharts-legend {
+  /* display: flex;
+  right: 25px;
+  align-items: center;
+  justify-content: center !important;
+  height: 100%; */
+}

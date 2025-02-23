@@ -67,7 +67,9 @@ const TrafficeByDirection = () => {
             width: 10,
             height: 10,
             radius: 50,
-            shape: "circle"
+            shape: "circle",
+            strokeWidth: 0, 
+            strokeColor: "transparent",
           },
           labels: { colors: "#fff" }
         },

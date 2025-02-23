@@ -217,7 +217,7 @@ const CrossRoadDashboard = () => {
                 </span>
               </div>
               <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                      <TrafficeByDirection />
+                <TrafficeByDirection />
               </div>
             </section>
             <section className=" flex flex-1/12 h-[full] overflow-hidden bg-[#000] rounded-[5px]">
@@ -226,6 +226,99 @@ const CrossRoadDashboard = () => {
                   차종별 교통량 (traffic by Vehicle Type)
                 </span>
               </div>
+              <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
+                <div className="flex flex-row gap-[10px] h-full items-center justify-between overflow-hidden">
+                  <div className="flex gap-[10px] flex-row justify-between w-full items-center flex-1">
+                    <div className="w-full flex flex-col h-full gap-[15px]">
+                      <div className="w-full flex-col gap-2">
+                        <span className="text-text-white body2">승용차</span>
+                        <div className="flex gap-[2px] flex-row w-full items-center">
+                          <img src={IconCar} alt="" />
+                          <span className="text-text-white body2">/</span>
+                          <span className="text-text-white body2 title3bold">
+                            300
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full flex-col gap-2">
+                        <span className="text-text-white body2">오토바이</span>
+                        <div className="flex gap-[2px] flex-row w-full items-center">
+                          <img src={IconMotor} alt="" />
+                          <span className="text-text-white body2">/</span>
+                          <span className="text-text-white body2 title3bold">
+                            300
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full flex-col gap-2">
+                        <span className="text-text-white body2">버스</span>
+                        <div className="flex gap-[2px] flex-row w-full items-center">
+                          <img src={IconBus} alt="" />
+                          <span className="text-text-white body2">/</span>
+                          <span className="text-text-white body2 title3bold">
+                            300
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full flex-col gap-2">
+                        <span className="text-text-white body2">트럭</span>
+                        <div className="flex gap-[2px] flex-row w-full items-center">
+                          <img src={IconTruck} alt="" />
+                          <span className="text-text-white body2">/</span>
+                          <span className="text-text-white body2 title3bold">
+                            300
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-full flex flex-col h-full gap-[15px]">
+                      <div className="w-full flex-col gap-2">
+                        <span className="text-text-white body2">승합차</span>
+                        <div className="flex gap-[2px] flex-row w-full items-center">
+                          <img src={IconVan} alt="" />
+                          <span className="text-text-white body2">/</span>
+                          <span className="text-text-white body2 title3bold">
+                            300
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full flex-col gap-2">
+                        <span className="text-text-white body2">자전거</span>
+                        <div className="flex gap-[2px] flex-row w-full items-center">
+                          <img src={IconBicycles} alt="" />
+                          <span className="text-text-white body2">/</span>
+                          <span className="text-text-white body2 title3bold">
+                            300
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full flex-col gap-2">
+                        <span className="text-text-white body2">대형 트럭</span>
+                        <div className="flex gap-[2px] flex-row w-full items-center">
+                          <img src={IconHeavyTruck} alt="" />
+                          <span className="text-text-white body2">/</span>
+                          <span className="text-text-white body2 title3bold">
+                            300
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full flex-col gap-2">
+                        <span className="text-text-white body2">기타</span>
+                        <div className="flex gap-[2px] flex-row w-full items-center">
+                          <img src={IconUnknown} alt="" />
+                          <span className="text-text-white body2">/</span>
+                          <span className="text-text-white body2 title3bold">
+                            300
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center flex-1/2 w-full h-full relative">
+                    <TrafficeByVehicle />
+                  </div>
+                </div>
+              </div>
             </section>
             <section className=" flex flex-1 h-[full] overflow-hidden bg-[#000] rounded-[5px]">
               <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
@@ -233,12 +326,18 @@ const CrossRoadDashboard = () => {
                   진입 비율 (Entry Rate)
                 </span>
               </div>
+              <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
+                <EntryRate />
+              </div>
             </section>
             <section className=" flex flex-1 h-[full] overflow-hidden bg-[#000] rounded-[5px]">
               <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                 <span className="title3bold text-text-white">
                   진출 비율 (Exit Rate)
                 </span>
+              </div>
+              <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
+                <ExitRAte />
               </div>
             </section>
           </div>
