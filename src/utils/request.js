@@ -19,11 +19,15 @@ export const handleErrorCode = (errCode) => {
   };
   
   export const reqGet = async (url) => {
+    console.log('url')
+    console.log(url)
     return await fetch(url, {
       method: "GET",
       credentials: "include",
     })
       .then(async (response) => {
+        console.log('response')
+        console.log(response)
         const contentType = response.headers.get("Content-Type");
         const responseData =
           contentType && contentType.indexOf("application/json") !== -1
@@ -49,6 +53,11 @@ export const handleErrorCode = (errCode) => {
     isStringify = true,
     fetchOptions = {}
   ) => {
+    console.log('url')
+    console.log(url)
+    console.log('receivedDT')
+    console.log(receivedDT)
+    
     return await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
