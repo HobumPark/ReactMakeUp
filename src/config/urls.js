@@ -92,6 +92,10 @@ export const APIS = {
   createSite: ()=>`/site`,
   //facility
   facilityList: (filterParams) => `/facility?${filterParams}`,
+  detailFacility: (fcID) =>`/facility/${fcID}`,
+  deleteFacility: (fcID) =>`/facility/${fcID}`,
+  createFacility: '/facility',
+  updateFacility: (fcID) =>`/facility/${fcID}`,
   //road
   roadList:(filterParams) => `/road?${filterParams}`,
 }

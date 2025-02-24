@@ -10,6 +10,14 @@ import GeneralInput from "../../components/GeneralInput/GeneralInput";
 import useCommonCodes from "../../hooks/useCommonCodes";
 import { useTranslation } from "react-i18next";
 import useFacilityMgt from "../../hooks/useFacilityMgt";
+import AirDatepicker from "air-datepicker";
+import 'air-datepicker/air-datepicker.css';
+import localeEn from 'air-datepicker/locale/en.js'; 
+import localeKo from 'air-datepicker/locale/ko.js'; 
+import localeId from 'air-datepicker/locale/id.js';
+import useUnmappedSiteRoad from "../../hooks/useUnmappedSiteRoad";
+import NoticeMessage from "../../plugin/noticemessage/noticemessage";
+import { formatDateKor, formatDateToYYYYMMDD } from "../../utils/date";
 
 
 const facilityTabulator = [
@@ -73,7 +81,7 @@ const facilityTabulator = [
   },
   {
     title: "매핑 사이트",
-    field: "mapping_site",
+    field: "site_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -82,7 +90,7 @@ const facilityTabulator = [
   },
   {
     title: "매핑 접근로",
-    field: "mapping_approach",
+    field: "road_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -102,17 +110,18 @@ const facilityTabulator = [
 
 
 const FacilityManagement = () => {
-
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tbRef = useRef(null);
   const searchRef = useRef(null);
   const [disabledForm, setDisabledForm] = useState(true);
   const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
   const [hasChangesCreate, setHasChangesCreate] = useState(false);
+  const [isNewClicked, setIsNewClicked] = useState(false);
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);
+  const isNewClickedRef = useRef(isNewClicked);
   const [newId, setNewId] = useState('');
-  const [isNewClicked, setIsNewClicked] = useState(false);
+  const [selectedSiteId, setSelectedSiteId] = useState('');
 
   useEffect(() => {
     if (searchRef.current) {
@@ -120,13 +129,16 @@ const FacilityManagement = () => {
     }
   }, []); 
 
+
   //Params 
   const [selectedOption, setSelectedOption] = useState("");
   const [queryParams, setQueryParams] = useState("");
   const [optionParams, setOptionParams] = useState("upper-code=221");
+   const [resource, setResource] = useState("resource=vms");
   const [selectedFacility, setSelectedFacility] = useState({
     fc_id: null,
   });
+  const selectedFacilityRef = useRef(selectedFacility);
   
 
   useEffect(() => {
@@ -134,6 +146,63 @@ const FacilityManagement = () => {
     hasChangesCreateRef.current = hasChangesCreate;
   }, [hasChangesUpdate, hasChangesCreate]);
 
+
+  const detailFacility = (data) => {
+    return {
+      facility_id: data.facility_id || null,
+      site_id: data.site_id || null,
+      road_id: data.road_id || null,
+      name: data.name || null,
+      description: data.description || null,
+      installed_date: data.installed_date || null,
+      pic_name: data.pic_name || null,
+      pic_phone_number: data.pic_phone_number || null,
+      model: data.model || null,
+      s_n: data.s_n || null,
+      lat: data.lat || null,
+      lng: data.lng || null,
+      manufacturer: data.manufacturer || null,
+      ip: data.ip || null,
+      mac: data.mac || null,
+      port: data.port || null,
+      type: data.type || null,
+    };
+  };
+
+  useEffect(() => {
+    let locale;
+    if (i18n.language === "eng") {
+      locale = localeEn;
+    } else if (i18n.language === "ind") {
+      locale = localeId;
+    } else {
+      locale = localeKo; 
+    }
+
+    const optionsDate = {
+      autoClose: true,
+      locale: locale,
+      position: "top center",
+      onSelect: (date) => {
+        handleInputChange({
+          target: {
+            name: "installed_date",
+            value: date.formattedDate,
+          },
+        });
+        setFormValues((prevValues) => ({
+          ...prevValues,
+          installed_date: date.formattedDate,
+        }));
+      },
+    };
+
+    const datepicker = new AirDatepicker('[name="installed_date"]', optionsDate);
+
+    return () => {
+      datepicker.destroy();
+    };
+  }, [i18n.language]);
 
   //Values
   const [formValues, setFormValues] = useState({
@@ -157,26 +226,12 @@ const FacilityManagement = () => {
   });
 
   const emptyDetail = () => {
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      facility_id: '',
-      site_id: '',
-      road_id: '', 
-      name: '',
-      description: '',
-      installed_date: '',
-      pic_name: '',
-      pic_phone_number: '',
-      model: '',
-      s_n: '',
-      lat: '',
-      lng: '',
-      manufacturer: '',
-      ip: '',
-      mac: '',
-      port: '',
-      type: ''
-    }));
+    setFormValues((prevValues) =>
+      Object.keys(prevValues).reduce((acc, key) => {
+        acc[key] = '';
+        return acc;
+      }, {})
+    );
   };
 
   //Button 
@@ -224,30 +279,62 @@ const FacilityManagement = () => {
     }));
   };
 
+  const reloadCallback = () => {
+    enableInitialButtons();
+    tbRef.current.deselectRow();
+    emptyDetail();
+    setDisabledForm(true);
+    setHasChangesUpdate(false);
+    setIsNewClicked(false);
+    setHasChangesCreate(false);
+    setSelectedSiteId(null)
+    setSelectedFacility({ fc_id: null });
+  };
 
-  const { facilityListData } = useFacilityMgt({
+  const { facilityListData, detailFacilityData, deleteFacility, createFacility, updateFacility } = useFacilityMgt({
     fcID: selectedFacility?.fc_id,
-    queryParams: queryParams
+    queryParams: queryParams,
+    onDeleteSuccess: reloadCallback,
+    onUpdateSuccess: () => {
+      enableUPDATEButtons();
+      setIsNewClicked(false);
+      setHasChangesUpdate(false);
+    },
+    onCreateSuccess: (responseData) => {
+      reloadCallback();
+      const newID = responseData.facility_id;
+      setNewId(newID);
+    },
   });
 
   const data = facilityListData?.data;
+  const dataFacility = detailFacilityData?.data;
 
   const { commonListData } = useCommonCodes({ optionParams });
+  const { unmappedSiteRoad } = useUnmappedSiteRoad({ resource });
+
+  const dataSiteRoad = unmappedSiteRoad?.data;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;  
-      setFormValues((prevValues) => ({
-        ...prevValues,
-        [name]: value,
-      }));
-    
-    if (isNewClicked) {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  
+    if (name === "site_id") {
+      console.log("Site changed:", value);
+      setSelectedSiteId(value);
+    }
+
+    if (isNewClickedRef.current) {
       setHasChangesCreate(true); 
     } else {
+
       setHasChangesUpdate(true); 
     }
 
-    if (selectedFacility?.dt_id){
+    if (selectedFacilityRef.current?.fc_id) {
       setHasChangesUpdate(true);
     }
   };
@@ -305,14 +392,197 @@ const FacilityManagement = () => {
     setSelectedOption('All');
   };
 
+
+  const handleRowSelected = useCallback((row) => {
+    if(hasChangesCreateRef.current || hasChangesUpdateRef.current){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        const rowData = row.getData();
+        setSelectedFacility({
+          fc_id: rowData.facility_id,  
+        });
+        setSelectedSiteId(rowData.site_id);
+        setDisabledForm(false);
+        setHasChangesUpdate(false);
+        setIsNewClicked(false);
+      });
+      
+    } else {
+      const rowData = row.getData();
+      setSelectedFacility({
+        fc_id: rowData.facility_id,  
+      });
+      setSelectedSiteId(rowData.site_id);
+      setDisabledForm(false);
+      enableUPDATEButtons();
+      setIsNewClicked(false);
+    }
+  }, []);
+
+  const handleNewButtonClick = () => {
+    if(hasChangesCreate || hasChangesUpdate){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        tbRef.current.deselectRow();
+        emptyDetail();
+        setIsNewClicked(true);
+        enableRegisterButtons();
+        setSelectedFacility({fc_id: null});
+        setSelectedSiteId(null);
+        setDisabledForm(false);
+        setHasChangesUpdate(false);
+      });
+    } else{
+      tbRef.current.deselectRow();
+      emptyDetail();
+      setIsNewClicked(true);
+      enableRegisterButtons();
+      setSelectedFacility({fc_id: null});
+      setSelectedSiteId(null);
+      setDisabledForm(false); 
+      setHasChangesUpdate(false);
+    }
+
+  };
+
+  const handleCancelButtonClick = () => {
+    if (hasChangesUpdate){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        setDisabledForm(false);
+        const formattedData = detailFacility(dataFacility);
+        formattedData.installed_date = formatDateKor(formattedData.installed_date);
+        setFormValues(formattedData);
+        setHasChangesUpdate(false);
+        setSelectedSiteId(dataFacility.site_id);
+      });
+    }
+    
+    else if(isNewClicked){
+      if(hasChangesCreate){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        emptyDetail();
+        setIsNewClicked(false);
+        setDisabledForm(true);
+        enableInitialButtons();
+        setHasChangesCreate(false);
+        setSelectedSiteId(null)
+      });
+    }
+    else{
+      emptyDetail();
+      setIsNewClicked(false);
+      setDisabledForm(true);
+      enableInitialButtons();
+      setHasChangesCreate(false);
+      setSelectedSiteId(null)
+    }
+  }   else {
+    reloadCallback()
+  }
+  };
+
+  const handleRegistButtonClick = () => {
+    const { facility_id, description, ...fieldsToCheck } = formValues;
+
+    const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
+    
+    if (isEmptyField) {
+      new NoticeMessage('필수 값을 모두 입력해주세요.')
+      return;
+    }
+
+    const updatedFormValues = {
+      ...formValues,
+      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
+    };
+    console.log(updatedFormValues);
+    createFacility(updatedFormValues);
+  }  
+
+  const handleConfirmButtonClick = () => {
+    const { facility_id, description, ...fieldsToCheck } = formValues;
+
+    const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
   
-  const logData = [
-    { label: "등록자", value: "김철수" },
-    { label: "등록 시간", value: "02-22-2022 12:02:47 " },
-    { label: "수정자", value: "박철수" },
-    { label: "수정 시간", value: "02-23-2022 12:02:47 " },
+    if (isEmptyField) {
+      
+      new NoticeMessage('필수 값을 모두 입력해주세요.')
+      return;
+    }
+    console.log("Installed Date:", formValues.installed_date);
+
+    const updatedFormValues = {
+      ...formValues,
+      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
+    };
+    console.log(updatedFormValues);
+    updateFacility(updatedFormValues);
+
+  }
+
+ const handleDeleteButtonClick = () => {
+    const message = new NoticeMessage(
+      t('msg > delete confirm'),
+      {
+        mode: "confirm",
+      }
+    );
+    message.confirmClicked().then(() => {
+      deleteFacility(selectedFacility?.fc_id); 
+    }); 
+    
+  };
+
+  const roadOptions = selectedSiteId
+  ? dataSiteRoad?.sites
+      ?.find(site => site.site_id === Number(selectedSiteId))
+      ?.roads.map(road => ({
+        value: road.road_id,
+        label: `${road.name} (${road.road_id})`, 
+      })) || []
+  : [];
+
+
   
-  ];
+  useEffect(() => {
+    if (dataFacility) {
+      const formattedData = detailFacility(dataFacility);
+      formattedData.installed_date = formatDateKor(formattedData.installed_date);
+      setFormValues(formattedData);
+    }
+  }, [dataFacility]);
+  
+
+  const logData = dataFacility
+  ? [
+      { label: t('cmn > registered by'), value: dataFacility.registered_by },
+      { label: t('cmn > registered time'), value: dataFacility.registered_time },
+      { label: t('cmn > updated by'), value: dataFacility.updated_by },
+      { label: t('cmn > updated time'), value: dataFacility.updated_time },
+    ]
+  : [];
 
   return (
     <section className="wrap">
@@ -356,7 +626,23 @@ const FacilityManagement = () => {
         layout={"fitColumns"}
         className="tabulator-custom w-full "
         //   pagination="local"
+        onRef={(r) => {
+          tbRef.current = r.current;
+        }}
         options={optionsTabulator}
+        events={{
+          rowSelected: handleRowSelected,
+          tableBuilt: () => {
+            if (selectedFacility?.fc_id) {
+              const row = tbRef.current.getRow(selectedFacility?.fc_id);
+              row && row.select();
+            }else if (newId){
+              const row = tbRef.current.getRow(newId);
+              tbRef.current.scrollToRow(row, "bottom", true);
+              tbRef.current.selectRow(newId);
+        }
+          }
+        }}
       />
     </ContainerCard>
 
@@ -366,9 +652,9 @@ const FacilityManagement = () => {
           <DetailForm 
           className="items-center!" 
           label="시설물 ID" 
-          disabled={disabledForm}
+          disabled={true}
           onChange={handleInputChange}
-          value={formValues.facility_id}
+          value={formValues.facility_id || ''}
           name={'facility_id'}
           />
 
@@ -378,8 +664,9 @@ const FacilityManagement = () => {
             required={true}
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.name}
+            value={formValues.name || ''}
             name={'name'}
+            maxLength={100}
           />
 
         <DetailForm
@@ -389,13 +676,19 @@ const FacilityManagement = () => {
             required={true}
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.type}
+            value={formValues.type || ''}
             name={'type'}
-            optionSelect={[
-              { label: "전광판", value: "전광판" },
-              { label: "스피커", value: "스피커" },
-           
-            ]}
+            optionSelect={
+              commonListData?.["221"]
+                  ? [
+                      { value: "All", label: t('cmn > all') }, 
+                      ...commonListData["221"].code.map((code, index) => ({
+                        value: code,
+                        label: commonListData["221"].name[index],
+                      })),
+                    ]
+                  : []
+                }
           />
         </div>
 
@@ -412,15 +705,19 @@ const FacilityManagement = () => {
                 customInput="w-full" 
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.lat}
+                value={formValues.lat || ''}
                 name={'lat'}
+                maxLength={100}
+                pattern={'^[0-9.]*$'}
                 />
                 <GeneralInput 
                 customInput="w-full" 
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.lng}
+                value={formValues.lng || ''}
                 name={'lng'}
+                maxLength={100}
+                pattern={'^[0-9.]*$'}
                  />
               </div>
             </DetailForm>
@@ -432,8 +729,9 @@ const FacilityManagement = () => {
             required={true}
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.installed_date}
+            value={formValues.installed_date || ''} 
             name={'installed_date'}
+            readonly={true}
           />
 
         </div>
@@ -444,14 +742,20 @@ const FacilityManagement = () => {
             className="items-center!"
             label="매핑 사이트"
             required={true}
-            optionSelect={[
-              { label: "사이트 1", value: "site1" },
-              { label: "사이트 2", value: "site2" },
-              { label: "사이트 3", value: "site3" }
-            ]}
+            optionSelect={
+              dataSiteRoad?.sites
+                ? [
+                    { value: "", label: "" },
+                    ...dataSiteRoad?.sites.map((site) => ({
+                      value: site.site_id, 
+                      label: `${site.name} (${site.site_id})`, 
+                    })),
+                  ]
+                : []
+            }
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.site_id}
+            value={formValues.site_id || ''}
             name={'site_id'}
 
           />
@@ -460,15 +764,10 @@ const FacilityManagement = () => {
             className="items-center!"
             label="매핑 접근로"
             required={true}
-            optionSelect={[
-              { label: "남쪽 접근로(ROAD001)", value: "site1" },
-              { label: "남쪽 접근로(ROAD002)", value: "site2" },
-              { label: "남쪽 접근로(ROAD003)", value: "site3" }
-            ]}
-          
+            optionSelect={roadOptions}
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.road_id}
+            value={formValues.road_id || ''}
             name={'road_id'}
           />
 
@@ -481,8 +780,9 @@ const FacilityManagement = () => {
             required={true}
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.pic_name}
+            value={formValues.pic_name || ''}
             name={'pic_name'}
+            maxLength={100}
           />
 
           <DetailForm
@@ -492,8 +792,10 @@ const FacilityManagement = () => {
             inputType= "number"
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.pic_phone_number}
+            value={formValues.pic_phone_number || ''}
             name={'pic_phone_number'}
+            maxLength={100} 
+            pattern={'^[0-9]*$'} 
           />
         </div>
 
@@ -504,8 +806,9 @@ const FacilityManagement = () => {
             required={true}
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.model}
+            value={formValues.model || ''}
             name={'model'}
+            maxLength={100}
           />
 
           <DetailForm
@@ -514,8 +817,9 @@ const FacilityManagement = () => {
             required={true}
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.s_n}
+            value={formValues.s_n || ''}
             name={'s_n'}
+            maxLength={100}
           />
 
           <DetailForm
@@ -524,8 +828,9 @@ const FacilityManagement = () => {
             required={true}
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.manufacturer}
+            value={formValues.manufacturer || ''}
             name={'manufacturer'}
+            maxLength={100}
           />
         </div>
 
@@ -536,8 +841,9 @@ const FacilityManagement = () => {
             required={true}
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.mac}
+            value={formValues.mac || ''}
             name={'mac'}
+            maxLength={100}
           />
 
         <div className="flex w-full flex-row gap-x-4">
@@ -552,15 +858,19 @@ const FacilityManagement = () => {
                 customInput="w-full" 
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.ip}
-                name={'ip'} />
+                value={formValues.ip || ''}
+                name={'ip'}
+                maxLength={100}
+                pattern={'^[0-9.]*$'}  />
                 <span>:</span>
                 <GeneralInput 
                 customInput="w-full" 
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.port}
-                name={'port'} />
+                value={formValues.port || ''}
+                name={'port'}
+                maxLength={100}
+                pattern={'^[0-9.]*$'} />
               </div>
             </DetailForm>
           </div>
@@ -573,8 +883,9 @@ const FacilityManagement = () => {
             label="설명"
             disabled={disabledForm}
             onChange={handleInputChange}
-            value={formValues.description}
+            value={formValues.description || ''}
             name={'description'}
+            maxLength={500}
           />
         </div>
 
@@ -585,11 +896,16 @@ const FacilityManagement = () => {
           </div>
           <div className="flex-none">
             <ButtonGroup
-
-              cancelButtonState={false}
-              confirmButtonState={false}
-              deleteButtonState={false}
-              newButtonState={false}
+              onClickDelete={handleDeleteButtonClick}
+              onClickNew={handleNewButtonClick}
+              onClickCancel={handleCancelButtonClick}
+              onClickRegist={handleRegistButtonClick}
+              onClickConfirm ={handleConfirmButtonClick}
+              isNewClicked={isNewClicked}
+              cancelButtonState={buttonState.cancel}
+              confirmButtonState={hasChangesUpdate ? false : buttonState.confirm}
+              deleteButtonState={buttonState.delete}
+              newButtonState={hasChangesCreate ? false :buttonState.create}
             />
           </div>
         </div>

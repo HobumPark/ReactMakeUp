@@ -16,7 +16,7 @@ import localeEn from 'air-datepicker/locale/en.js';
 import localeKo from 'air-datepicker/locale/ko.js'; 
 import localeId from 'air-datepicker/locale/id.js'; 
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
-import { formatDateKor, formatDateToDDMMYYYY, formatDateToMMDDYYYY, formatDateToYYYYMMDD } from "../../utils/date";
+import { formatDateKor, formatDateToYYYYMMDD } from "../../utils/date";
 import useUnmappedSiteRoad from "../../hooks/useUnmappedSiteRoad";
 
 
@@ -105,7 +105,6 @@ const DetectorManagement = () => {
   const tbRef = useRef(null);
   const searchRef = useRef(null);
   const [disabledForm, setDisabledForm] = useState(true);
-  const [disabledId, setDisabledId] = useState(true);
   const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
   const [hasChangesCreate, setHasChangesCreate] = useState(false);
   const [isNewClicked, setIsNewClicked] = useState(false);
@@ -295,7 +294,7 @@ const DetectorManagement = () => {
     },
     onCreateSuccess: (responseData) => {
       reloadCallback();
-      const newID = responseData.remote_terminal_unit_id;
+      const newID = responseData.detector_id;
       setNewId(newID);
     },
   });
