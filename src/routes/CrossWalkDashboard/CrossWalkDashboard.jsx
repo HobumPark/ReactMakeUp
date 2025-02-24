@@ -534,10 +534,10 @@ const CrossWalkDashboard = () => {
 
   return (
     <>
-      <section className="_AccessRoadContainer w-full h-screen overflow-hidden flex flex-col bg-bg-grey-400">
+      <section className="_crossWalkContainer w-full h-screen overflow-hidden flex flex-col bg-bg-grey-400">
         <Header />
 
-        <div className="_layoutAccessRoad w-full h-[calc(100%-60px)] flex flex-col gap-[10px] p-[10px] overflow-hidden">
+        <div className="_layoutCrossWalksRoad w-full h-[calc(100%-60px)] flex flex-col gap-[10px] p-[10px] overflow-hidden">
           <div className="flex  flex-row gap-[10px] flex-2 overflow-hidden">
             <section className="leftToproad flex flex-1 h-full bg-[#000] overflow-hidden rounded-[5px]">
               <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
