@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import NoticeMessage from "../plugin/noticemessage/noticemessage.js";
-import { createBox, fetchBoxList, fetchDetailBox } from "../api/box-mgt.jsx";
+import { createBox, deleteBox, fetchBoxList, fetchDetailBox, updateBox } from "../api/box-mgt.jsx";
 import { useTranslation } from "react-i18next";
 
 
@@ -40,13 +40,47 @@ const useBoxMgt = ({
       });
       },
     onError: (err) => {
-      console.error("Error creating user:", err);
+      new NoticeMessage(err.message)
+      },
+  });
+
+  const deleteBoxMutation = useMutation({
+    mutationFn: (rtuID) => deleteBox(rtuID),
+    onSuccess: () => {
+      new NoticeMessage(t('msg > delete success'), {
+        callback() {
+          onDeleteSuccess();
+          queryClient.invalidateQueries(["boxListData", queryParams]);
+        }
+      });
+    },
+    onError: (err) => {
+      new NoticeMessage(err.message)
       },
     });
 
+  const updateBoxMutation = useMutation({
+    mutationFn: (boxData) => updateBox(boxData),
+    onSuccess: (responseData) => {
+      new NoticeMessage(t('msg > update success'), {
+        callback() {
+          queryClient.invalidateQueries(["boxListData", queryParams]);
+          onUpdateSuccess(responseData.data);
+            
+        }
+      });
+    },
+    onError: (err) => {
+      new NoticeMessage(err.message)
+      },
+  });
+
   return {
     boxListData,
-    detailBoxData
+    detailBoxData,
+    createBox: createBoxMutation.mutate,
+    updateBox: updateBoxMutation.mutate,
+    deleteBox: deleteBoxMutation.mutate,
   };
 };
 

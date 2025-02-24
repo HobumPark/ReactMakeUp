@@ -13,7 +13,7 @@ export const fetchDetailBox = async (rtuID) => {
 };
 
 export const deleteBox = async (rtuID) => {
-  const url = `${URLS.BACK_DSH}${APIS.deleteUser(rtuID)}`;
+  const url = `${URLS.BACK_DSH}${APIS.deleteBox(rtuID)}`;
   return await reqDelete(url);
 };
 
@@ -22,8 +22,8 @@ const url = `${URLS.BACK_DSH}${APIS.createBox}`;
 return await reqPost(url, boxData); 
 };
 
-export const updateUser = async (boxData) => {
-const url = `${URLS.BACK_DSH}${APIS.updateUser}`; 
+export const updateBox = async (boxData) => {
+const url = `${URLS.BACK_DSH}${APIS.updateBox(boxData.remote_terminal_unit_id)}`; 
 return await reqPut(url, boxData); 
 };
 

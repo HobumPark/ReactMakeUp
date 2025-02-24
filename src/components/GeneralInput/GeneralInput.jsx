@@ -36,7 +36,8 @@ const GeneralInput = forwardRef(
     const { value } = event.target;
   
     if (pattern) {
-      if (pattern.test(value)) {
+      const regex = new RegExp(pattern); 
+      if (regex.test(value)) {
         setInputValue(value);  
       }else{
         return;

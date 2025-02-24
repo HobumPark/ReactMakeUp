@@ -16,6 +16,8 @@ import localeEn from 'air-datepicker/locale/en.js';
 import localeKo from 'air-datepicker/locale/ko.js'; 
 import localeId from 'air-datepicker/locale/id.js'; 
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
+import useSiteMgt from "../../hooks/useSiteMgt";
+import { formatDateToDDMMYYYY, formatDateToYYYYMMDD } from "../../utils/date";
 
 
 const boxTabulator = [
@@ -97,10 +99,12 @@ const BoxManagement = () => {
   const [disabledId, setDisabledId] = useState(true);
   const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
   const [hasChangesCreate, setHasChangesCreate] = useState(false);
+  const [isNewClicked, setIsNewClicked] = useState(false);
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);
+  const isNewClickedRef = useRef(isNewClicked);
   const [newId, setNewId] = useState('');
-  const [isNewClicked, setIsNewClicked] = useState(false);
+
 
   useEffect(() => {
     if (searchRef.current) {
@@ -115,8 +119,32 @@ const BoxManagement = () => {
   const [selectedBox, setSelectedBox] = useState({
     rtu_id: null,
   }); 
+  const selectedBoxRef = useRef(selectedBox);
 
-  const detailBox = ({ ...data }) => data;
+  const detailBox = (data) => {
+    return {
+      remote_terminal_unit_id: data.remote_terminal_unit_id || null,
+      site_id: data.site_id || null,
+      name: data.name || null,
+      description: data.description || null,
+      installed_date: data.installed_date || null,
+      pic_name: data.pic_name || null,
+      pic_phone_number: data.pic_phone_number || null,
+      model: data.model || null,
+      s_n: data.s_n || null,
+      lat: data.lat || null,
+      lng: data.lng || null,
+      manufacturer: data.manufacturer || null,
+      edge1_ip: data.edge1_ip || null,
+      router_ip: data.router_ip || null,
+      switch_ip: data.switch_ip || null,
+      env_board_ip: data.env_board_ip || null,
+      env_board_port: data.env_board_port || null,
+      env_board_mac: data.env_board_mac || null,
+    };
+  };
+  
+  
 
   useEffect(() => {
     let locale;
@@ -133,6 +161,12 @@ const BoxManagement = () => {
       locale: locale,
       position: "top center",
       onSelect: (date) => {
+        handleInputChange({
+          target: {
+            name: "installed_date",
+            value: date.formattedDate,
+          },
+        });
         setFormValues((prevValues) => ({
           ...prevValues,
           installed_date: date.formattedDate,
@@ -150,14 +184,15 @@ const BoxManagement = () => {
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;
     hasChangesCreateRef.current = hasChangesCreate;
-  }, [hasChangesUpdate, hasChangesCreate]);
+    isNewClickedRef.current = isNewClicked;
+    selectedBoxRef.current = selectedBox
+  }, [hasChangesUpdate, hasChangesCreate, isNewClicked, selectedBox]);
 
 
   //Values
   const [formValues, setFormValues] = useState({
     remote_terminal_unit_id: null,
     site_id: null,
-    site_name: null,
     name: null,
     description: null,
     installed_date: null,
@@ -237,19 +272,34 @@ const BoxManagement = () => {
     emptyDetail();
     setDisabledForm(true);
     setHasChangesUpdate(false);
+    setIsNewClicked(false);
+    setHasChangesCreate(false);
     setSelectedBox({ rtu_id: null });
   };
 
-  const { boxListData, detailBoxData } = useBoxMgt({
+  const { boxListData, detailBoxData, createBox, deleteBox, updateBox} = useBoxMgt({
     rtuID: selectedBox?.rtu_id,
-    queryParams: queryParams
+    queryParams: queryParams,
+    onDeleteSuccess: reloadCallback,
+    onUpdateSuccess: () => {
+      enableUPDATEButtons();
+      setIsNewClicked(false);
+      setHasChangesUpdate(false);
+    },
+    onCreateSuccess: (responseData) => {
+      reloadCallback();
+      const newID = responseData.remote_terminal_unit_id;
+      setNewId(newID);
+    },
   });
 
+  const { siteListData } = useSiteMgt({})
+
   const data = boxListData?.data;
+  const siteData = siteListData?.data;
   const dataBox = detailBoxData?.data[0];
   
   const { commonListData } = useCommonCodes({ optionParams });
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;  
@@ -257,14 +307,15 @@ const BoxManagement = () => {
         ...prevValues,
         [name]: value,
       }));
-    
-    if (isNewClicked) {
+
+    if (isNewClickedRef.current) {
       setHasChangesCreate(true); 
     } else {
+
       setHasChangesUpdate(true); 
     }
 
-    if (selectedBox?.rtu_id){
+    if (selectedBoxRef.current?.rtu_id) {
       setHasChangesUpdate(true);
     }
   };
@@ -298,6 +349,7 @@ const BoxManagement = () => {
     rowHeight: 41,
     selectableRows: 1,
     movableRows: false,
+    index: "remote_terminal_unit_id",
     resizableRows: false,
     locale: "ko",
     langs: {
@@ -339,6 +391,7 @@ const BoxManagement = () => {
         setHasChangesUpdate(false);
         setIsNewClicked(false);
       });
+      
     } else {
       const rowData = row.getData();
       setSelectedBox({
@@ -390,7 +443,9 @@ const BoxManagement = () => {
       );
       message.confirmClicked().then(() => {
         setDisabledForm(false);
-        setFormValues(detailBox(dataBox));
+        const formattedData = detailBox(dataBox);
+        formattedData.installed_date = formatDateToDDMMYYYY(formattedData.installed_date);
+        setFormValues(formattedData);
         setHasChangesUpdate(false);
       });
     }
@@ -423,11 +478,68 @@ const BoxManagement = () => {
   }
   };
 
+
+  const handleRegistButtonClick = () => {
+    const { remote_terminal_unit_id, ...fieldsToCheck } = formValues;
+
+    const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
+  
+    if (isEmptyField) {
+      new NoticeMessage('필수 값을 모두 입력해주세요.')
+      return;
+    }
+
+    const updatedFormValues = {
+      ...formValues,
+      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
+    };
+    console.log(updatedFormValues);
+    createBox(updatedFormValues);
+  }  
+
+  const handleConfirmButtonClick = () => {
+    const { remote_terminal_unit_id, ...fieldsToCheck } = formValues;
+
+    const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
+  
+    if (isEmptyField) {
+      new NoticeMessage('필수 값을 모두 입력해주세요.')
+      return;
+    }
+    
+    
+
+    const updatedFormValues = {
+      ...formValues,
+      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
+    };
+    updateBox(updatedFormValues);
+
+  }
+ 
+
+ const handleDeleteButtonClick = () => {
+    const message = new NoticeMessage(
+      t('msg > delete confirm'),
+      {
+        mode: "confirm",
+      }
+    );
+    message.confirmClicked().then(() => {
+      deleteBox(selectedBox?.rtu_id); 
+    }); 
+    
+  };
+
   useEffect(() => {
     if (dataBox) {
-      setFormValues(detailBox(dataBox));
+      const formattedData = detailBox(dataBox);
+      formattedData.installed_date = formatDateToDDMMYYYY(formattedData.installed_date);
+      setFormValues(formattedData);
     }
   }, [dataBox]);
+  
+
    
 
   const logData = dataBox
@@ -492,11 +604,11 @@ const BoxManagement = () => {
                 if (selectedBox?.rtu_id) {
                   const row = tbRef.current.getRow(selectedBox?.rtu_id);
                   row && row.select();
-                } else if (newId){
-                    const row = tbRef.current.getRow(newId);
-                    tbRef.current.scrollToRow(row, "bottom", true);
-                    tbRef.current.selectRow(newId);
-              }
+                }else if (newId){
+                  const row = tbRef.current.getRow(newId);
+                  tbRef.current.scrollToRow(row, "bottom", true);
+                  tbRef.current.selectRow(newId);
+            }
               }
             }}
           />
@@ -513,7 +625,7 @@ const BoxManagement = () => {
               <DetailForm 
               className="items-center!" 
               label="함체 ID" 
-              value={formValues.remote_terminal_unit_id} 
+              value={formValues.remote_terminal_unit_id || ""} 
               name='remote_terminal_unit_id'
               disabled={disabledId}
               onChange={handleInputChange}
@@ -523,10 +635,11 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="명칭"
                 required={true}
-                value={formValues.name}
+                value={formValues.name || ""}
                 name='name'
                 disabled={disabledForm}
                 onChange={handleInputChange}
+                maxLength={100}
               />
             </div>
 
@@ -539,8 +652,8 @@ const BoxManagement = () => {
                   showInput={false}
                 >
                   <div className="flex w-full flex-row gap-x-2">
-                    <GeneralInput customInput="w-full" disabled={disabledForm} value={formValues.lat} name='lat' onChange={handleInputChange}/>
-                    <GeneralInput customInput="w-full" disabled={disabledForm} value={formValues.lng} name='lng' onChange={handleInputChange}/>
+                    <GeneralInput customInput="w-full" disabled={disabledForm} value={formValues.lat || ""} name='lat' onChange={handleInputChange} maxLength={100} pattern={'^[0-9.]*$'} />
+                    <GeneralInput customInput="w-full" disabled={disabledForm} value={formValues.lng || ""} name='lng' onChange={handleInputChange} maxLength={100} pattern={'^[0-9.]*$'} />
                   </div>
                 </DetailForm>
               </div>
@@ -549,10 +662,10 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="설치 일시"
                 required={true}
-                value={formValues.installed_date}
+                value={formValues.installed_date || ""}
                 name='installed_date'
                 disabled={disabledForm}
-                onChange={handleInputChange}
+                readonly={true}
               />
 
               <DetailForm
@@ -560,10 +673,22 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="매핑 사이트"
                 required={true}
-                value={formValues.site_id}
+                value={formValues.site_id || ""}
                 name='site_id'
                 disabled={disabledForm}
                 onChange={handleInputChange}
+                optionSelect={
+                  siteData
+                    ? [
+                        { value: "", label: "" },
+                        ...siteData.map((site) => ({
+                          value: site.site_id, 
+                          label: `${site.name} (${site.site_id})`, 
+                        })),
+                      ]
+                    : []
+                }
+                
               />
             </div>
 
@@ -572,8 +697,9 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="담당자"
                 required={true}
-                value={formValues.pic_name}
+                value={formValues.pic_name || ""}
                 name='pic_name'
+                maxLength={100}
                 disabled={disabledForm}
                 onChange={handleInputChange}
               />
@@ -582,8 +708,10 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="담당자 전화번호"
                 required={true}
-                value={formValues.pic_phone_number}
+                value={formValues.pic_phone_number || ""}
                 name='pic_phone_number'
+                maxLength={100} 
+                pattern={'^[0-9]*$'} 
                 disabled={disabledForm}
                 onChange={handleInputChange}
               />
@@ -594,8 +722,9 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="모델명"
                 required={true}
-                value={formValues.model}
+                value={formValues.model || ""}
                 name='model'
+                maxLength={100}
                 disabled={disabledForm}
                 onChange={handleInputChange}
               />
@@ -603,9 +732,10 @@ const BoxManagement = () => {
               <DetailForm
                 className="items-center!"
                 label="시리얼 넘버"
-                required={true}
-                value={formValues.s_n}
+                required={true} 
+                value={formValues.s_n || ""}
                 name='s_n'
+                maxLength={100}
                 disabled={disabledForm}
                 onChange={handleInputChange}
               />
@@ -614,7 +744,8 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="제조사"
                 required={true}
-                value={formValues.manufacturer}
+                maxLength={100}
+                value={formValues.manufacturer || ""}
                 name='manufacturer'
                 disabled={disabledForm}
                 onChange={handleInputChange}
@@ -626,10 +757,11 @@ const BoxManagement = () => {
                 className=" h-[90px]"
                 inputType="textarea"
                 label="설명"
-                value={formValues.description}
+                value={formValues.description || ""}
                 name='description'
                 disabled={disabledForm}
                 onChange={handleInputChange}
+                maxLength={500}
               />
             </div>
 
@@ -643,8 +775,10 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="Edge IP"
                 required={true}
-                value={formValues.edge1_ip}
+                value={formValues.edge1_ip || ""}
                 name='edge1_ip'
+                maxLength={100} 
+                pattern={'^[0-9.]*$'} 
                 disabled={disabledForm}
                 onChange={handleInputChange}
               />
@@ -653,8 +787,10 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="Switch IP"
                 required={true}
-                value={formValues.switch_ip}
+                value={formValues.switch_ip || ""}
                 name='switch_ip'
+                maxLength={100} 
+                pattern={'^[0-9.]*$'} 
                 disabled={disabledForm}
                 onChange={handleInputChange}
               />
@@ -663,7 +799,9 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="Router IP"
                 required={true}
-                value={formValues.router_ip}
+                maxLength={100} 
+                pattern={'^[0-9.]*$'} 
+                value={formValues.router_ip || ""}
                 name='router_ip'
                 disabled={disabledForm}
                 onChange={handleInputChange}
@@ -681,16 +819,20 @@ const BoxManagement = () => {
                   <div className="flex w-full flex-row gap-x-2 items-center">
                     <GeneralInput
                       customInput="w-full"
-                      value={formValues.env_board_ip}
+                      value={formValues.env_board_ip || ""}
                       name='env_board_ip'
+                      maxLength={100}
+                       pattern={'^[0-9.]*$'} 
                       disabled={disabledForm}
                       onChange={handleInputChange}
                     />
                     <span>:</span>
                     <GeneralInput 
                       customInput="w-full"
-                      value={formValues.env_board_port}
+                      value={formValues.env_board_port || ""}
                       name='env_board_port'
+                      maxLength={100}
+                      pattern={'^[0-9]*$'} 
                       disabled={disabledForm}
                       onChange={handleInputChange} />
                   </div>
@@ -701,8 +843,9 @@ const BoxManagement = () => {
                 className="items-center!"
                 label="Env Board Mac address"
                 required={true}
-                value={formValues.env_board_mac}
+                value={formValues.env_board_mac || ""}
                 name='env_board_mac'
+                maxLength={100}
                 disabled={disabledForm}
                 onChange={handleInputChange}
               />
@@ -714,8 +857,11 @@ const BoxManagement = () => {
               </div>
               <div className="flex-none">
                 <ButtonGroup
+                  onClickDelete={handleDeleteButtonClick}
                   onClickNew={handleNewButtonClick}
                   onClickCancel={handleCancelButtonClick}
+                  onClickRegist={handleRegistButtonClick}
+                  onClickConfirm ={handleConfirmButtonClick}
                   isNewClicked={isNewClicked}
                   cancelButtonState={buttonState.cancel}
                   confirmButtonState={hasChangesUpdate ? false : buttonState.confirm}
