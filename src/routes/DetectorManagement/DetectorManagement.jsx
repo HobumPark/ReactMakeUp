@@ -10,6 +10,14 @@ import GeneralInput from "../../components/GeneralInput/GeneralInput";
 import useCommonCodes from "../../hooks/useCommonCodes";
 import useDetectorMgt from "../../hooks/useDetectorMgt";
 import { useTranslation } from "react-i18next";
+import AirDatepicker from "air-datepicker";
+import 'air-datepicker/air-datepicker.css';
+import localeEn from 'air-datepicker/locale/en.js'; 
+import localeKo from 'air-datepicker/locale/ko.js'; 
+import localeId from 'air-datepicker/locale/id.js'; 
+import NoticeMessage from "../../plugin/noticemessage/noticemessage";
+import { formatDateKor, formatDateToDDMMYYYY, formatDateToMMDDYYYY, formatDateToYYYYMMDD } from "../../utils/date";
+import useUnmappedSiteRoad from "../../hooks/useUnmappedSiteRoad";
 
 
 const detectorTabulator = [
@@ -93,16 +101,19 @@ const detectorTabulator = [
 
 
 const DetectorManagement = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tbRef = useRef(null);
   const searchRef = useRef(null);
   const [disabledForm, setDisabledForm] = useState(true);
+  const [disabledId, setDisabledId] = useState(true);
   const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
   const [hasChangesCreate, setHasChangesCreate] = useState(false);
+  const [isNewClicked, setIsNewClicked] = useState(false);
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);
+  const isNewClickedRef = useRef(isNewClicked);
   const [newId, setNewId] = useState('');
-  const [isNewClicked, setIsNewClicked] = useState(false);
+  const [selectedSiteId, setSelectedSiteId] = useState('');
 
   useEffect(() => {
     if (searchRef.current) {
@@ -114,15 +125,76 @@ const DetectorManagement = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [queryParams, setQueryParams] = useState("");
   const [optionParams, setOptionParams] = useState("upper-code=102");
+  const [resource, setResource] = useState("resource=detector");
   const [selectedDetector, setSelectedDetector] = useState({
     dt_id: null,
   });
+  const selectedDetectorRef = useRef(selectedDetector);
+
+
+  const detailDetector = (data) => {
+    return {
+      detector_id: data.detector_id || null,
+      site_id: data.site_id || null,
+      road_id: data.road_id || null,
+      name: data.name || null,
+      description: data.description || null,
+      installed_date: data.installed_date || null,
+      pic_name: data.pic_name || null,
+      pic_phone_number: data.pic_phone_number || null,
+      model: data.model || null,
+      s_n: data.s_n || null,
+      lat: data.lat || null,
+      lng: data.lng || null,
+      manufacturer: data.manufacturer || null,
+      ip: data.ip || null,
+      mac: data.mac || null,
+      camera_url: data.camera_url || null,
+    };
+  };
   
+
+  useEffect(() => {
+    let locale;
+    if (i18n.language === "eng") {
+      locale = localeEn;
+    } else if (i18n.language === "ind") {
+      locale = localeId;
+    } else {
+      locale = localeKo; 
+    }
+
+    const optionsDate = {
+      autoClose: true,
+      locale: locale,
+      position: "top center",
+      onSelect: (date) => {
+        handleInputChange({
+          target: {
+            name: "installed_date",
+            value: date.formattedDate,
+          },
+        });
+        setFormValues((prevValues) => ({
+          ...prevValues,
+          installed_date: date.formattedDate,
+        }));
+      },
+    };
+
+    const datepicker = new AirDatepicker('[name="installed_date"]', optionsDate);
+
+    return () => {
+      datepicker.destroy();
+    };
+  }, [i18n.language]);
 
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;
     hasChangesCreateRef.current = hasChangesCreate;
-  }, [hasChangesUpdate, hasChangesCreate]);
+    isNewClickedRef.current = isNewClicked;
+    selectedDetectorRef.current = selectedDetector
+  }, [hasChangesUpdate, hasChangesCreate, isNewClicked, selectedDetector]);
 
 
   //Values
@@ -146,25 +218,12 @@ const DetectorManagement = () => {
   });
 
   const emptyDetail = () => {
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      detector_id: '',
-      site_id: '',
-      road_id: '', 
-      name: '',
-      description: '',
-      installed_date: '',
-      pic_name: '',
-      pic_phone_number: '',
-      model: '',
-      s_n: '',
-      lat: '',
-      lng: '',
-      manufacturer: '',
-      camera_url: '',
-      ip: '',
-      mac: ''
-    }));
+    setFormValues((prevValues) =>
+      Object.keys(prevValues).reduce((acc, key) => {
+        acc[key] = '';
+        return acc;
+      }, {})
+    );
   };
 
   //Button 
@@ -212,30 +271,65 @@ const DetectorManagement = () => {
     }));
   };
 
+  const reloadCallback = () => {
+    enableInitialButtons();
+    tbRef.current.deselectRow();
+    emptyDetail();
+    setDisabledForm(true);
+    setHasChangesUpdate(false);
+    setIsNewClicked(false);
+    setHasChangesCreate(false);
+    setSelectedSiteId(null)
+    setSelectedDetector({ dt_id: null });
+  };
 
-  const { detectorListData } = useDetectorMgt({
+
+  const { detectorListData, detailDetectorData, deleteDetector, createDetector, updateDetector } = useDetectorMgt({
     dtID: selectedDetector?.dt_id,
-    queryParams: queryParams
+    queryParams: queryParams,
+    onDeleteSuccess: reloadCallback,
+    onUpdateSuccess: () => {
+      enableUPDATEButtons();
+      setIsNewClicked(false);
+      setHasChangesUpdate(false);
+    },
+    onCreateSuccess: (responseData) => {
+      reloadCallback();
+      const newID = responseData.remote_terminal_unit_id;
+      setNewId(newID);
+    },
   });
 
   const data = detectorListData?.data;
+  const dataDetector = detailDetectorData?.data;
+
 
   const { commonListData } = useCommonCodes({ optionParams });
+  const { unmappedSiteRoad } = useUnmappedSiteRoad({ resource });
+
+  const dataSiteRoad = unmappedSiteRoad?.data;
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;  
-      setFormValues((prevValues) => ({
-        ...prevValues,
-        [name]: value,
-      }));
-    
-    if (isNewClicked) {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  
+    if (name === "site_id") {
+      console.log("Site changed:", value);
+      setSelectedSiteId(value);
+    }
+
+    if (isNewClickedRef.current) {
       setHasChangesCreate(true); 
     } else {
+
       setHasChangesUpdate(true); 
     }
 
-    if (selectedDetector?.dt_id){
+    if (selectedDetectorRef.current?.dt_id) {
       setHasChangesUpdate(true);
     }
   };
@@ -269,6 +363,7 @@ const DetectorManagement = () => {
     rowHeight: 41,
     selectableRows: 1,
     movableRows: false,
+    index:'detector_id',
     resizableRows: false,
     locale: "ko",
     langs: {
@@ -293,14 +388,196 @@ const DetectorManagement = () => {
     setSelectedOption('All');
   };
 
+  const handleRowSelected = useCallback((row) => {
+    if(hasChangesCreateRef.current || hasChangesUpdateRef.current){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        const rowData = row.getData();
+        setSelectedDetector({
+          dt_id: rowData.detector_id,  
+        });
+        setSelectedSiteId(rowData.site_id);
+        setDisabledForm(false);
+        setHasChangesUpdate(false);
+        setIsNewClicked(false);
+      });
+      
+    } else {
+      const rowData = row.getData();
+      setSelectedDetector({
+        dt_id: rowData.detector_id,  
+      });
+      setSelectedSiteId(rowData.site_id);
+      setDisabledForm(false);
+      enableUPDATEButtons();
+      setIsNewClicked(false);
+    }
+  }, []);
+
+  const handleNewButtonClick = () => {
+    if(hasChangesCreate || hasChangesUpdate){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        tbRef.current.deselectRow();
+        emptyDetail();
+        setIsNewClicked(true);
+        enableRegisterButtons();
+        setSelectedDetector({ dt_id: null });
+        setSelectedSiteId(null);
+        setDisabledForm(false);
+        setHasChangesUpdate(false);
+      });
+    } else{
+      tbRef.current.deselectRow();
+      emptyDetail();
+      setIsNewClicked(true);
+      enableRegisterButtons();
+      setSelectedDetector({ dt_id: null });
+      setSelectedSiteId(null);
+      setDisabledForm(false); 
+      setHasChangesUpdate(false);
+    }
+
+  };
+
+
+  const handleCancelButtonClick = () => {
+    if (hasChangesUpdate){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        setDisabledForm(false);
+        const formattedData = detailDetector(dataDetector);
+        formattedData.installed_date = formatDateKor(formattedData.installed_date);
+        setFormValues(formattedData);
+        setHasChangesUpdate(false);
+        setSelectedSiteId(dataDetector.site_id);
+      });
+    }
+    
+    else if(isNewClicked){
+      if(hasChangesCreate){
+      const message = new NoticeMessage(
+        t('msg > flush confirm'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+        emptyDetail();
+        setIsNewClicked(false);
+        setDisabledForm(true);
+        enableInitialButtons();
+        setHasChangesCreate(false);
+        setSelectedSiteId(null)
+      });
+    }
+    else{
+      emptyDetail();
+      setIsNewClicked(false);
+      setDisabledForm(true);
+      enableInitialButtons();
+      setHasChangesCreate(false);
+      setSelectedSiteId(null)
+    }
+  }   else {
+    reloadCallback()
+  }
+  };
+
+  const handleRegistButtonClick = () => {
+    const { detector_id, description, ...fieldsToCheck } = formValues;
+
+    const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
+    
+    if (isEmptyField) {
+      new NoticeMessage('필수 값을 모두 입력해주세요.')
+      return;
+    }
+
+    const updatedFormValues = {
+      ...formValues,
+      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
+    };
+    console.log(updatedFormValues);
+    createDetector(updatedFormValues);
+  }  
+
+  const handleConfirmButtonClick = () => {
+    const { detector_id, description, ...fieldsToCheck } = formValues;
+
+    const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
   
-  const logData = [
-    { label: "등록자", value: "김철수" },
-    { label: "등록 시간", value: "02-22-2022 12:02:47 " },
-    { label: "수정자", value: "박철수" },
-    { label: "수정 시간", value: "02-23-2022 12:02:47 " },
+    if (isEmptyField) {
+      
+      new NoticeMessage('필수 값을 모두 입력해주세요.')
+      return;
+    }
+    console.log("Installed Date:", formValues.installed_date);
+
+    const updatedFormValues = {
+      ...formValues,
+      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
+    };
+    console.log(updatedFormValues);
+    updateDetector(updatedFormValues);
+
+  }
+
+ const handleDeleteButtonClick = () => {
+    const message = new NoticeMessage(
+      t('msg > delete confirm'),
+      {
+        mode: "confirm",
+      }
+    );
+    message.confirmClicked().then(() => {
+      deleteDetector(selectedDetector?.dt_id); 
+    }); 
+    
+  };
+  const roadOptions = selectedSiteId
+  ? dataSiteRoad?.sites
+      ?.find(site => site.site_id === Number(selectedSiteId))
+      ?.roads.map(road => ({
+        value: road.road_id,
+        label: `${road.name} (${road.road_id})`, 
+      })) || []
+  : [];
+
+
+
+  useEffect(() => {
+    if (dataDetector) {
+      const formattedData = detailDetector(dataDetector);
+      formattedData.installed_date = formatDateKor(formattedData.installed_date);
+      setFormValues(formattedData);
+    }
+  }, [dataDetector]);
   
-  ];
+
+  const logData = dataDetector
+  ? [
+      { label: t('cmn > registered by'), value: dataDetector.registered_by },
+      { label: t('cmn > registered time'), value: dataDetector.registered_time },
+      { label: t('cmn > updated by'), value: dataDetector.updated_by },
+      { label: t('cmn > updated time'), value: dataDetector.updated_time },
+    ]
+  : [];
 
 
   return (
@@ -346,7 +623,23 @@ const DetectorManagement = () => {
             layout={"fitColumns"}
             className="tabulator-custom w-full "
             //   pagination="local"
+            onRef={(r) => {
+              tbRef.current = r.current;
+            }}
             options={optionsTabulator}
+            events={{
+              rowSelected: handleRowSelected,
+              tableBuilt: () => {
+                if (selectedDetector?.dt_id) {
+                  const row = tbRef.current.getRow(selectedDetector?.dt_id);
+                  row && row.select();
+                }else if (newId){
+                  const row = tbRef.current.getRow(newId);
+                  tbRef.current.scrollToRow(row, "bottom", true);
+                  tbRef.current.selectRow(newId);
+            }
+              }
+            }}
           />
         </ContainerCard>
 
@@ -356,9 +649,9 @@ const DetectorManagement = () => {
               <DetailForm 
               className="items-center!" 
               label="검지기 ID" 
-              value={formValues.detector_id}
+              value={formValues.detector_id || ''}
               name={'detector_id'} 
-              disabled={disabledForm}
+              disabled={true}
               onChange={handleInputChange} 
               />
 
@@ -368,8 +661,9 @@ const DetectorManagement = () => {
                 required={true}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.name}
+                value={formValues.name || ''}
                 name={'name'}
+                maxLength={100}
               />
             </div>
 
@@ -386,15 +680,19 @@ const DetectorManagement = () => {
                     customInput="w-full" 
                     disabled={disabledForm}
                     onChange={handleInputChange}
-                    value={formValues.lat}
-                    name={'lat'} />
+                    value={formValues.lat || ''}
+                    name={'lat'}
+                    maxLength={100}
+                    pattern={'^[0-9.]*$'} />
 
                     <GeneralInput 
                     customInput="w-full" 
                     disabled={disabledForm}
                     onChange={handleInputChange}
-                    value={formValues.lng}
+                    value={formValues.lng || ''}
                     name={'lng'}
+                    maxLength={100}
+                    pattern={'^[0-9.]*$'}
                     />
                   </div>
                 </DetailForm>
@@ -406,8 +704,9 @@ const DetectorManagement = () => {
                 required={true}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.installed_date}
+                value={formValues.installed_date || ''}
                 name={'installed_date'}
+                readonly={true}
               />
 
             </div>
@@ -418,14 +717,20 @@ const DetectorManagement = () => {
                 className="items-center!"
                 label="매핑 사이트"
                 required={true}
-                optionSelect={[
-                  { label: "사이트 1", value: "site1" },
-                  { label: "사이트 2", value: "site2" },
-                  { label: "사이트 3", value: "site3" }
-                ]}
+                optionSelect={
+                  dataSiteRoad?.sites
+                    ? [
+                        { value: "", label: "" },
+                        ...dataSiteRoad?.sites.map((site) => ({
+                          value: site.site_id, 
+                          label: `${site.name} (${site.site_id})`, 
+                        })),
+                      ]
+                    : []
+                }
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.site_id}
+                value={formValues.site_id || ''}
                 name={'site_id'}
               />
             <DetailForm
@@ -433,15 +738,10 @@ const DetectorManagement = () => {
                 className="items-center!"
                 label="매핑 접근로"
                 required={true}
-                optionSelect={[
-                  { label: "남쪽 접근로(ROAD001)", value: "site1" },
-                  { label: "남쪽 접근로(ROAD002)", value: "site2" },
-                  { label: "남쪽 접근로(ROAD003)", value: "site3" }
-                ]}
-              
+                optionSelect={roadOptions}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.road_id}
+                value={formValues.road_id || ''}
                 name={'road_id'}
               />
 
@@ -454,19 +754,21 @@ const DetectorManagement = () => {
                 required={true}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.pic_name}
+                value={formValues.pic_name || ''}
                 name={'pic_name'}
+                maxLength={100}
               />
 
               <DetailForm
                 className="items-center!"
                 label="담당자 전화번호"
                 required={true}
-                inputType= "number"
-                value={formValues.pic_phone_number}
+                value={formValues.pic_phone_number || ''}
                 name={'pic_phone_number'}
                 disabled={disabledForm}
                 onChange={handleInputChange}
+                maxLength={100} 
+                pattern={'^[0-9]*$'} 
               />
             </div>
 
@@ -477,8 +779,9 @@ const DetectorManagement = () => {
                 required={true}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.model}
+                value={formValues.model || ''}
                 name={'model'}
+                maxLength={100}
               />
 
               <DetailForm
@@ -487,8 +790,9 @@ const DetectorManagement = () => {
                 required={true}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.s_n}
-                name={'sn'}
+                value={formValues.s_n || ''}
+                name={'s_n'}
+                maxLength={100}
               />
 
               <DetailForm
@@ -497,8 +801,9 @@ const DetectorManagement = () => {
                 required={true}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.manufacturer}
+                value={formValues.manufacturer || ''}
                 name={'manufacturer'}
+                maxLength={100}
               />
             </div>
 
@@ -509,8 +814,9 @@ const DetectorManagement = () => {
                 required={true}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.mac}
+                value={formValues.mac || ''}
                 name={'mac'}
+                maxLength={100}
               />
 
               <DetailForm
@@ -519,8 +825,10 @@ const DetectorManagement = () => {
                 required={true}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.ip}
+                value={formValues.ip || ''}
                 name={'ip'}
+                maxLength={100}
+                pattern={'^[0-9.]*$'} 
               />
 
               <DetailForm
@@ -529,8 +837,10 @@ const DetectorManagement = () => {
                 required={true}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.camera_url}
+                value={formValues.camera_url || ''}
                 name={'camera_url'}
+                pattern={'^[0-9.]*$'} 
+                maxLength={100}
               />
             </div>
 
@@ -541,8 +851,9 @@ const DetectorManagement = () => {
                 label="설명"
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.description}
+                value={formValues.description || ''}
                 name={'description'}
+                maxLength={500}
 
               />
             </div>
@@ -554,6 +865,11 @@ const DetectorManagement = () => {
               </div>
               <div className="flex-none">
                 <ButtonGroup
+                  onClickDelete={handleDeleteButtonClick}
+                  onClickNew={handleNewButtonClick}
+                  onClickCancel={handleCancelButtonClick}
+                  onClickRegist={handleRegistButtonClick}
+                  onClickConfirm ={handleConfirmButtonClick}
                   isNewClicked={isNewClicked}
                   cancelButtonState={buttonState.cancel}
                   confirmButtonState={hasChangesUpdate ? false : buttonState.confirm}

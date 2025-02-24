@@ -17,7 +17,7 @@ import localeKo from 'air-datepicker/locale/ko.js';
 import localeId from 'air-datepicker/locale/id.js'; 
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
 import useSiteMgt from "../../hooks/useSiteMgt";
-import { formatDateToDDMMYYYY, formatDateToYYYYMMDD } from "../../utils/date";
+import { formatDateKor, formatDateToDDMMYYYY, formatDateToMMDDYYYY, formatDateToYYYYMMDD } from "../../utils/date";
 
 
 const boxTabulator = [
@@ -444,7 +444,7 @@ const BoxManagement = () => {
       message.confirmClicked().then(() => {
         setDisabledForm(false);
         const formattedData = detailBox(dataBox);
-        formattedData.installed_date = formatDateToDDMMYYYY(formattedData.installed_date);
+        formattedData.installed_date = formatDateKor(formattedData.installed_date);
         setFormValues(formattedData);
         setHasChangesUpdate(false);
       });
@@ -480,7 +480,7 @@ const BoxManagement = () => {
 
 
   const handleRegistButtonClick = () => {
-    const { remote_terminal_unit_id, ...fieldsToCheck } = formValues;
+    const { remote_terminal_unit_id, description, ...fieldsToCheck } = formValues;
 
     const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
   
@@ -498,7 +498,7 @@ const BoxManagement = () => {
   }  
 
   const handleConfirmButtonClick = () => {
-    const { remote_terminal_unit_id, ...fieldsToCheck } = formValues;
+    const { remote_terminal_unit_id, description, ...fieldsToCheck } = formValues;
 
     const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
   
@@ -508,11 +508,14 @@ const BoxManagement = () => {
     }
     
     
-
+    console.log(formValues.installed_date);
+    
     const updatedFormValues = {
       ...formValues,
       installed_date: formatDateToYYYYMMDD(formValues.installed_date)
     };
+    console.log(updatedFormValues);
+    
     updateBox(updatedFormValues);
 
   }
@@ -534,7 +537,7 @@ const BoxManagement = () => {
   useEffect(() => {
     if (dataBox) {
       const formattedData = detailBox(dataBox);
-      formattedData.installed_date = formatDateToDDMMYYYY(formattedData.installed_date);
+      formattedData.installed_date = formatDateKor(formattedData.installed_date);
       setFormValues(formattedData);
     }
   }, [dataBox]);

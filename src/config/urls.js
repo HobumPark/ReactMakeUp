@@ -1,4 +1,3 @@
-
 // ! Warning: The DEBUG changes may cause issues with the production server.
 const isDebugMode = import.meta.env.DEV;
 export const DEBUG = isDebugMode;
@@ -72,13 +71,19 @@ export const APIS = {
   forgotPassword: '/forgot-password',
   updateProfileByUser :'/users/update-user',
   updateProfilePassword: '/users/update-password',
-  boxList: (filterParams) => `/box?${filterParams}`,
+  unmappedSiteRoad: (filterParams) => `/unmapped-site-road?${filterParams}`,
   //box
+  boxList: (filterParams) => `/box?${filterParams}`,
   detailBox: (rtuID) =>`/box/${rtuID}`,
   deleteBox: (rtuID) =>`/box/${rtuID}`,
   createBox: '/box',
   updateBox: (rtuID) =>`/box/${rtuID}`,
+  //detector
   detectorList: (filterParams) => `/detector?${filterParams}`,
+  detailDetector: (dtID) =>`/detector/${dtID}`,
+  deleteDetector: (dtID) =>`/detector/${dtID}`,
+  createDetector: '/detector',
+  updateDetector: (dtID) =>`/detector/${dtID}`,
   //site
   siteList:(filterParams) => `/site?${filterParams}`,
   updateSite: (siteId)=>`/site/${siteId}`,
