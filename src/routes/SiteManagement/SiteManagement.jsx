@@ -10,8 +10,11 @@ import GeneralInput from "../../components/GeneralInput/GeneralInput";
 import DynamicForm from "../../components/DynamicForm/DynamicForm";
 import IconDelete from "../../assets/icon/icon-delete-circle.svg";
 import useSiteMgt from '../../hooks/useSiteMgt';
+import useRoadMgt from '../../hooks/useRoadMgt';
 import NoticeMessage from "../../plugin/noticemessage/noticemessage"
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from "@tanstack/react-query";
+
 
 //table set, text
 const boxTabulator = [
@@ -26,7 +29,7 @@ const boxTabulator = [
   },
   {
     title: "사이트 ID",
-    field: "site_id",
+    field: "site_id",//snake case
     WidthGrow: 80,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -104,15 +107,30 @@ const data = [
 
 const SiteManagement = () => {
   const { t, i18n } = useTranslation();
+  // queryClient 가져오기
+  const queryClient = useQueryClient();
 
-  const [queryParams, setQueryParams] = useState("");
+  const [queryParams, setQueryParams] = useState(""); // queryParams 상태
+  const [siteId, setSiteId] = useState(null); // siteId 상태
 
-  //get site data - API
+  // site 데이터 가져오기
   const { siteListData, deleteSite, updateSite } = useSiteMgt({
-    queryParams: queryParams  || "",
+    queryParams: queryParams || "",
   });
-  console.log('siteListData')
-  console.log(siteListData)
+
+  const { roadListData, error, isLoadingRoad } = useRoadMgt({
+    queryParams: siteId ? `site_id=${siteId}` : null, // siteId가 있을 때만 API 호출
+  });
+
+  console.log('useRoadMgt');
+  console.log(roadListData);
+  console.log(isLoadingRoad);
+  console.log(error);
+
+  if(roadListData){
+    console.log('roadListData')
+    console.log(roadListData)
+  }
 
 
   const [selectedOption, setSelectedOption] = useState("");
@@ -150,21 +168,23 @@ const SiteManagement = () => {
   //add dynamic input form of road
   const addDynamicGroup = () => {
 
-    if(siteFormValues?.number_of_access_roads){
+    if(siteFormValues?.number_road){
 
-      const {number_of_access_roads}=siteFormValues
+      const {number_road}=siteFormValues
 
-        if(groupList.length >= number_of_access_roads){
+        if(groupList.length >= number_road){
           alert('접근로 생성 최대 갯수를 넘을수 없습니다.')
           return
+        }else{
+          console.log(groupList)
+          setGroupList([...groupList, groupList.length + 1]); 
         }
 
     }else{
       alert('접근로수를 입력하세요!')
       return
     }
-    console.log(groupList)
-    setGroupList([...groupList, groupList.length + 1]); 
+    
   };
 
   const deleteDynamicGroup = (index) => {
@@ -172,7 +192,7 @@ const SiteManagement = () => {
     setGroupList(newGroupList);
   };
 
-  //site input form values
+  //site input form values, row data to display
   const [siteFormValues, setSiteFormValues] = useState({
     site_id:'',
     name:'',
@@ -185,6 +205,11 @@ const SiteManagement = () => {
     mapping_box:'',
     description:'description'
   })
+
+  //road data list related with site
+  const [siteRelatedRoadList, setSiteRelatedRoadList] = useState([
+
+  ])
 
   // select on change - intersection and crosswalk
   const handleSiteInputChange = (e) => {
@@ -215,10 +240,12 @@ const SiteManagement = () => {
     console.log(siteFormValues)
   };
 
+
+
   const tbRefInit = useRef(null);
 
   //road input form values
-  const [roadformValues, setRoadFormValues] = useState({
+  const [roadInputformValues, setRoadInputFormValues] = useState({
     road_id:'',//접근로 id
     road_name:'', //접근로 명칭
     incoming_compass:'북',//진입 방향
@@ -248,12 +275,18 @@ const SiteManagement = () => {
     console.log(name)
     console.log(value)
 
-    setRoadFormValues((prevValues) => ({
+    setRoadInputFormValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }));
 
-    console.log(roadformValues)
+    if (isNewClicked) {//new버튼 클릭했을때만
+      setHasChangesCreate(true); 
+    } else {
+      setHasChangesUpdate(true); 
+    }
+
+    console.log(roadInputformValues)
   }
 
   const handleRowSelected = useCallback((row) => {
@@ -279,22 +312,27 @@ const SiteManagement = () => {
     setHasChangesUpdate(false)
     enableUpdateButtons()
     setIsNewClicked(false);
+    setGroupList([])
   }
   
-    
-    // 바로 폼에 값을 설정하는 방식
-    setSiteFormValues({
-      site_id: rowData.site_id,
-      name: rowData.name,
-      address: rowData.address,
-      lat: rowData.lat,
-      lng: rowData.lng,
-      type:'102001',
-      type_value: rowData.type_value || "교차로",
-      number_road: rowData.number_road,
-      mapping_box: rowData.mapping_box || "",
-      description:"description"
-    });
+  const siteId = rowData.site_id
+  //camel case
+  console.log('siteId:'+siteId);
+  setSiteId(siteId)
+
+  // 바로 폼에 값을 설정하는 방식
+  setSiteFormValues({
+    site_id: rowData.site_id,
+    name: rowData.name,
+    address: rowData.address,
+    lat: rowData.lat,
+    lng: rowData.lng,
+    type:'102001',
+    type_value: rowData.type_value || "교차로",
+    number_road: rowData.number_road,
+    mapping_box: rowData.mapping_box || "",
+    description:"description"
+  });
     
   }, []);
   
@@ -431,6 +469,11 @@ const SiteManagement = () => {
       console.log(updatedSiteFormValues)
       console.log(siteId)
       console.log(testSample)
+      
+      setDisabledForm(false)
+      setHasChangesUpdate(false)
+      enableUpdateButtons()
+      setIsNewClicked(false);
 
       updateSite(updatedSiteFormValues)
       
@@ -645,11 +688,23 @@ const SiteManagement = () => {
               {/* <hr className="border-t border-gray-300" /> */}
             </div>
 
-            {groupList.map((_, index) => (
+            {roadListData?.map((data, index) => (
               <div key={index}>
                 <DynamicForm index={index} 
                 onDelete={deleteDynamicGroup} 
                 handleRoadInputChange={handleRoadInputChange}
+                road_id={data.road_id}
+                name={data.name}
+                crosswalk_length={data.crosswalk_length}
+                crosswalk_width={data.crosswalk_width}
+                incoming_direction={data.incoming_direction}
+                site_id={data.site_id}
+                crosswalk={data.crosswalk}//횡단보도 유무
+                incoming_compass={data.incoming_compass}//진입방향
+                outgoing_compass={data.outgoing_compass}//진출방향
+                incoming_lane_cnt={data.incoming_lane_cnt}//진입 차선수
+                outgoing_lane_cnt={data.outgoing_lane_cnt}//진출 차선수
+                
                 />
               </div>
             ))}

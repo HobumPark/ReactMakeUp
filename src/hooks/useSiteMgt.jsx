@@ -23,6 +23,7 @@ const useSiteMgt = ({
           return updateSite(siteData);
         },
         onSuccess: (responseData) => {
+          alert('onSuccess!')
           new NoticeMessage(t('msg > update success'), {
             callback() {
               queryClient.invalidateQueries(["siteListData", queryParams]);

@@ -73,6 +73,7 @@ export const APIS = {
   updateProfileByUser :'/users/update-user',
   updateProfilePassword: '/users/update-password',
   boxList: (filterParams) => `/box?${filterParams}`,
+  //box
   detailBox: (rtuID) =>`/box/${rtuID}`,
   deleteBox: (rtuID) =>`/box/${rtuID}`,
   createBox: '/box',
@@ -83,4 +84,6 @@ export const APIS = {
   updateSite: (siteId)=>`/site/${siteId}`,
   deleteSite: (siteId)=>`/site/${siteId}`,
   facilityList: (filterParams) => `/facility?${filterParams}`,
+  //road
+  roadList:(filterParams) => `/road?${filterParams}`,
 }
