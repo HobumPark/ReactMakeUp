@@ -114,9 +114,14 @@ const SiteManagement = () => {
   const [siteId, setSiteId] = useState(null); // siteId 상태
 
   // site 데이터 가져오기
-  const { siteListData, deleteSite, updateSite } = useSiteMgt({
-    queryParams: queryParams || "",
+  const { siteListData, detailSiteData, deleteSite, updateSite, createSite } = useSiteMgt({
+    queryParams: queryParams || "", siteId
   });
+  console.log('useSiteMgt');
+  console.log('siteListData');
+  console.log(siteListData);
+  console.log('detailSiteData');
+  console.log(detailSiteData);
 
   const { roadListData, error, isLoadingRoad } = useRoadMgt({
     queryParams: siteId ? `site_id=${siteId}` : null, // siteId가 있을 때만 API 호출
@@ -163,7 +168,8 @@ const SiteManagement = () => {
     { label: "수정 시간", value: "02-23-2022 12:02:47 " },
   ];
 
-  const [groupList, setGroupList] = useState([]);
+  //입력용 road 목록
+  const [roadInputList, setRoadInputList] = useState([]);
 
   //add dynamic input form of road
   const addDynamicGroup = () => {
@@ -172,12 +178,12 @@ const SiteManagement = () => {
 
       const {number_road}=siteFormValues
 
-        if(groupList.length >= number_road){
+        if(roadInputList.length >= number_road){
           alert('접근로 생성 최대 갯수를 넘을수 없습니다.')
           return
         }else{
-          console.log(groupList)
-          setGroupList([...groupList, groupList.length + 1]); 
+          console.log(roadInputList)
+          setRoadInputList([...roadInputList, roadInputList.length + 1]); 
         }
 
     }else{
@@ -187,11 +193,21 @@ const SiteManagement = () => {
     
   };
 
-  const deleteDynamicGroup = (index) => {
-    const newGroupList = groupList.filter((_, i) => i !== index); 
-    setGroupList(newGroupList);
+  const deleteDynamicGroup = (mode, road_id) => {
+    //alert('roadList delete')
+    //const newGroupList = groupList.filter((_, i) => i !== index); 
+    //setGroupList(newGroupList);
+    //roadList delete button
+    console.log('입력 모드:'+mode)
+    console.log('접근로 아이디:'+road_id)
+    if(mode == 'input_mode'){
+      alert(road_id+" 번 접근로 단순 입력 목록 삭제")
+    }else if(mode == 'list_mode'){
+      alert(road_id+" 번 접근로 삭제 API요청")
+    }
   };
 
+  const [currentRoadNumber,setCurrentRoadNumber]=useState(0)
   //site input form values, row data to display
   const [siteFormValues, setSiteFormValues] = useState({
     site_id:'',
@@ -217,13 +233,15 @@ const SiteManagement = () => {
   
     // If the number_of_access_roads is being changed, reset the dynamic groups
     if (name === "number_road") {
+      console.log("number_road")
+      console.log(value)
       setSiteFormValues((prevValues) => ({
         ...prevValues,
         [name]: value,
       }));
-  
+      
       // Reset the group list whenever the number of access roads changes
-      setGroupList([]); // Reset all dynamic groups
+      //setGroupList([]); // Reset all dynamic groups
     } else {
       setSiteFormValues((prevValues) => ({
         ...prevValues,
@@ -236,7 +254,7 @@ const SiteManagement = () => {
     } else {
       setHasChangesUpdate(true); 
     }
-
+    setHasChangesUpdate(true); 
     console.log(siteFormValues)
   };
 
@@ -270,6 +288,7 @@ const SiteManagement = () => {
   const [maxRoadInputForms,setMaxRoadInputForms]=useState(0)
   const [curRoadInputForms,setCurRoadInputForms]=useState(0)
 
+  //
   const handleRoadInputChange = (e) =>{
     const { name, value } = e.target; 
     console.log(name)
@@ -289,6 +308,7 @@ const SiteManagement = () => {
     console.log(roadInputformValues)
   }
 
+  // 테이블 row선택시
   const handleRowSelected = useCallback((row) => {
     const rowData = row.getData();
 
@@ -312,7 +332,7 @@ const SiteManagement = () => {
     setHasChangesUpdate(false)
     enableUpdateButtons()
     setIsNewClicked(false);
-    setGroupList([])
+    //setGroupList([])
   }
   
   const siteId = rowData.site_id
@@ -329,7 +349,7 @@ const SiteManagement = () => {
     lng: rowData.lng,
     type:'102001',
     type_value: rowData.type_value || "교차로",
-    number_road: rowData.number_road,
+    number_road: rowData.number_road || "",
     mapping_box: rowData.mapping_box || "",
     description:"description"
   });
@@ -444,9 +464,17 @@ const SiteManagement = () => {
       setIsNewClicked(true);
       setDisabledForm(false);
       emptyDetail()
+      setSiteId(null)
+      setRoadInputList([])
+      //siteId를 null로 하면 road 데이터 초기화
   };
   const handleRegistButtonClick = () => {
       //alert('regist!')
+      //입력폼 검사
+      const updatedSiteFormValues = {
+        ...siteFormValues
+      }
+      createSite(updatedSiteFormValues)
   }
 
   const handleConfirmButtonClick = () => {
@@ -493,12 +521,15 @@ const SiteManagement = () => {
           //alert('취소!')
           setDisabledForm(false);
           emptyDetail()
-
+          setSiteId(null)
+          //siteId를 null로 하면 road 데이터 초기화
         });
       }
       else{
         setDisabledForm(false);
         emptyDetail()
+        setSiteId(null)
+        //siteId를 null로 하면 road 데이터 초기화
       }
   };
 
@@ -528,6 +559,8 @@ const SiteManagement = () => {
     setSelectedUser({ id: null });
   };
 
+  const {mapped_box} = detailSiteData?.data || ""
+
   return (
     <>
       <section className="wrap">
@@ -543,13 +576,6 @@ const SiteManagement = () => {
             placeholder="명칭 / 시리얼 넘버"
             disableFiltering={true}
           >
-            {/* <Select
-              options={options}
-              //   label="Pilih Opsi"
-              //   name="contoh aja coy"
-              value={selectedOption}
-              onChange={handleChange}
-            /> */}
           </Filtering>
         </ContainerCard>
 
@@ -659,7 +685,8 @@ const SiteManagement = () => {
                 onChange={handleSiteInputChange} 
                 name="number_road"
                 value={siteFormValues.number_road || ''}
-                disabled={disabledForm}
+                disabled={isNewClicked? false:true}
+                //목록은 비활성화, 입력시에는 활성화
               />
             </div>
 
@@ -671,7 +698,8 @@ const SiteManagement = () => {
                 placeholder="BX01001(ID0001)"
                 onChange={handleSiteInputChange} 
                 name="mapping_box"
-                disabled={disabledForm}
+                disabled={true}
+                value={mapped_box}
               />
             </div>
 
@@ -687,11 +715,14 @@ const SiteManagement = () => {
               </span>
               {/* <hr className="border-t border-gray-300" /> */}
             </div>
-
-            {roadListData?.map((data, index) => (
+            
+            {
+            isNewClicked? 
+            // 입력시 출력되는 접근로 목록
+            roadInputList?.map((data, index) => (
               <div key={index}>
                 <DynamicForm index={index} 
-                onDelete={deleteDynamicGroup} 
+                onDelete={()=>deleteDynamicGroup('input_mode',data.road_id)} 
                 handleRoadInputChange={handleRoadInputChange}
                 road_id={data.road_id}
                 name={data.name}
@@ -704,10 +735,35 @@ const SiteManagement = () => {
                 outgoing_compass={data.outgoing_compass}//진출방향
                 incoming_lane_cnt={data.incoming_lane_cnt}//진입 차선수
                 outgoing_lane_cnt={data.outgoing_lane_cnt}//진출 차선수
-                
+                mapped_vms={data.mapped_vms}
+                mapped_speaker={data.mapped_speaker}
                 />
               </div>
-            ))}
+            ))
+            : //행 선택시 출력되는 접근로 목록
+            roadListData?.map((data, index) => (
+              <div key={index}>
+                <DynamicForm index={index} 
+                onDelete={()=>deleteDynamicGroup('list_mode',data.road_id)} 
+                handleRoadInputChange={handleRoadInputChange}
+                road_id={data.road_id}
+                name={data.name}
+                crosswalk_length={data.crosswalk_length}
+                crosswalk_width={data.crosswalk_width}
+                incoming_direction={data.incoming_direction}
+                site_id={data.site_id}
+                crosswalk={data.crosswalk}//횡단보도 유무
+                incoming_compass={data.incoming_compass}//진입방향
+                outgoing_compass={data.outgoing_compass}//진출방향
+                incoming_lane_cnt={data.incoming_lane_cnt}//진입 차선수
+                outgoing_lane_cnt={data.outgoing_lane_cnt}//진출 차선수
+                mapped_vms={data.mapped_vms}
+                mapped_speaker={data.mapped_speaker}
+                />
+              </div>
+            ))
+            
+            }
 
             <hr className="border-t border-gray-300" />
             <div className="flex items-center justify-between gap-4 w-full">

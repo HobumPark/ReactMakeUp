@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchSiteList, deleteSite, updateSite } from "../api/site-mgt";
+import { fetchSiteList, fetchDetailSite, deleteSite, updateSite, createSite } from "../api/site-mgt";
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
 import { useTranslation } from "react-i18next";
 
 const useSiteMgt = ({
   queryParams =  "",
- 
+  siteId= ""
 }) => {
   const queryClient = useQueryClient();
   const {t} = useTranslation();
@@ -15,6 +15,17 @@ const useSiteMgt = ({
     queryFn: () => fetchSiteList(queryParams),
     staleTime: 1000 * 60 * 1,
   });
+
+  // Query to fetch detailed user data
+    const { data: detailSiteData, error: detailSiteError, isLoading: isLoadingDetailSite} = useQuery({
+      queryKey: ["detailSiteData", siteId],
+      queryFn: () => fetchDetailSite(siteId),
+      retry: false, 
+      enabled: !!siteId,
+      onError: () => {
+      },
+    });
+  
 
   // Update Site
   const updateSiteMutation = useMutation({
@@ -54,10 +65,29 @@ const useSiteMgt = ({
       },
     });
 
+  // Mutation to create a Site (POST request)
+      const createSiteMutation = useMutation({
+        mutationFn: (siteData) => createSite(siteData),
+        onSuccess: (responseData) => {
+          new NoticeMessage(t('msg > registration success'), {
+            callback() {
+              queryClient.invalidateQueries(["siteListData", queryParams]);
+              onCreateSuccess(responseData);
+            }
+          });
+        },
+        onError: (err) => {
+          console.error("Error creating site:", err);
+          new NoticeMessage(t(err.message))
+        },
+      });
+
   return {
     siteListData,
+    detailSiteData,
     deleteSite: deleteSiteMutation.mutate,
-    updateSite: updateSiteMutation.mutate
+    updateSite: updateSiteMutation.mutate,
+    createSite: createSiteMutation.mutate
   };
 };
 

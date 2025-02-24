@@ -7,6 +7,14 @@ export const fetchSiteList = async (params = "") => {
   return await reqGet(url);
 };
 
+// [GET] Detail Site Info 
+export const fetchDetailSite = async (siteId) => {
+  const url = `${URLS.BACK_DSH}${APIS.detailSite(
+    siteId
+  )}`;
+  return await reqGet(url);
+};  
+
 // [DELETE] Delete Site
 export const deleteSite = async (siteId) => {
   const url = `${URLS.BACK_DSH}${APIS.deleteSite(siteId)}`;
@@ -22,4 +30,10 @@ export const updateSite = async (siteData) => {
 
   const url = `${URLS.BACK_DSH}${APIS.updateSite(siteId)}`; 
   return await reqPut(url, siteData); 
+};
+
+// [POST] Create Site
+export const createSite = async (siteData) => {
+  const url = `${URLS.BACK_DSH}${APIS.createSite}`; 
+  return await reqPost(url, siteData); 
 };

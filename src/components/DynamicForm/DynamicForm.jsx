@@ -8,7 +8,8 @@ import IconDelete from "../../assets/icon/icon-delete-circle.svg";
 const DynamicForm = ({ index, onDelete, handleRoadInputChange, 
   //road info props
   road_id, name, crosswalk_length, crosswalk_width, incoming_direction, site_id, crosswalk,
-  incoming_compass,outgoing_compass,incoming_lane_cnt, outgoing_lane_cnt
+  incoming_compass,outgoing_compass,incoming_lane_cnt, outgoing_lane_cnt,
+  mapped_vms, mapped_speaker
  }) => {
   
     const [directionValues, setDirectionValues] = useState({
@@ -44,7 +45,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
           <div className="flex flex-row items-start gap-[20px]">
             <div
               className="_boxImgDelete w-fit"
-              onClick={() => onDelete(index)}
+              onClick={() => onDelete()}
             >
               <img src={IconDelete} alt="" />
             </div>
@@ -155,7 +156,8 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                 styleLabel="w-[124px]!"
                 label="매핑 검지기"
                 placeholder="DT01001(ID0003)"
-                name="mapping_detector"
+                name="mapped_detector"
+                disabled={true}
                 onChange={handleRoadInputChange}
               />
             </div>
@@ -294,11 +296,27 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
           <div className="grid grid-cols-2 gap-[50px]">
             <div className="flex flex-row items-center gap-[20px]">
               <div className="flex w-full flex-row gap-x-4">
-                <DetailForm className="items-center!" label="사이트 ID" name="related_site_id1" onChange={handleRoadInputChange} value={site_id}/>
+                <DetailForm 
+                  className="items-center!" 
+                  label="매핑 전광판" 
+                  name="mapped_vms" 
+                  placeholder="DT01001(ID0003)"
+                  disabled={true}
+                  onChange={handleRoadInputChange} 
+                  value={mapped_vms}
+                />
               </div>
             </div>
             <div className="flex flex-row items-center gap-[20px]">
-                <DetailForm className="items-center!" label="사이트 ID" name="related_site_id2" onChange={handleRoadInputChange}/>
+                <DetailForm 
+                  className="items-center!" 
+                  label="매핑 스피커" 
+                  name="mapped_speaker" 
+                  placeholder="DT01001(ID0003)"
+                  disabled={true}
+                  onChange={handleRoadInputChange} 
+                  value={mapped_speaker}
+                />
             </div>
           </div>
         </div>
