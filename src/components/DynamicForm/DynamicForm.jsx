@@ -7,7 +7,7 @@ import IconDelete from "../../assets/icon/icon-delete-circle.svg";
 
 const DynamicForm = ({ index, onDelete, handleRoadInputChange, 
   //road info props
-  road_id, name, crosswalk_length, crosswalk_width, incoming_direction, site_id, crosswalk,
+  road_id, road_name, crosswalk_length, crosswalk_width, incoming_direction, site_id, crosswalk,
   incoming_compass,outgoing_compass,incoming_lane_cnt, outgoing_lane_cnt,
   mapped_vms, mapped_speaker
  }) => {
@@ -44,7 +44,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
         <div className="w-full grid col-span-1">
           <div className="flex flex-row items-start gap-[20px]">
             <div
-              className="_boxImgDelete w-fit"
+              className="_boxImgDelete w-fit cursor-pointer hover:opacity-80"
               onClick={() => onDelete()}
             >
               <img src={IconDelete} alt="" />
@@ -91,7 +91,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       ]}
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                       name="incoming_compass"
-                      value={incoming_lane_cnt}
+                      value={incoming_lane_cnt || 2}
                       onChange={handleRoadInputChange}
                     />
                     <DetailForm
@@ -114,7 +114,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       ]}
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                       name="outgoing_compass"
-                      value={outgoing_lane_cnt}
+                      value={outgoing_lane_cnt || 2}
                       onChange={handleRoadInputChange}
                     />
                   </div>
@@ -146,7 +146,8 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                         { label: "미존재", value: "105002" },
                         { label:"존재", value:"105001"}
                       ]}
-                      onChange={(e) => console.log("Selected:", e.target.value)}
+                      value="105002" // 기본값 "미존재" 선택
+                      //onChange={(e) => console.log("Selected:", e.target.value)}
                     />
                   </div>
                 </DetailForm>
@@ -174,7 +175,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   label="명칭 "
                   placeholder="북쪽 접근로"
                   name="road_name"
-                  value={name}
+                  value={road_name}
                   onChange={handleRoadInputChange}
                 />
               </div>
@@ -284,7 +285,16 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       className="items-center!"
                       showTitle={false}
                       required={true}
-                      optionSelect={[{ label: "북", value: "number" }]}
+                      optionSelect={  crosswalk=='105001'?
+                        [
+                          { label: "존재", value: "105001" },
+                          { label:"미존재", value:"105002"}
+                        ]:
+                        [
+                          { label: "미존재", value: "105002" },
+                          { label:"존재", value:"105001"}
+                        ]}
+                        value="105002" // 기본값 "미존재" 선택
                       onChange={(e) => console.log("Selected:", e.target.value)}
                     />
                   </div>
