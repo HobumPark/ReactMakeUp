@@ -78,7 +78,7 @@ const useSiteMgt = ({
         },
         onError: (err) => {
           console.error("Error creating site:", err);
-          new NoticeMessage(t(err.message))
+          //new NoticeMessage(t(err.message))
         },
       });
 
