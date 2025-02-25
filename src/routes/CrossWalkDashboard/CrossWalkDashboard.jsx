@@ -40,8 +40,6 @@ import VehicleCount from "../../components/VehicleCount/VehicleCount";
 import TrafficeByDirection from "../../components/CrossRoadStatistic/TrafficeByDirection";
 import TrafficeByVehicle from "../../components/CrossRoadStatistic/TrafficeByVehicle";
 import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
-import ExitRAte from "../../components/CrossRoadStatistic/ExitRAte";
-
 import PieChartIn from "../../components/CrossWalkStatistic/PieChartIn";
 import PieChartOut from "../../components/CrossWalkStatistic/PieChartout";
 

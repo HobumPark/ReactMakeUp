@@ -37,7 +37,7 @@ import VehicleCount from "../../components/VehicleCount/VehicleCount";
 import TrafficeByDirection from "../../components/CrossRoadStatistic/TrafficeByDirection";
 import TrafficeByVehicle from "../../components/CrossRoadStatistic/TrafficeByVehicle";
 import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
-import ExitRAte from "../../components/CrossRoadStatistic/ExitRAte";
+import ExitRate from "../../components/CrossRoadStatistic/ExitRate";
 
 import PieChartOut from "../../components/AccessRoadStatistic/PieChartOut";
 import PieChartIn from "../../components/AccessRoadStatistic/PieChartIn";

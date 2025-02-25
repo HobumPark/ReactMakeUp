@@ -17,7 +17,7 @@ import VehicleCount from "../../components/VehicleCount/VehicleCount";
 import TrafficeByDirection from "../../components/CrossRoadStatistic/TrafficeByDirection";
 import TrafficeByVehicle from "../../components/CrossRoadStatistic/TrafficeByVehicle";
 import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
-import ExitRAte from "../../components/CrossRoadStatistic/ExitRAte";
+import ExitRate from "../../components/CrossRoadStatistic/ExitRate";
 
 const CrossRoadDashboard = () => {
   const radioOptions = [
@@ -337,7 +337,7 @@ const CrossRoadDashboard = () => {
                 </span>
               </div>
               <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                <ExitRAte />
+                <ExitRate />
               </div>
             </section>
           </div>
