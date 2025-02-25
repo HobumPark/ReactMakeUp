@@ -72,7 +72,7 @@ const facilityTabulator = [
   },
   {
     title: "매핑 사이트 타입",
-    field: "site_type",
+    field: "site_type_value",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -122,6 +122,7 @@ const FacilityManagement = () => {
   const isNewClickedRef = useRef(isNewClicked);
   const [newId, setNewId] = useState('');
   const [selectedSiteId, setSelectedSiteId] = useState('');
+  const [selectedType, setSelectedType] = useState('');
 
   useEffect(() => {
     if (searchRef.current) {
@@ -134,7 +135,7 @@ const FacilityManagement = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [queryParams, setQueryParams] = useState("");
   const [optionParams, setOptionParams] = useState("upper-code=221");
-   const [resource, setResource] = useState("resource=vms");
+  const [resource, setResource] = useState("");
   const [selectedFacility, setSelectedFacility] = useState({
     fc_id: null,
   });
@@ -325,6 +326,7 @@ const FacilityManagement = () => {
       ...prevValues,
       [name]: value,
     }));
+
   
     if (name === "site_id") {
       console.log("Site changed:", value);
@@ -333,12 +335,30 @@ const FacilityManagement = () => {
 
     if (isNewClickedRef.current) {
       setHasChangesCreate(true); 
+      if (name === 'type') {
+        if (value === "221001") {
+          setResource("resource=speaker");
+        } else if (value === "221002") {
+          setResource("resource=vms");
+        } else {
+          setResource(""); 
+        }
+      }
     } else {
-      setHasChangesUpdate(true); 
+      setHasChangesUpdate(true);
     }
 
     if (selectedFacilityRef.current?.fc_id) {
       setHasChangesUpdate(true);
+      if (name === 'type') {
+        if (value === "221001") {
+          setResource(`id=${selectedFacilityRef.current?.fc_id}&resource=speaker`);
+        } else if (value === "221002") {
+          setResource(`id=${selectedFacilityRef.current?.fc_id}&resource=vms`);
+        } else {
+          setResource(""); 
+        }
+      }
     }
   };
 
@@ -407,10 +427,17 @@ const FacilityManagement = () => {
       );
       message.confirmClicked().then(() => {
         const rowData = row.getData();
+
+        
         setSelectedFacility({
           fc_id: rowData.facility_id,  
         });
         setSelectedSiteId(rowData.site_id);
+        if (rowData.type === "221001") {
+          setResource(`id=${rowData.facility_id}&resource=speaker`);
+        } else if (rowData.type === "221002") {
+          setResource(`id=${rowData.facility_id}&resource=vms`);
+        } 
         setDisabledForm(false);
         setHasChangesUpdate(false);
         setIsNewClicked(false);
@@ -421,6 +448,11 @@ const FacilityManagement = () => {
       setSelectedFacility({
         fc_id: rowData.facility_id,  
       });
+      if (rowData.type === "221001") {
+        setResource(`id=${rowData.facility_id}&resource=speaker`);
+      } else if (rowData.type === "221002") {
+        setResource(`id=${rowData.facility_id}&resource=vms`);
+      } 
       setSelectedSiteId(rowData.site_id);
       setDisabledForm(false);
       enableUPDATEButtons();

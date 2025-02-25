@@ -63,7 +63,7 @@ const detectorTabulator = [
   },
   {
     title: "매핑 사이트 타입",
-    field: "site_type",
+    field: "site_type_value",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -401,6 +401,7 @@ const DetectorManagement = () => {
           dt_id: rowData.detector_id,  
         });
         setSelectedSiteId(rowData.site_id);
+        setResource(`id=${rowData.detector_id}&resource=detector`);
         setDisabledForm(false);
         setHasChangesUpdate(false);
         setIsNewClicked(false);
@@ -412,6 +413,7 @@ const DetectorManagement = () => {
         dt_id: rowData.detector_id,  
       });
       setSelectedSiteId(rowData.site_id);
+      setResource(`id=${rowData.detector_id}&resource=detector`);
       setDisabledForm(false);
       enableUPDATEButtons();
       setIsNewClicked(false);
@@ -432,6 +434,7 @@ const DetectorManagement = () => {
         setIsNewClicked(true);
         enableRegisterButtons();
         setSelectedDetector({ dt_id: null });
+        setResource(`resource=detector`);
         setSelectedSiteId(null);
         setDisabledForm(false);
         setHasChangesUpdate(false);
@@ -442,6 +445,7 @@ const DetectorManagement = () => {
       setIsNewClicked(true);
       enableRegisterButtons();
       setSelectedDetector({ dt_id: null });
+      setResource(`resource=detector`);
       setSelectedSiteId(null);
       setDisabledForm(false); 
       setHasChangesUpdate(false);

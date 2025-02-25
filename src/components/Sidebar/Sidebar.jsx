@@ -80,7 +80,6 @@ const Sidebar = ({ userInfo, commonData }) => {
 
 
     {id: "site", label: "Site", path: "/site-management/site", category: "site"},
-    {id: "crosswalk", label: "Crosswalk", path: "/site-management/crosswalk", category: "site"},
     
     
     {id: "communication-history", label: "communication-history", path: "/statistic/communication-history", category: "statistic"},
