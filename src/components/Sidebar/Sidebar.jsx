@@ -53,9 +53,9 @@ const Sidebar = ({ userInfo, commonData }) => {
 
   const categories = [
     { name: "dashboard", label: "Dashboard" },
-    { name: "system", label: t("SYSTEM") },
-    { name: "asset", label: t("ASSET") },
-    { name: "site", label: "Site Management" },
+    { name: "system", label: '시스템 관리' },
+    { name: "asset", label: '사이트 관리' },
+    { name: "site", label: "사이트 관리" },
     { name: "statistic", label: "Statistic" },
   ]
 
@@ -68,18 +68,18 @@ const Sidebar = ({ userInfo, commonData }) => {
 
 
 
-    { id: "code", label: t('SYSTEM-CODE'), path: "/system-management/code", category: "system", },
-    { id: "group", label: t('SYSTEM-GROUP'), path: "/system-management/group", category: "system", },
-    { id: "user", label: t('SYSTEM-USER'), path: "/system-management/user", category: "system", },
-    { id: "program", label: t('SYSTEM-PROGRAM'), path: "/system-management/program", category: "system", },
-    { id: "authority", label: t('SYSTEM-AUTHORITY'), path: "/system-management/authority", category: "system", },
+    { id: "code", label: '코드 관리', path: "/system-management/code", category: "system", },
+    { id: "group", label: '그룹 관리', path: "/system-management/group", category: "system", },
+    { id: "user", label: '유저 관리', path: "/system-management/user", category: "system", },
+    { id: "program", label: '프로그램 관리', path: "/system-management/program", category: "system", },
+    { id: "authority", label: '권한 관리', path: "/system-management/authority", category: "system", },
 
-    {id: "box", label: t('ASSET-BOX'), path: "/asset-management/box", category: "asset"},
-    {id: "detector", label: t('ASSET-DETECTOR'), path: "/asset-management/detector", category: "asset"},
-    {id: "facility", label: t('ASSET-FACILITY'), path: "/asset-management/facility", category: "asset"},
+    {id: "box", label: '함체', path: "/asset-management/box", category: "asset"},
+    {id: "detector", label: '검지기', path: "/asset-management/detector", category: "asset"},
+    {id: "facility", label: '시설물', path: "/asset-management/facility", category: "asset"},
 
 
-    {id: "site", label: "Site", path: "/site-management/site", category: "site"},
+    {id: "site", label: "사이트", path: "/site-management/site", category: "site"},
     
     
     {id: "communication-history", label: "communication-history", path: "/statistic/communication-history", category: "statistic"},
