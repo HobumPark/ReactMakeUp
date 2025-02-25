@@ -41,7 +41,7 @@ import TrafficeByDirection from "../../components/CrossRoadStatistic/TrafficeByD
 import TrafficeByVehicle from "../../components/CrossRoadStatistic/TrafficeByVehicle";
 import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
 import PieChartIn from "../../components/CrossWalkStatistic/PieChartIn";
-import PieChartOut from "../../components/CrossWalkStatistic/PieChartout";
+import PieChartOut from "../../components/CrossWalkStatistic/PieChartOut";
 
 // tabulator exit
 
