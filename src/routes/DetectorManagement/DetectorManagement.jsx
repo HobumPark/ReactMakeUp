@@ -103,6 +103,7 @@ const detectorTabulator = [
 const DetectorManagement = () => {
   const { t, i18n } = useTranslation();
   const tbRef = useRef(null);
+  const nameRef = useRef(null);
   const searchRef = useRef(null);
   const [disabledForm, setDisabledForm] = useState(true);
   const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
@@ -418,6 +419,11 @@ const DetectorManagement = () => {
       enableUPDATEButtons();
       setIsNewClicked(false);
     }
+    requestAnimationFrame(() => {
+      if (nameRef.current) {
+        nameRef.current.focus();
+      }
+    }); 
   }, []);
 
   const handleNewButtonClick = () => {
@@ -438,6 +444,7 @@ const DetectorManagement = () => {
         setSelectedSiteId(null);
         setDisabledForm(false);
         setHasChangesUpdate(false);
+        
       });
     } else{
       tbRef.current.deselectRow();
@@ -450,6 +457,11 @@ const DetectorManagement = () => {
       setDisabledForm(false); 
       setHasChangesUpdate(false);
     }
+    requestAnimationFrame(() => {
+      if (nameRef.current) {
+        nameRef.current.focus();
+      }
+    }); 
 
   };
 
@@ -469,6 +481,11 @@ const DetectorManagement = () => {
         setFormValues(formattedData);
         setHasChangesUpdate(false);
         setSelectedSiteId(dataDetector.site_id);
+        requestAnimationFrame(() => {
+          if (nameRef.current) {
+            nameRef.current.focus();
+          }
+        }); 
       });
     }
     
@@ -558,7 +575,7 @@ const DetectorManagement = () => {
 
   const roadOptions = selectedSiteId
   ? [
-      { value: "", label: "" }, 
+      { value: "", label: "매핑 없음" }, 
       ...(dataSiteRoad?.sites
         ?.find(site => site.site_id === Number(selectedSiteId))
         ?.roads.map(road => ({
@@ -675,6 +692,7 @@ const DetectorManagement = () => {
                 value={formValues.name || ''}
                 name={'name'}
                 maxLength={100}
+                formRef={nameRef}
               />
             </div>
 

@@ -15,8 +15,7 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Style from "ol/style/Style";
 import Icon from "ol/style/Icon";
-import DbVideoModal from "../../components/Modal/dbVideoModal/dbVideoModal";
-// import DbVideoModal from "../../components/Modal/DbVideoModal/DbVideoModal";
+import DbVideoModal from "../../components/Modal/DbVideoModal/DbVideoModal";
 
 import CardList from "../../components/CardList/CardList";
 

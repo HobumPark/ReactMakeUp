@@ -112,6 +112,7 @@ const facilityTabulator = [
 const FacilityManagement = () => {
   const { t, i18n } = useTranslation();
   const tbRef = useRef(null);
+  const nameRef = useRef(null);
   const searchRef = useRef(null);
   const [disabledForm, setDisabledForm] = useState(true);
   const [hasChangesUpdate, setHasChangesUpdate] = useState(false);
@@ -306,7 +307,6 @@ const FacilityManagement = () => {
     onCreateSuccess: (responseData) => {
       reloadCallback();
       console.log(responseData);
-      
       const newID = responseData.facility_id;
       setNewId(newID);
     },
@@ -458,6 +458,11 @@ const FacilityManagement = () => {
       enableUPDATEButtons();
       setIsNewClicked(false);
     }
+    requestAnimationFrame(() => {
+      if (nameRef.current) {
+        nameRef.current.focus();
+      }
+    }); 
   }, []);
 
   const handleNewButtonClick = () => {
@@ -488,6 +493,11 @@ const FacilityManagement = () => {
       setDisabledForm(false); 
       setHasChangesUpdate(false);
     }
+    requestAnimationFrame(() => {
+      if (nameRef.current) {
+        nameRef.current.focus();
+      }
+    }); 
 
   };
 
@@ -506,6 +516,11 @@ const FacilityManagement = () => {
         setFormValues(formattedData);
         setHasChangesUpdate(false);
         setSelectedSiteId(dataFacility.site_id);
+        requestAnimationFrame(() => {
+          if (nameRef.current) {
+            nameRef.current.focus();
+          }
+        }); 
       });
     }
     
@@ -588,7 +603,6 @@ const FacilityManagement = () => {
     message.confirmClicked().then(() => {
       deleteFacility(selectedFacility?.fc_id); 
     }); 
-    
   };
 
   const roadOptions = selectedSiteId
@@ -702,6 +716,7 @@ const FacilityManagement = () => {
           <DetailForm
             className="items-center!"
             label="명칭"
+            formRef={nameRef}
             required={true}
             disabled={disabledForm}
             onChange={handleInputChange}

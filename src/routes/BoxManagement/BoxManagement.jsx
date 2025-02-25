@@ -94,6 +94,7 @@ const boxTabulator = [
 const BoxManagement = () => {
   const { t, i18n } = useTranslation();
   const tbRef = useRef(null);
+  const nameRef = useRef(null);
   const searchRef = useRef(null);
   const [disabledForm, setDisabledForm] = useState(true);
   const [disabledId, setDisabledId] = useState(true);
@@ -401,6 +402,11 @@ const BoxManagement = () => {
       enableUPDATEButtons();
       setIsNewClicked(false);
     }
+    requestAnimationFrame(() => {
+      if (nameRef.current) {
+        nameRef.current.focus();
+      }
+    }); 
   }, []);
 
   const handleNewButtonClick = () => {
@@ -418,7 +424,7 @@ const BoxManagement = () => {
         enableRegisterButtons();
         setSelectedBox({ rtu_id: null });
         setDisabledForm(false);
-        setHasChangesUpdate(false);
+        setHasChangesUpdate(false); 
       });
     } else{
       tbRef.current.deselectRow();
@@ -427,8 +433,13 @@ const BoxManagement = () => {
       enableRegisterButtons();
       setSelectedBox({ rtu_id: null });
       setDisabledForm(false); 
-      setHasChangesUpdate(false);
+      setHasChangesUpdate(false); 
     }
+    requestAnimationFrame(() => {
+      if (nameRef.current) {
+        nameRef.current.focus();
+      }
+    }); 
 
   };
 
@@ -447,6 +458,11 @@ const BoxManagement = () => {
         formattedData.installed_date = formatDateKor(formattedData.installed_date);
         setFormValues(formattedData);
         setHasChangesUpdate(false);
+        requestAnimationFrame(() => {
+          if (nameRef.current) {
+            nameRef.current.focus();
+          }
+        }); 
       });
     }
     
@@ -638,6 +654,7 @@ const BoxManagement = () => {
               <DetailForm
                 className="items-center!"
                 label="명칭"
+                formRef={nameRef}
                 required={true}
                 value={formValues.name || ""}
                 name='name'
