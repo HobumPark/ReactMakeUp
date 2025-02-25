@@ -123,7 +123,7 @@ const SiteManagement = () => {
   console.log('detailSiteData');
   console.log(detailSiteData);
 
-  const { roadListData, error, isLoadingRoad } = useRoadMgt({
+  const { roadListData, deleteRoad, error, isLoadingRoad } = useRoadMgt({
     queryParams: siteId ? `site_id=${siteId}` : null, // siteId가 있을 때만 API 호출
   });
 
@@ -182,6 +182,7 @@ const SiteManagement = () => {
           alert('접근로 생성 최대 갯수를 넘을수 없습니다.')
           return
         }else{
+          console.log('roadInputList')
           console.log(roadInputList)
           setRoadInputList([...roadInputList, roadInputList.length + 1]); 
         }
@@ -193,6 +194,7 @@ const SiteManagement = () => {
     
   };
 
+  // road list 삭제
   const deleteDynamicGroup = (mode, road_id) => {
     //alert('roadList delete')
     //const newGroupList = groupList.filter((_, i) => i !== index); 
@@ -200,10 +202,17 @@ const SiteManagement = () => {
     //roadList delete button
     console.log('입력 모드:'+mode)
     console.log('접근로 아이디:'+road_id)
+
     if(mode == 'input_mode'){
       alert(road_id+" 번 접근로 단순 입력 목록 삭제")
+      roadInputList
     }else if(mode == 'list_mode'){
       alert(road_id+" 번 접근로 삭제 API요청")
+      deleteRoad(road_id)
+      //삭제 성공후 선택했던 row다시 선택해서 삭제된것 사라지게
+      const tempSiteId = siteId;
+      setSiteId(null)
+      setSiteId(tempSiteId)
     }
   };
 

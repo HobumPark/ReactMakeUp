@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchRoadList } from "../api/road-mgt";
+import { fetchRoadList, deleteRoad } from "../api/road-mgt";
 import { useTranslation } from "react-i18next";
 
 const useRoadMgt = ({
@@ -21,9 +21,26 @@ const useRoadMgt = ({
     console.log('도로 목록 데이터:', roadListData);
   }
 
+
+  const deleteRoadMutation = useMutation({
+      mutationFn: (roadId) => deleteRoad(roadId),
+      onSuccess: () => {
+        new NoticeMessage(t('msg > delete success'), {
+          callback() {
+            onDeleteSuccess();
+            queryClient.invalidateQueries(["roadListData", queryParams]);
+          }
+        });
+      },
+      onError: (err) => {
+        new NoticeMessage(t(err.message))
+      },
+    });
+
   return {
     roadListData,
-    isLoadingRoad
+    isLoadingRoad,
+    deleteRoad: deleteRoadMutation.mutate,
   };
 };
 

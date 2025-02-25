@@ -98,4 +98,5 @@ export const APIS = {
   updateFacility: (fcID) =>`/facility/${fcID}`,
   //road
   roadList:(filterParams) => `/road?${filterParams}`,
+  deleteRoad:(roadId) => `/road/${roadId}`,
 }
