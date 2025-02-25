@@ -11,6 +11,7 @@ const CardList = ({
   subtitle,
   date,
   id,
+  showID = false
 }) => {
   const [isClicked, setIsClicked] = useState(false);
 
@@ -32,15 +33,18 @@ const CardList = ({
           } ${typeStyles.event}`}
           onClick={handleCardClick}
         >
-          <div className="w-full grid grid-cols-2">
+          <div className="w-full flex flex-row">
             <span
-              className={`title3bold ${customTitle} text-text-white col-span-2`}
+              className={`title3bold ${customTitle} text-text-white flex-1`}
             >
               [이벤트] {title}
             </span>
-            {/* <span className={`${customID} body2 text-text-white text-right`}>
+
+            {showID && (
+            <span className={`${customID} flex-1 body2 text-text-white text-right`}>
               {id}
-            </span> */}
+            </span>
+            )}
           </div>
           <div className="w-full grid grid-cols-2">
             <span className={`body2medium ${customSubtitle} text-text-white`}>
