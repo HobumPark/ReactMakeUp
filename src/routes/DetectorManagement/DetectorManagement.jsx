@@ -135,8 +135,8 @@ const DetectorManagement = () => {
   const detailDetector = (data) => {
     return {
       detector_id: data.detector_id || null,
-      site_id: data.site_id || null,
-      road_id: data.road_id || null,
+      site_id: data.site_id || 'NO_MAPPING',
+      road_id: data.road_id || 'NO_MAPPING',
       name: data.name || null,
       description: data.description || null,
       installed_date: data.installed_date || null,
@@ -318,7 +318,6 @@ const DetectorManagement = () => {
     }));
   
     if (name === "site_id") {
-      console.log("Site changed:", value);
       setSelectedSiteId(value);
     }
 
@@ -372,7 +371,7 @@ const DetectorManagement = () => {
     selectableRowsCheck: (row) => {
       return !row.getElement().classList.contains("tabulator-selected");
     },
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data?.length} 건</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">${t('cmn > total')} ${data?.length} ${t('cmn > results')}</div>`,
   };
 
   const handleSearch = useCallback((inputVal = null) => {
@@ -401,7 +400,7 @@ const DetectorManagement = () => {
         setSelectedDetector({
           dt_id: rowData.detector_id,  
         });
-        setSelectedSiteId(rowData.site_id);
+        setSelectedSiteId(rowData.site_id ?? "NO_MAPPING");
         setResource(`id=${rowData.detector_id}&resource=detector`);
         setDisabledForm(false);
         setHasChangesUpdate(false);
@@ -413,7 +412,7 @@ const DetectorManagement = () => {
       setSelectedDetector({
         dt_id: rowData.detector_id,  
       });
-      setSelectedSiteId(rowData.site_id);
+      setSelectedSiteId(rowData.site_id ?? "NO_MAPPING");
       setResource(`id=${rowData.detector_id}&resource=detector`);
       setDisabledForm(false);
       enableUPDATEButtons();
@@ -425,6 +424,8 @@ const DetectorManagement = () => {
       }
     }); 
   }, []);
+
+  
 
   const handleNewButtonClick = () => {
     if(hasChangesCreate || hasChangesUpdate){
@@ -520,7 +521,7 @@ const DetectorManagement = () => {
   };
 
   const handleRegistButtonClick = () => {
-    const { detector_id, description, ...fieldsToCheck } = formValues;
+    const { detector_id, description, road_id, site_id, ...fieldsToCheck } = formValues;
 
     const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
     
@@ -532,6 +533,9 @@ const DetectorManagement = () => {
 
     const updatedFormValues = {
       ...formValues,
+      road_id: !formValues.road_id || formValues.road_id === "NO_MAPPING" ? null : formValues.road_id,
+      site_id: !formValues.site_id || formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
+
       installed_date: formatDateToYYYYMMDD(formValues.installed_date)
     };
     console.log(updatedFormValues);
@@ -539,7 +543,7 @@ const DetectorManagement = () => {
   }  
 
   const handleConfirmButtonClick = () => {
-    const { detector_id, description, ...fieldsToCheck } = formValues;
+    const { detector_id, description, road_id, site_id, ...fieldsToCheck } = formValues;
 
     const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
   
@@ -548,10 +552,11 @@ const DetectorManagement = () => {
       new NoticeMessage('필수 값을 모두 입력해주세요.')
       return;
     }
-    console.log("Installed Date:", formValues.installed_date);
 
     const updatedFormValues = {
       ...formValues,
+      road_id: formValues.road_id === "NO_MAPPING" ? null : formValues.road_id,
+      site_id: formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
       installed_date: formatDateToYYYYMMDD(formValues.installed_date)
     };
     console.log(updatedFormValues);
@@ -575,7 +580,8 @@ const DetectorManagement = () => {
 
   const roadOptions = selectedSiteId
   ? [
-      { value: "", label: "매핑 없음" }, 
+      { value: "", label: "" }, 
+      { value: "NO_MAPPING", label: "매핑 없음" }, 
       ...(dataSiteRoad?.sites
         ?.find(site => site.site_id === Number(selectedSiteId))
         ?.roads.map(road => ({
@@ -661,7 +667,6 @@ const DetectorManagement = () => {
                   const row = tbRef.current.getRow(selectedDetector?.dt_id);
                   row && row.select();
                 }else if (newId){
-                  console.log(newId);
                   const row = tbRef.current.getRow(newId);
                   tbRef.current.scrollToRow(row, "bottom", true);
                   tbRef.current.selectRow(newId);
@@ -745,32 +750,29 @@ const DetectorManagement = () => {
                 inputType="select"
                 className="items-center!"
                 label="매핑 사이트"
-                required={true}
                 optionSelect={
-                  dataSiteRoad?.sites
-                    ? [
-                        { value: "", label: "" },
-                        ...dataSiteRoad?.sites.map((site) => ({
-                          value: site.site_id, 
-                          label: `${site.name} (${site.site_id})`, 
-                        })),
-                      ]
-                    : []
-                }
+                          [
+                            { value: "", label: "" },
+                            { value: "NO_MAPPING", label: "매핑 없음" },
+                            ...(dataSiteRoad?.sites?.map(site => ({
+                              value: site.site_id,
+                              label: `${site.name} (${site.site_id})`
+                            })) || [])
+                          ]
+                        }
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.site_id || ''}
+                value={formValues.site_id ||'' }
                 name={'site_id'}
               />
             <DetailForm
                 inputType="select"
                 className="items-center!"
                 label="매핑 접근로"
-                required={true}
                 optionSelect={roadOptions}
                 disabled={disabledForm}
                 onChange={handleInputChange}
-                value={formValues.road_id || ''}
+                value={formValues.road_id || null }
                 name={'road_id'}
               />
 

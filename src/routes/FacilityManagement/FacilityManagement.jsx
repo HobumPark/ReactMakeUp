@@ -154,8 +154,8 @@ const FacilityManagement = () => {
   const detailFacility = (data) => {
     return {
       facility_id: data.facility_id || null,
-      site_id: data.site_id || null,
-      road_id: data.road_id || null,
+      site_id: data.site_id || 'NO_MAPPING',
+      road_id: data.road_id || 'NO_MAPPING',
       name: data.name || null,
       description: data.description || null,
       installed_date: data.installed_date || null,
@@ -400,7 +400,7 @@ const FacilityManagement = () => {
     selectableRowsCheck: (row) => {
       return !row.getElement().classList.contains("tabulator-selected");
     },
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data?.length} 건</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">${t('cmn > total')} ${data?.length} ${t('cmn > results')}</div>`,
   };
 
   const handleSearch = useCallback((inputVal = null) => {
@@ -432,7 +432,7 @@ const FacilityManagement = () => {
         setSelectedFacility({
           fc_id: rowData.facility_id,  
         });
-        setSelectedSiteId(rowData.site_id);
+        setSelectedSiteId(rowData.site_id ?? "NO_MAPPING");
         if (rowData.type === "221001") {
           setResource(`id=${rowData.facility_id}&resource=speaker`);
         } else if (rowData.type === "221002") {
@@ -453,7 +453,7 @@ const FacilityManagement = () => {
       } else if (rowData.type === "221002") {
         setResource(`id=${rowData.facility_id}&resource=vms`);
       } 
-      setSelectedSiteId(rowData.site_id);
+      setSelectedSiteId(rowData.site_id ?? "NO_MAPPING");
       setDisabledForm(false);
       enableUPDATEButtons();
       setIsNewClicked(false);
@@ -464,6 +464,8 @@ const FacilityManagement = () => {
       }
     }); 
   }, []);
+
+  console.log(selectedSiteId);
 
   const handleNewButtonClick = () => {
     if(hasChangesCreate || hasChangesUpdate){
@@ -555,7 +557,7 @@ const FacilityManagement = () => {
   };
 
   const handleRegistButtonClick = () => {
-    const { facility_id, description, ...fieldsToCheck } = formValues;
+    const { facility_id, description, road_id, site_id, ...fieldsToCheck } = formValues;
 
     const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
     
@@ -566,6 +568,8 @@ const FacilityManagement = () => {
 
     const updatedFormValues = {
       ...formValues,
+      road_id: !formValues.road_id || formValues.road_id === "NO_MAPPING" ? null : formValues.road_id,
+      site_id: !formValues.site_id || formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
       installed_date: formatDateToYYYYMMDD(formValues.installed_date)
     };
     console.log(updatedFormValues);
@@ -573,7 +577,7 @@ const FacilityManagement = () => {
   }  
 
   const handleConfirmButtonClick = () => {
-    const { facility_id, description, ...fieldsToCheck } = formValues;
+    const { facility_id, description, road_id, site_id, ...fieldsToCheck } = formValues;
 
     const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
   
@@ -586,6 +590,9 @@ const FacilityManagement = () => {
 
     const updatedFormValues = {
       ...formValues,
+      road_id: !formValues.road_id || formValues.road_id === "NO_MAPPING" ? null : formValues.road_id,
+      site_id: !formValues.site_id || formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
+
       installed_date: formatDateToYYYYMMDD(formValues.installed_date)
     };
     console.log(updatedFormValues);
@@ -607,7 +614,8 @@ const FacilityManagement = () => {
 
   const roadOptions = selectedSiteId
   ? [
-      { value: "", label: "" }, 
+    { value: "", label: "" },
+    { value: "NO_MAPPING", label: "매핑 없음" },
       ...(dataSiteRoad?.sites
         ?.find(site => site.site_id === Number(selectedSiteId))
         ?.roads.map(road => ({
@@ -797,17 +805,15 @@ const FacilityManagement = () => {
             inputType="select"
             className="items-center!"
             label="매핑 사이트"
-            required={true}
             optionSelect={
-              dataSiteRoad?.sites
-                ? [
-                    { value: "", label: "" },
-                    ...dataSiteRoad?.sites.map((site) => ({
-                      value: site.site_id, 
-                      label: `${site.name} (${site.site_id})`, 
-                    })),
-                  ]
-                : []
+              [
+                { value: "", label: "" },
+                { value: "NO_MAPPING", label: "매핑 없음" },
+                ...(dataSiteRoad?.sites?.map(site => ({
+                  value: site.site_id,
+                  label: `${site.name} (${site.site_id})`
+                })) || [])
+              ]
             }
             disabled={disabledForm}
             onChange={handleInputChange}
@@ -819,7 +825,6 @@ const FacilityManagement = () => {
             inputType="select"
             className="items-center!"
             label="매핑 접근로"
-            required={true}
             optionSelect={roadOptions}
             disabled={disabledForm}
             onChange={handleInputChange}
