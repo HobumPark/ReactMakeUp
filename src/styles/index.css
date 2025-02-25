@@ -252,6 +252,27 @@ input.input-db-text {
 	background-repeat: no-repeat;
 	background-position: 96%;
 }
+
+
+input.input-db-date:focus {
+	border: .5px solid #FDFDFD;
+	outline: none;
+}
+
+input.input-db-date {
+    background-color: transparent;
+    border: .5px solid #B4B4B4;
+    color: var(--white);
+    padding: 0px 10px;
+	height: 31px;
+	border-radius: 3px;
+	outline: none;
+	color: #F0F0F0;
+	width: 100%;
+	background-image: url(../assets/icon/icon-calender-db.svg);
+	background-repeat: no-repeat;
+	background-position: 96%;
+}
 /* input dashboard */
 
 

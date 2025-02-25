@@ -1,0 +1,11 @@
+._chartTemptHum .apexcharts-legend-marker {
+    margin-right: 4px;
+  }
+  /* ._chartTemptHum .apexcharts-legend-group  {
+    display: flex;
+    flex-direction: row;
+} */
+
+._chartTemptHum  .apexcharts-legend-text {
+    font-size: 11px !important;
+}
