@@ -100,6 +100,11 @@ const columnsHistory = [
   const hasChangesCreateRef = useRef(hasChangesCreate);
   const [newId, setNewId] = useState('');
   const [isNewClicked, setIsNewClicked] = useState(false);
+  const isNewClickedRef = useRef(isNewClicked);
+  const [selectedUser, setSelectedUser] = useState({
+    id: null,
+  });
+  const selectedUserRef = useRef(selectedUser);
 
   useEffect(() => {
     if (searchRef.current) {
@@ -122,6 +127,12 @@ const columnsHistory = [
       locale: locale,
       position: "top center",
       onSelect: (date) => {
+        handleInputChange({
+          target: {
+            name: "birth",
+            value: date.formattedDate,
+          },
+        });
         setFormValues((prevValues) => ({
           ...prevValues,
           birth: date.formattedDate,
@@ -139,7 +150,9 @@ const columnsHistory = [
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;
     hasChangesCreateRef.current = hasChangesCreate;
-  }, [hasChangesUpdate, hasChangesCreate]);
+    isNewClickedRef.current = isNewClicked;
+    selectedUserRef.current = selectedUser
+  }, [hasChangesUpdate, hasChangesCreate, isNewClicked, selectedUser]);
 
   const [formValues, setFormValues] = useState({
     account_id: '',
@@ -154,18 +167,12 @@ const columnsHistory = [
   });
 
   const emptyDetail = () => {
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      account_id: '',
-      email: '',
-      phone_no: '',
-      name: '',
-      password: '',
-      confirmation:'',
-      organization: '',
-      birth: '',
-      position: '',
-    }));
+    setFormValues((prevValues) =>
+      Object.keys(prevValues).reduce((acc, key) => {
+        acc[key] = '';
+        return acc;
+      }, {})
+    );
   };
 
 //Button 
@@ -242,9 +249,8 @@ const updateCallback = () => {
 };
 
   const [queryParams, setQueryParams] = useState("");
-  const [selectedUser, setSelectedUser] = useState({
-    id: null,
-  });
+
+  
   const [optionParams, setOptionParams] = useState("upper-code=021&upper-code=001&upper-code=ORG");
   const { usersListData, detailUserData, deleteUser, detailUserError, createUser, updateUser} = useUserMgt({
     userID: selectedUser?.id,
@@ -364,13 +370,13 @@ const updateCallback = () => {
         [name]: value,
       }));
     
-    if (isNewClicked) {
+    if (isNewClickedRef.current) {
       setHasChangesCreate(true); 
     } else {
       setHasChangesUpdate(true); 
     }
 
-    if (selectedUser?.account_id){
+    if (selectedUserRef.current?.id){
       setHasChangesUpdate(true);
     }
   };

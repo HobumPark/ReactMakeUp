@@ -20,7 +20,6 @@ import FacilityManagement from './routes/FacilityManagement/FacilityManagement.j
 
 // sitemanagement
 import SiteManagement from './routes/SiteManagement/SiteManagement.jsx';
-import CrosswalkManagement from './routes/CrosswalkManagement/CrosswalkManagement.jsx';
 // sitemanagement
 
 // statistic
@@ -110,12 +109,6 @@ const router = createBrowserRouter([
         path: "site",
         element: <SiteManagement></SiteManagement>,
       },
-      {
-        path: "crosswalk",
-        element: <CrosswalkManagement></CrosswalkManagement>,
-      },
-  
-
     ],
   },
    {

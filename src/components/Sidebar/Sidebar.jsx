@@ -54,7 +54,7 @@ const Sidebar = ({ userInfo, commonData }) => {
   const categories = [
     { name: "dashboard", label: "Dashboard" },
     { name: "system", label: t("SYSTEM") },
-    { name: "asset", label: "Asset Management" },
+    { name: "asset", label: t("ASSET") },
     { name: "site", label: "Site Management" },
     { name: "statistic", label: "Statistic" },
   ]
@@ -74,9 +74,9 @@ const Sidebar = ({ userInfo, commonData }) => {
     { id: "program", label: t('SYSTEM-PROGRAM'), path: "/system-management/program", category: "system", },
     { id: "authority", label: t('SYSTEM-AUTHORITY'), path: "/system-management/authority", category: "system", },
 
-    {id: "box", label: "Box", path: "/asset-management/box", category: "asset"},
-    {id: "detector", label: "Detector", path: "/asset-management/detector", category: "asset"},
-    {id: "facility", label: "Facility", path: "/asset-management/facility", category: "asset"},
+    {id: "box", label: t('ASSET-BOX'), path: "/asset-management/box", category: "asset"},
+    {id: "detector", label: t('ASSET-DETECTOR'), path: "/asset-management/detector", category: "asset"},
+    {id: "facility", label: t('ASSET-FACILITY'), path: "/asset-management/facility", category: "asset"},
 
 
     {id: "site", label: "Site", path: "/site-management/site", category: "site"},

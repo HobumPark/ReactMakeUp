@@ -40,7 +40,7 @@ const facilityTabulator = [
     field: "facility_id",
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: false,
+    headerSort: true,
     resizable: false,
   },
   {
@@ -103,7 +103,7 @@ const facilityTabulator = [
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: false,
+    headerSort: true,
     resizable: false,
   },
 ];
@@ -144,7 +144,9 @@ const FacilityManagement = () => {
   useEffect(() => {
     hasChangesUpdateRef.current = hasChangesUpdate;
     hasChangesCreateRef.current = hasChangesCreate;
-  }, [hasChangesUpdate, hasChangesCreate]);
+    isNewClickedRef.current = isNewClicked;
+    selectedFacilityRef.current = selectedFacility
+  }, [hasChangesUpdate, hasChangesCreate, isNewClicked, selectedFacility]);
 
 
   const detailFacility = (data) => {
@@ -302,6 +304,8 @@ const FacilityManagement = () => {
     },
     onCreateSuccess: (responseData) => {
       reloadCallback();
+      console.log(responseData);
+      
       const newID = responseData.facility_id;
       setNewId(newID);
     },
@@ -330,7 +334,6 @@ const FacilityManagement = () => {
     if (isNewClickedRef.current) {
       setHasChangesCreate(true); 
     } else {
-
       setHasChangesUpdate(true); 
     }
 
@@ -369,6 +372,7 @@ const FacilityManagement = () => {
     selectableRows: 1,
     movableRows: false,
     resizableRows: false,
+    index: 'facility_id',
     locale: "ko",
     langs: {
       ko: languageTabulator(),
@@ -556,13 +560,17 @@ const FacilityManagement = () => {
   };
 
   const roadOptions = selectedSiteId
-  ? dataSiteRoad?.sites
-      ?.find(site => site.site_id === Number(selectedSiteId))
-      ?.roads.map(road => ({
-        value: road.road_id,
-        label: `${road.name} (${road.road_id})`, 
-      })) || []
-  : [];
+  ? [
+      { value: "", label: "" }, 
+      ...(dataSiteRoad?.sites
+        ?.find(site => site.site_id === Number(selectedSiteId))
+        ?.roads.map(road => ({
+          value: road.road_id,
+          label: `${road.name} (${road.road_id})`,
+        })) || [])
+    ]
+  : [{ value: "", label: "" }]; 
+;
 
 
   
@@ -637,6 +645,7 @@ const FacilityManagement = () => {
               const row = tbRef.current.getRow(selectedFacility?.fc_id);
               row && row.select();
             }else if (newId){
+              console.log(newId)
               const row = tbRef.current.getRow(newId);
               tbRef.current.scrollToRow(row, "bottom", true);
               tbRef.current.selectRow(newId);
@@ -681,7 +690,7 @@ const FacilityManagement = () => {
             optionSelect={
               commonListData?.["221"]
                   ? [
-                      { value: "All", label: t('cmn > all') }, 
+                      { value: "", label: "" },
                       ...commonListData["221"].code.map((code, index) => ({
                         value: code,
                         label: commonListData["221"].name[index],
@@ -789,7 +798,6 @@ const FacilityManagement = () => {
             className="items-center!"
             label="담당자 전화번호"
             required={true}
-            inputType= "number"
             disabled={disabledForm}
             onChange={handleInputChange}
             value={formValues.pic_phone_number || ''}

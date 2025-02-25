@@ -608,6 +608,7 @@ const BoxManagement = () => {
                   const row = tbRef.current.getRow(selectedBox?.rtu_id);
                   row && row.select();
                 }else if (newId){
+                  console.log(newId)
                   const row = tbRef.current.getRow(newId);
                   tbRef.current.scrollToRow(row, "bottom", true);
                   tbRef.current.selectRow(newId);

@@ -294,7 +294,7 @@ const DetectorManagement = () => {
     },
     onCreateSuccess: (responseData) => {
       reloadCallback();
-      const newID = responseData.detector_id;
+      const newID = responseData.detector_id.detector_id;
       setNewId(newID);
     },
   });
@@ -504,6 +504,7 @@ const DetectorManagement = () => {
     const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
     
     if (isEmptyField) {
+
       new NoticeMessage('필수 값을 모두 입력해주세요.')
       return;
     }
@@ -549,14 +550,20 @@ const DetectorManagement = () => {
     }); 
     
   };
+
+
   const roadOptions = selectedSiteId
-  ? dataSiteRoad?.sites
-      ?.find(site => site.site_id === Number(selectedSiteId))
-      ?.roads.map(road => ({
-        value: road.road_id,
-        label: `${road.name} (${road.road_id})`, 
-      })) || []
-  : [];
+  ? [
+      { value: "", label: "" }, 
+      ...(dataSiteRoad?.sites
+        ?.find(site => site.site_id === Number(selectedSiteId))
+        ?.roads.map(road => ({
+          value: road.road_id,
+          label: `${road.name} (${road.road_id})`,
+        })) || [])
+    ]
+  : [{ value: "", label: "" }]; 
+;
 
 
 
@@ -633,6 +640,7 @@ const DetectorManagement = () => {
                   const row = tbRef.current.getRow(selectedDetector?.dt_id);
                   row && row.select();
                 }else if (newId){
+                  console.log(newId);
                   const row = tbRef.current.getRow(newId);
                   tbRef.current.scrollToRow(row, "bottom", true);
                   tbRef.current.selectRow(newId);
