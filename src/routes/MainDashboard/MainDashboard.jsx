@@ -48,7 +48,8 @@ import IconRoadMap from "../../assets/icon/icon-road-map.svg"
 import IconDarkMap from "../../assets/icon/icon-dark-map.svg"
 import IconSatelite from "../../assets/icon/icon-satelite-map.svg"
 
-
+import Colorize from "ol-ext/filter/Colorize";
+import CanvasFilter from "ol-ext/filter/CanvasFilter";
 
 const MainDashboard = () => {
   const [selectedButtons, setSelectedButtons] = useState({
@@ -84,14 +85,62 @@ const MainDashboard = () => {
 
   useEffect(() => {
     if (!mapRef.current) return;
+    
+    const tileLayer = new TileLayer({
+      source: new OSM(), 
+    });
+
+
+    // Black (Dark Mode)
+    // tileLayer.on("prerender", (event) => {
+    //   if (event.context) {
+    //     const ctx = event.context;
+    //     ctx.filter = "grayscale(100%) invert(100%) contrast(120%)";
+    //   }
+    // });
+    
+    // tileLayer.on("postrender", (event) => {
+    //   if (event.context) {
+    //     const ctx = event.context;
+    //     ctx.filter = "none";
+    //   }
+    // });
+
+    const enhanceOption = new Colorize()
+    enhanceOption.setFilter({
+      operation: "enhance",
+      value: Number("0.1"), 
+    });
+    tileLayer.addFilter(enhanceOption);
+
+    // 'color' option - RGB4 ( Blue Dark =  50, 30, 0 )
+    const colorOption = new Colorize()
+    colorOption.setFilter({
+      operation: "color",
+      red: Number("0"),
+      green: Number("0"),
+      blue: Number("0"),
+      value: Number("1"),
+    });
+    tileLayer.addFilter(colorOption);
+
+    // 'saturation' option => highlight lines on the land
+    const saturationOption = new Colorize()
+    saturationOption.setFilter({
+      operation: "enhance",
+      value: Number("0.1"),
+    });
+    tileLayer.addFilter(saturationOption);
+
+    var invert_filter = new Colorize()
+    tileLayer.addFilter(invert_filter);
+    invert_filter.setFilter("invert");
+
 
     // ✅ Inisialisasi peta
     const olMap = new Map({
       target: mapRef.current,
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-        }),
+      layers: [tileLayer
       ],
 
       view: new View({
