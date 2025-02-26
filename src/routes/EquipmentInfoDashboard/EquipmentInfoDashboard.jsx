@@ -344,8 +344,9 @@ const EquipmentInfoDashboard = () => {
             </div>
 
             <div className="contentBottomLeft w-full flex flex-col flex-1 h-full bg-[#212527] overflow-hidden rounded-[5px]">
-              <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
+              <div className="bg-header-content w-full flex flex-row justify-between h-[36px] flex items-center px-[15px]">
                 <span className="title3bold text-text-white">레이더 현황</span>
+                <span className="title3bold text-text-white">총 4개</span>
               </div>
               <div className="w-full h-[calc(100%-30px)] grid grid-cols-1 gap-[8px]  overflow-auto p-[10px]">
                 <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[3px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
@@ -625,9 +626,12 @@ const EquipmentInfoDashboard = () => {
           {/* right */}
           <section className="rightEq flex! flex-col gap-[10px] w-[21%] h-full  overflow-hidden rounded-[5px]">
             <div className="contentTopLeft w-full flex flex-col  bg-[#212527] overflow-hidden rounded-[5px]">
-              <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
+              <div className="bg-header-content w-full flex flex-row justify-between h-[36px] flex items-center px-[15px]">
                 <span className="title3bold text-text-white">
                   금일 이벤트 현황
+                </span>
+                <span className="title3bold text-text-white">
+                  105
                 </span>
               </div>
               <div className="w-full grid grid-cols-6 gap-[5px] items-center p-[10px]">
