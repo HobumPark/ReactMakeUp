@@ -39,6 +39,7 @@ const detectorTabulator = [
     title: "검지기 ID",
     field: "detector_id",
     hozAlign: "center",
+    widthGrow: "0.7",
     headerHozAlign: "center",
     headerSort: true,
     resizable: false,
