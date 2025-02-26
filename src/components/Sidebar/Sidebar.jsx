@@ -54,7 +54,7 @@ const Sidebar = ({ userInfo, commonData }) => {
   const categories = [
     { name: "dashboard", label: "Dashboard" },
     { name: "system", label: '시스템 관리' },
-    { name: "asset", label: '사이트 관리' },
+    { name: "asset", label: '자산 관리' },
     { name: "site", label: "사이트 관리" },
     { name: "statistic", label: "Statistic" },
   ]
