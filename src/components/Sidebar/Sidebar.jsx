@@ -87,7 +87,7 @@ const Sidebar = ({ userInfo, commonData }) => {
     {id: "sudden-event", label: "sudden-event", path: "/statistic/sudden-event", category: "statistic"}
   ];
   
-  const [openMenu, setOpenMenu] = useState("system");
+  const [openMenu, setOpenMenu] = useState("");
 
   const toggleVisibility = (menu) => {
     setOpenMenu((prevMenu) => (prevMenu === menu ? null : menu));
@@ -115,6 +115,14 @@ const Sidebar = ({ userInfo, commonData }) => {
       handleLogout();
     });
   };  
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const matchedLink = links.find((link) => link.path === currentPath);
+    if (matchedLink) {
+      setOpenMenu(matchedLink.category);
+    }
+  }, [location.pathname]);
 
   return (
     <>
