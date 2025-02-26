@@ -66,21 +66,40 @@ const useSiteMgt = ({
     });
 
   // Mutation to create a Site (POST request)
-      const createSiteMutation = useMutation({
-        mutationFn: (siteData) => createSite(siteData),
-        onSuccess: (responseData) => {
-          new NoticeMessage(t('msg > registration success'), {
-            callback() {
-              queryClient.invalidateQueries(["siteListData", queryParams]);
-              onCreateSuccess(responseData);
-            }
-          });
-        },
-        onError: (err) => {
-          console.error("Error creating site:", err);
-          //new NoticeMessage(t(err.message))
-        },
+  const createSiteMutation = useMutation({
+    mutationFn: async (siteData) => { // async 키워드를 추가하여 비동기 처리
+      console.log('createSiteMutation:'); // siteData 콘솔로 출력
+      console.log('siteData:', siteData); // siteData 콘솔로 출력
+  
+      try {
+        // 비동기 API 호출 후 결과를 기다림
+        const createSiteResult = await createSite(siteData); // 실제 API 호출
+        console.log('createSiteResult:', createSiteResult); // API 응답 출력
+  
+        return createSiteResult; // API 결과 반환
+      } catch (error) {
+        console.error('Error during createSite:', error);
+        throw error; // 오류 발생 시 throw
+      }
+    },
+    onSuccess: (responseData) => {
+      new NoticeMessage(t('msg > registration success'), {
+        callback() {
+          queryClient.invalidateQueries(["siteListData", queryParams]);
+          onCreateSuccess(responseData);
+        }
       });
+      console.log('createSiteMutation on Success');
+      console.log(responseData);
+      return responseData
+    },
+    onError: (err) => {
+      console.error("Error creating site:", err);
+      // new NoticeMessage(t(err.message))
+    },
+  });
+  
+  
 
   return {
     siteListData,

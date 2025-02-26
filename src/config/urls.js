@@ -89,7 +89,7 @@ export const APIS = {
   detailSite: (siteId)=>`/site/${siteId}`,
   updateSite: (siteId)=>`/site/${siteId}`,
   deleteSite: (siteId)=>`/site/${siteId}`,
-  createSite: ()=>`/site`,
+  createSite: '/site',
   //facility
   facilityList: (filterParams) => `/facility?${filterParams}`,
   detailFacility: (fcID) =>`/facility/${fcID}`,
@@ -98,5 +98,6 @@ export const APIS = {
   updateFacility: (fcID) =>`/facility/${fcID}`,
   //road
   roadList:(filterParams) => `/road?${filterParams}`,
+  createRoad:'/road',
   deleteRoad:(roadId) => `/road/${roadId}`,
 }

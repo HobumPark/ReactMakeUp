@@ -124,7 +124,7 @@ const SiteManagement = () => {
   console.log('detailSiteData');
   console.log(detailSiteData);
 
-  const { roadListData, deleteRoad, error, isLoadingRoad } = useRoadMgt({
+  const { roadListData, createRoad, deleteRoad, error, isLoadingRoad } = useRoadMgt({
     queryParams: siteId ? `site_id=${siteId}` : null, // siteId가 있을 때만 API 호출
   });
 
@@ -203,6 +203,7 @@ const SiteManagement = () => {
               incoming_direction_sub4:'',
               incoming_direction_sub5:'',
               incoming_direction_sub6:'',
+              incoming_direction:'',//방향 모두 합친 값
               crosswalk:'미존재',//횡단보도 유무
               crosswalk_length:'',//횡단보도 길이
               corsswalk_width:'',//횡단보도 폭
@@ -271,6 +272,7 @@ const SiteManagement = () => {
   };
 
   const [currentRoadNumber,setCurrentRoadNumber]=useState(0)
+
   //site input form values, row data to display
   const [siteInputFormValues, setSiteInputFormValues] = useState({
     site_id:'',
@@ -284,11 +286,6 @@ const SiteManagement = () => {
     mapping_box:'',
     description:'description'
   })
-
-  //road data list related with site
-  const [siteRelatedRoadList, setSiteRelatedRoadList] = useState([
-
-  ])
 
   // select on change - intersection and crosswalk
   const handleSiteInputChange = (e) => {
@@ -314,18 +311,19 @@ const SiteManagement = () => {
 
     if (isNewClicked) {//new버튼 클릭했을때만
       setHasChangesCreate(true); 
+      disableConfirmButtons()//생성시에는 register만 하면되고 저장(수정)은 필요없다.
+      enableCancelButtons()
     } else {
       setHasChangesUpdate(true); 
     }
-    setHasChangesUpdate(true); 
+    //setHasChangesUpdate(true); 
     console.log(siteInputFormValues)
   };
-
-
 
   const tbRefInit = useRef(null);
 
   //road input form values
+  /*
   const [roadInputformValues, setRoadInputFormValues] = useState({
     road_id:'',//접근로 id
     road_name:'', //접근로 명칭
@@ -347,9 +345,7 @@ const SiteManagement = () => {
     related_site_id1:'',//사이트 id (연관된)
     related_site_id2:''//사이트 id (연관된)
   })
-
-  const [maxRoadInputForms,setMaxRoadInputForms]=useState(0)
-  const [curRoadInputForms,setCurRoadInputForms]=useState(0)
+  */
 
   //
   const handleRoadInputChange = (e, mode, index) =>{
@@ -368,28 +364,42 @@ const SiteManagement = () => {
     console.log('updatedRoadInputList')
     console.log(updatedRoadInputList)
 
+  // 'incoming_direction_sub1' 부터 'incoming_direction_sub6'까지 값을 검사하여 '|'로 합침
+  const directionFields = [
+    'incoming_direction_sub1',
+    'incoming_direction_sub2',
+    'incoming_direction_sub3',
+    'incoming_direction_sub4',
+    'incoming_direction_sub5',
+    'incoming_direction_sub6'
+  ];
+
+    // 접근방향 1~6 검사하여 - 값이 채워진 것들만 필터링하여 합침
+    // 좌|직 , 좌|직|직  , 좌,직|직,좌|직 , ....
+    const incomingDirectionValues = directionFields
+      .map(field => updatedRoadInputList[index][field])
+      .filter(value => value !== '' && value !== null && value !== undefined); // 빈 값 제외
+
+    // 'incoming_direction'에 '|'로 합친 값 넣기
+    if (incomingDirectionValues.length > 0) {
+      updatedRoadInputList[index].incoming_direction = incomingDirectionValues.join('|');
+    } else {
+      updatedRoadInputList[index].incoming_direction = ''; // 값이 없으면 빈 문자열
+    }
+
+    console.log('updatedRoadInputList');
+    console.log(updatedRoadInputList);
+
     // 변경된 리스트를 상태에 반영
     setRoadInputList(updatedRoadInputList);
 
-    /*
-    const { name, value } = e.target; 
-    console.log(name)
-    console.log(value)
-
-    setRoadInputFormValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
-
     if (isNewClicked) {//new버튼 클릭했을때만
       setHasChangesCreate(true); 
+      disableConfirmButtons()//생성시에는 register만 하면되고 저장(수정)은 필요없다.
     } else {
       setHasChangesUpdate(true); 
     }
 
-    console.log('roadInputformValues')
-    console.log(roadInputformValues)
-    */
   }
 
   // 테이블 row선택시
@@ -490,6 +500,7 @@ const SiteManagement = () => {
     delete: true,
     create: false,
   });
+
   const tbRef = useRef(null);
   const searchRef = useRef(null);
   const idRef = useRef(null);
@@ -504,7 +515,7 @@ const SiteManagement = () => {
   const [newId, setNewId] = useState('');
   const [isNewClicked, setIsNewClicked] = useState(false);
 
-  //empty form data
+  //site입력폼 비우기
   const emptyDetail = () => {
     setSiteInputFormValues((prevValues) => ({
       ...prevValues,
@@ -531,6 +542,7 @@ const SiteManagement = () => {
     });
   };
 
+  //
   const enableInitialButtons = () => {
     disableAllButtons();
     setIsNewClicked(false); 
@@ -540,6 +552,7 @@ const SiteManagement = () => {
     }));
   };
 
+  //수정관련 버튼 활성화
   const enableUpdateButtons = () => {
     disableAllButtons();
     setButtonState((prevState) => ({
@@ -550,13 +563,37 @@ const SiteManagement = () => {
     }));
   };
 
+  //삭제버튼 비활성화
   const disableDeleteButtons = () => {
     setButtonState((prevState) => ({
       ...prevState,
-      cancel: true,//비활성화
       delete: true,//비활성화
     }));
   };
+
+  //취소버튼 비활성화
+  const disableCancelButtons = () => {
+    setButtonState((prevState) => ({
+      ...prevState,
+      cancel: true,//비활성화
+    }));
+  };
+  //취소버튼 활성화
+  const enableCancelButtons = () => {
+    setButtonState((prevState) => ({
+      ...prevState,
+      cancel: false,//비활성화
+    }));
+  };
+
+  //확인 버튼 비활성화
+  const disableConfirmButtons = () => {
+    setButtonState((prevState) => ({
+      ...prevState,
+      confirm: true,//비활성화
+    }));
+  };
+
 
   const handleNewButtonClick = () => {//생성 버튼 누르면
       //alert('new!')
@@ -564,29 +601,59 @@ const SiteManagement = () => {
       setDisabledForm(false); //
       emptyDetail() // 사이트 입력폼 모두 비우기
       setSiteId(null) //사이트 아이디 해제
-      setRoadInputList([])
-      disableDeleteButtons()//생성할때는 cancel, delete가 필요없으므로
+      setRoadInputList([])//접근로 입력목록 초기화 (모두 비우기)
+
+      disableConfirmButtons() //확인버튼 비활성화
+      disableCancelButtons()//취소버튼 비활성화
+      disableDeleteButtons()//삭제버튼 비활성화
+      
       //siteId를 null로 하면 road 데이터 초기화
   };
-  const handleRegistButtonClick = () => {
-      alert('regist!')
 
-      //입력폼 검사
-      var isSiteRoadInputFormValid=siteRoadInputFormCheck()
-      if(isSiteRoadInputFormValid==false){
-        return; //입력검사 통과못하면 끝냄
-      }
-      
-      //입력검사 통과하면 입력값 가져와서
-      const updatedSiteInputFormValues = {
-        ...siteInputFormValues
+  //등록버튼 클릭시
+  const handleRegistButtonClick = async () => {
+    alert('regist!');
+
+    // 입력폼 검사
+    const isSiteRoadInputFormValid = siteRoadInputFormCheck();
+    if (!isSiteRoadInputFormValid) {
+      return; // 입력검사 통과 못하면 끝냄
+    }
+
+    const createSiteFormValues = { ...siteInputFormValues };
+
+    try {
+      // createSite API 호출 후 결과 기다림
+      const createSiteResult = await createSite.mutateAsync(createSiteFormValues);
+      console.log('createSiteResult:', createSiteResult);
+
+      const site_id = siteId;  // 화면에서 siteId를 사용
+      console.log('road추가시 사용될 site_id:', site_id);
+
+      if (!site_id) {
+        throw new Error('사이트 ID가 없습니다.');
       }
 
-      //사이트 정보를 생성한다.
-      createSite(updatedSiteInputFormValues)
-      
-      //접근로 정보도 생성한다.
-  }
+      // road 정보는 여러 개이므로 요청을 반복해서 전송해야 함
+      console.log('road추가 API전송전 확인');
+      console.log(roadInputList);
+
+      // 각 roadItem에 대해 createRoad 요청을 비동기적으로 전송
+      for (const roadItem of roadInputList) {
+        console.log(roadItem); // 각 항목을 확인
+        await createRoad({ ...roadItem, site_id }); // site_id를 함께 전달
+      }
+
+      // 성공적으로 처리된 후 추가 작업 (예: 화면 전환, 메시지 표시 등)
+      alert('등록이 완료되었습니다!');
+    } catch (error) {
+      console.error('API 요청 중 오류 발생:', error);
+      alert('오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+  
+  
+
   
   const siteRoadInputFormCheck = () =>{//사이트 정보, 접근로 정보 입력필드 검사 함수
     // 제외할 필드들
@@ -619,7 +686,10 @@ const SiteManagement = () => {
     const isRoadFieldsFilled = roadInputList.every((item, index) => {
 
       return Object.entries(item).every(([key, value]) => {
-        const excludedFields = ['road_id', 'mapped_detector', 'mapped_vms', 'mapped_speaker'];
+        const excludedFields = ['road_id', 'mapped_detector', 'mapped_vms', 'mapped_speaker',
+          'incoming_direction_sub3','incoming_direction_sub4','incoming_direction_sub5','incoming_direction_sub6'];
+        //접근방향 1,2,3,4,5,6 은 모두 채우지 않아도 상관없다. 일단 1,2만 필수 3,4,5,6은 제외시켜둠
+        //접근방향 모두 합친값(incoming_direction)은 입력할때마다 새로 갱신
         
         // 제외할 필드는 체크하지 않음
         if (excludedFields.includes(key)) {
@@ -650,60 +720,40 @@ const SiteManagement = () => {
     // 입력이 모두 완료되었으면
     new NoticeMessage(t('모든 필드가 올바르게 입력되었습니다.'));
     console.log("사이트, 접근로 관련 모든 필드가 올바르게 입력되었습니다.");
+
     return true;
   }
 
   
-
   const handleConfirmButtonClick = () => {
       //alert('confirm!')
       //추가할때
-      if(isNewClicked){
-        //new 버튼 클릭 되었을때
-        //
-        alert('사이트, 접근로 정보 수정 API요청')
-        
-        //return
-      }else{
-        alert('수정 작업진행')
-        
-        const updatedSiteInputFormValues = {
-          ...siteInputFormValues
-        }
-        //test sample
-        /*
-        const testSample = {
-          "name":'aaa',
-          "type":'bbb',
-          "address":'ccc',
-          "lat":12.3,
-          "lng":12.4,
-          "description":"ddd"
-        }
-        console.log(testSample)  
-        */
-        alert('변경될값 확인')
-        const siteId = updatedSiteInputFormValues.site_id
-        console.log('변경될값 확인')
-        console.log(updatedSiteInputFormValues)
-        console.log(siteId)
-        
-        
-        setDisabledForm(false)
-        setHasChangesUpdate(false)
-        enableUpdateButtons()
-        setIsNewClicked(false);
-  
-        updateSite(updatedSiteInputFormValues)
-
+      
+      alert('수정 작업진행')
+      
+      const updatedSiteInputFormValues = {
+        ...siteInputFormValues
       }
- 
+      
+      alert('변경될값 확인')
+      const siteId = updatedSiteInputFormValues.site_id
+      console.log('변경될값 확인')
+      console.log(updatedSiteInputFormValues)
+      console.log(siteId)
+      
+      setDisabledForm(false)
+      setHasChangesUpdate(false)
+      enableUpdateButtons()
+      setIsNewClicked(false);
+
+      updateSite(updatedSiteInputFormValues)
   }
   
+  //취소 버튼 클릭시
   const handleCancelButtonClick = () => {
       //alert('cancel!')
       
-      if (hasChangesUpdate){
+      if (hasChangesUpdate){//변경된 상태일때
         const message = new NoticeMessage(
           t('msg > flush confirm'),
           {
@@ -718,7 +768,22 @@ const SiteManagement = () => {
           //siteId를 null로 하면 road 데이터 초기화
         });
       }
-      else{
+      else if(isNewClicked){//new를 누른상태일때
+        const message = new NoticeMessage(
+          t('msg > flush confirm'),
+          {
+            mode: "confirm",
+          }
+        );
+        message.confirmClicked().then(() => {
+          //alert('취소!')
+          setDisabledForm(false);
+          emptyDetail()
+          setSiteId(null)
+          setRoadInputList([])
+          //siteId를 null로 하면 road 데이터 초기화
+        });
+      }else{
         setDisabledForm(false);
         emptyDetail()
         setSiteId(null)
