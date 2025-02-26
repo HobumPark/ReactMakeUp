@@ -128,6 +128,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
           </div>
 
           <div className="flex flex-col gap-4">
+            
             <DetailModal
               label="조직"
               inputType="select"
@@ -137,6 +138,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
               onChange={handleChange}
               modalType={'forgot'}
             />
+
             <DetailModal
               label="이메일"
               inputType="text"
@@ -155,6 +157,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
               maxLength={20}
               modalType={'forgot'}
             />
+
             <DetailModal
               label="비밀번호 확인"
               inputType="password"
@@ -164,6 +167,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
               maxLength={20}
               modalType={'forgot'}
             />
+            
           </div>
         </div>
 
