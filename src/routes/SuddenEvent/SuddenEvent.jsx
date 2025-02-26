@@ -65,7 +65,7 @@ const suddenEventTabulator = [
     resizable: false,
   },
   {
-    title: "차종crt",
+    title: "차종",
     field: "vehicle_type",
     widthGrow: 1,
     hozAlign: "center",
@@ -210,8 +210,12 @@ const SuddenEvent = () => {
   };
   const options = [
     { value: "전체", label: "전체" },
-    { value: "교차로", label: "교차로" },
-    { value: "횡단보도", label: "횡단보도" },
+    { value: "역주행", label: "역주행" },
+    { value: "정차", label: "정차" },
+    { value: "정지선 위반", label: "정지선 위반" },
+    { value: "불법 주정차", label: "불법 주정차" },
+    { value: "속도 위반", label: "속도 위반" },
+    { value: "보행자", label: "보행자" },
   ];
 
   const [activeButton, setActiveButton] = useState("1시간");
@@ -324,21 +328,22 @@ const SuddenEvent = () => {
           <Filtering
             placeholder="사이트 / 접근로"
             disableFiltering={true}
-            customWidthSelect="w-full"
+            customWidthSelect="w-[65%]"
             customWidthInput="w-[300px]"
             labelSelect="이벤트 유형  "
           >
+
+            <div className="flex w-full gap-4 flex-row items-center">
             <Select
               options={options}
-              customWidthSelect="w-[60%]!"
+              customWidthSelect="w-[40%]!"
               label="Pilih Opsi"
               name="contoh aja coy"
               value={selectedOption}
               onChange={handleChange}
             />
-
-            <div className="flex w-full gap-4 flex-row">
-              <Button
+           <div className="flex w-[60%] gap-[12px]">
+           <Button
                 customButton={`button filtering  w-full ${
                   activeButton === "1시간" ? "active" : ""
                 }`}
@@ -359,8 +364,7 @@ const SuddenEvent = () => {
                 label="1개월"
                 onClick={() => handleButtonClick("1개월")}
               />
-            </div>
-
+           </div>
             <div className="flex flex-row gap-2 items-center w-full">
               <GeneralInput isDob={true} inputType="text" name={"first-date"} />
               <span>-</span>
@@ -370,6 +374,8 @@ const SuddenEvent = () => {
                 name={"second-date"}
               />
             </div>
+            </div>
+
           </Filtering>
         </ContainerCard>
 

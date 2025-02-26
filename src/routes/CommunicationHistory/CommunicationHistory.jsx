@@ -93,7 +93,7 @@ const communityHistoryTabulator = [
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: true,
+    headerSort: false,
     resizable: false,
   },
 ];
@@ -189,9 +189,10 @@ const CommunicationHistory = () => {
     <>
       <section className="wrap">
         <div className="header-title">
-          <h3>이트 관리</h3>
-          <h3>&gt;</h3>
-          <h3>횡단보도</h3>
+          <h3>소통정보 이력</h3>
+          {/* <h3>이트 관리</h3> */}
+          {/* <h3>&gt;</h3>
+          <h3>횡단보도</h3> */}
         </div>
 
         <ContainerCard>

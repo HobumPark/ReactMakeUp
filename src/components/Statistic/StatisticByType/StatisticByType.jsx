@@ -16,8 +16,9 @@ const statisticByTypeTabulator = [
     title: "집계시간",
     field: "aggregation_time",
     hozAlign: "center",
+    widthGrow: 2.5,
     headerHozAlign: "center",
-    headerSort: true,
+    headerSort: false,
     resizable: false,
   },
   {

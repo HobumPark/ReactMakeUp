@@ -94,7 +94,7 @@ const CommunicationStatistic = () => {
         </div>
 
         <ContainerCard>
-          <Filtering placeholder="사이트 / 접근로" disableFiltering={true} customWidthSelect= "w-full">
+          <Filtering placeholder="사이트 / 접근로" disableFiltering={true} customWidthSelect= "w-[55%]">
             <div className="flex w-fit gap-4 flex-row">
               <Button
                 customButton={`button filtering ${
@@ -125,7 +125,7 @@ const CommunicationStatistic = () => {
                 onClick={() => handleButtonClick("60분")}
               />
             </div>
-            <div className="flex flex-row gap-2 items-center w-full">
+            <div className="flex flex-row gap-2 items-center w-[60%]">
             <GeneralInput 
               isDob={true} 
               inputType = "text"
