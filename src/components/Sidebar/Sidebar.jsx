@@ -56,7 +56,7 @@ const Sidebar = ({ userInfo, commonData }) => {
     { name: "system", label: '시스템 관리' },
     { name: "asset", label: '자산 관리' },
     { name: "site", label: "사이트 관리" },
-    { name: "statistic", label: "Statistic" },
+    { name: "statistic", label: "통계" },
   ]
 
   const links = [
@@ -82,9 +82,9 @@ const Sidebar = ({ userInfo, commonData }) => {
     {id: "site", label: "사이트", path: "/site-management/site", category: "site"},
     
     
-    {id: "communication-history", label: "communication-history", path: "/statistic/communication-history", category: "statistic"},
-    {id: "communication-statistic", label: "communication-statistic", path: "/statistic/communication-statistic", category: "statistic"},
-    {id: "sudden-event", label: "sudden-event", path: "/statistic/sudden-event", category: "statistic"}
+    {id: "communication-history", label: "소통정보 이력", path: "/statistic/communication-history", category: "statistic"},
+    {id: "communication-statistic", label: "소통정보 통계", path: "/statistic/communication-statistic", category: "statistic"},
+    {id: "sudden-event", label: "돌발이벤트", path: "/statistic/sudden-event", category: "statistic"}
   ];
   
   const [openMenu, setOpenMenu] = useState("");
