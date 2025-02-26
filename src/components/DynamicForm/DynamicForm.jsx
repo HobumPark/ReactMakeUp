@@ -7,7 +7,7 @@ import IconDelete from "../../assets/icon/icon-delete-circle.svg";
 
 const DynamicForm = ({ index, onDelete, handleRoadInputChange, 
   //road info props
-  road_id, road_name, crosswalk_length, crosswalk_width, incoming_direction, site_id, crosswalk,
+  road_id, name, crosswalk_length, crosswalk_width, incoming_direction, site_id, crosswalk,
   incoming_compass,outgoing_compass,incoming_lane_cnt, outgoing_lane_cnt,
   mapped_vms, mapped_speaker
  }) => {
@@ -90,7 +90,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                         { label: 1, value: 1 },
                       ]}
                       //onChange={(e) => console.log("Selected:", e.target.value)}
-                      name="incoming_compass"
+                      name="incoming_lane_cnt"
                       value={incoming_lane_cnt || 2}
                       onChange={handleRoadInputChange}
                     />
@@ -113,8 +113,8 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                         { label: 1, value: 1 },
                       ]}
                       //onChange={(e) => console.log("Selected:", e.target.value)}
-                      name="outgoing_compass"
-                      value={outgoing_lane_cnt || 2}
+                      name="outgoing_lane_cnt"
+                      defaultValue={outgoing_lane_cnt || 2}
                       onChange={handleRoadInputChange}
                     />
                   </div>
@@ -146,7 +146,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                         { label: "미존재", value: "105002" },
                         { label:"존재", value:"105001"}
                       ]}
-                      value="105002" // 기본값 "미존재" 선택
+                      defaultValue="105002" // 기본값 "미존재" 선택
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                     />
                   </div>
@@ -156,7 +156,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                 className="items-center!"
                 styleLabel="w-[124px]!"
                 label="매핑 검지기"
-                placeholder="DT01001(ID0003)"
+                //placeholder="DT01001(ID0003)"
                 name="mapped_detector"
                 disabled={true}
                 onChange={handleRoadInputChange}
@@ -173,9 +173,10 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   className="items-center!"
                   styleLabel=""
                   label="명칭 "
+                  required={true}
                   placeholder="북쪽 접근로"
-                  name="road_name"
-                  value={road_name}
+                  name="name"
+                  value={name}
                   onChange={handleRoadInputChange}
                 />
               </div>
@@ -206,7 +207,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       ]}
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                       name="incoming_compass"
-                      value={incoming_compass}
+                      defaultValue={incoming_compass}
                       onChange={handleRoadInputChange}
                     />
                     <DetailForm
@@ -226,7 +227,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       ]}
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                       name="outgoing_compass"
-                      value={outgoing_compass}
+                      defaultValue={outgoing_compass}
                       onChange={handleRoadInputChange}
                     />
                   </div>
@@ -259,12 +260,25 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                 <DetailForm
                   className="items-center!"
                   label="횡단 보도 길이 / 폭"
+                  name="crosswalk"
                   required={true}
                   showInput={false}
                 >
                   <div className="flex w-full flex-row gap-x-2">
-                    <GeneralInput customInput="w-full" placeholder="5m" name="crosswalk_length" onChange={handleRoadInputChange} value={crosswalk_length}/>
-                    <GeneralInput customInput="w-full" placeholder="2.5m" name="corsswalk_width" onChange={handleRoadInputChange} value={crosswalk_width}/>
+                    <GeneralInput 
+                      customInput="w-full" 
+                      placeholder="5m" 
+                      name="crosswalk_length" 
+                      pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
+                      title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
+                      onChange={handleRoadInputChange} value={crosswalk_length}/>
+                    <GeneralInput 
+                      customInput="w-full" 
+                      placeholder="2.5m" 
+                      name="crosswalk_width" 
+                      pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
+                      title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
+                      onChange={handleRoadInputChange} value={crosswalk_width}/>
                   </div>
                 </DetailForm>
               </div>
@@ -294,7 +308,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                           { label: "미존재", value: "105002" },
                           { label:"존재", value:"105001"}
                         ]}
-                        value="105002" // 기본값 "미존재" 선택
+                        defaultValue="105002" // 기본값 "미존재" 선택
                       onChange={(e) => console.log("Selected:", e.target.value)}
                     />
                   </div>
@@ -310,10 +324,10 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   className="items-center!" 
                   label="매핑 전광판" 
                   name="mapped_vms" 
-                  placeholder="DT01001(ID0003)"
+                  //placeholder="DT01001(ID0003)"
                   disabled={true}
                   onChange={handleRoadInputChange} 
-                  value={mapped_vms}
+                  defaultValue={mapped_vms}
                 />
               </div>
             </div>
@@ -322,10 +336,10 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   className="items-center!" 
                   label="매핑 스피커" 
                   name="mapped_speaker" 
-                  placeholder="DT01001(ID0003)"
+                  //placeholder="DT01001(ID0003)"
                   disabled={true}
                   onChange={handleRoadInputChange} 
-                  value={mapped_speaker}
+                  defaultValue={mapped_speaker}
                 />
             </div>
           </div>

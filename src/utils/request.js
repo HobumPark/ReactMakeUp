@@ -83,6 +83,9 @@ export const handleErrorCode = (errCode) => {
     isStringify = true,
     fetchOptions = {}
   ) => {
+    console.log('reqPut')
+    console.log(url)
+    console.log(receivedDT)
     return await fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },

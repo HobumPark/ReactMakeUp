@@ -39,6 +39,7 @@ const boxTabulator = [
     title: "함체 ID",
     field: "remote_terminal_unit_id",
     hozAlign: "center",
+    widthGrow: .6,
     headerHozAlign: "center",
     headerSort:  true,
     resizable: false,
@@ -82,7 +83,7 @@ const boxTabulator = [
   {
     title: "업데이트 일시",
     field: "updated_time",
-    widthGrow: 1,
+    widthGrow: .8,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: true,

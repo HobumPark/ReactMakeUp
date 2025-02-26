@@ -100,4 +100,5 @@ export const APIS = {
   roadList:(filterParams) => `/road?${filterParams}`,
   createRoad:'/road',
   deleteRoad:(roadId) => `/road/${roadId}`,
+  updateRoad: (roadId)=>`/road/${roadId}`,
 }

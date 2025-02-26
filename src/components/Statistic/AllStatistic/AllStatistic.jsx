@@ -18,7 +18,7 @@ const allStatisticTabulator = [
     field: "aggregation_time",
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: true,
+    headerSort: false,
     resizable: false,
   },
   {
@@ -81,7 +81,7 @@ const allStatisticTabulator = [
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: true,
+    headerSort: false,
     resizable: false,
   },
 ];
@@ -229,7 +229,7 @@ const AllStatistic = () => {
             <div className="_chartAllStatistic w-full grid! grid-cols-2 gap-[20px]">
         
             <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
-                <span className="title3bold text-[#545454]">평균 대기길이</span>
+                <span className="title3bold text-[#545454]">평균속도</span>
                 <Chart
                     options={options}
                     series={averageSpeed}
@@ -238,7 +238,7 @@ const AllStatistic = () => {
                 />
             </div>
             <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
-            <span className="title3bold text-[#545454]">평균 대기길이</span>
+            <span className="title3bold text-[#545454]">최고속도</span>
                 <Chart
                     options={options}
                     series={maximumSpeed}

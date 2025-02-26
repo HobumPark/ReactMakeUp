@@ -104,7 +104,6 @@ const data = [
   },
 ];
 
-
 const SiteManagement = () => {
   const { t, i18n } = useTranslation();
   // queryClient 가져오기
@@ -112,6 +111,7 @@ const SiteManagement = () => {
 
   const [queryParams, setQueryParams] = useState(""); // queryParams 상태
   const [siteId, setSiteId] = useState(null); // siteId 상태
+  //const [selectedSiteId, setSelectedSiteId]= useState(null)
   const [curRowId, setCurRowId] = useState(null); //현재 선택된 row번호
 
   // site 데이터 가져오기
@@ -124,7 +124,7 @@ const SiteManagement = () => {
   console.log('detailSiteData');
   console.log(detailSiteData);
 
-  const { roadListData, createRoad, deleteRoad, error, isLoadingRoad } = useRoadMgt({
+  const { roadListData, createRoad, deleteRoad, updateRoad, error, isLoadingRoad } = useRoadMgt({
     queryParams: siteId ? `site_id=${siteId}` : null, // siteId가 있을 때만 API 호출
   });
 
@@ -133,16 +133,12 @@ const SiteManagement = () => {
   console.log(isLoadingRoad);
   console.log(error);
 
-  if(roadListData){
-    console.log('roadListData')
-    console.log(roadListData)
-  }
-
-
   const [selectedOption, setSelectedOption] = useState("");
+
   const handleChange = (e) => {
     setSelectedOption(e.target.value);
   };
+
   const options = [
     { value: "전체", label: "전체" },
     { value: "교차로", label: "교차로" },
@@ -160,7 +156,7 @@ const SiteManagement = () => {
     selectableRowsCheck:(row)=>{
       return !row.getElement().classList.contains("tabulator-selected")
     },
-    index: "id", // index 필드를 지정하여 행을 고유하게 식별  
+    index: "site_id", // index 필드를 지정하여 행을 고유하게 식별  
   };
 
   const logData = [
@@ -172,6 +168,23 @@ const SiteManagement = () => {
 
   //입력용 road 목록
   const [roadInputList, setRoadInputList] = useState([]);
+  /*
+  if(roadListData){
+    console.log('roadListData')
+    console.log(roadListData)//API에서 가져온 접근로 목록 상태값에 저장해놓음 (추후 수정용)
+    setRoadInputList(roadListData)
+  }
+  */
+
+  useEffect(() => {
+    // roadListData가 존재하고, roadInputList가 변경되지 않았을 때만 업데이트
+    if (roadListData && roadInputList !== roadListData) {
+      console.log('roadListData');
+      console.log(roadListData); // API에서 가져온 접근로 목록 상태값에 저장해놓음 (추후 수정용)
+      setRoadInputList(roadListData);
+    }
+  }, [roadListData, roadInputList]); // roadListData가 변경될 때만 실행
+
 
   //add dynamic input form of road
   const addDynamicGroup = () => {
@@ -192,31 +205,28 @@ const SiteManagement = () => {
             ...roadInputList, 
             {
               road_id:'',//접근로 id
-              road_name:'', //접근로 명칭
-              incoming_compass:'북',//진입 방향
-              outgoing_compass:'북동',//진출 방향
+              name:'', //접근로 명칭 road_name
+              incoming_compass:'',//진입 방향
+              outgoing_compass:'',//진출 방향
               incoming_lane_cnt:2,//진입 방향 차선수
               outgoing_lane_cnt:2,//진출 방향 차선수
-              incoming_direction_sub1:'',
-              incoming_direction_sub2:'',
-              incoming_direction_sub3:'',
-              incoming_direction_sub4:'',
-              incoming_direction_sub5:'',
-              incoming_direction_sub6:'',
+              incoming_direction_sub1:'', //진입방향1
+              incoming_direction_sub2:'', //진입방향2
+              incoming_direction_sub3:'', //진입방향3
+              incoming_direction_sub4:'', //진입방향4
+              incoming_direction_sub5:'', //진입방향5
+              incoming_direction_sub6:'', //진입방향6
               incoming_direction:'',//방향 모두 합친 값
-              crosswalk:'미존재',//횡단보도 유무
+              crosswalk:'105002',//횡단보도 유무
               crosswalk_length:'',//횡단보도 길이
-              corsswalk_width:'',//횡단보도 폭
-              traffic_light:'북',//보행자 신호등 유무
-              mapped_detector:'',
-              mapped_vms:'',
-              mapped_speaker:'',
+              crosswalk_width:'',//횡단보도 폭
+              traffic_light:'106002',//보행자 신호등 유무
+              mapped_detector:'',//매핑 검지기
+              mapped_vms:'', //매핑 전광판
+              mapped_speaker:'',//매핑 스피커
             }
           ]);
-
-          
         }
-
     }else{
       //alert('접근로수를 입력하세요!')
       new NoticeMessage(t('접근로 개수를 입력하세요!'));
@@ -251,23 +261,24 @@ const SiteManagement = () => {
       deleteRoad(road_id)
 
       //삭제 성공후 선택했던 row 해제 후 다시 선택
-      tbRefInit.current.deselectRow()
+      //tbRefInit.current.deselectRow()
       // 해당 row를 선택
        // 데이터 갱신 후 100ms 정도 기다리고 행 선택
-       const row = tbRefInit.current.selectRow(curRowId.toString()); // 숫자를 문자열로 변환
+       /*
+       const row = tbRefInit.current.selectRow(curRowId); // 숫자를 문자열로 변환
        if (row) {
          row.select();  // 선택
        } else {
          console.log(`Row with ID ${curRowId} not found`);
        }
-       
- 
-      console.log('curRowId')
-      console.log(curRowId)
-      console.log('row')
-      console.log(row)
-      
-      row.select();
+       */
+       tbRefInit.current.deselectRow()
+       //reloadCallback()
+      tbRefInit.current.selectRow(siteId);
+      console.log('selectRow')
+      console.log(siteId)
+      //window.location.reload();  // 페이지 리프레시
+      //reloadCallback()
     }
   };
 
@@ -339,7 +350,7 @@ const SiteManagement = () => {
     incoming_direction_sub6:'',
     crosswalk:'존재',//횡단보도 유무
     crosswalk_length:'',//횡단보도 길이
-    corsswalk_width:'',//횡단보도 폭
+    crosswalk_width:'',//횡단보도 폭
     traffic_light:'북',//보행자 신호등 유무
     mapping_detector:'',//매핑 검지기
     related_site_id1:'',//사이트 id (연관된)
@@ -351,8 +362,39 @@ const SiteManagement = () => {
   const handleRoadInputChange = (e, mode, index) =>{
     console.log('접근로 정보 입력 change')
     console.log(e.target.name)
+    console.log(e.target.value)
     console.log(mode)
     console.log(index)
+  
+    
+    const inComingCompass = roadInputList[index]?.incoming_compass
+    const outGoingCompass = e.target.value
+    const name = e.target.name
+    console.log('inComingCompass')
+    console.log(inComingCompass)
+    console.log('outGoingCompass')
+    console.log(outGoingCompass)
+    console.log('roadInputList')
+    console.log(roadInputList)
+    console.log(roadInputList[index].cross_walk)
+    if(name == 'outgoing_compass' ){
+      alert('진출 방향 선택중')
+      alert(inComingCompass)
+      alert(outGoingCompass)
+    
+
+      // 진출 방향 값 초기화 (선택 해제)
+      setRoadInputList((prevList) => {
+        const updatedList = [...prevList];
+        updatedList[index] = {
+          ...updatedList[index],
+          outgoing_compass: '', // 진출 방향 초기화
+        };
+        return updatedList;
+      });
+
+      return
+    }
 
     // 복사본을 만들어서 해당 index에 있는 원소를 업데이트
     const updatedRoadInputList = [...roadInputList]; // 기존 리스트 복사
@@ -391,7 +433,7 @@ const SiteManagement = () => {
     console.log(updatedRoadInputList);
 
     // 변경된 리스트를 상태에 반영
-    setRoadInputList(updatedRoadInputList);
+    //setRoadInputList(updatedRoadInputList);
 
     if (isNewClicked) {//new버튼 클릭했을때만
       setHasChangesCreate(true); 
@@ -412,6 +454,10 @@ const SiteManagement = () => {
     
     //선택된 행 번호를 저장해놓음 (선택,해제 할때 쓰기 위하여)
     setCurRowId(rowNum)
+
+    //수정작업을 대비하여
+    //site - 현재 값들을 siteInpuForm에 넣어놓기
+    //road - 현재 값들을 roadInputList에 넣어놓기
 
     if(hasChangesCreateRef.current || hasChangesUpdateRef.current){{
       const message = new NoticeMessage(
@@ -455,18 +501,21 @@ const SiteManagement = () => {
     description:"description"
   });
     
+  console.log('roadInputList check')
+  console.log(roadInputList)
+  console.log(roadListData)
   }, []);
   
   // select site type - Intersection or Crosswalk
   const getSiteTypeOptions = () => {
-    if (siteInputFormValues.type_value === 'Intersection') {
+    if (siteInputFormValues.type === '102001') {
       console.log('Intersection');
 
       return [
         { label: '교차로', value: '교차로' },
         { label: '횡단보도', value: '횡단보도' }
       ];
-    } else if (siteInputFormValues.type_value === 'Crosswalk') {
+    } else if (siteInputFormValues.type === '102002') {
       console.log('Crosswalk');
 
       return [
@@ -594,6 +643,20 @@ const SiteManagement = () => {
     }));
   };
 
+  const handleSearch = useCallback(
+      (inputVal = null) => { 
+        alert('검색!')
+        const resultInput = inputVal ? `input=${inputVal}` : "";
+        alert(resultInput)//검색어
+        const result = resultInput;
+        setQueryParams(result); 
+
+        //검색후 하단 박스 초기화
+        enableInitialButtons()
+        emptyDetail()
+        disabledForm()
+      }, []
+  );
 
   const handleNewButtonClick = () => {//생성 버튼 누르면
       //alert('new!')
@@ -613,44 +676,55 @@ const SiteManagement = () => {
   //등록버튼 클릭시
   const handleRegistButtonClick = async () => {
     alert('regist!');
-
+  
     // 입력폼 검사
     const isSiteRoadInputFormValid = siteRoadInputFormCheck();
     if (!isSiteRoadInputFormValid) {
       return; // 입력검사 통과 못하면 끝냄
     }
-
+  
     const createSiteFormValues = { ...siteInputFormValues };
-
+  
     try {
-      // createSite API 호출 후 결과 기다림
-      const createSiteResult = await createSite.mutateAsync(createSiteFormValues);
-      console.log('createSiteResult:', createSiteResult);
-
-      const site_id = siteId;  // 화면에서 siteId를 사용
-      console.log('road추가시 사용될 site_id:', site_id);
-
-      if (!site_id) {
-        throw new Error('사이트 ID가 없습니다.');
-      }
-
-      // road 정보는 여러 개이므로 요청을 반복해서 전송해야 함
-      console.log('road추가 API전송전 확인');
-      console.log(roadInputList);
-
-      // 각 roadItem에 대해 createRoad 요청을 비동기적으로 전송
-      for (const roadItem of roadInputList) {
-        console.log(roadItem); // 각 항목을 확인
-        await createRoad({ ...roadItem, site_id }); // site_id를 함께 전달
-      }
-
-      // 성공적으로 처리된 후 추가 작업 (예: 화면 전환, 메시지 표시 등)
-      alert('등록이 완료되었습니다!');
+      // createSite 호출 후, 결과를 처리하는 방법
+      createSite(createSiteFormValues, {
+        onSuccess: (createSiteResult) => {
+          console.log('createSite onSuccess:', createSiteResult);
+  
+          // site추가 후 반환된 site_id를 사용해야함
+          const site_id = createSiteResult?.data?.site_id;  // createSiteResult에서 site_id를 가져옴
+          console.log('road추가시 사용될 site_id:', site_id);
+  
+          if (!site_id) {
+            throw new Error('사이트 ID가 없습니다.');
+          }
+  
+          // road 정보는 여러 개이므로 요청을 반복해서 전송해야 함
+          console.log('road추가 API전송전 확인');
+          console.log(roadInputList);
+  
+          // 각 roadItem에 대해 createRoad 요청을 비동기적으로 전송
+          for (const roadItem of roadInputList) {
+            console.log('roadItem'); // 각 항목을 확인
+            console.log(roadItem)
+            createRoad({ ...roadItem, site_id }); // 각 요청을 비동기적으로 처리
+          }
+  
+          // 성공적으로 처리된 후 추가 작업 (예: 화면 전환, 메시지 표시 등)
+          alert('등록이 완료되었습니다!');
+          reloadCallback()
+        },
+        onError: (error) => {
+          console.error('createSite onError:', error);
+          alert('사이트 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+        }
+      });
     } catch (error) {
       console.error('API 요청 중 오류 발생:', error);
       alert('오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
+  
   
   
 
@@ -747,6 +821,20 @@ const SiteManagement = () => {
       setIsNewClicked(false);
 
       updateSite(updatedSiteInputFormValues)
+
+      //접근로 관련 정보도 수정
+      console.log('접근로 정보 수정전 출력확인')
+      console.log(roadInputList)
+      
+       // 각 접근로 항목을 순차적으로 updateRoad 호출
+      if (roadInputList && roadInputList.length > 0) {
+        roadInputList.forEach((roadItem) => {
+          // 각 roadItem을 updateRoad로 전달
+          console.log('접근로 수정!')
+          console.log(roadItem)
+          updateRoad(roadItem); // 이 부분에서 각 roadItem을 전달하고 수정 작업 진행
+        });
+      }
   }
   
   //취소 버튼 클릭시
@@ -814,10 +902,11 @@ const SiteManagement = () => {
     setDisabledForm(true);
     setDisabledId(true);
     setHasChangesUpdate(false);
-    setSelectedUser({ id: null });
+    //setSelectedUser({ id: null });
   };
 
   const {mapped_box} = detailSiteData?.data || ""
+  //매핑함체는 사이트 상세정보 API에서 가져와야함
 
   return (
     <>
@@ -833,6 +922,7 @@ const SiteManagement = () => {
             // labelSelect="매핑 사이트 타입"
             placeholder="명칭 / 시리얼 넘버"
             disableFiltering={true}
+            onSearch={handleSearch}
           >
           </Filtering>
         </ContainerCard>
@@ -911,6 +1001,8 @@ const SiteManagement = () => {
                         placeholder="5.55555" 
                         onChange={handleSiteInputChange} 
                         name="lat"
+                        pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
+                        title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
                         value={siteInputFormValues.lat || ''}
                         disabled={disabledForm}
                       />
@@ -919,6 +1011,8 @@ const SiteManagement = () => {
                         placeholder="5.55555" 
                         onChange={handleSiteInputChange} 
                         name="lng"
+                        pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
+                        title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
                         value={siteInputFormValues.lng || ''}
                         disabled={disabledForm}
                       />
@@ -932,7 +1026,6 @@ const SiteManagement = () => {
                 label="타입"
                 required={true}
                 optionSelect={getSiteTypeOptions()} // Dynamic options based on site_type
-
                 onChange={handleSiteInputChange} name="site_type"
                 disabled={disabledForm}
               />
@@ -952,7 +1045,6 @@ const SiteManagement = () => {
               <DetailForm
                 className="items-center!"
                 label="매핑 함체"
-                required={true}
                 placeholder="BX01001(ID0001)"
                 onChange={handleSiteInputChange} 
                 name="mapped_box"
@@ -976,7 +1068,7 @@ const SiteManagement = () => {
             
             {
             isNewClicked? 
-            // 입력시 출력되는 접근로 목록 (접근로 입력 폼)
+            // 입력시 출력되는 접근로 목록 (접근로 입력 폼) , 입력이므로 비어있고, 동적생성 진행
             roadInputList?.map((data, index) => (
               <div key={index}>
                 <DynamicForm index={index} 
@@ -985,14 +1077,15 @@ const SiteManagement = () => {
                 />
               </div>
             ))
-            : //행 선택시 출력되는 접근로 목록 (API에서 받아온 정보)
-            roadListData?.map((data, index) => (
+            : //행 선택시 출력되는 접근로 목록 (API에서 받아온 정보) , 목록일때도 수정해야함
+            //roadListData
+            roadInputList?.map((data, index) => (
               <div key={index}>
                 <DynamicForm index={index} 
                 onDelete={()=>deleteDynamicGroup('list_mode',data.road_id, index)} 
                 handleRoadInputChange={(e) => handleRoadInputChange(e, 'list_mode', index)}
                 road_id={data.road_id}
-                road_name={data.name}//
+                name={data.name}//접근로 이름
                 crosswalk_length={data.crosswalk_length}
                 crosswalk_width={data.crosswalk_width}
                 incoming_direction={data.incoming_direction}
@@ -1006,7 +1099,7 @@ const SiteManagement = () => {
                 mapped_vms={data.mapped_vms}
                 mapped_speaker={data.mapped_speaker}
                 />
-              </div>
+            </div>
             ))
             
             }
