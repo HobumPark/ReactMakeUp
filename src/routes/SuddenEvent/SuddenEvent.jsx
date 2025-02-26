@@ -274,10 +274,33 @@ const SuddenEvent = () => {
     };
   }, [i18n.language]);
 
+
+  const languageTabulator = () => {
+    let datalanguage = {
+      pagination: {
+        first: t('cmn > first page'), //text for the first page button
+        first_title:t('cmn > first page'), //tooltip text for the first page button
+        last:t('cmn > last page'),
+        last_title: t('cmn > last page'),
+        prev: t('cmn > page before'),
+        prev_title: t('cmn > page before'),
+        next: t('cmn > next page'),
+        next_title: t('cmn > next page'),
+      },
+    }
+    return datalanguage
+  }
+
+
   const optionsTabulator = {
     pagination: true,
     paginationSize: 10,
     rowHeight: 41,
+    index: "id",
+    locale: "ko",
+    langs: {
+      ko: languageTabulator(),
+    },
     movableRows: false,
     resizableRows: false,
     footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,

@@ -13,6 +13,7 @@ import localeKo from "air-datepicker/locale/ko.js";
 import localeId from "air-datepicker/locale/id.js";
 import AirDatepicker from "air-datepicker";
 
+
 import Button from "../../components/Button/Button";
 
 const communityHistoryTabulator = [
@@ -176,14 +177,38 @@ const CommunicationHistory = () => {
     };
   }, [i18n.language]);
 
+
+  const languageTabulator = () => {
+    let datalanguage = {
+      pagination: {
+        first: t('cmn > first page'), //text for the first page button
+        first_title:t('cmn > first page'), //tooltip text for the first page button
+        last:t('cmn > last page'),
+        last_title: t('cmn > last page'),
+        prev: t('cmn > page before'),
+        prev_title: t('cmn > page before'),
+        next: t('cmn > next page'),
+        next_title: t('cmn > next page'),
+      },
+    }
+    return datalanguage
+  }
+
   const optionsTabulator = {
     pagination: true,
     paginationSize: 10,
     rowHeight: 41,
     movableRows: false,
+    index: "id",
+    locale: "ko",
+    langs: {
+      ko: languageTabulator(),
+    },
     resizableRows: false,
     footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
   };
+
+ 
 
   return (
     <>
