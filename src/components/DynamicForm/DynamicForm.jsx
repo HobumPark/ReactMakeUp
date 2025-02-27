@@ -251,7 +251,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
           <div className="flex w-full flex-row gap-x-4">
             <DetailForm
               className="items-center!"
-              label="위도 / 경도"
+              label="진입 진행 방향"
               required={true}
               showInput={false}
             >

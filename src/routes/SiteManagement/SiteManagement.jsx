@@ -32,7 +32,8 @@ const boxTabulator = [
     WidthGrow: 80,
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: false,
+    widthGrow: ".6",
+    headerSort: true,
     resizable: false,
   },
   {
@@ -170,11 +171,34 @@ const SiteManagement = () => {
     { value: "횡단보도", label: "횡단보도" },
   ];
 
+
+
+  const languageTabulator = () => {
+    let datalanguage = {
+      pagination: {
+        first: t('cmn > first page'), //text for the first page button
+        first_title:t('cmn > first page'), //tooltip text for the first page button
+        last:t('cmn > last page'),
+        last_title: t('cmn > last page'),
+        prev: t('cmn > page before'),
+        prev_title: t('cmn > page before'),
+        next: t('cmn > next page'),
+        next_title: t('cmn > next page'),
+      },
+    }
+    return datalanguage
+  }
+
   const optionsTabulator = {
     selectableRows: 1,
     pagination: true,
     paginationSize: 10,
     rowHeight: 41,
+    index: "id",
+    locale: "ko",
+    langs: {
+      ko: languageTabulator(),
+    },
     movableRows: false,
     resizableRows: false,
     footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${siteListData?.data.length} 건</div>`,
@@ -981,7 +1005,7 @@ const SiteManagement = () => {
         <ContainerCard>
           <Filtering
             // labelSelect="매핑 사이트 타입"
-            placeholder="명칭 / 시리얼 넘버"
+            placeholder="사이트ID / 명칭 / 주소"
             disableFiltering={true}
             onSearch={handleSearch}
           >
