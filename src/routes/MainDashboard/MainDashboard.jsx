@@ -606,6 +606,7 @@ const MainDashboard = () => {
                         onClick={() => toggleAccordion(id)}
                       >
                         <div className="flex flex-row w-full items-center gap-[8px]">
+                        <img src={IconArrow} alt="" className={`transition-transform duration-300 ${openSections.includes(id) ? "rotate-180" : "rotate-0"}`}/>
                           <span className="title3bold text-text-white">
                             {title}
                           </span>
