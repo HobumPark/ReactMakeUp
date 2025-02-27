@@ -20,6 +20,7 @@ const allStatisticTabulator = [
     title: "집계시간",
     field: "aggregation_time",
     hozAlign: "center",
+    widthGrow: "2",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
