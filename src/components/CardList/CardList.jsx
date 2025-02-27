@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const CardList = ({
-  type = "listSite", // Bisa "list" atau "event"
+  type = "listSite", 
   customCard,
   customTitle,
   customID,
@@ -11,13 +11,11 @@ const CardList = ({
   subtitle,
   date,
   id,
-  showID = false
+  showId = true,
+  isActive, 
+  onClick,
 }) => {
-  const [isClicked, setIsClicked] = useState(false);
 
-  const handleCardClick = () => {
-    setIsClicked(!isClicked);
-  };
 
   const typeStyles = {
     listSite: "border-l-[4px]  ",
@@ -29,9 +27,9 @@ const CardList = ({
       {type === "event" ? (
         <div
           className={`${customCard} w-full flex flex-col gap-[3px] p-[10px] rounded-[2px] ${
-            isClicked ? "bg-[#5B5C5C]" : "bg-[#31363D]"
+            isActive ? "bg-[#5B5C5C]" : "bg-[#31363D]"
           } ${typeStyles.event}`}
-          onClick={handleCardClick}
+          onClick={onClick}
         >
           <div className="w-full flex flex-row">
             <span
@@ -40,10 +38,11 @@ const CardList = ({
               [이벤트] {title}
             </span>
 
-            {showID && (
+            { showId && (
             <span className={`${customID} flex-1 body2 text-text-white text-right`}>
               {id}
             </span>
+
             )}
           </div>
           <div className="w-full grid grid-cols-2">
@@ -60,9 +59,9 @@ const CardList = ({
       ) : (
         <div
           className={`${customCard} w-full flex flex-col gap-[3px] p-[10px] rounded-[2px] ${
-            isClicked ? "bg-[#5B5C5C]" : "bg-[#31363D]"
+            isActive ? "bg-[#5B5C5C]" : "bg-[#31363D]"
           } ${typeStyles.listSite}`}
-          onClick={handleCardClick}
+          onClick={onClick}
         >
           <div className="w-full grid grid-cols-2">
             <span className={`body2 ${customTitle} text-text-white`}>

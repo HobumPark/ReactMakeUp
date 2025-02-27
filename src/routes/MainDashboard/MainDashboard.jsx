@@ -42,14 +42,15 @@ import LegendSignal from "../../assets/icon/icon-top-signal.svg";
 import LegendBox from "../../assets/icon/icon-top-box.svg";
 import LegendBillboard from "../../assets/icon/icon-top-billboard.svg";
 
-import IconDefault from "../../assets/icon/icon-default.svg"
-import IconReturn from "../../assets/icon/icon-return.svg"
-import IconRoadMap from "../../assets/icon/icon-road-map.svg"
-import IconDarkMap from "../../assets/icon/icon-dark-map.svg"
-import IconSatelite from "../../assets/icon/icon-satelite-map.svg"
+import IconDefault from "../../assets/icon/icon-default.svg";
+import IconReturn from "../../assets/icon/icon-return.svg";
+import IconRoadMap from "../../assets/icon/icon-road-map.svg";
+import IconDarkMap from "../../assets/icon/icon-dark-map.svg";
+import IconSatelite from "../../assets/icon/icon-satelite-map.svg";
 
 import Colorize from "ol-ext/filter/Colorize";
 import CanvasFilter from "ol-ext/filter/CanvasFilter";
+import id from "air-datepicker/locale/id";
 
 const MainDashboard = () => {
   const [selectedButtons, setSelectedButtons] = useState({
@@ -60,7 +61,7 @@ const MainDashboard = () => {
   const handleSelect = (button) => {
     setSelectedButtons((prev) => ({
       ...prev,
-      [button]: !prev[button], // Toggle select/unselect for each button
+      [button]: !prev[button],
     }));
   };
 
@@ -80,16 +81,42 @@ const MainDashboard = () => {
     }));
   };
 
+  const [activeIndex, setActiveIndex] = useState(null);
+
+  const handleCardClick = (index) => {
+    setActiveIndex(index);
+  };
+
+  const cardDataEvent = [
+    {
+      customCard: "border-[#135A78]",
+      title: "삼성역 사거리 교차로 / 시청 방면",
+      subtitle: "승용차 / 진입 / 1차로",
+      date: "2025-01-20 12:30:00",
+    },
+    {
+      customCard: "border-[#ED3131]",
+      title: "강남역 사거리 교차로 / 시청 방면",
+      subtitle: "버스 / 진입 / 2차로",
+      date: "2025-01-21 14:45:00",
+    },
+    {
+      customCard: "border-[#1D7E46]",
+      title: "서울역 사거리 교차로 / 시청 방면",
+      subtitle: "택시 / 진입 / 3차로",
+      date: "2025-01-22 10:15:00",
+    },
+  ];
+
   const mapRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (!mapRef.current) return;
-    
-    const tileLayer = new TileLayer({
-      source: new OSM(), 
-    });
 
+    const tileLayer = new TileLayer({
+      source: new OSM(),
+    });
 
     // Black (Dark Mode)
     // tileLayer.on("prerender", (event) => {
@@ -98,7 +125,7 @@ const MainDashboard = () => {
     //     ctx.filter = "grayscale(100%) invert(100%) contrast(120%)";
     //   }
     // });
-    
+
     // tileLayer.on("postrender", (event) => {
     //   if (event.context) {
     //     const ctx = event.context;
@@ -106,15 +133,16 @@ const MainDashboard = () => {
     //   }
     // });
 
-    const enhanceOption = new Colorize()
+    const enhanceOption = new Colorize();
     enhanceOption.setFilter({
       operation: "enhance",
-      value: Number("0.1"), 
+      value: Number("0.1"),
     });
     tileLayer.addFilter(enhanceOption);
 
+    // alt black mode (30, 20, 10)
     // 'color' option - RGB4 ( Blue Dark =  50, 30, 0 )
-    const colorOption = new Colorize()
+    const colorOption = new Colorize();
     colorOption.setFilter({
       operation: "color",
       red: Number("0"),
@@ -125,23 +153,21 @@ const MainDashboard = () => {
     tileLayer.addFilter(colorOption);
 
     // 'saturation' option => highlight lines on the land
-    const saturationOption = new Colorize()
+    const saturationOption = new Colorize();
     saturationOption.setFilter({
       operation: "enhance",
       value: Number("0.1"),
     });
     tileLayer.addFilter(saturationOption);
 
-    var invert_filter = new Colorize()
+    var invert_filter = new Colorize();
     tileLayer.addFilter(invert_filter);
     invert_filter.setFilter("invert");
-
 
     // ✅ Inisialisasi peta
     const olMap = new Map({
       target: mapRef.current,
-      layers: [tileLayer
-      ],
+      layers: [tileLayer],
 
       view: new View({
         center: fromLonLat([106.8456, -6.2088]),
@@ -152,11 +178,13 @@ const MainDashboard = () => {
     setTimeout(() => {
       // Ambil elemen kontrol zoom
       const zoomControl = document.querySelector(".ol-zoom");
-    
+
       if (zoomControl) {
         // ✅ Hapus semua tombol ikon lama sebelum menambahkan yang baru
-        zoomControl.querySelectorAll(".custom-icon-button").forEach((btn) => btn.remove());
-    
+        zoomControl
+          .querySelectorAll(".custom-icon-button")
+          .forEach((btn) => btn.remove());
+
         const icons = [
           {
             src: IconReturn,
@@ -184,23 +212,22 @@ const MainDashboard = () => {
             action: () => alert("Settings clicked!"),
           },
         ];
-    
+
         icons.forEach((iconData) => {
           // Buat elemen tombol untuk setiap ikon
           const newButton = document.createElement("button");
           newButton.innerHTML = `<img src="${iconData.src}" alt="${iconData.title}" width="20" height="20">`;
           newButton.className = "custom-icon-button";
           newButton.title = iconData.title;
-    
+
           // Tambahkan event click ke masing-masing tombol
           newButton.onclick = iconData.action;
-    
+
           // Masukkan ikon ke dalam kontrol zoom
           zoomControl.appendChild(newButton);
         });
       }
     }, 100);
-    
 
     const iconFeature = new Feature({
       geometry: new Point(fromLonLat([106.8456, -6.2088])), // Lokasi Jakarta
@@ -343,17 +370,20 @@ const MainDashboard = () => {
   ];
 
   const [openSections, setOpenSections] = useState([]);
-
+  const [activeCard, setActiveCard] = useState(null);
   // Fungsi untuk toggle status accordion
   const toggleAccordion = (id) => {
-    setOpenSections((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((sectionId) => sectionId !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
+    setOpenSections((prev) =>
+      prev.includes(id)
+        ? prev.filter((sectionId) => sectionId !== id)
+        : [...prev, id]
+    );
   };
+
+  const handleCardClickSiteList = (cardId) => {
+    setActiveCard((prev) => (prev === cardId ? null : cardId));
+  };
+
   const accordionData = [
     {
       id: 1,
@@ -363,6 +393,7 @@ const MainDashboard = () => {
       cardData: [
         {
           id: "ACCID0001",
+
           title: "북 (6차선) / 남(6차선)",
           subtitle: "제 2자유로 방면",
           borderStyle: "border-[#ED3131]",
@@ -567,55 +598,44 @@ const MainDashboard = () => {
                 </div>
 
                 <div className="_contentCardList w-full  flex flex-col gap-[5px] overflow-auto h-full">
-                  {accordionData.map(
-                    ({ id, title, subtitle, count, cardData }) => (
-                      <div key={id} className="w-full">
-                        <div
-                          className="flex flex-row w-full justify-between items-center bg-[#404953] border border-[#455665] py-[8px] px-[10px] rounded-[5px]"
-                          onClick={() => toggleAccordion(id)}
-                        >
-                          <div className="flex flex-row w-full items-center gap-[8px]">
-                            <img
-                              src={IconArrow}
-                              alt=""
-                              className={`transition-transform duration-300 ${
-                                openSections.includes(id)
-                                  ? "rotate-180"
-                                  : "rotate-0"
-                              }`}
-                            />
-                            <span className="title3bold text-text-white">
-                              {title}
-                            </span>
-                          </div>
+                  {accordionData.map(({ id, title, count, cardData }) => (
+                    <div key={id} className="w-full">
+                      {/* Accordion Header */}
+                      <div
+                        className="flex flex-row w-full justify-between items-center bg-[#404953] border border-[#455665] py-[8px] px-[10px] rounded-[5px]"
+                        onClick={() => toggleAccordion(id)}
+                      >
+                        <div className="flex flex-row w-full items-center gap-[8px]">
                           <span className="title3bold text-text-white">
-                            {count}
+                            {title}
                           </span>
                         </div>
-                        {openSections.includes(id) && (
-                          <div className="flex flex-col gap-[3px] mt-[5px] px-[3px]">
-                            {cardData.map(
-                              ({
-                                id: cardId,
-                                title,
-                                subtitle,
-                                borderStyle,
-                              }) => (
-                                <CardList
-                                  type="listSite"
-                                  key={cardId}
-                                  customCard={borderStyle} // Mengirimkan kelas borderStyle ke CardList
-                                  title={title}
-                                  id={cardId}
-                                  subtitle={subtitle}
-                                />
-                              )
-                            )}
-                          </div>
-                        )}
+                        <span className="title3bold text-text-white">
+                          {count}
+                        </span>
                       </div>
-                    )
-                  )}
+
+                      {/* Accordion Content */}
+                      {openSections.includes(id) && (
+                        <div className="flex flex-col gap-[3px] mt-[5px] px-[3px]">
+                          {cardData.map(
+                            ({ id: cardId, title, subtitle, borderStyle }) => (
+                              <CardList
+                                key={cardId}
+                                type="listSite"
+                                customCard={borderStyle}
+                                title={title}
+                                id={cardId}
+                                subtitle={subtitle}
+                                isActive={activeCard === cardId}
+                                onClick={() => handleCardClickSiteList(cardId)}
+                              />
+                            )
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -706,48 +726,16 @@ const MainDashboard = () => {
                 </div>
 
                 <div className="_containerCardEvntList flex flex-col gap-[3px] overflow-auto h-full">
-                  <CardList
-                    type="event"
-                    customCard="border-[#135A78]"
-                    title="삼성역 사거리 교차로 / 시청 방면"
-                    subtitle="승용차 / 진입 / 1차로"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    customCard="border-[#ED3131]"
-                    title="삼성역 사거리 교차로 / 시청 방면"
-                    subtitle="승용차 / 진입 / 1차로"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    customCard="border-[#1D7E46]"
-                    title="삼성역 사거리 교차로 / 시청 방면"
-                    subtitle="승용차 / 진입 / 1차로"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    customCard="border-[#5791AA]"
-                    title="삼성역 사거리 교차로 / 시청 방면"
-                    subtitle="승용차 / 진입 / 1차로"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    customCard="border-[#EE9F17]"
-                    title="삼성역 사거리 교차로 / 시청 방면"
-                    subtitle="승용차 / 진입 / 1차로"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    customCard="border-[#F35A19]"
-                    title="삼성역 사거리 교차로 / 시청 방면"
-                    subtitle="승용차 / 진입 / 1차로"
-                    date="2025-01-20 12:30:00"
-                  />
+                  {cardDataEvent.map((card, index) => (
+                    <CardList
+                      type="event"
+                      showId={false}
+                      key={index}
+                      {...card}
+                      isActive={activeIndex === index}
+                      onClick={() => handleCardClick(index)}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
