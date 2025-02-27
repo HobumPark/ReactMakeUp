@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchSiteList, fetchDetailSite, deleteSite, updateSite, createSite } from "../api/site-mgt";
-import { updateRoad, createRoad } from "../api/road-mgt";
+import { updateRoad, createRoad, deleteRoad } from "../api/road-mgt";
 
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
 import { useTranslation } from "react-i18next";
@@ -146,19 +146,23 @@ const useSiteMgt = ({
       console.log(siteInfo)
       console.log(roadInputList)
 
-      if (siteInfo && Object.keys(siteInfo).length > 0) {
-        
-      }
+        if (siteInfo && Object.keys(siteInfo).length > 0) {
+            requests.push(createSite(siteInfo))
+        }
 
-      if (roadInputList && Object.keys(roadInputList).length > 0) {
-      // 반복문을 통해 roadInputList의 각 항목에 대해 요청을 추가
-        
-      }
-
+        if (roadInputList && Object.keys(roadInputList).length > 0) {
+        // 반복문을 통해 roadInputList의 각 항목에 대해 요청을 추가
+          for (let i = 0; i < roadInputList.length; i++) {
+            const roadInfo = roadInputList[i];
+            // 각 roadInfo에 대해 updateSite 요청을 추가
+            requests.push(createRoad(roadInfo));
+          }
+        }
+        return await Promise.all(requests);
     },
     
     onSuccess:(responseData) =>{
-      new NoticeMessage(t('msg > update success'), {
+      new NoticeMessage(t('msg > registration success'), {
         callback() {
           queryClient.invalidateQueries(["siteListData", queryParams]);
           onUpdateSuccess(responseData);
@@ -169,7 +173,44 @@ const useSiteMgt = ({
       new NoticeMessage(t(err.message))
     }   
   })
-  
+
+
+  const deleteSiteRoadMutation =  useMutation({
+    mutationFn: async ({ siteId, roadIdList }) => {
+      const requests = [];
+      console.log('deleteSiteRoadMutation')
+      
+      console.log(siteId)
+      console.log(roadIdList)
+
+        if (siteId) {
+            requests.push(deleteSite(siteId))
+        }
+
+        if (roadIdList && Object.keys(roadIdList).length > 0) {
+        // 반복문을 통해 roadInputList의 각 항목에 대해 요청을 추가
+          for (let i = 0; i < roadIdList.length; i++) {
+            const roadId = roadIdList[i];
+            // 각 roadInfo에 대해 updateSite 요청을 추가
+            requests.push(deleteRoad(roadId));
+          }
+        }
+        return await Promise.all(requests);
+    },
+    
+    onSuccess:(responseData) =>{
+      new NoticeMessage(t('msg > delete success'), {
+        callback() {
+          queryClient.invalidateQueries(["siteListData", queryParams]);
+          onDeleteSuccess(responseData);
+        }
+      });
+    },
+    onError:(err) => {
+      new NoticeMessage(t(err.message))
+    }   
+  })
+
 
   return {
     siteListData,
@@ -179,6 +220,7 @@ const useSiteMgt = ({
     createSite: createSiteMutation.mutate,
     createSiteRoad: createSiteRoadMutation.mutate,
     updateSiteRoad: updateSiteRoadMutation.mutate,
+    deleteSiteRoad: deleteSiteRoadMutation.mutate
   };
 };
 

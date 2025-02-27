@@ -18,7 +18,7 @@ const allCompassOptions = [
 
 const DynamicForm = ({ index, onDelete, handleRoadInputChange, 
   //road info props
-  road_id, name, crosswalk_length, crosswalk_width, incoming_direction, site_id, crosswalk,
+  road_id, name, crosswalk_length, crosswalk_width, traffic_light, incoming_direction, site_id, crosswalk,
   incoming_compass,outgoing_compass,incoming_lane_cnt, outgoing_lane_cnt,
   mapped_vms, mapped_speaker
  }) => {
@@ -251,7 +251,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
           <div className="flex w-full flex-row gap-x-4">
             <DetailForm
               className="items-center!"
-              label="위도 / 경도"
+              label="진입 진행 방향"
               required={true}
               showInput={false}
             >
@@ -303,25 +303,25 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   required={true}
                   showInput={false}
                   name="traffic_light" 
-                  onChange={handleRoadInputChange}
                 >
                   <div className="flex w-full flex-row gap-x-2">
                     <DetailForm
                       inputType="select"
                       className="items-center!"
+                      name="traffic_light" 
                       showTitle={false}
                       required={true}
-                      optionSelect={  crosswalk=='105001'?
+                      optionSelect={  traffic_light=='106001'?
                         [
-                          { label: "존재", value: "105001" },
-                          { label:"미존재", value:"105002"}
+                          { label: "존재", value: "106001" },
+                          { label:"미존재", value:"106002"}
                         ]:
                         [
-                          { label: "미존재", value: "105002" },
-                          { label:"존재", value:"105001"}
+                          { label: "미존재", value: "106002" },
+                          { label:"존재", value:"106001"}
                         ]}
-                        defaultValue="105002" // 기본값 "미존재" 선택
-                      onChange={(e) => console.log("Selected:", e.target.value)}
+                        value={traffic_light || "106002" }
+                        onChange={handleRoadInputChange}
                     />
                   </div>
                 </DetailForm>

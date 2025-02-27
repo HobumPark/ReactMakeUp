@@ -5,6 +5,9 @@ import NoticeMessage from "../plugin/noticemessage/noticemessage";
 
 const useRoadMgt = ({
   queryParams = "",
+  onUpdateSuccess = () => {},
+  onDeleteSuccess = () => {},
+  onCreateSuccess = () => {}
 }) => {
   const queryClient = useQueryClient();
   const {t} = useTranslation();
@@ -26,7 +29,7 @@ const useRoadMgt = ({
   const deleteRoadMutation = useMutation({
       mutationFn: (roadId) => deleteRoad(roadId),
       onSuccess: () => {
-        alert('사이트 삭제 노티스 전 확인')
+        //alert('사이트 삭제 노티스 전 확인')
         new NoticeMessage(t('msg > delete success'), {
           callback() {
             onDeleteSuccess();

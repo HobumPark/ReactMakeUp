@@ -104,6 +104,7 @@ const SiteManagement = () => {
     enableUpdateButtons();
     setIsRequired(false);
     setHasChangesUpdate(false);
+    //tbRef.current.deselectRow();
   };
 
   const [queryParams, setQueryParams] = useState(""); // queryParams 상태
@@ -115,20 +116,21 @@ const SiteManagement = () => {
   //삭제 노티스 상태관리
 
   // site 데이터 가져오기
-  const { siteListData, detailSiteData, updateSite, updateSiteRoad, deleteSite, createSite, createSiteRoad } = useSiteMgt({
-    queryParams: queryParams || "deletion=001002", siteId, 
+  const { siteListData, detailSiteData, updateSite, updateSiteRoad, deleteSite, createSite, createSiteRoad, deleteSiteRoad,  } = useSiteMgt({
+    queryParams: queryParams || "", siteId, 
     onUpdateSuccess: (responseData) =>{
       console.log('onUpdateSuccess')
-      alert('onUpdateSuccess')
+      //alert('onUpdateSuccess')
       updateCallback()
+      //InitSiteRoadInputForm()
     },
     onDeleteSuccess: () => {
       console.log('onDeleteSuccess')
-      alert('onDeleteSuccess')
+      //alert('onDeleteSuccess')
     },
     onCreateSuccess: (responseData) => {
       console.log('onCreateSuccess')
-      alert('onCreateSuccess')
+      //alert('onCreateSuccess')
     },
   });
   console.log('useSiteMgt');
@@ -141,15 +143,15 @@ const SiteManagement = () => {
     queryParams: siteId ? `site_id=${siteId}` : null, // siteId가 있을 때만 API 호출
     onUpdateSuccess: (responseData) =>{
       console.log('onUpdateSuccess')
-      alert('onUpdateSuccess')
+      //alert('onUpdateSuccess')
     },
     onDeleteSuccess: () => {
       console.log('onDeleteSuccess')
-      alert('onDeleteSuccess')
+      //alert('onDeleteSuccess')
     },
     onCreateSuccess: (responseData) => {
       console.log('onCreateSuccess')
-      alert('onCreateSuccess')
+      //alert('onCreateSuccess')
     },
   });
 
@@ -266,7 +268,7 @@ const SiteManagement = () => {
     console.log('삭제할 인덱스 번호:'+index)
     if(mode == 'input_mode'){
       //alert(road_id+" 번 접근로 단순 입력 목록 삭제")
-      alert('삭제할 인덱스 번호:'+index)
+      //alert('삭제할 인덱스 번호:'+index)
 
       // 특정 인덱스를 제외한 새로운 배열 만들기
       // 특정 인덱스를 제외한 새로운 배열 만들기
@@ -278,9 +280,12 @@ const SiteManagement = () => {
     
     }else if(mode == 'list_mode'){
 
-      alert(road_id+" 번 접근로 삭제 API요청")
+      //alert(road_id+" 번 접근로 삭제 API요청")
       deleteRoad(road_id)
+      const updatedRoadInputList = roadInputList.filter((_, i) => i !== index);
 
+      // 상태 업데이트
+      setRoadInputList(updatedRoadInputList);
       /*
       let message = new NoticeMessage(
         t('접근로 정보가 삭제됩니다'),
@@ -305,26 +310,8 @@ const SiteManagement = () => {
         window.location.reload()
       });
       */
-
-      /*
-      tbRefInit.current.deselectRow()
-       //reloadCallback()
-      tbRefInit.current.selectRow(siteId);
-      console.log('selectRow')
-      console.log(siteId)
-      //window.location.reload();  // 페이지 리프레시
-      //reloadCallback()
-      */
     }
   };
-
-
-  //상태가 변경된 후 콜백을 실행하기 위한 useEffect
-  useEffect(() => {
-    // 이 코드 블록은 roadInputList가 변경된 후 실행됩니다.
-    console.log('roadInputList가 변경되었습니다:', roadInputList);
-  }, [roadInputList]); // roadInputList가 변경될 때마다 실행됩니다.
-  
 
   //site input form values, row data to display
   const [siteInputFormValues, setSiteInputFormValues] = useState({
@@ -336,7 +323,7 @@ const SiteManagement = () => {
     type:'102001',
     type_value:'Intersection',
     number_road:'',
-    mapping_box:'',
+    mapped_box:'',
     description:'description'
   })
 
@@ -378,8 +365,6 @@ const SiteManagement = () => {
   const tbRefInit = useRef(null);
 
   //진입, 진출방향 상태값
-
-  //
   const handleRoadInputChange = (e, mode, index) =>{
     console.log('접근로 정보 입력 change')
     console.log(e.target.name)
@@ -512,7 +497,7 @@ const SiteManagement = () => {
     type:'102001',
     type_value: rowData.type_value || "교차로",
     number_road: rowData.number_road || "",
-    mapping_box: rowData.mapping_box || "",
+    mapped_box: rowData.mapped_box || "",
     description:"description"
   });
     
@@ -591,7 +576,7 @@ const SiteManagement = () => {
       type:'102001',
       type_value:'Intersection',
       number_road:'',
-      mapping_box:'',
+      mapped_box:'',
       description:'description'
     }));
   };
@@ -666,7 +651,6 @@ const SiteManagement = () => {
         alert(resultInput)//검색어
         const result = resultInput;
         setQueryParams(result); 
-
         //검색후 하단 박스 초기화
         enableInitialButtons()
         emptyDetail()
@@ -685,9 +669,24 @@ const SiteManagement = () => {
       disableConfirmButtons() //확인버튼 비활성화
       disableCancelButtons()//취소버튼 비활성화
       disableDeleteButtons()//삭제버튼 비활성화
-      
       //siteId를 null로 하면 road 데이터 초기화
   };
+
+  const InitSiteRoadInputForm=()=>{
+    setRoadInputList([])
+          setSiteInputFormValues({
+            site_id:'',
+            name:'',
+            address:'',
+            lat:'',
+            lng:'',
+            type:'102001',
+            type_value:'Intersection',
+            number_road:'',
+            mapped_box:'',
+            description:'description'
+          })
+  }
 
   //등록버튼 클릭시
   const handleRegistButtonClick = async () => {
@@ -701,7 +700,11 @@ const SiteManagement = () => {
   
     const createSiteFormValues = { ...siteInputFormValues };
     
-    //여기서 한번에 처리
+    //const siteRoadInfo={siteInfo:createSiteFormValues,roadInputList:roadInputList}
+    //createSiteRoad(siteRoadInfo)
+    //site추가한다음 아이디를 받아서 해야해서... 한번에 처리하는게 불가능할듯
+    //site먼저 처리하고 road를 처리할수밖에
+    //createSite -> get site id -> create road with site id
 
     try {
       // createSite 호출 후, 결과를 처리하는 방법
@@ -727,11 +730,11 @@ const SiteManagement = () => {
             console.log(roadItem)
             createRoad({ ...roadItem, site_id }); // 각 요청을 비동기적으로 처리
           }
-  
-          // 성공적으로 처리된 후 추가 작업 (예: 화면 전환, 메시지 표시 등)
+
           //alert('등록이 완료되었습니다!');
-          //reloadCallback()
-          //window.location.reload()
+          //등록후 입력폼 초기화 - init site, road form
+          InitSiteRoadInputForm()
+          
         },
         onError: (error) => {
           console.error('createSite onError:', error);
@@ -744,16 +747,12 @@ const SiteManagement = () => {
     }
   };
   
-  
-  
-
-  
   const siteRoadInputFormCheck = () =>{//사이트 정보, 접근로 정보 입력필드 검사 함수
     // 제외할 필드들
-    const excludedFields = ['site_id', 'mapping_box'];//입력검사시에 제외할 필드
+    const excludedFields = ['site_id', 'mapped_box'];//입력검사시에 제외할 필드 - site check exclude field
     //사이트 아이디는 자동으로 생성됨, 함체정보는 입력하지 않음
 
-    // 사이트정보 입력 폼검사 - 제외할 필드를 제외한 나머지 필드들만 검사
+    // 사이트정보 입력 폼검사 - 제외할 필드를 제외한 나머지 필드들만 검사 - siteInputForm Check
     const isEmptyField = Object.keys(siteInputFormValues)
       .filter(key => !excludedFields.includes(key))  // 제외할 필드를 필터링
       .some(key => siteInputFormValues[key] === null || siteInputFormValues[key] === '');
@@ -776,8 +775,6 @@ const SiteManagement = () => {
     }
 
     //접근로 입력 갯수만큼 생성된 동적박스에 입력값이 모두 채워졌는지도 검사해야한다.
-
-    
     const isRoadFieldsFilled = roadInputList?.every((item, index) => {
 
       return Object.entries(item).every(([key, value]) => {
@@ -785,7 +782,8 @@ const SiteManagement = () => {
           'incoming_direction_sub3','incoming_direction_sub4','incoming_direction_sub5','incoming_direction_sub6'];
         //접근방향 1,2,3,4,5,6 은 모두 채우지 않아도 상관없다. 일단 1,2만 필수 3,4,5,6은 제외시켜둠
         //접근방향 모두 합친값(incoming_direction)은 입력할때마다 새로 갱신
-        
+        //road check exclude field
+
         // 제외할 필드는 체크하지 않음
         if (excludedFields.includes(key)) {
           return true;
@@ -813,17 +811,16 @@ const SiteManagement = () => {
     }
 
     // 입력이 모두 완료되었으면
-    new NoticeMessage(t('모든 필드가 올바르게 입력되었습니다.'));
+    //new NoticeMessage(t('모든 필드가 올바르게 입력되었습니다.'));
     console.log("사이트, 접근로 관련 모든 필드가 올바르게 입력되었습니다.");
 
     return true;
   }
 
-  
+
   const handleConfirmButtonClick = () => {
       //alert('confirm!')
       //추가할때
-      
       alert('수정 작업진행')
       
       const updatedSiteInputFormValues = {
@@ -846,7 +843,7 @@ const SiteManagement = () => {
       console.log('siteRoadInfo')
       console.log(siteRoadInfo)
       updateSiteRoad(siteRoadInfo)
-
+      tbRef.current.deselectRow();
       /*
       updateSite(updatedSiteInputFormValues)
 
@@ -864,13 +861,11 @@ const SiteManagement = () => {
         });
       }
       */
-
   }
   
   //취소 버튼 클릭시
   const handleCancelButtonClick = () => {
       //alert('cancel!')
-      
       if (hasChangesUpdate){//변경된 상태일때
         const message = new NoticeMessage(
           t('msg > flush confirm'),
@@ -883,7 +878,7 @@ const SiteManagement = () => {
           setDisabledForm(false);
           emptyDetail()
           setSiteId(null)
-          //siteId를 null로 하면 road 데이터 초기화
+          //siteId -> null : road list empty
         });
       }
       else if(isNewClicked){//new를 누른상태일때
@@ -910,7 +905,7 @@ const SiteManagement = () => {
   };
 
   const handleDeleteButtonClick = () => {
-      alert('delete!')
+      //alert('delete!')
       const message = new NoticeMessage(
       t('msg > delete confirm'),
       {
@@ -918,9 +913,16 @@ const SiteManagement = () => {
       }
     );
     message.confirmClicked().then(() => {
-      alert('삭제 진행!')
+      //alert('삭제 진행!')
       const siteId=siteInputFormValues?.site_id
-      deleteSite(siteId)
+      const roadIdList = roadInputList.map(item => item.road_id);
+      console.log(roadIdList);
+      const siteRoadInfo = {siteId:siteId,roadIdList:roadIdList}
+      //deleteSite(siteId)
+
+      //delete site and road
+      deleteSiteRoad(siteRoadInfo)
+
     });
   };
 
@@ -946,6 +948,7 @@ const SiteManagement = () => {
       if (detailSiteData) {
         console.log('useEffect detailSiteData')
         console.log(detailSiteData)
+        /*
         setSiteInputFormValues({
           site_id:detailSiteData.data.site_id,
           name:detailSiteData.data.name,
@@ -953,19 +956,20 @@ const SiteManagement = () => {
           lat:detailSiteData.data.lat,
           lng:detailSiteData.data.lng,
           type:detailSiteData.data.type,
-          mapping_box:detailSiteData.data.mapped_box,
+          mapped_box:detailSiteData.data.mapped_box,
           description:detailSiteData.data.description,
           ...siteInputFormValues
         })
+        */
       }
     }, [detailSiteData]); 
   
-    const logData = detailSiteData
+    const logData = detailSiteData?.data
     ? [
-        { label: t('cmn > registered by'), value: detailSiteData.data.registered_by },
-        { label: t('cmn > registered time'), value: detailSiteData.data.registered_time },
-        { label: t('cmn > updated by'), value: detailSiteData.data.updated_by },
-        { label: t('cmn > updated time'), value: detailSiteData.data.updated_time },
+        { label: t('cmn > registered by'), value: detailSiteData?.data.registered_by || '' },
+        { label: t('cmn > registered time'), value: detailSiteData?.data.registered_time || ''},
+        { label: t('cmn > updated by'), value: detailSiteData?.data.updated_by || ''},
+        { label: t('cmn > updated time'), value: detailSiteData?.data.updated_time || ''},
       ]
     : [];
 
@@ -1138,6 +1142,21 @@ const SiteManagement = () => {
                 <DynamicForm index={index} 
                 onDelete={()=>deleteDynamicGroup('input_mode',data.road_id, index)} 
                 handleRoadInputChange={(e) => handleRoadInputChange(e, 'input_mode', index)}
+                road_id={data.road_id}
+                name={data.name}//접근로 이름
+                crosswalk_length={data.crosswalk_length}
+                crosswalk_width={data.crosswalk_width}
+                traffic_light={data.traffic_light}
+                incoming_direction={data.incoming_direction}
+                site_id={data.site_id}
+                crosswalk={data.crosswalk}//횡단보도 유무
+                incoming_compass={data.incoming_compass}//진입방향
+                outgoing_compass={data.outgoing_compass}//진출방향   
+                incoming_lane_cnt={data.incoming_lane_cnt}//진입 차선수
+                outgoing_lane_cnt={data.outgoing_lane_cnt}//진출 차선수
+                mapped_detector={data.mapped_detector}
+                mapped_vms={data.mapped_vms}
+                mapped_speaker={data.mapped_speaker}
                 />
               </div>
             ))
@@ -1153,6 +1172,7 @@ const SiteManagement = () => {
                 name={data.name}//접근로 이름
                 crosswalk_length={data.crosswalk_length}
                 crosswalk_width={data.crosswalk_width}
+                traffic_light={data.traffic_light}
                 incoming_direction={data.incoming_direction}
                 site_id={data.site_id}
                 crosswalk={data.crosswalk}//횡단보도 유무
