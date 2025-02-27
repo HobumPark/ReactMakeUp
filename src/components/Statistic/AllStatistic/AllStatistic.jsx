@@ -232,7 +232,7 @@ const AllStatistic = () => {
                 />
             </div>
             <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
-            <span className="title3bold text-[#545454]">평균 대기길이</span>
+            <span className="title3bold text-[#545454]">최대 대기길이</span>
                 <Chart
                     options={options}
                     series={maximumWait}

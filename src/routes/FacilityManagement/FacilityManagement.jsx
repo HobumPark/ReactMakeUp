@@ -427,8 +427,6 @@ const FacilityManagement = () => {
       );
       message.confirmClicked().then(() => {
         const rowData = row.getData();
-
-        
         setSelectedFacility({
           fc_id: rowData.facility_id,  
         });
@@ -806,20 +804,20 @@ const FacilityManagement = () => {
             className="items-center!"
             label="매핑 사이트"
             optionSelect={
-              [
-                { value: "", label: "" },
-                { value: "NO_MAPPING", label: "매핑 없음" },
-                ...(dataSiteRoad?.sites?.map(site => ({
-                  value: site.site_id,
-                  label: `${site.name} (${site.site_id})`
-                })) || [])
-              ]
-            }
+            formValues.type
+              ? [{ value: "", label: "" },
+                  { value: "NO_MAPPING", label: "매핑 없음" },
+                  ...(dataSiteRoad?.sites?.map(site => ({
+                    value: site.site_id,
+                    label: `${site.name} (${site.site_id})`
+                  })) || [])]
+              : [    { value: "", label: "" }  
+        ]
+  }
             disabled={disabledForm}
             onChange={handleInputChange}
             value={formValues.site_id || ''}
             name={'site_id'}
-
           />
         <DetailForm
             inputType="select"
