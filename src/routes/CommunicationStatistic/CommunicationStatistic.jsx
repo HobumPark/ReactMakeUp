@@ -94,7 +94,19 @@ const CommunicationStatistic = () => {
         </div>
 
         <ContainerCard>
-          <Filtering placeholder="사이트 / 접근로" disableFiltering={true} customWidthSelect= "w-[55%]">
+          <Filtering 
+            placeholder="사이트 / 접근로"
+            customWidthInput=" flex xl:flex-[0.8] lg:flex-1 md:flex-1 "
+            showLabel= {false} 
+            disableFiltering={true} 
+            customWidthSelect= "w-full flex flex-1 basis-[700px] ">
+          {/* <Filtering 
+            placeholder="사이트 / 접근로"
+            customWidthInput=" flex flex-1 w-full!"
+            showLabel= {false} 
+            disableFiltering={true} 
+            customWidthSelect= "w-full flex flex-1 basis-[790px] "> */}
+
             <div className="flex w-fit gap-4 flex-row">
               <Button
                 customButton={`button filtering ${
@@ -125,7 +137,7 @@ const CommunicationStatistic = () => {
                 onClick={() => handleButtonClick("60분")}
               />
             </div>
-            <div className="flex flex-row gap-2 items-center w-[60%]">
+            <div className="flex flex-row gap-2 items-center w-full">
             <GeneralInput 
               isDob={true} 
               inputType = "text"

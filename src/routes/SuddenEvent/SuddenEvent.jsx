@@ -351,8 +351,8 @@ const SuddenEvent = () => {
           <Filtering
             placeholder="사이트 / 접근로"
             disableFiltering={true}
-            customWidthSelect="w-[65%]"
-            customWidthInput="w-[300px]"
+            customWidthSelect= "w-full flex flex-1 basis-[750px] "
+            customWidthInput=" flex flex-1 w-full!"
             labelSelect="이벤트 유형  "
           >
 

@@ -18,6 +18,7 @@ const Filtering = ({
   disableFiltering = false,
   disableResetButton = false,
   isSearchOnInput = false,
+  showLabel= true,
   optionsRadioFilter,
   optionsRadioFilterUsage,
   isUsage,
@@ -74,15 +75,17 @@ const Filtering = ({
   };
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-4 justify-between items-center">
+      <div className="flex gap-4 justify-between items-center flex-wrap w-full">
       <div className={`${customWidthSelect ? `${customWidthSelect}` : "w-70"} flex items-center gap-4`}>
-          <span className="text-body-2 text-au-neutral-4 py-[9px] flex-grow whitespace-nowrap">
-            {labelSelect}
-          </span>
+         {showLabel && (
+           <span className="text-body-2 text-au-neutral-4 py-[9px] flex-grow whitespace-nowrap">
+           {labelSelect}
+         </span>
+         )}
           {children}
         </div>
 
-        <div className="flex gap-[12px] ml-auto items-center">
+        <div className="flex gap-[12px] ml-auto items-center flex-1 justify-end basis-[400px]">
           {!disableSearchInput && (
             <GeneralInput
               ref={searchRef}
