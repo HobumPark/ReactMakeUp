@@ -15,7 +15,6 @@ import NoticeMessage from "../../plugin/noticemessage/noticemessage"
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from "@tanstack/react-query";
 
-
 //table set, text
 const boxTabulator = [
   {
@@ -92,31 +91,45 @@ const boxTabulator = [
   },
 ];
 
-//sample data
-const data = [
-  {
-    site_id: "SITE00100",
-    name: "삼성역 사거리 교차로",
-    address: "서울시 강남구 삼성동",
-    location: "5.55572383 / 5.55572383",
-    no_approaches: "4",
-    update_date: "2025-01-24 23:10:11",
-  },
-];
-
 const SiteManagement = () => {
   const { t, i18n } = useTranslation();
   // queryClient 가져오기
   const queryClient = useQueryClient();
+
+  const createCallback = () => {
+
+  };
+
+  const updateCallback = () => {
+    enableUpdateButtons();
+    setIsRequired(false);
+    setHasChangesUpdate(false);
+  };
 
   const [queryParams, setQueryParams] = useState(""); // queryParams 상태
   const [siteId, setSiteId] = useState(null); // siteId 상태
   //const [selectedSiteId, setSelectedSiteId]= useState(null)
   const [curRowId, setCurRowId] = useState(null); //현재 선택된 row번호
 
+  const [closeNoticeState,setCloseNoticeState]=useState(null);
+  //삭제 노티스 상태관리
+
   // site 데이터 가져오기
-  const { siteListData, detailSiteData, deleteSite, updateSite, createSite } = useSiteMgt({
-    queryParams: queryParams || "", siteId
+  const { siteListData, detailSiteData, updateSite, updateSiteRoad, deleteSite, createSite, createSiteRoad } = useSiteMgt({
+    queryParams: queryParams || "deletion=001002", siteId, 
+    onUpdateSuccess: (responseData) =>{
+      console.log('onUpdateSuccess')
+      alert('onUpdateSuccess')
+      updateCallback()
+    },
+    onDeleteSuccess: () => {
+      console.log('onDeleteSuccess')
+      alert('onDeleteSuccess')
+    },
+    onCreateSuccess: (responseData) => {
+      console.log('onCreateSuccess')
+      alert('onCreateSuccess')
+    },
   });
   console.log('useSiteMgt');
   console.log('siteListData');
@@ -124,14 +137,26 @@ const SiteManagement = () => {
   console.log('detailSiteData');
   console.log(detailSiteData);
 
-  const { roadListData, createRoad, deleteRoad, updateRoad, error, isLoadingRoad } = useRoadMgt({
+  const { roadListData, updateRoad, deleteRoad, createRoad} = useRoadMgt({
     queryParams: siteId ? `site_id=${siteId}` : null, // siteId가 있을 때만 API 호출
+    onUpdateSuccess: (responseData) =>{
+      console.log('onUpdateSuccess')
+      alert('onUpdateSuccess')
+    },
+    onDeleteSuccess: () => {
+      console.log('onDeleteSuccess')
+      alert('onDeleteSuccess')
+    },
+    onCreateSuccess: (responseData) => {
+      console.log('onCreateSuccess')
+      alert('onCreateSuccess')
+    },
   });
 
   console.log('useRoadMgt');
   console.log(roadListData);
-  console.log(isLoadingRoad);
-  console.log(error);
+  //console.log(isLoadingRoad);
+  //console.log(error);
 
   const [selectedOption, setSelectedOption] = useState("");
 
@@ -159,31 +184,26 @@ const SiteManagement = () => {
     index: "site_id", // index 필드를 지정하여 행을 고유하게 식별  
   };
 
+  /*
   const logData = [
     { label: "등록자", value: "김철수" },
     { label: "등록 시간", value: "02-22-2022 12:02:47 " },
     { label: "수정자", value: "박철수" },
     { label: "수정 시간", value: "02-23-2022 12:02:47 " },
   ];
+  */
 
   //입력용 road 목록
   const [roadInputList, setRoadInputList] = useState([]);
-  /*
-  if(roadListData){
-    console.log('roadListData')
-    console.log(roadListData)//API에서 가져온 접근로 목록 상태값에 저장해놓음 (추후 수정용)
-    setRoadInputList(roadListData)
-  }
-  */
 
   useEffect(() => {
     // roadListData가 존재하고, roadInputList가 변경되지 않았을 때만 업데이트
-    if (roadListData && roadInputList !== roadListData) {
+   
       console.log('roadListData');
       console.log(roadListData); // API에서 가져온 접근로 목록 상태값에 저장해놓음 (추후 수정용)
       setRoadInputList(roadListData);
-    }
-  }, [roadListData, roadInputList]); // roadListData가 변경될 때만 실행
+    
+  }, [roadListData]); // roadListData가 변경될 때만 실행
 
 
   //add dynamic input form of road
@@ -206,8 +226,8 @@ const SiteManagement = () => {
             {
               road_id:'',//접근로 id
               name:'', //접근로 명칭 road_name
-              incoming_compass:'',//진입 방향
-              outgoing_compass:'',//진출 방향
+              incoming_compass:'103001',//진입 방향
+              outgoing_compass:'103002',//진출 방향
               incoming_lane_cnt:2,//진입 방향 차선수
               outgoing_lane_cnt:2,//진출 방향 차선수
               incoming_direction_sub1:'', //진입방향1
@@ -243,7 +263,7 @@ const SiteManagement = () => {
     //roadList delete button
     console.log('입력 모드:'+mode)
     console.log('접근로 아이디:'+road_id)
-
+    console.log('삭제할 인덱스 번호:'+index)
     if(mode == 'input_mode'){
       //alert(road_id+" 번 접근로 단순 입력 목록 삭제")
       alert('삭제할 인덱스 번호:'+index)
@@ -257,32 +277,54 @@ const SiteManagement = () => {
       console.log(updatedRoadInputList)
     
     }else if(mode == 'list_mode'){
+
       alert(road_id+" 번 접근로 삭제 API요청")
       deleteRoad(road_id)
 
-      //삭제 성공후 선택했던 row 해제 후 다시 선택
-      //tbRefInit.current.deselectRow()
-      // 해당 row를 선택
-       // 데이터 갱신 후 100ms 정도 기다리고 행 선택
-       /*
-       const row = tbRefInit.current.selectRow(curRowId); // 숫자를 문자열로 변환
-       if (row) {
-         row.select();  // 선택
-       } else {
-         console.log(`Row with ID ${curRowId} not found`);
-       }
-       */
-       tbRefInit.current.deselectRow()
+      /*
+      let message = new NoticeMessage(
+        t('접근로 정보가 삭제됩니다'),
+        {
+          mode: "confirm",
+        }
+      );
+      message.confirmClicked().then(() => {
+
+        alert(road_id+" 번 접근로 삭제 API요청")
+        deleteRoad(road_id)
+
+        const updatedRoadInputList = roadInputList.filter((_, i) => i !== index);
+        // 동적 박스 삭제
+
+        // 상태 업데이트
+        setRoadInputList(updatedRoadInputList);
+        console.log(updatedRoadInputList)
+        
+        reloadCallback()
+
+        window.location.reload()
+      });
+      */
+
+      /*
+      tbRefInit.current.deselectRow()
        //reloadCallback()
       tbRefInit.current.selectRow(siteId);
       console.log('selectRow')
       console.log(siteId)
       //window.location.reload();  // 페이지 리프레시
       //reloadCallback()
+      */
     }
   };
 
-  const [currentRoadNumber,setCurrentRoadNumber]=useState(0)
+
+  //상태가 변경된 후 콜백을 실행하기 위한 useEffect
+  useEffect(() => {
+    // 이 코드 블록은 roadInputList가 변경된 후 실행됩니다.
+    console.log('roadInputList가 변경되었습니다:', roadInputList);
+  }, [roadInputList]); // roadInputList가 변경될 때마다 실행됩니다.
+  
 
   //site input form values, row data to display
   const [siteInputFormValues, setSiteInputFormValues] = useState({
@@ -310,9 +352,7 @@ const SiteManagement = () => {
         ...prevValues,
         [name]: value,
       }));
-      
-      // Reset the group list whenever the number of access roads changes
-      //setGroupList([]); // Reset all dynamic groups
+
     } else {
       setSiteInputFormValues((prevValues) => ({
         ...prevValues,
@@ -321,11 +361,15 @@ const SiteManagement = () => {
     }
 
     if (isNewClicked) {//new버튼 클릭했을때만
-      setHasChangesCreate(true); 
+      console.log('생성버튼을 누른상태에서 입력변화')
+      setHasChangesCreate(false);// 
+      setHasChangesUpdate(false);//생성시에는 변경 되지않았다고 표시 (저장 비활성화)
       disableConfirmButtons()//생성시에는 register만 하면되고 저장(수정)은 필요없다.
       enableCancelButtons()
+  
     } else {
       setHasChangesUpdate(true); 
+      
     }
     //setHasChangesUpdate(true); 
     console.log(siteInputFormValues)
@@ -333,30 +377,7 @@ const SiteManagement = () => {
 
   const tbRefInit = useRef(null);
 
-  //road input form values
-  /*
-  const [roadInputformValues, setRoadInputFormValues] = useState({
-    road_id:'',//접근로 id
-    road_name:'', //접근로 명칭
-    incoming_compass:'북',//진입 방향
-    outgoing_compass:'남서',//진출 방향
-    incoming_lane_cnt:'6',//진입 방향 차선수
-    outgoing_lane_cnt:'6',//진출 방향 차선수
-    incoming_direction_sub1:'',
-    incoming_direction_sub2:'',
-    incoming_direction_sub3:'',
-    incoming_direction_sub4:'',
-    incoming_direction_sub5:'',
-    incoming_direction_sub6:'',
-    crosswalk:'존재',//횡단보도 유무
-    crosswalk_length:'',//횡단보도 길이
-    crosswalk_width:'',//횡단보도 폭
-    traffic_light:'북',//보행자 신호등 유무
-    mapping_detector:'',//매핑 검지기
-    related_site_id1:'',//사이트 id (연관된)
-    related_site_id2:''//사이트 id (연관된)
-  })
-  */
+  //진입, 진출방향 상태값
 
   //
   const handleRoadInputChange = (e, mode, index) =>{
@@ -365,39 +386,31 @@ const SiteManagement = () => {
     console.log(e.target.value)
     console.log(mode)
     console.log(index)
-  
     
     const inComingCompass = roadInputList[index]?.incoming_compass
     const outGoingCompass = e.target.value
-    const name = e.target.name
+    
     console.log('inComingCompass')
     console.log(inComingCompass)
     console.log('outGoingCompass')
     console.log(outGoingCompass)
     console.log('roadInputList')
     console.log(roadInputList)
-    console.log(roadInputList[index].cross_walk)
-    if(name == 'outgoing_compass' ){
-      alert('진출 방향 선택중')
-      alert(inComingCompass)
-      alert(outGoingCompass)
+    console.log(roadInputList[index].crosswalk)
+    if(e.target.name == 'outgoing_compass' ){
+      //alert('진출 방향 선택중')
+      //alert(inComingCompass)
+      //alert(outGoingCompass)
     
-
-      // 진출 방향 값 초기화 (선택 해제)
-      setRoadInputList((prevList) => {
-        const updatedList = [...prevList];
-        updatedList[index] = {
-          ...updatedList[index],
-          outgoing_compass: '', // 진출 방향 초기화
-        };
-        return updatedList;
-      });
-
-      return
+      //return
     }
 
     // 복사본을 만들어서 해당 index에 있는 원소를 업데이트
     const updatedRoadInputList = [...roadInputList]; // 기존 리스트 복사
+    console.log('handleRoadInputChange')
+    console.log(e.target.name+' 수정')
+    console.log(e.target.value+' 수정')
+    
     updatedRoadInputList[index] = {
         ...updatedRoadInputList[index], // 해당 index의 기존 데이터 복사
         [e.target.name]: e.target.value, // 변경된 값을 넣어줌
@@ -405,6 +418,7 @@ const SiteManagement = () => {
 
     console.log('updatedRoadInputList')
     console.log(updatedRoadInputList)
+    setRoadInputList(updatedRoadInputList);
 
   // 'incoming_direction_sub1' 부터 'incoming_direction_sub6'까지 값을 검사하여 '|'로 합침
   const directionFields = [
@@ -433,7 +447,7 @@ const SiteManagement = () => {
     console.log(updatedRoadInputList);
 
     // 변경된 리스트를 상태에 반영
-    //setRoadInputList(updatedRoadInputList);
+    setRoadInputList(updatedRoadInputList);
 
     if (isNewClicked) {//new버튼 클릭했을때만
       setHasChangesCreate(true); 
@@ -446,6 +460,7 @@ const SiteManagement = () => {
 
   // 테이블 row선택시
   const handleRowSelected = useCallback((row) => {
+    setRoadInputList([])
     const rowData = row.getData();  // 선택된 행의 데이터
     const rowNum = row.getPosition(); // DOM에서 직접 행 번호를 가져오기
 
@@ -461,18 +476,18 @@ const SiteManagement = () => {
 
     if(hasChangesCreateRef.current || hasChangesUpdateRef.current){{
       const message = new NoticeMessage(
-              t('msg > flush confirm'),
-              {
-                mode: "confirm",
-              }
-            );
-            message.confirmClicked().then(() => {
-              //const rowData = row.getData();
-              setDisabledForm(false)
-              setHasChangesUpdate(false)
-              enableUpdateButtons()
-              setIsNewClicked(false);
-            });
+          t('msg > flush confirm'),
+          {
+            mode: "confirm",
+          }
+        );
+        message.confirmClicked().then(() => {
+          //const rowData = row.getData();
+          setDisabledForm(false)
+          setHasChangesUpdate(false)
+          enableUpdateButtons()
+          setIsNewClicked(false);
+        });
     } 
   }else {
     setDisabledForm(false)
@@ -627,11 +642,12 @@ const SiteManagement = () => {
       cancel: true,//비활성화
     }));
   };
+
   //취소버튼 활성화
   const enableCancelButtons = () => {
     setButtonState((prevState) => ({
       ...prevState,
-      cancel: false,//비활성화
+      cancel: false,//활성화
     }));
   };
 
@@ -684,7 +700,9 @@ const SiteManagement = () => {
     }
   
     const createSiteFormValues = { ...siteInputFormValues };
-  
+    
+    //여기서 한번에 처리
+
     try {
       // createSite 호출 후, 결과를 처리하는 방법
       createSite(createSiteFormValues, {
@@ -711,17 +729,18 @@ const SiteManagement = () => {
           }
   
           // 성공적으로 처리된 후 추가 작업 (예: 화면 전환, 메시지 표시 등)
-          alert('등록이 완료되었습니다!');
-          reloadCallback()
+          //alert('등록이 완료되었습니다!');
+          //reloadCallback()
+          //window.location.reload()
         },
         onError: (error) => {
           console.error('createSite onError:', error);
-          alert('사이트 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+          //alert('사이트 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
         }
       });
     } catch (error) {
       console.error('API 요청 중 오류 발생:', error);
-      alert('오류가 발생했습니다. 다시 시도해주세요.');
+      //alert('오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
   
@@ -741,7 +760,7 @@ const SiteManagement = () => {
 
     //사이트정보 입력 폼검사 - 값이 모두 채워졌는지 검사한다
     if (isEmptyField) {
-      alert('비어있음!')
+      //alert('비어있음!')
       new NoticeMessage(t('모든 필드에 값을 채우세요'));
       return false;
     }
@@ -751,13 +770,15 @@ const SiteManagement = () => {
     var number_road = siteInputFormValues?.number_road
 
     if(number_road > roadListLen){//생성한 접근로 갯수가 부족하면
-      console.log('접근로 정보를 더 생성하세요!')
+      //console.log('접근로 정보를 더 생성하세요!')
       new NoticeMessage(t('접근로 정보를 더 생성하세요!'));
       return false
     }
 
     //접근로 입력 갯수만큼 생성된 동적박스에 입력값이 모두 채워졌는지도 검사해야한다.
-    const isRoadFieldsFilled = roadInputList.every((item, index) => {
+
+    
+    const isRoadFieldsFilled = roadInputList?.every((item, index) => {
 
       return Object.entries(item).every(([key, value]) => {
         const excludedFields = ['road_id', 'mapped_detector', 'mapped_vms', 'mapped_speaker',
@@ -808,6 +829,7 @@ const SiteManagement = () => {
       const updatedSiteInputFormValues = {
         ...siteInputFormValues
       }
+      setSiteInputFormValues({...siteInputFormValues})
       
       alert('변경될값 확인')
       const siteId = updatedSiteInputFormValues.site_id
@@ -819,7 +841,13 @@ const SiteManagement = () => {
       setHasChangesUpdate(false)
       enableUpdateButtons()
       setIsNewClicked(false);
+      
+      const siteRoadInfo={siteInfo:updatedSiteInputFormValues,roadInputList:roadInputList}
+      console.log('siteRoadInfo')
+      console.log(siteRoadInfo)
+      updateSiteRoad(siteRoadInfo)
 
+      /*
       updateSite(updatedSiteInputFormValues)
 
       //접근로 관련 정보도 수정
@@ -835,6 +863,8 @@ const SiteManagement = () => {
           updateRoad(roadItem); // 이 부분에서 각 roadItem을 전달하고 수정 작업 진행
         });
       }
+      */
+
   }
   
   //취소 버튼 클릭시
@@ -902,11 +932,42 @@ const SiteManagement = () => {
     setDisabledForm(true);
     setDisabledId(true);
     setHasChangesUpdate(false);
+    setSiteId(null)
     //setSelectedUser({ id: null });
   };
 
+
   const {mapped_box} = detailSiteData?.data || ""
   //매핑함체는 사이트 상세정보 API에서 가져와야함
+
+  //logData
+  useEffect(() => {
+      
+      if (detailSiteData) {
+        console.log('useEffect detailSiteData')
+        console.log(detailSiteData)
+        setSiteInputFormValues({
+          site_id:detailSiteData.data.site_id,
+          name:detailSiteData.data.name,
+          address:detailSiteData.data.address,
+          lat:detailSiteData.data.lat,
+          lng:detailSiteData.data.lng,
+          type:detailSiteData.data.type,
+          mapping_box:detailSiteData.data.mapped_box,
+          description:detailSiteData.data.description,
+          ...siteInputFormValues
+        })
+      }
+    }, [detailSiteData]); 
+  
+    const logData = detailSiteData
+    ? [
+        { label: t('cmn > registered by'), value: detailSiteData.data.registered_by },
+        { label: t('cmn > registered time'), value: detailSiteData.data.registered_time },
+        { label: t('cmn > updated by'), value: detailSiteData.data.updated_by },
+        { label: t('cmn > updated time'), value: detailSiteData.data.updated_time },
+      ]
+    : [];
 
   return (
     <>
@@ -971,6 +1032,7 @@ const SiteManagement = () => {
                 placeholder="삼성역 사거리 교차로"
                 onChange={handleSiteInputChange}
                 name="name"
+                maxLength={100}
                 value={siteInputFormValues.name || ''}
                 disabled={disabledForm}
               />
@@ -1035,6 +1097,8 @@ const SiteManagement = () => {
                 label="접근로 수" 
                 onChange={handleSiteInputChange} 
                 name="number_road"
+                type="number"
+                maxLength={"2"}
                 value={siteInputFormValues.number_road || ''}
                 disabled={isNewClicked? false:true}
                 //목록은 비활성화, 입력시에는 활성화
@@ -1078,7 +1142,8 @@ const SiteManagement = () => {
               </div>
             ))
             : //행 선택시 출력되는 접근로 목록 (API에서 받아온 정보) , 목록일때도 수정해야함
-            //roadListData
+              //list mode는 접근로 삭제시에 단순 동적박스삭제 + API삭제요청 둘다 필요함
+            //roadListData , roadInputList
             roadInputList?.map((data, index) => (
               <div key={index}>
                 <DynamicForm index={index} 
@@ -1092,7 +1157,7 @@ const SiteManagement = () => {
                 site_id={data.site_id}
                 crosswalk={data.crosswalk}//횡단보도 유무
                 incoming_compass={data.incoming_compass}//진입방향
-                outgoing_compass={data.outgoing_compass}//진출방향
+                outgoing_compass={data.outgoing_compass}//진출방향   
                 incoming_lane_cnt={data.incoming_lane_cnt}//진입 차선수
                 outgoing_lane_cnt={data.outgoing_lane_cnt}//진출 차선수
                 mapped_detector={data.mapped_detector}
@@ -1107,7 +1172,7 @@ const SiteManagement = () => {
             <hr className="border-t border-gray-300" />
             <div className="flex items-center justify-between gap-4 w-full">
               <div className="flex-1">
-                <LogList logs={logData} />
+                {disabledForm ? null : <LogList logs={logData}/>}
               </div>
               <div className="flex-none">
                 <ButtonGroup

@@ -5,6 +5,17 @@ import Select from "../Select/Select";
 import GeneralInput from "../GeneralInput/GeneralInput";
 import IconDelete from "../../assets/icon/icon-delete-circle.svg";
 
+const allCompassOptions = [
+  { label: "북", value: "103001" },
+  { label: "북동", value: "103002" },
+  { label: "동", value: "103003" },
+  { label: "남동", value: "103004" },
+  { label: "남", value: "103005" },
+  { label: "남서", value: "103006" },
+  { label: "서", value: "103007" },
+  { label: "북서", value: "103008" },
+];
+
 const DynamicForm = ({ index, onDelete, handleRoadInputChange, 
   //road info props
   road_id, name, crosswalk_length, crosswalk_width, incoming_direction, site_id, crosswalk,
@@ -37,6 +48,24 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
       }
     }, [incoming_direction]);
 
+
+  // 조건에 맞춰 'outgoing_compass' 값을 제일 앞으로 옮기기
+  const sortedOptions = (outgoing_compass) => {
+    console.log('sortedOptions')
+    console.log(outgoing_compass)
+    
+    // 1. `outgoing_compass`가 선택되어 있다면 그 값을 맨 앞에 배치
+    const selectedOption = allCompassOptions.find(option => option.value === outgoing_compass);
+    const otherOptions = allCompassOptions.filter(option => option.value !== outgoing_compass);
+    
+    console.log('selectedOption')
+    console.log(selectedOption)
+    console.log('otherOptions')
+    console.log(otherOptions)
+
+    // 2. `outgoing_compass` 값이 있다면 그 값을 앞에 두고 나머지 옵션은 뒤에 배치
+    return selectedOption ? [selectedOption, ...otherOptions] : allCompassOptions;
+  };
 
   return (
     <>
@@ -114,7 +143,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       ]}
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                       name="outgoing_lane_cnt"
-                      defaultValue={outgoing_lane_cnt || 2}
+                      value={outgoing_lane_cnt || 2}
                       onChange={handleRoadInputChange}
                     />
                   </div>
@@ -176,6 +205,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   required={true}
                   placeholder="북쪽 접근로"
                   name="name"
+                  maxLength={100}
                   value={name}
                   onChange={handleRoadInputChange}
                 />
@@ -195,19 +225,10 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       className="items-center!"
                       showTitle={false}
                       required={true}
-                      optionSelect={[
-                        { label: "북", value: "103001" },
-                        { label: "북동", value: "103002" },
-                        { label: "동", value: "103003" },
-                        { label: "남동", value: "103004" },
-                        { label: "남", value: "103005" },
-                        { label: "남서", value: "103006" },
-                        { label: "서", value: "103007" },
-                        { label: "북서", value: "103008" }
-                      ]}
+                      optionSelect={sortedOptions(incoming_compass)}  // 동적으로 옵션 순서 조정
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                       name="incoming_compass"
-                      defaultValue={incoming_compass}
+                      value={incoming_compass || "103001"}
                       onChange={handleRoadInputChange}
                     />
                     <DetailForm
@@ -215,19 +236,10 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       className="items-center!"
                       showTitle={false}
                       required={true}
-                      optionSelect={[
-                        { label: "북", value: "103001" },
-                        { label: "북동", value: "103002" },
-                        { label: "동", value: "103003" },
-                        { label: "남동", value: "103004" },
-                        { label: "남", value: "103005" },
-                        { label: "남서", value: "103006" },
-                        { label: "서", value: "103007" },
-                        { label: "북서", value: "103008" }
-                      ]}
+                      optionSelect={sortedOptions(outgoing_compass)}  // 동적으로 옵션 순서 조정
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                       name="outgoing_compass"
-                      defaultValue={outgoing_compass}
+                      value={outgoing_compass || "103002" }
                       onChange={handleRoadInputChange}
                     />
                   </div>
@@ -327,7 +339,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   //placeholder="DT01001(ID0003)"
                   disabled={true}
                   onChange={handleRoadInputChange} 
-                  defaultValue={mapped_vms}
+                  value={mapped_vms}
                 />
               </div>
             </div>
@@ -339,7 +351,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   //placeholder="DT01001(ID0003)"
                   disabled={true}
                   onChange={handleRoadInputChange} 
-                  defaultValue={mapped_speaker}
+                  value={mapped_speaker}
                 />
             </div>
           </div>

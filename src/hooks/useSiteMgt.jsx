@@ -1,11 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchSiteList, fetchDetailSite, deleteSite, updateSite, createSite } from "../api/site-mgt";
+import { updateRoad, createRoad } from "../api/road-mgt";
+
 import NoticeMessage from "../plugin/noticemessage/noticemessage";
 import { useTranslation } from "react-i18next";
 
 const useSiteMgt = ({
   queryParams =  "",
-  siteId= ""
+  siteId= null,
+  onUpdateSuccess = () => {},
+  onDeleteSuccess = () => {},
+  onCreateSuccess = () => {}
 }) => {
   const queryClient = useQueryClient();
   const {t} = useTranslation();
@@ -29,13 +34,10 @@ const useSiteMgt = ({
 
   // Update Site
   const updateSiteMutation = useMutation({
-        mutationFn: (siteData) => {
-          console.log('mutationFn:', siteData);  // 여기서 값을 확인
-          return updateSite(siteData);
-        },
+        mutationFn: (siteData) => updateSite(siteData),
         onSuccess: (responseData) => {
-          alert('onSuccess!')
-          new NoticeMessage(t('msg > update success'), {
+          alert('updateSiteMutation onSuccess!')
+          new NoticeMessage(t('수정 성공'), {
             callback() {
               queryClient.invalidateQueries(["siteListData", queryParams]);
               onUpdateSuccess(responseData);
@@ -48,6 +50,43 @@ const useSiteMgt = ({
           new NoticeMessage(t(err.message))
         },
   });
+
+  //Update Site + Road
+  const updateSiteRoadMutation =  useMutation({
+        mutationFn: async ({ siteInfo, roadInputList }) => {
+          const requests = [];
+          console.log('updateSiteRoadMutation')
+          console.log(siteInfo)
+          console.log(roadInputList)
+
+          if (siteInfo && Object.keys(siteInfo).length > 0) {
+          requests.push(updateSite(siteInfo))
+          }
+
+          if (roadInputList && Object.keys(roadInputList).length > 0) {
+          // 반복문을 통해 roadInputList의 각 항목에 대해 요청을 추가
+            for (let i = 0; i < roadInputList.length; i++) {
+              const roadInfo = roadInputList[i];
+              // 각 roadInfo에 대해 updateSite 요청을 추가
+              requests.push(updateRoad(roadInfo.site_id,roadInfo));
+            }
+
+          }
+          return await Promise.all(requests);
+        },
+        
+        onSuccess:(responseData) =>{
+          new NoticeMessage(t('msg > update success'), {
+            callback() {
+              queryClient.invalidateQueries(["siteListData", queryParams]);
+              onUpdateSuccess(responseData);
+            }
+          });
+        },
+        onError:(err) => {
+          new NoticeMessage(t(err.message))
+        }   
+      })
 
   // Delete Site
   const deleteSiteMutation = useMutation({
@@ -99,6 +138,37 @@ const useSiteMgt = ({
     },
   });
   
+  const createSiteRoadMutation =  useMutation({
+    mutationFn: async ({ siteInfo, roadInputList }) => {
+      const requests = [];
+      console.log('createSiteRoadMutation')
+      
+      console.log(siteInfo)
+      console.log(roadInputList)
+
+      if (siteInfo && Object.keys(siteInfo).length > 0) {
+        
+      }
+
+      if (roadInputList && Object.keys(roadInputList).length > 0) {
+      // 반복문을 통해 roadInputList의 각 항목에 대해 요청을 추가
+        
+      }
+
+    },
+    
+    onSuccess:(responseData) =>{
+      new NoticeMessage(t('msg > update success'), {
+        callback() {
+          queryClient.invalidateQueries(["siteListData", queryParams]);
+          onUpdateSuccess(responseData);
+        }
+      });
+    },
+    onError:(err) => {
+      new NoticeMessage(t(err.message))
+    }   
+  })
   
 
   return {
@@ -106,7 +176,9 @@ const useSiteMgt = ({
     detailSiteData,
     deleteSite: deleteSiteMutation.mutate,
     updateSite: updateSiteMutation.mutate,
-    createSite: createSiteMutation.mutate
+    createSite: createSiteMutation.mutate,
+    createSiteRoad: createSiteRoadMutation.mutate,
+    updateSiteRoad: updateSiteRoadMutation.mutate,
   };
 };
 

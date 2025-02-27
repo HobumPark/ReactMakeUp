@@ -21,6 +21,10 @@ export const createRoad = async (roadData) => {
 
 // [PUT] Update Road
 export const updateRoad = async (roadId, roadData) => {
+  console.log('updateRoad(road-mgt)')
+  console.log(roadId)
+  console.log(roadData)
+  
   const url = `${URLS.BACK_DSH}${APIS.updateRoad(roadId)}`; 
   return await reqPut(url, roadData); 
 };

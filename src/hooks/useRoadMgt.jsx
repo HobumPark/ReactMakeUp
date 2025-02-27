@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchRoadList, deleteRoad, createRoad, updateRoad } from "../api/road-mgt";
 import { useTranslation } from "react-i18next";
+import NoticeMessage from "../plugin/noticemessage/noticemessage";
 
 const useRoadMgt = ({
   queryParams = "",
@@ -25,6 +26,7 @@ const useRoadMgt = ({
   const deleteRoadMutation = useMutation({
       mutationFn: (roadId) => deleteRoad(roadId),
       onSuccess: () => {
+        alert('사이트 삭제 노티스 전 확인')
         new NoticeMessage(t('msg > delete success'), {
           callback() {
             onDeleteSuccess();
@@ -33,6 +35,7 @@ const useRoadMgt = ({
         });
       },
       onError: (err) => {
+        //console.log(err)
         new NoticeMessage(t(err.message))
       },
     });
@@ -50,7 +53,7 @@ const useRoadMgt = ({
       });
     },
     onError: (err) => {
-      console.error("Error creating Road:", err);
+      //console.error("Error creating Road:", err);
       new NoticeMessage(t(err.message))
     },
   });
