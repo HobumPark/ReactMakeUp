@@ -50,13 +50,13 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
 
 
   // 조건에 맞춰 'outgoing_compass' 값을 제일 앞으로 옮기기
-  const sortedOptions = (outgoing_compass) => {
+  const sortedOptions = (type,compass) => {
     console.log('sortedOptions')
-    console.log(outgoing_compass)
-    
+    console.log(type)
+    console.log(compass)
     // 1. `outgoing_compass`가 선택되어 있다면 그 값을 맨 앞에 배치
-    const selectedOption = allCompassOptions.find(option => option.value === outgoing_compass);
-    const otherOptions = allCompassOptions.filter(option => option.value !== outgoing_compass);
+    const selectedOption = allCompassOptions.find(option => option.value === compass);
+    const otherOptions = allCompassOptions.filter(option => option.value !== compass);
     
     console.log('selectedOption')
     console.log(selectedOption)
@@ -225,7 +225,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       className="items-center!"
                       showTitle={false}
                       required={true}
-                      optionSelect={sortedOptions(incoming_compass)}  // 동적으로 옵션 순서 조정
+                      optionSelect={sortedOptions('incoming',incoming_compass)}  // 동적으로 옵션 순서 조정
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                       name="incoming_compass"
                       value={incoming_compass || "103001"}
@@ -236,7 +236,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       className="items-center!"
                       showTitle={false}
                       required={true}
-                      optionSelect={sortedOptions(outgoing_compass)}  // 동적으로 옵션 순서 조정
+                      optionSelect={sortedOptions('outgoing',outgoing_compass)}  // 동적으로 옵션 순서 조정
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                       name="outgoing_compass"
                       value={outgoing_compass || "103002" }

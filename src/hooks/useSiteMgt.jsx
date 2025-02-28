@@ -67,8 +67,16 @@ const useSiteMgt = ({
           // 반복문을 통해 roadInputList의 각 항목에 대해 요청을 추가
             for (let i = 0; i < roadInputList.length; i++) {
               const roadInfo = roadInputList[i];
-              // 각 roadInfo에 대해 updateSite 요청을 추가
-              requests.push(updateRoad(roadInfo.site_id,roadInfo));
+              console.log('roadInfo.is_new')
+              console.log(roadInfo.is_new)
+              
+              //기존껀 update요청, 새로운정보는 create요청
+              if(roadInfo.is_new==true){// new road info - create
+                requests.push(createRoad(roadInfo));
+              }else if(roadInfo.is_new==false){ // exist road info - update
+                 // 각 roadInfo에 대해 updateSite 요청을 추가
+                 requests.push(updateRoad(roadInfo.site_id,roadInfo));
+              }
             }
 
           }
