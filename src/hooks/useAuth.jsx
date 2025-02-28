@@ -39,6 +39,18 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
     });
   };
 
+  const handleAuthority = async () => {
+    const requestURL = `${URLS.BACK_DSH}${APIS.accessMenu}`;
+    try {
+      const response = await reqGet(requestURL); 
+      return response;  
+    } catch (error) {
+      console.error("Error fetching authority data:", error);
+      return null; 
+    }
+  };
+  
+
 
   const getIsLogin = () => {
     if (sessionStorage.getItem("isLogin") || localStorage.getItem("isLogin")) {
@@ -83,7 +95,8 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
     getIsLogin,
     handleLogin,
     handleLogout,
-    handleForgotPassword, 
+    handleForgotPassword,
+    handleAuthority 
   };
 };
 

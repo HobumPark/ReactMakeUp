@@ -19,8 +19,6 @@ const fetchUserLanguage = async () => {
 
     if (response) {
       localStorage.setItem('userLanguage', response);
-      console.log(response);
-      
       i18n.changeLanguage(response);
       await fetchTranslation(response);
     }

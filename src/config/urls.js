@@ -23,6 +23,7 @@ export { URLS };
 
 export const APIS = {
   checkStatus:'/authentication/check-status',
+  accessMenu: '/program-navbar',
   userLanguage:'/common/authenticated-user/language-preference',
   language:'/common/authenticated-user/languages',
   programLanguage:'/common/authenticated-user/programs',
