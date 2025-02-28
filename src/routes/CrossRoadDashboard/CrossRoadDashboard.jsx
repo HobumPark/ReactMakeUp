@@ -9,8 +9,9 @@ import IconVan from "../../assets/icon/icon-db-van.svg";
 import IconBicycles from "../../assets/icon/icon-db-bicycles.svg";
 import IconHeavyTruck from "../../assets/icon/icon-db-heavy-truck.svg";
 import IconUnknown from "../../assets/icon/icon-db-unknown.svg";
-
-import imgMaps from "../../assets/icon/img-lane-maps.svg";
+import IconRightCircle from "../../assets/icon/icon-db-right-circle.svg";
+// import imgMaps from "../../assets/icon/img-lane-maps.svg";
+import imgMaps from "../../assets/icon/img-lane-maps-2.svg";
 
 import VehicleCount from "../../components/VehicleCount/VehicleCount";
 
@@ -19,7 +20,27 @@ import TrafficeByVehicle from "../../components/CrossRoadStatistic/TrafficeByVeh
 import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
 import ExitRate from "../../components/CrossRoadStatistic/ExitRate";
 
+
+
+
 const CrossRoadDashboard = () => {
+  const [videos, setVideos] = useState([
+    "video1.mp4",
+    "video1.mp4",
+  ]);
+
+  // Fungsi untuk menentukan jumlah kolom grid berdasarkan jumlah video
+  const getGridCols = (count) => {
+    if (count === 1) return "grid-cols-1"; 
+    if (count === 2) return "grid-cols-2"; 
+    if (count === 3) return "grid-cols-2"; 
+    if (count === 4) return "grid-cols-2"; 
+    if (count === 5) return "grid-cols-3"; 
+    if (count === 6) return "grid-cols-3"; 
+    // if (count <= 4) return "grid-cols-2 grid-rows-2 md:grid-cols-4";
+    return "grid-cols-4";
+  };
+  
   const radioOptions = [
     { id: "radio-5min", label: "5분", value: "5" },
     { id: "radio-15min", label: "15분", value: "15" },
@@ -50,6 +71,21 @@ const CrossRoadDashboard = () => {
   };
   //untuk filter mobil
 
+
+  // Tambah video baru secara dinamis
+  const addVideo = () => {
+    const newVideo = `video${videos.length + 1}.mp4`; // Simulasi nama video
+    setVideos([...videos, newVideo]);
+  };
+
+  // Hapus video terakhir
+  const removeVideo = () => {
+    if (videos.length > 0) {
+      setVideos(videos.slice(0, -1));
+    }
+  };
+
+
   return (
     <>
       <section className="_CrossRoadContainer w-full h-screen overflow-hidden flex flex-col bg-bg-grey-400">
@@ -63,12 +99,44 @@ const CrossRoadDashboard = () => {
                   삼성역 사거리 교차로
                 </span>
               </div>
-              <div className="w-full h-[calc(100%-35px)] grid grid-cols-2 gap-[5px] p-[10px]">
+                {/* <div className={`w-full h-[calc(100%-35px)] grid ${getGridCols(videos.length)} gap-2 p-4`}>
+                    {videos.map((video, index) => (
+                      <div key={index} className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden">
+                        <video src={video} className="w-full h-full object-cover" controls />
+                      </div>
+                    ))}
+                  </div> */}
+                  <div className={`w-full h-[calc(100%-35px)] grid ${videos.length > 0 ? getGridCols(videos.length) : "grid-cols-1"} gap-2 p-4`}>
+                      {videos.length > 0 ? (
+                        videos.map((video, index) => (
+                          <div key={index} className="_boxVideo w-full h-full relative flex bg-[] overflow-hidden">
+                            <video src={video} className="w-full h-full object-cover" controls />
+                              <img src={IconRightCircle} alt="" className="cursor-pointer absolute right-[20px] top-[10px]"
+                              //   onClick={() => {
+                              //     window.open("/statistic/sudden-event", "_blank");
+                              // }}
+                              />
+                            {/* <div className="text-text-white absolute right-[20px] top-[10px]">ok</div> */}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-white bg-[#171A1C] p-4 rounded-md">
+                          No Video
+                        </div>
+                      )}
+                    </div>
+              {/* <div className="w-full h-[calc(100%-35px)] grid grid-cols-4 grid-rows-4 gap-[5px] p-[10px]">
                 <div className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden "></div>
                 <div className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden "></div>
                 <div className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden "></div>
                 <div className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden "></div>
-              </div>
+                <div className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden "></div>
+                <div className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden "></div>
+                <div className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden "></div>
+                <div className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden "></div>
+                <div className="_boxVideo w-full h-full flex bg-[#171A1C] overflow-hidden "></div>
+    
+              </div> */}
             </section>
             <section className="rightToproad flex flex-1 h-FULL bg-[#000] overflow-hidden rounded-[5px] ">
               <section className="leftToproad flex flex-1/6 h-full bg-[#000] overflow-hidden rounded-[5px]">
