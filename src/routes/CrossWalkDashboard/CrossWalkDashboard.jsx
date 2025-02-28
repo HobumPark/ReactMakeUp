@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Header from "../../components/Header/Header";
 // import "./AccessRoadDashboard.css";
 import { ReactTabulator } from "react-tabulator";
@@ -18,6 +19,7 @@ import Icon from "ol/style/Icon";
 import IconPlay from "../../assets/icon/icon-db-play-white.svg";
 import IconVideo from "../../assets/icon/icon-db-video.svg";
 import IconVideoActive from "../../assets/icon/icon-db-video-active.svg";
+import IconRightCircle from "../../assets/icon/icon-db-right-circle.svg";
 
 import ImgOneWay from "../../assets/icon/img-one-way.svg";
 
@@ -819,10 +821,14 @@ const CrossWalkDashboard = () => {
 
             <div className="_boxRowBottom flex w-full gap-[10px] overflow-hidden">
               <section className=" flex flex-1/8 h-[full] overflow-hidden bg-[#212527] rounded-[5px]">
-                <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
+                <div className="bg-header-content w-full h-[36px] flex items-center justify-between px-[15px]">
                   <span className="title3bold text-text-white">
-                    발생 이벤트 ( events )
+                    발생 이벤트
                   </span>
+                  <img src={IconRightCircle} alt="" className="cursor-pointer"
+                  onClick={() => {
+                    window.open("/statistic/sudden-event", "_blank");
+                  }}/>
                 </div>
                 <div className="_containerEventsTabullator overflow-hidden h-[calc(100%-55px)] m-[10px] p-[10px] rounded-[5px] bg-[#171A1C]">
                   <ReactTabulator

@@ -210,38 +210,36 @@ const SiteManagement = () => {
     index: "site_id", // index 필드를 지정하여 행을 고유하게 식별  
   };
 
-  /*
-  const logData = [
-    { label: "등록자", value: "김철수" },
-    { label: "등록 시간", value: "02-22-2022 12:02:47 " },
-    { label: "수정자", value: "박철수" },
-    { label: "수정 시간", value: "02-23-2022 12:02:47 " },
-  ];
-  */
-
   //입력용 road 목록
   const [roadInputList, setRoadInputList] = useState([]);
 
   useEffect(() => {
     // roadListData가 존재하고, roadInputList가 변경되지 않았을 때만 업데이트
-   
       console.log('roadListData');
       console.log(roadListData); // API에서 가져온 접근로 목록 상태값에 저장해놓음 (추후 수정용)
       const data = Array.isArray(roadListData) ? roadListData : roadListData?.data;
- 
-      setRoadInputList(data);
+      //alert('useEffect roadInputListChange 로드입력 값변경')
+
+      if(data){
+        setRoadInputList(data);
+      }else{
+        setRoadInputList([])
+      }
     
   }, [roadListData]); // roadListData가 변경될 때만 실행
 
 
   //add dynamic input form of road
   const addDynamicGroup = () => {
-
+    console.log('addDynamicGroup')
+    console.log(roadInputList)
+    console.log(siteInputFormValues.number_road)
+    
     if(siteInputFormValues?.number_road){
 
       const {number_road}=siteInputFormValues
 
-        if(roadInputList.length >= number_road){
+        if(roadInputList?.length >= number_road){
           //alert('접근로 생성 최대 갯수를 넘을수 없습니다.')
           new NoticeMessage(t('접근로 생성 최대 갯수를 넘을수 없습니다.'));
           return
@@ -388,7 +386,7 @@ const SiteManagement = () => {
     console.log(siteInputFormValues)
   };
 
-  const tbRefInit = useRef(null);
+  //const tbRefInit = useRef(null);
 
   //진입, 진출방향 상태값
   const handleRoadInputChange = (e, mode, index) =>{
@@ -412,7 +410,6 @@ const SiteManagement = () => {
       //alert('진출 방향 선택중')
       //alert(inComingCompass)
       //alert(outGoingCompass)
-    
       //return
     }
 
@@ -672,9 +669,9 @@ const SiteManagement = () => {
 
   const handleSearch = useCallback(
       (inputVal = null) => { 
-        alert('검색!')
+        //alert('검색!')
         const resultInput = inputVal ? `input=${inputVal}` : "";
-        alert(resultInput)//검색어
+        //alert(resultInput)//검색어
         const result = resultInput;
         setQueryParams(result); 
         //검색후 하단 박스 초기화
@@ -690,33 +687,37 @@ const SiteManagement = () => {
       setDisabledForm(false); //
       emptyDetail() // 사이트 입력폼 모두 비우기
       setSiteId(null) //사이트 아이디 해제
-      setRoadInputList([])//접근로 입력목록 초기화 (모두 비우기)
+      
 
       disableConfirmButtons() //확인버튼 비활성화
       disableCancelButtons()//취소버튼 비활성화
       disableDeleteButtons()//삭제버튼 비활성화
       //siteId를 null로 하면 road 데이터 초기화
+      //alert('handleNewButtonClick 로드입력 값변경')
+      tbRef.current.deselectRow();
+      setRoadInputList([])//접근로 입력목록 초기화 (모두 비우기)
   };
 
   const InitSiteRoadInputForm=()=>{
     setRoadInputList([])
-          setSiteInputFormValues({
-            site_id:'',
-            name:'',
-            address:'',
-            lat:'',
-            lng:'',
-            type:'102001',
-            type_value:'Intersection',
-            number_road:'',
-            mapped_box:'',
-            description:'description'
-          })
+    
+    setSiteInputFormValues({
+      site_id:'',
+      name:'',
+      address:'',
+      lat:'',
+      lng:'',
+      type:'102001',
+      type_value:'Intersection',
+      number_road:'',
+      mapped_box:'',
+      description:'description'
+    })
   }
 
   //등록버튼 클릭시
   const handleRegistButtonClick = async () => {
-    alert('regist!');
+    //alert('regist!');
   
     // 입력폼 검사
     const isSiteRoadInputFormValid = siteRoadInputFormCheck();
@@ -847,14 +848,14 @@ const SiteManagement = () => {
   const handleConfirmButtonClick = () => {
       //alert('confirm!')
       //추가할때
-      alert('수정 작업진행')
+      //alert('진행')
       
       const updatedSiteInputFormValues = {
         ...siteInputFormValues
       }
       setSiteInputFormValues({...siteInputFormValues})
       
-      alert('변경될값 확인')
+      //alert('변경될값 확인')
       const siteId = updatedSiteInputFormValues.site_id
       console.log('변경될값 확인')
       console.log(updatedSiteInputFormValues)
@@ -870,23 +871,7 @@ const SiteManagement = () => {
       console.log(siteRoadInfo)
       updateSiteRoad(siteRoadInfo)
       tbRef.current.deselectRow();
-      /*
-      updateSite(updatedSiteInputFormValues)
 
-      //접근로 관련 정보도 수정
-      console.log('접근로 정보 수정전 출력확인')
-      console.log(roadInputList)
-      
-       // 각 접근로 항목을 순차적으로 updateRoad 호출
-      if (roadInputList && roadInputList.length > 0) {
-        roadInputList.forEach((roadItem) => {
-          // 각 roadItem을 updateRoad로 전달
-          console.log('접근로 수정!')
-          console.log(roadItem)
-          updateRoad(roadItem); // 이 부분에서 각 roadItem을 전달하고 수정 작업 진행
-        });
-      }
-      */
   }
   
   //취소 버튼 클릭시
@@ -1031,7 +1016,7 @@ const SiteManagement = () => {
             //   pagination="local"
             options={optionsTabulator}
             onRef={(r) => {
-              tbRefInit.current = r.current;
+              tbRef.current = r.current;
             }}
             events={{
               rowSelected: handleRowSelected,

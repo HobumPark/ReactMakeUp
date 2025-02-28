@@ -36,7 +36,7 @@ const useSiteMgt = ({
   const updateSiteMutation = useMutation({
         mutationFn: (siteData) => updateSite(siteData),
         onSuccess: (responseData) => {
-          alert('updateSiteMutation onSuccess!')
+          //alert('updateSiteMutation onSuccess!')
           new NoticeMessage(t('수정 성공'), {
             callback() {
               queryClient.invalidateQueries(["siteListData", queryParams]);
