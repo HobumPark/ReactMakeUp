@@ -75,6 +75,7 @@ const GeneralInput = forwardRef(
             disabled={disabled}
             onKeyUp={onKeyUp}
             name={name}
+            readOnly={readonly}
             onChange={handleInputChange}
           />
           <img

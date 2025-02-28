@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ContainerCard from "../../components/ContainerCard/ContainerCard";
 import Filtering from "../../components/Filtering/Filtering";
 import { ReactTabulator } from "react-tabulator";
@@ -12,14 +12,19 @@ import localeEn from "air-datepicker/locale/en.js";
 import localeKo from "air-datepicker/locale/ko.js";
 import localeId from "air-datepicker/locale/id.js";
 import AirDatepicker from "air-datepicker";
-
-
 import Button from "../../components/Button/Button";
+import UseStatistic from "../../hooks/useStatistic";
+import { formatDateTime, getLocalISOString } from "../../utils/date";
 
 const communityHistoryTabulator = [
   {
     title: "No",
-    formatter: "rownum",
+    formatter: (cell) => {
+      let row = cell.getRow();
+      let page = row.getTable().getPage();
+      let pageSize = row.getTable().getPageSize();
+      return (page - 1) * pageSize + row.getPosition(true);
+    },
     width: 60,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -28,7 +33,7 @@ const communityHistoryTabulator = [
   },
   {
     title: "수집시간",
-    field: "collection_time",
+    field: "timestamp",
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: true,
@@ -36,7 +41,7 @@ const communityHistoryTabulator = [
   },
   {
     title: "사이트",
-    field: "site",
+    field: "site_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -45,7 +50,7 @@ const communityHistoryTabulator = [
   },
   {
     title: "접근로",
-    field: "access",
+    field: "road_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -54,7 +59,7 @@ const communityHistoryTabulator = [
   },
   {
     title: "방위",
-    field: "orientation",
+    field: "lane_compass",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -63,7 +68,7 @@ const communityHistoryTabulator = [
   },
   {
     title: "차선방향",
-    field: "lane_direction",
+    field: "lane_moving_direction",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -72,7 +77,7 @@ const communityHistoryTabulator = [
   },
   {
     title: "차로",
-    field: "lane",
+    field: "lane_number",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -99,34 +104,34 @@ const communityHistoryTabulator = [
   },
 ];
 
-const data = [
-  {
-    collection_time: "2025-01-24 23:10:11",
-  
-    site: "시청사거리",
-    access: "시청 방면",
-    orientation: "남",
-    lane_direction: "진입",
-    lane: "3",
-    vehicle_type: "승용차",
-    speed: "80",
-  },
-  {
-    collection_time: "2024-01-24 20:10:11",
-    site: "시청사거리",
-    access: "시청 방면",
-    orientation: "남",
-    lane_direction: "진입",
-    lane: "3",
-    vehicle_type: "승용차",
-    speed: "50",
-  },
-];
 
 const CommunicationHistory = () => {
   const { t, i18n } = useTranslation();
-  
 
+  const today = new Date();
+  const [isResetClicked, setIsResetClicked] = useState(false)
+
+  const getYesterdayMidnight = () => {
+    const date = new Date();
+    date.setDate(date.getDate() - 1); 
+    date.setHours(23, 59, 59, 999);
+    return date;
+  };
+
+  const yesterdayMidnight = getYesterdayMidnight();
+  const [dateTime, setDateTime] = useState({
+    start_date:formatDateTime(yesterdayMidnight),
+    end_date: formatDateTime(today)
+  });
+
+  const [queryParams, setQueryParams] = useState(`start_date=${getLocalISOString(yesterdayMidnight)}&end_date=${getLocalISOString(today)}`);
+  const { objectListData } = UseStatistic({
+    queryParams: queryParams
+  })
+
+
+  const data = objectListData?.data;
+ 
   useEffect(() => {
     let locale;
     if (i18n.language === "eng") {
@@ -143,11 +148,14 @@ const CommunicationHistory = () => {
       autoClose: true,
       locale: locale,
       position: "bottom center",
-      selectedDates: [today],
+      selectedDates: [yesterdayMidnight],
+      timepicker: true,
+      timeFormat: "HH:mm",
+      dateFormat: "yyyy-MM-dd",
       onSelect: (date) => {
-        setFormValues((prevValues) => ({
+        setDateTime((prevValues) => ({
           ...prevValues,
-          birth: date.formattedDate,
+          start_date: date.formattedDate,
         }));
       },
     };
@@ -157,25 +165,30 @@ const CommunicationHistory = () => {
       locale: locale,
       position: "bottom center",
       selectedDates: [today],
+      timepicker: true,
+      timeFormat: "HH:mm",
+      dateFormat: "yyyy-MM-dd",
       onSelect: (date) => {
-        setFormValues((prevValues) => ({
+        setDateTime((prevValues) => ({
           ...prevValues,
-          birth: date.formattedDate,
+          end_date: date.formattedDate,
         }));
       },
     };
 
-    const datepicker1 = new AirDatepicker('[name="first-date"]', optionsDate);
+    const datepicker1 = new AirDatepicker('[name="start_date"]', optionsDate);
     const datepicker2 = new AirDatepicker(
-      '[name="second-date"]',
+      '[name="end_date"]',
       optionsDateSecond
     );
+    setIsResetClicked(false);
 
     return () => {
       datepicker1.destroy();
       datepicker2.destroy();
     };
-  }, [i18n.language]);
+  }, [i18n.language, isResetClicked]);
+
 
 
   const languageTabulator = () => {
@@ -205,10 +218,42 @@ const CommunicationHistory = () => {
       ko: languageTabulator(),
     },
     resizableRows: false,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data?.length || 0} 건</div>`,
   };
 
- 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;  
+      setDateTime((prevValues) => ({
+        ...prevValues,
+        [name]: value,
+      }));
+  };
+
+  const handleReset= () => {
+    
+    setIsResetClicked(true);
+    setDateTime({
+      start_date:formatDateTime(yesterdayMidnight),
+      end_date:formatDateTime(today)
+    })
+
+  };
+
+  const handleSearch = useCallback((inputVal = null) => {
+    const resultInput = inputVal ? `input=${inputVal}` : "";
+    const { start_date, end_date } = dateTime;
+    const dateParams = [];
+    if (start_date) {
+      dateParams.push(`start_time=${getLocalISOString(start_date)}`);
+    }
+
+    if (end_date) {
+      dateParams.push(`end_time=${getLocalISOString(end_date)}`);
+    }
+  
+    const result = [resultInput, ...dateParams].join("&");
+    setQueryParams(result); 
+  },[dateTime]);
 
   return (
     <>
@@ -225,18 +270,24 @@ const CommunicationHistory = () => {
             placeholder="사이트 / 접근로"
             disableFiltering={true}
             customWidthSelect="w-[30%]"
+            onReset={handleReset}
+            onSearch={handleSearch}
           >
             <div className="flex flex-row gap-2 items-center w-full">
             <GeneralInput 
               isDob={true} 
               inputType = "text"
-              name={"first-date"}
+              name={"start_date"}
+              onChange={handleInputChange}
+              value={dateTime.start_date}
             />
             <span>-</span>
             <GeneralInput 
               isDob={true} 
               inputType = "text"
-              name={"second-date"}
+              name={"end_date"}
+              onChange={handleInputChange}
+              value={dateTime.end_date}
             />
             </div>
           </Filtering>

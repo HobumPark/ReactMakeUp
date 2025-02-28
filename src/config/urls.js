@@ -101,4 +101,7 @@ export const APIS = {
   createRoad:'/road',
   deleteRoad:(roadId) => `/road/${roadId}`,
   updateRoad: (roadId)=>`/road/${roadId}`,
+  //statistic
+  object:(filterParams) => `/object?${filterParams}`,
+  objectTraffic:(filterParams) => `/object-traffic/aggregated?${filterParams}`,
 }

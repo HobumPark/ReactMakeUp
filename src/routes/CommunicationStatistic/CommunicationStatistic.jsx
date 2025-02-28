@@ -18,13 +18,29 @@ import StatisticByType from "../../components/Statistic/StatisticByType/Statisti
 import StatisticByLane from "../../components/Statistic/StatisticByLane/StatisticByLane";
 
 import Button from "../../components/Button/Button";
+import { formatDateTime } from "../../utils/date";
 
 
 const CommunicationStatistic = () => {
   const [activeButton, setActiveButton] = useState("5분");
+  const [interval, setInterval] = useState('');
+  const [dateTime, setDateTime] = useState({
+    start_date:'',
+    end_date:''
+  });
+  const today = new Date();
+  const fiveMinutesAgo = new Date(new Date().getTime() - 5 * 60 * 1000);
 
-  const handleButtonClick = (label) => {
+  const handleButtonClick = (label, interval) => {
     setActiveButton(label);
+    setInterval(interval);
+    const startTime = new Date(today.getTime() - interval * 60 * 1000); 
+
+    setDateTime((prevValues) => ({
+      ...prevValues,
+      start_date: formatDateTime(startTime),
+      end_date: formatDateTime(today)
+    }));
   };
 
   const { t, i18n } = useTranslation();
@@ -39,18 +55,21 @@ const CommunicationStatistic = () => {
         locale = localeKo; 
       }
 
-      const today = new Date();
   
       const optionsDate = {
         autoClose: true,
         locale: locale,
         position: "bottom center",
-        selectedDates: [today],
+        selectedDates: [fiveMinutesAgo],
+        timepicker: true,
+        timeFormat: "HH:mm",
+        dateFormat: "yyyy-MM-dd",
         onSelect: (date) => {
-          setFormValues((prevValues) => ({
+          setDateTime((prevValues) => ({
             ...prevValues,
-            birth: date.formattedDate,
+            start_date: date.formattedDate,
           }));
+          setActiveButton('');
         },
       };
   
@@ -58,17 +77,21 @@ const CommunicationStatistic = () => {
         autoClose: true,
         locale: locale,
         position: "bottom center",
+        timepicker: true,
+        timeFormat: "HH:mm",
+        dateFormat: "yyyy-MM-dd",
         selectedDates: [today],
         onSelect: (date) => {
-          setFormValues((prevValues) => ({
+          setDateTime((prevValues) => ({
             ...prevValues,
-            birth: date.formattedDate,
+            end_date: date.formattedDate,
           }));
+          setActiveButton('');
         },
       };
   
-      const datepicker1 = new AirDatepicker('[name="first-date"]', optionsDate);
-      const datepicker2 = new AirDatepicker('[name="second-date"]', optionsDateSecond);
+      const datepicker1 = new AirDatepicker('[name="start_date"]', optionsDate);
+      const datepicker2 = new AirDatepicker('[name="end_date"]', optionsDateSecond);
   
       return () => {
         datepicker1.destroy();
@@ -84,6 +107,14 @@ const CommunicationStatistic = () => {
       { label: "차종별 통계", content: <StatisticByType /> },
       { label: "차로별 통계", content: <StatisticByLane /> },
     ]
+
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;  
+        setDateTime((prevValues) => ({
+          ...prevValues,
+          [name]: value,
+        }));
+    };
 
   return (
     <>
@@ -113,41 +144,45 @@ const CommunicationStatistic = () => {
                   activeButton === "5분" ? "active" : ""
                 }`}
                 label="5분"
-                onClick={() => handleButtonClick("5분")}
+                onClick={() => handleButtonClick("5분",5)}
               />
               <Button
                 customButton={`button filtering ${
                   activeButton === "15분" ? "active" : ""
                 }`}
                 label="15분"
-                onClick={() => handleButtonClick("15분")}
+                onClick={() => handleButtonClick("15분",15)}
               />
               <Button
                 customButton={`button filtering ${
                   activeButton === "30분" ? "active" : ""
                 }`}
                 label="30분"
-                onClick={() => handleButtonClick("30분")}
+                onClick={() => handleButtonClick("30분",30)}
               />
               <Button
                 customButton={`button filtering ${
                   activeButton === "60분" ? "active" : ""
                 }`}
                 label="60분"
-                onClick={() => handleButtonClick("60분")}
+                onClick={() => handleButtonClick("60분",60)}
               />
             </div>
             <div className="flex flex-row gap-2 items-center w-full">
             <GeneralInput 
               isDob={true} 
               inputType = "text"
-              name={"first-date"}
+              name={"start_date"}
+              value={dateTime.start_date}
+              onChange={handleInputChange}
             />
             <span>-</span>
             <GeneralInput 
               isDob={true} 
               inputType = "text"
-              name={"second-date"}
+              name={"end_date"}
+              value={dateTime.end_date}
+              onChange={handleInputChange}
             />
             </div>
           </Filtering>
