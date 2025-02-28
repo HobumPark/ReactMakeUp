@@ -227,7 +227,9 @@ const SiteManagement = () => {
    
       console.log('roadListData');
       console.log(roadListData); // API에서 가져온 접근로 목록 상태값에 저장해놓음 (추후 수정용)
-      setRoadInputList(roadListData);
+      const data = Array.isArray(roadListData) ? roadListData : roadListData?.data;
+ 
+      setRoadInputList(data);
     
   }, [roadListData]); // roadListData가 변경될 때만 실행
 
@@ -996,6 +998,10 @@ const SiteManagement = () => {
         { label: t('cmn > updated time'), value: detailSiteData?.data.updated_time || ''},
       ]
     : [];
+    
+  // 로컬 환경은 바로 배열 사용 가능, 배포 환경은 roadInputList.data 사용
+  const listToMap = Array.isArray(roadInputList) ? roadInputList : roadInputList?.data || [];
+
 
   return (
     <>
