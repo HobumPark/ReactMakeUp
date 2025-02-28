@@ -15,7 +15,7 @@ const ProtectedRoutes = () => {
     userID: user_id,
   });
 
-  const { checkStatus } = useAuth({});
+  const { checkStatus, handleAuthority } = useAuth({});
 
   const [optionParams, setOptionParams] = useState("upper-code=021&upper-code=ORG");
   const { commonListData } = useCommonCodes({ optionParams });
@@ -41,6 +41,7 @@ const ProtectedRoutes = () => {
   useEffect(() => {
     initLang();
     checkStatus();
+    handleAuthority();
   }, []);
 
   const isDashboard = location.pathname.startsWith("/dashboard");
