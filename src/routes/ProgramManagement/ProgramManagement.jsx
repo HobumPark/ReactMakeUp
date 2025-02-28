@@ -152,9 +152,6 @@ const ProgramManagement = () => {
     usage: null,
     eng: null,
     ind: null,
-    kor: null,
-    language4: null,
-    language5: null,
     sort_order: null
   });
   
@@ -167,9 +164,6 @@ const ProgramManagement = () => {
       usage: '',
       eng: '',
       ind: '',
-      kor: '',
-      language4: '',
-      language5: '',
       sort_order: '',
       programType:''
     });
