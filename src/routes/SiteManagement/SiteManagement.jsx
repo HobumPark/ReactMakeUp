@@ -210,15 +210,6 @@ const SiteManagement = () => {
     index: "site_id", // index 필드를 지정하여 행을 고유하게 식별  
   };
 
-  /*
-  const logData = [
-    { label: "등록자", value: "김철수" },
-    { label: "등록 시간", value: "02-22-2022 12:02:47 " },
-    { label: "수정자", value: "박철수" },
-    { label: "수정 시간", value: "02-23-2022 12:02:47 " },
-  ];
-  */
-
   //입력용 road 목록
   const [roadInputList, setRoadInputList] = useState([]);
 
@@ -726,7 +717,7 @@ const SiteManagement = () => {
 
   //등록버튼 클릭시
   const handleRegistButtonClick = async () => {
-    alert('regist!');
+    //alert('regist!');
   
     // 입력폼 검사
     const isSiteRoadInputFormValid = siteRoadInputFormCheck();
@@ -857,14 +848,14 @@ const SiteManagement = () => {
   const handleConfirmButtonClick = () => {
       //alert('confirm!')
       //추가할때
-      alert('수정 작업진행')
+      //alert('진행')
       
       const updatedSiteInputFormValues = {
         ...siteInputFormValues
       }
       setSiteInputFormValues({...siteInputFormValues})
       
-      alert('변경될값 확인')
+      //alert('변경될값 확인')
       const siteId = updatedSiteInputFormValues.site_id
       console.log('변경될값 확인')
       console.log(updatedSiteInputFormValues)
@@ -880,23 +871,7 @@ const SiteManagement = () => {
       console.log(siteRoadInfo)
       updateSiteRoad(siteRoadInfo)
       tbRef.current.deselectRow();
-      /*
-      updateSite(updatedSiteInputFormValues)
 
-      //접근로 관련 정보도 수정
-      console.log('접근로 정보 수정전 출력확인')
-      console.log(roadInputList)
-      
-       // 각 접근로 항목을 순차적으로 updateRoad 호출
-      if (roadInputList && roadInputList.length > 0) {
-        roadInputList.forEach((roadItem) => {
-          // 각 roadItem을 updateRoad로 전달
-          console.log('접근로 수정!')
-          console.log(roadItem)
-          updateRoad(roadItem); // 이 부분에서 각 roadItem을 전달하고 수정 작업 진행
-        });
-      }
-      */
   }
   
   //취소 버튼 클릭시
