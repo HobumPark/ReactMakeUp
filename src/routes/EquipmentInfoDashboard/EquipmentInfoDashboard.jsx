@@ -35,6 +35,7 @@ import IconCameraVideo from "../../assets/icon/icon-camera-video.svg";
 import VideoRecord from "../../assets/icon/icon-video.svg";
 import IconTemp from "../../assets/icon/icon-temp.svg";
 import IconHum from "../../assets/icon/icon-hum.svg";
+import IconTempHum from "../../assets/icon/icon-db-temp-hum.svg";
 
 // ini copmponent proggresbar ya
 const ProgressBar = ({ label, percentage, showLabel = true }) => {
@@ -166,83 +167,86 @@ const EquipmentInfoDashboard = () => {
                 <span className="title3bold text-text-white">함체 현황</span>
               </div>
               <div className="w-full h-[calc(100%-30px)] grid grid-cols-2 gap-[8px]  overflow-auto p-[10px]">
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[4px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[4px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <img src={IconPower} alt="" />
-                      <span className="title3bold text-text-danger-400">
-                        OFF
-                      </span>
-                    </div>
-                    <div className="ml-auto">
-                      <img src={SignalAbnormal} alt="" srcset="" />
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconPower}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <span className="title2bold text-text-white">Power</span>
                     </div>
                   </div>
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="title3bold text-text-white">OFF</span>
-                    </div>
-                    <div className="ml-auto">
-                      <span className="title3bold text-text-white">
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                      <span className="title2bold text-text-danger-400">
+                        OFF
+                      </span>
+                      <span className="title2bold text-text-white">
                         199 Volt
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[4px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-col gap-[8px] items-start">
-                      <div className="flex flex-row w-fit gap-[8px] items-center">
-                        <img src={IconNetwork} alt="" srcset="" />
-                        <span className="title3bold text-text-white">ON</span>
-                      </div>
-                      <span className="title3bold text-text-white">
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconNetwork}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <span className="title2bold text-text-white">
                         Network
                       </span>
                     </div>
-                    <div className="ml-auto">
-                      <img src={SignalNormal} alt="" />
-                    </div>
                   </div>
-                </div>
-
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[4px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <img src={IconPower} alt="" />
-                    </div>
-                    <div className="ml-auto">
-                      <span className="title3bold text-text-danger-400">
-                        Abnormal
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="title3bold text-text-white">
-                        Temp / Hum
-                      </span>
-                    </div>
-                    <div className="ml-auto flex flex-row gap-[5px]">
-                      <span className="body2bold text-text-white">75°C</span>
-                      <span className="body2bold text-text-white">/</span>
-                      <span className="body2bold text-text-danger-400">
-                        50%
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                      <span className="title2bold text-text-danger-400">
+                        OFF
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[4px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-col gap-[8px] items-start">
-                      <div className="flex flex-row w-fit gap-[8px] items-center">
-                        <img src={IconHeater} alt="" srcset="" />
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconTempHum}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <div className="flex flex-col">
+                        <span className="title2bold text-text-white">Temp</span>
+                        <span className="title2bold text-text-white">Hum</span>
                       </div>
-                      <span className="title3bold text-text-white">Heater</span>
                     </div>
-                    <div className="ml-auto">
+                  </div>
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                      <span className="title2bold text-[#8AC63F]">75°C </span>
+                      <span className="title2bold text-text-white"> 50%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconHeater}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <span className="title2bold text-text-white">Heater</span>
+                    </div>
+                  </div>
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
                       <div
                         className={`w-14 h-8 flex items-center px-1 rounded-full cursor-pointer transition-all duration-300 ${
                           isOn ? "bg-[#8AC63F]" : "bg-[#BBC0C7]"
@@ -259,40 +263,15 @@ const EquipmentInfoDashboard = () => {
                   </div>
                 </div>
 
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[4px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-col gap-[8px] items-start">
-                      <div className="flex flex-row w-fit gap-[8px] items-center">
-                        <img src={IconDoorOpen} alt="" srcset="" />
-                      </div>
-                      <span className="title3bold text-text-white">
-                        Door Open
-                      </span>
-                    </div>
-                    <div className="ml-auto flex flex-row items-center h-full gap-[5px]">
-                      <div className="bg-[#31373E] p-[6px] gap-[5px] w-full h-full flex items-center flex-col rounded-[5px]">
-                        <span className="body2 text-text-white">Front</span>
-                        <span className="body2bold text-text-danger-400 ">
-                          Open
-                        </span>
-                      </div>
-                      <div className="bg-[#31373E] p-[6px] gap-[5px] w-full h-full flex items-center flex-col rounded-[5px]">
-                        <span className="body2 text-text-white">Front</span>
-                        <span className="body2bold text-text-white ">Open</span>
-                      </div>
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img src={IconFan} alt="" className="w-[35px] h-[35px]" />
+                      <span className="title2bold text-text-white">Fan</span>
                     </div>
                   </div>
-                </div>
-
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[4px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-col gap-[8px] items-start">
-                      <div className="flex flex-row w-fit gap-[8px] items-center">
-                        <img src={IconFan} alt="" srcset="" />
-                      </div>
-                      <span className="title3bold text-text-white">Fan</span>
-                    </div>
-                    <div className="ml-auto">
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
                       <div
                         className={`w-14 h-8 flex items-center px-1 rounded-full cursor-pointer transition-all duration-300 ${
                           isOnFan ? "bg-[#8AC63F]" : "bg-[#BBC0C7]"
@@ -309,27 +288,48 @@ const EquipmentInfoDashboard = () => {
                   </div>
                 </div>
 
-                <div className="bx-card-status w-full h-full col-span-2 row-span-4 justify-center flex flex-col gap-[5px] px-[10px] py-[4px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <img src={IconEdge} alt="" />
-                      <span className="title3bold text-text-white">OFF</span>
-                    </div>
-                    <div className="ml-auto">
-                      <img src={SignalAbnormal} alt="" srcset="" />
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconDoorOpen}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <span className="title2bold text-text-white">
+                        Door Open
+                      </span>
                     </div>
                   </div>
+                  <div className="flex w-fit flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto w-full flex flex-col justify-center items-center bg-bg-grey-500 rounded-[5px] p-[5px]">
+                      <span className="title3 text-text-white">OFF</span>
+                      <span className="title3bold text-text-danger-400 ">
+                        Open
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bx-card-status w-full h-full col-span-2 row-span-4 justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
                     <div className="flex flex-row gap-[8px] items-center">
-                      <span className="title3bold text-text-white">Edge</span>
+                      <img
+                        src={IconEdge}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <span className="title2bold text-text-white">Edge</span>
                     </div>
-                    <div className="ml-auto">
+                    <div className="ml-auto flex flex-col  gap-[5px] justify-end items-end">
+                      <span className="title2bold text-text-white">ON</span>
                       <button className="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
                         Restart
                       </button>
                     </div>
                   </div>
-                  <div className="_bxStorage flex flex-col gap-[5px]">
+
+                  <div className="_bxStorage flex flex-col justify-around h-full gap-[5px]">
                     <ProgressBar label="CPU" percentage={40} />
                     <ProgressBar label="RAM" percentage={60} />
                     <ProgressBar label="Storage" percentage={90} />
@@ -349,149 +349,163 @@ const EquipmentInfoDashboard = () => {
                 <span className="title3bold text-text-white">총 4개</span>
               </div>
               <div className="w-full h-[calc(100%-30px)] grid grid-cols-1 gap-[8px]  overflow-auto p-[10px]">
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[3px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <img src={IconCameraVideo} alt="" />
-                      <span className="title3bold text-text-white">OFF</span>
-                    </div>
-                    <div className="ml-auto">
-                      <img src={SignalNormal} alt="" srcset="" />
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconCameraVideo}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <div className="flex flex-col">
+                        <span className="title2bold text-text-white">
+                          BXID0010 | 남쪽 접근로{" "}
+                        </span>
+                        <span className="title2 text-text-white">
+                          2025-01-20 12:30:00
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="body2bold text-text-white">
-                        BXID0010 | 남쪽 접근로{" "}
-                      </span>
-                    </div>
-                    <div className="ml-auto flex flex-row gap-[5px]">
-                      <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                        <img src={VideoRecord} alt="" />
-                      </button>
-                      <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                        Restart
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="body2 text-text-white">
-                        2025-01-20 12:30:00
-                      </span>
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                      <span className="title2bold text-text-white">ON </span>
+                      <div className="ml-auto flex flex-row gap-[5px]">
+                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          <img src={VideoRecord} alt="" />
+                        </button>
+                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          Restart
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[3px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <img src={IconCameraVideo} alt="" />
-                      <span className="title3bold text-text-danger-400">
-                        OFF
-                      </span>
-                    </div>
-                    <div className="ml-auto">
-                      <img src={SignalAbnormal} alt="" srcset="" />
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconCameraVideo}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <div className="flex flex-col">
+                        <span className="title2bold text-text-white">
+                          BXID0010 | 남쪽 접근로{" "}
+                        </span>
+                        <span className="title2 text-text-white">
+                          2025-01-20 12:30:00
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="body2bold text-text-white">
-                        BXID0010 | 남쪽 접근로{" "}
-                      </span>
-                    </div>
-                    <div className="ml-auto flex flex-row gap-[5px]">
-                      <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                        <img src={VideoRecord} alt="" />
-                      </button>
-                      <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                        Restart
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="body2 text-text-white">
-                        2025-01-20 12:30:00
-                      </span>
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                      <span className="title2bold text-text-white">ON </span>
+                      <div className="ml-auto flex flex-row gap-[5px]">
+                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          <img src={VideoRecord} alt="" />
+                        </button>
+                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          Restart
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[3px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <img src={IconCameraVideo} alt="" />
-                      <span className="title3bold text-text-danger-400">
-                        OFF
-                      </span>
-                    </div>
-                    <div className="ml-auto">
-                      <img src={SignalAbnormal} alt="" srcset="" />
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconCameraVideo}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <div className="flex flex-col">
+                        <span className="title2bold text-text-white">
+                          BXID0010 | 남쪽 접근로{" "}
+                        </span>
+                        <span className="title2 text-text-white">
+                          2025-01-20 12:30:00
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="body2bold text-text-white">
-                        BXID0010 | 남쪽 접근로{" "}
-                      </span>
-                    </div>
-                    <div className="ml-auto flex flex-row gap-[5px]">
-                      <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                        <img src={VideoRecord} alt="" />
-                      </button>
-                      <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                        Restart
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="body2 text-text-white">
-                        2025-01-20 12:30:00
-                      </span>
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                      <span className="title2bold text-text-white">ON </span>
+                      <div className="ml-auto flex flex-row gap-[5px]">
+                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          <img src={VideoRecord} alt="" />
+                        </button>
+                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          Restart
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="bx-card-status w-full h-full justify-center flex flex-col gap-[5px] px-[10px] py-[3px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <img src={IconCameraVideo} alt="" />
-                      <span className="title3bold text-text-danger-400">
-                        OFF
-                      </span>
-                    </div>
-                    <div className="ml-auto">
-                      <img src={SignalAbnormal} alt="" srcset="" />
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconCameraVideo}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <div className="flex flex-col">
+                        <span className="title2bold text-text-white">
+                          BXID0010 | 남쪽 접근로{" "}
+                        </span>
+                        <span className="title2 text-text-white">
+                          2025-01-20 12:30:00
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="body2bold text-text-white">
-                        BXID0010 | 남쪽 접근로{" "}
-                      </span>
-                    </div>
-                    <div className="ml-auto flex flex-row gap-[5px]">
-                      <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                        <img src={VideoRecord} alt="" />
-                      </button>
-                      <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                        Restart
-                      </button>
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                      <span className="title2bold text-text-white">ON </span>
+                      <div className="ml-auto flex flex-row gap-[5px]">
+                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          <img src={VideoRecord} alt="" />
+                        </button>
+                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          Restart
+                        </button>
+                      </div>
                     </div>
                   </div>
-
+                </div>
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[8px] items-center">
-                      <span className="body2 text-text-white">
-                        2025-01-20 12:30:00
-                      </span>
+                    <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconCameraVideo}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <div className="flex flex-col">
+                        <span className="title2bold text-text-white">
+                          BXID0010 | 남쪽 접근로{" "}
+                        </span>
+                        <span className="title2 text-text-white">
+                          2025-01-20 12:30:00
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                      <span className="title2bold text-text-white">ON </span>
+                      <div className="ml-auto flex flex-row gap-[5px]">
+                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          <img src={VideoRecord} alt="" />
+                        </button>
+                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                          Restart
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -528,13 +542,13 @@ const EquipmentInfoDashboard = () => {
                       <span className="text-text-white body2  min-w-[160px]">
                         함체 ID
                       </span>
-                      <span className="text-text-white body2bold">01111</span>
+                      <span className="text-text-white title3bold">01111</span>
                     </div>
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
                       <span className="text-text-white body2  min-w-[160px]">
                         명칭
                       </span>
-                      <span className="text-text-white body2bold">
+                      <span className="text-text-white title3bold">
                         BOXID10010
                       </span>
                     </div>
@@ -542,7 +556,7 @@ const EquipmentInfoDashboard = () => {
                       <span className="text-text-white body2  min-w-[160px]">
                         매핑 사이트
                       </span>
-                      <span className="text-text-white body2bold">
+                      <span className="text-text-white title3bold">
                         삼성역 사거리 교차로(SITEID0001)
                       </span>
                     </div>
@@ -550,7 +564,7 @@ const EquipmentInfoDashboard = () => {
                       <span className="text-text-white body2  min-w-[160px]">
                         설치 위/경도
                       </span>
-                      <span className="text-text-white body2bold">
+                      <span className="text-text-white title3bold">
                         5.555323232 / 27.21829828
                       </span>
                     </div>
@@ -558,20 +572,23 @@ const EquipmentInfoDashboard = () => {
                       <span className="text-text-white body2  min-w-[160px]">
                         설치 일시
                       </span>
-                      <span className="text-text-white body2bold">
+                      <span className="text-text-white title3bold">
                         2025.01.20
                       </span>
                     </div>
                   </div>
+                  <div className="w-full flex">
 
                   <div className="_lineDivider w-full h-[0.5px] flex bg-[#CACACA]"></div>
+                  </div>
+
 
                   <div className="_groupDetailInfo w-full grid grid-cols-3 gap-x-[5px] gap-y-[5px] ">
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
                       <span className="text-text-white body2  min-w-[160px]">
                         Edge IP
                       </span>
-                      <span className="text-text-white body2bold">
+                      <span className="text-text-white title3bold">
                         192.168.1.1
                       </span>
                     </div>
@@ -579,7 +596,7 @@ const EquipmentInfoDashboard = () => {
                       <span className="text-text-white body2  min-w-[160px]">
                         Switch IP
                       </span>
-                      <span className="text-text-white body2bold">
+                      <span className="text-text-white title3bold">
                         192.168.1.1
                       </span>
                     </div>
@@ -587,7 +604,7 @@ const EquipmentInfoDashboard = () => {
                       <span className="text-text-white body2  min-w-[160px]">
                         Router IP
                       </span>
-                      <span className="text-text-white body2bold">
+                      <span className="text-text-white title3bold">
                         192.168.1.1
                       </span>
                     </div>
@@ -595,7 +612,7 @@ const EquipmentInfoDashboard = () => {
                       <span className="text-text-white body2  min-w-[160px]">
                         설치 위/경도
                       </span>
-                      <span className="text-text-white body2bold">
+                      <span className="text-text-white title3bold">
                         5.555323232 / 27.21829828
                       </span>
                     </div>
@@ -603,7 +620,7 @@ const EquipmentInfoDashboard = () => {
                       <span className="text-text-white body2  min-w-[160px]">
                         Env Board Mac address
                       </span>
-                      <span className="text-text-white body2bold">
+                      <span className="text-text-white title3bold">
                         2025.01.20
                       </span>
                     </div>
@@ -611,7 +628,7 @@ const EquipmentInfoDashboard = () => {
                 </div>
               </div>
 
-              <div className="_contentDetailCenter bg-[#212527] w-full flex-1/10 flex-col h-full rounded-[5px] overflow-hidden">
+              <div className="_contentDetailCenter bg-[#212527] w-full flex-1 flex-col h-full rounded-[5px] overflow-hidden">
                 <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                   <span className="title3bold text-text-white">온/습도</span>
                 </div>
@@ -630,9 +647,7 @@ const EquipmentInfoDashboard = () => {
                 <span className="title3bold text-text-white">
                   금일 이벤트 현황
                 </span>
-                <span className="title3bold text-text-white">
-                  105
-                </span>
+                <span className="title3bold text-text-white">105</span>
               </div>
               <div className="w-full grid grid-cols-6 gap-[5px] items-center p-[10px]">
                 <div className="bx-card-status col-span-3 w-full h-full justify-center items-center flex flex-col gap-[5px] p-[10px] border border-[#4D5152] bg-[#2D3238]">
