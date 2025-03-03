@@ -41,7 +41,6 @@ const ProtectedRoutes = () => {
   useEffect(() => {
     initLang();
     checkStatus();
-    handleAuthority();
   }, []);
 
   const isDashboard = location.pathname.startsWith("/dashboard");
@@ -54,7 +53,7 @@ const ProtectedRoutes = () => {
     
     <div className="wrapper">
     {/* {!isDashboard && <Sidebar userInfo={detailUserData} commonData={commonListData} />} */}
-         <Sidebar userInfo={detailUserData} commonData={commonListData}/>
+         <Sidebar userInfo={detailUserData} commonData={commonListData} navbarList={handleAuthority}/>
       <div className="article-content-right">
         
       {isLanguageReady && <Outlet />}

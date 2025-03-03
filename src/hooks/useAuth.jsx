@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { URLS, APIS } from "../config/urls.js";
@@ -39,18 +39,16 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
     });
   };
 
-  const handleAuthority = async () => {
-    const requestURL = `${URLS.BACK_DSH}${APIS.accessMenu}`;
-    try {
-      const response = await reqGet(requestURL); 
-      return response;  
-    } catch (error) {
-      console.error("Error fetching authority data:", error);
-      return null; 
-    }
-  };
+  const { data: handleAuthority } = useQuery({
+    queryKey: ["navbarList"],
+    queryFn: async () => {
+      const requestURL = `${URLS.BACK_DSH}${APIS.accessMenu}`;
+      const response = await reqGet(requestURL);
+      return response;
+    },
+    staleTime: 1000 * 60 * 1,
+  });
   
-
 
   const getIsLogin = () => {
     if (sessionStorage.getItem("isLogin") || localStorage.getItem("isLogin")) {

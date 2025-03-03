@@ -39,6 +39,7 @@ const useProgram = ({
         new NoticeMessage(t('msg > registration success'), {
             callback() {
               queryClient.invalidateQueries(["groupProgramsData", id]);
+              queryClient.invalidateQueries(["navbarList"]);
               onCreateSuccess(responseData);
             }
           });

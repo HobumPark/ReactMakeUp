@@ -46,6 +46,7 @@ const useUserAuthority = ({
             onDeleteSuccess();
             queryClient.invalidateQueries(["authorityUserAssign", id]);
             queryClient.invalidateQueries(["authorityUserInfo", id]);
+            queryClient.invalidateQueries(["navbarList"]);
           }
         });
       },
@@ -62,6 +63,7 @@ const useUserAuthority = ({
         new NoticeMessage(t('msg > registration success'), {
           callback() {
             queryClient.invalidateQueries(["userAuthenticated", queryParams]);
+            queryClient.invalidateQueries(["navbarList"]);
             onCreateSuccess(responseData);
           }
         });

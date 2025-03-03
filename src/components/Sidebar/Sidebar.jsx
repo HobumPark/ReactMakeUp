@@ -14,7 +14,7 @@ import Common from '../../utils/standard';
 import i18n from '../../utils/i18n';
 
 
-const Sidebar = ({ userInfo, commonData }) => {
+const Sidebar = ({ userInfo, commonData, navbarList }) => {
   const { t } = useTranslation();
   const { handleLogout } = useAuth();
   const [isActive, setIsActive] = useState(false);
@@ -51,41 +51,65 @@ const Sidebar = ({ userInfo, commonData }) => {
   }, [i18n.language]);
 
 
-  const categories = [
-    // { name: "dashboard", label: "Dashboard" },
-    { name: "system", label: '시스템 관리' },
-    { name: "asset", label: '자산 관리' },
-    { name: "site", label: "사이트 관리" },
-    { name: "statistic", label: "통계" },
-  ]
 
-  const links = [
-    // {id: "main-dashboard", label: "Main dashboard", path: "/dashboard/main-dashboard", category: "dashboard"},
-    // {id: "crossroad", label: "Cross Road", path: "/dashboard/crossroad", category: "dashboard"},
-    // {id: "equipment-info", label: "Equipment-info", path: "/dashboard/equipment-info", category: "dashboard"},
-    // {id: "accessroad", label: "Access Road", path: "/dashboard/accessroad", category: "dashboard"},
-    // {id: "crosswalk", label: "Cross Walk", path: "/dashboard/crosswalk", category: "dashboard"},
+  // const categories = [
+  //   { name: "dashboard", label: "Dashboard", path: "/dashboard/main-dashboard" },
+  //   { name: "system", label: '시스템 관리' },
+  //   { name: "asset", label: '자산 관리' },
+  //   { name: "site", label: "사이트 관리" },
+  //   { name: "statistic", label: "통계" },
+  // ]
+  const programOrder = ["DASHBOARD", "SYSTEM", "ASSET", "STATISTICS"];
+
+  const categories = navbarList
+    ?.filter(item => programOrder.includes(item.program_id))  
+    ?.sort((a, b) => programOrder.indexOf(a.program_id) - programOrder.indexOf(b.program_id)) 
+    ?.map(item => ({
+      name: item.program_id,
+      label: item.lang,
+      path: item.url || item.urls?.[0] 
+    }));
+  
+
+  const links = navbarList?.flatMap(item =>
+    item.child_program_ids?.map((childId, index) => ({
+      id: childId , 
+      label: item.langs[index], 
+      path: item.urls[index] ,
+      category: item.program_id,
+    }))
+  );
+  
+  console.log(navbarList);
+  
+
+  // const links = [
+  //   // {id: "main-dashboard", label: "Main dashboard", path: "/dashboard/main-dashboard", category: "dashboard"},
+  //   // {id: "crossroad", label: "Cross Road", path: "/dashboard/crossroad", category: "dashboard"},
+  //   // {id: "equipment-info", label: "Equipment-info", path: "/dashboard/equipment-info", category: "dashboard"},
+  //   // {id: "accessroad", label: "Access Road", path: "/dashboard/accessroad", category: "dashboard"},
+  //   // {id: "crosswalk", label: "Cross Walk", path: "/dashboard/crosswalk", category: "dashboard"},
 
 
 
-    { id: "code", label: '코드 관리', path: "/system-management/code", category: "system", },
-    { id: "group", label: '그룹 관리', path: "/system-management/group", category: "system", },
-    { id: "user", label: '유저 관리', path: "/system-management/user", category: "system", },
-    { id: "program", label: '프로그램 관리', path: "/system-management/program", category: "system", },
-    { id: "authority", label: '권한 관리', path: "/system-management/authority", category: "system", },
+  //   { id: "code", label: '코드 관리', path: "/system-management/code", category: "system", },
+  //   { id: "group", label: '그룹 관리', path: "/system-management/group", category: "system", },
+  //   { id: "user", label: '유저 관리', path: "/system-management/user", category: "system", },
+  //   { id: "program", label: '프로그램 관리', path: "/system-management/program", category: "system", },
+  //   { id: "authority", label: '권한 관리', path: "/system-management/authority", category: "system", },
 
-    {id: "box", label: '함체', path: "/asset-management/box", category: "asset"},
-    {id: "detector", label: '검지기', path: "/asset-management/detector", category: "asset"},
-    {id: "facility", label: '시설물', path: "/asset-management/facility", category: "asset"},
+  //   {id: "box", label: '함체', path: "/asset-management/box", category: "asset"},
+  //   {id: "detector", label: '검지기', path: "/asset-management/detector", category: "asset"},
+  //   {id: "facility", label: '시설물', path: "/asset-management/facility", category: "asset"},
 
 
-    {id: "site", label: "사이트", path: "/site-management/site", category: "site"},
+  //   {id: "site", label: "사이트", path: "/site-management/site", category: "site"},
     
     
-    {id: "communication-history", label: "소통정보 이력", path: "/statistic/communication-history", category: "statistic"},
-    {id: "communication-statistic", label: "소통정보 통계", path: "/statistic/communication-statistic", category: "statistic"},
-    {id: "sudden-event", label: "돌발이벤트", path: "/statistic/sudden-event", category: "statistic"}
-  ];
+  //   {id: "communication-history", label: "소통정보 이력", path: "/statistic/communication-history", category: "statistic"},
+  //   {id: "communication-statistic", label: "소통정보 통계", path: "/statistic/communication-statistic", category: "statistic"},
+  //   {id: "sudden-event", label: "돌발이벤트", path: "/statistic/sudden-event", category: "statistic"}
+  // ];
   
   const [openMenu, setOpenMenu] = useState("");
 
@@ -118,11 +142,15 @@ const Sidebar = ({ userInfo, commonData }) => {
 
   useEffect(() => {
     const currentPath = location.pathname;
-    const matchedLink = links.find((link) => link.path === currentPath);
+    const matchedLink = links?.find((link) => link.path === currentPath);
     if (matchedLink) {
       setOpenMenu(matchedLink.category);
     }
   }, [location.pathname]);
+
+
+  const dashboardCategory = categories?.find(category => category.name === "DASHBOARD");
+
 
   return (
     <>
@@ -156,49 +184,62 @@ const Sidebar = ({ userInfo, commonData }) => {
 
         <div className={classes["box-selection-toggle"]}>
           <div className={classes["box-toggle-dropdown"]}>
-          <div className={classes["box-system-management"]}>
-            <div className= {classes["title-system-management"]}>
-            <span  onClick={() => {
-                    window.open("/dashboard/main-dashboard", "_blank");
-                  }}>Main Dashboard</span>
-              </div> 
-              {categories.map((category) => (
-                <div key={category.name}>
+          {(categories && categories.length > 0 && links && links.length > 0) && (
+              <div className={classes["box-system-management"]}>
+                <div className={classes["title-system-management"]}>
                   <span
-                    className={`${classes["title-system-management"]} ${
-                      openMenu === category.name ? classes.active : ""
-                    }`}
-                    onClick={() => toggleVisibility(category.name)}
+                    onClick={() => {
+                      if (dashboardCategory) {
+                        window.open(dashboardCategory.path, "_blank");
+                      }
+                    }}
                   >
-                    {category.label}
-                    <img
-                      className={classes["menu-dropdown"]}
-                      src={dropdownArrow}
-                      alt="Dropdown"
-                    />
+                    {dashboardCategory?.label}
                   </span>
-                  {openMenu === category.name && (
-                    <div className={classes["content-system-management"]}>
-                      {links
-                        .filter((link) => link.category === category.name)
-                        .map((link) => (
-                          <NavLink
-                            key={link.id}
-                            to={link.path}
-                            className={`${classes.link} ${
-                              isLinkActive(link.path) ? classes.active : ""
-                            }`}
-                          >
-                            <li className={classes["list-system-management"]}>
-                              {link.label}
-                            </li>
-                          </NavLink>
-                        ))}
-                    </div>
-                  )}
                 </div>
-              ))}
-            </div>
+
+                {/* Render categories only if categories is not null or undefined */}
+                {categories.slice(1).map((category) => (
+                  <div key={category.name}>
+                    <span
+                      className={`${classes["title-system-management"]} ${
+                        openMenu === category.name ? classes.active : ""
+                      }`}
+                      onClick={() => toggleVisibility(category.name)}
+                    >
+                      {category.label}
+                      <img
+                        className={classes["menu-dropdown"]}
+                        src={dropdownArrow}
+                        alt="Dropdown"
+                      />
+                    </span>
+
+                    {openMenu === category.name && (
+                      <div className={classes["content-system-management"]}>
+                        {/* Render links only if links is not null or undefined */}
+                        {links
+                          .filter((link) => link.category === category.name)
+                          .map((link) => (
+                            <NavLink
+                              key={link.id}
+                              to={link.path}
+                              className={`${classes.link} ${
+                                isLinkActive(link.path) ? classes.active : ""
+                              }`}
+                            >
+                              <li className={classes["list-system-management"]}>
+                                {link.label}
+                              </li>
+                            </NavLink>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* <div className={classes["box-system-management"]}>
               <span
                 className={`${classes["title-system-management"]} ${isVisible ? classes.active : ''}`}
