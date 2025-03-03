@@ -52,7 +52,7 @@ const Sidebar = ({ userInfo, commonData }) => {
 
 
   const categories = [
-    { name: "dashboard", label: "Dashboard" },
+    // { name: "dashboard", label: "Dashboard" },
     { name: "system", label: '시스템 관리' },
     { name: "asset", label: '자산 관리' },
     { name: "site", label: "사이트 관리" },
@@ -60,11 +60,11 @@ const Sidebar = ({ userInfo, commonData }) => {
   ]
 
   const links = [
-    {id: "main-dashboard", label: "Main dashboard", path: "/dashboard/main-dashboard", category: "dashboard"},
-    {id: "crossroad", label: "Cross Road", path: "/dashboard/crossroad", category: "dashboard"},
-    {id: "equipment-info", label: "Equipment-info", path: "/dashboard/equipment-info", category: "dashboard"},
-    {id: "accessroad", label: "Access Road", path: "/dashboard/accessroad", category: "dashboard"},
-    {id: "crosswalk", label: "Cross Walk", path: "/dashboard/crosswalk", category: "dashboard"},
+    // {id: "main-dashboard", label: "Main dashboard", path: "/dashboard/main-dashboard", category: "dashboard"},
+    // {id: "crossroad", label: "Cross Road", path: "/dashboard/crossroad", category: "dashboard"},
+    // {id: "equipment-info", label: "Equipment-info", path: "/dashboard/equipment-info", category: "dashboard"},
+    // {id: "accessroad", label: "Access Road", path: "/dashboard/accessroad", category: "dashboard"},
+    // {id: "crosswalk", label: "Cross Walk", path: "/dashboard/crosswalk", category: "dashboard"},
 
 
 
@@ -157,6 +157,11 @@ const Sidebar = ({ userInfo, commonData }) => {
         <div className={classes["box-selection-toggle"]}>
           <div className={classes["box-toggle-dropdown"]}>
           <div className={classes["box-system-management"]}>
+            <div className= {classes["title-system-management"]}>
+            <span  onClick={() => {
+                    window.open("/dashboard/main-dashboard", "_blank");
+                  }}>Main Dashboard</span>
+              </div> 
               {categories.map((category) => (
                 <div key={category.name}>
                   <span
