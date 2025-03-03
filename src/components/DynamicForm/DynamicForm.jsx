@@ -156,8 +156,6 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   required={true}
                   styleLabel="w-[124px]!"
                   showInput={false}
-                  name="crosswalk"
-                  onChange={handleRoadInputChange}
                 >
                   <div className="flex w-full flex-row gap-x-2">
                     <DetailForm
@@ -166,6 +164,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       label="유형"
                       showTitle={false}
                       required={true}
+                      name="crosswalk"
                       optionSelect={  crosswalk=='105001'?
                       [
                         { label: "존재", value: "105001" },
@@ -175,7 +174,8 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                         { label: "미존재", value: "105002" },
                         { label:"존재", value:"105001"}
                       ]}
-                      defaultValue="105002" // 기본값 "미존재" 선택
+                      value={crosswalk || "105002" } // 기본값 "미존재" 선택
+                      onChange={handleRoadInputChange}
                       //onChange={(e) => console.log("Selected:", e.target.value)}
                     />
                   </div>
@@ -256,12 +256,18 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
               showInput={false}
             >
               <div className="flex w-full flex-row gap-x-2">
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub1" onChange={handleRoadInputChange} value={directionValues.firstDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub2" onChange={handleRoadInputChange} value={directionValues.secondDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub3" onChange={handleRoadInputChange} value={directionValues.thirdDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub4" onChange={handleRoadInputChange} value={directionValues.fourthDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub5" onChange={handleRoadInputChange} value={directionValues.fifthDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub6" onChange={handleRoadInputChange} value={directionValues.sixthDirection}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub1" 
+                onChange={handleRoadInputChange} value={directionValues.firstDirection}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub2" 
+                onChange={handleRoadInputChange} value={directionValues.secondDirection}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub3" 
+                onChange={handleRoadInputChange} value={directionValues.thirdDirection}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub4" 
+                onChange={handleRoadInputChange} value={directionValues.fourthDirection}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub5" 
+                onChange={handleRoadInputChange} value={directionValues.fifthDirection}/>
+                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub6" 
+                onChange={handleRoadInputChange} value={directionValues.sixthDirection}/>
               </div>
             </DetailForm>
           </div>
