@@ -835,7 +835,7 @@ const SiteManagement = () => {
       updateSiteRoad(siteRoadInfo)
       //tbRef.current.deselectRow();
       setTimeout(()=>{
-        alert('reload')
+        //alert('reload')
         window.location.reload()
       },1000)
      
