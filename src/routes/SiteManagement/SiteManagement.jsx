@@ -401,6 +401,8 @@ const SiteManagement = () => {
 
     // 복사본을 만들어서 해당 index에 있는 원소를 업데이트
     const updatedRoadInputList = [...roadInputList]; // 기존 리스트 복사
+    console.log('initial updatedRoadInputList')
+    console.log(updatedRoadInputList)
     console.log('handleRoadInputChange')
     console.log(e.target.name+' 수정')
     console.log(e.target.value+' 수정')
@@ -410,9 +412,9 @@ const SiteManagement = () => {
         [e.target.name]: e.target.value, // 변경된 값을 넣어줌
     };
 
-    console.log('updatedRoadInputList')
+    console.log('updatedRoadInputList111')
     console.log(updatedRoadInputList)
-    setRoadInputList(updatedRoadInputList);
+    //setRoadInputList(updatedRoadInputList);
 
   // 'incoming_direction_sub1' 부터 'incoming_direction_sub6'까지 값을 검사하여 '|'로 합침
   const directionFields = [
@@ -434,10 +436,10 @@ const SiteManagement = () => {
     if (incomingDirectionValues.length > 0) {
       updatedRoadInputList[index].incoming_direction = incomingDirectionValues.join('|');
     } else {
-      updatedRoadInputList[index].incoming_direction = ''; // 값이 없으면 빈 문자열
+      //updatedRoadInputList[index].incoming_direction = ''; // 값이 없으면 빈 문자열
     }
 
-    console.log('updatedRoadInputList');
+    console.log('updatedRoadInputList222');
     console.log(updatedRoadInputList);
 
     // 변경된 리스트를 상태에 반영
