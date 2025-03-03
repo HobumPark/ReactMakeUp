@@ -350,6 +350,7 @@ const ProgramManagement = () => {
           
         }
         setHasChangesUpdate(false);
+        setHasChangesCreate(false);
         setIsNewClicked(false);
       });
     } else {      

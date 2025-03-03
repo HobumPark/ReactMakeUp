@@ -438,6 +438,7 @@ const FacilityManagement = () => {
         } 
         setDisabledForm(false);
         setHasChangesUpdate(false);
+        setHasChangesCreate(false);
         setIsNewClicked(false);
       });
       

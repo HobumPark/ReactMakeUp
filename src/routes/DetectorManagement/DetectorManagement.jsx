@@ -405,6 +405,7 @@ const DetectorManagement = () => {
         setResource(`id=${rowData.detector_id}&resource=detector`);
         setDisabledForm(false);
         setHasChangesUpdate(false);
+        setHasChangesCreate(false);
         setIsNewClicked(false);
       });
       

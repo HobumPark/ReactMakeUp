@@ -353,6 +353,7 @@ const CodeManagement = () => {
           
         }
         setHasChangesUpdate(false);
+        setHasChangesCreate(false);
         setIsNewClicked(false);
       });
     } else {      

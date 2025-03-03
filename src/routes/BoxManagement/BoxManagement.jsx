@@ -391,6 +391,7 @@ const BoxManagement = () => {
         });
         setDisabledForm(false);
         setHasChangesUpdate(false);
+        setHasChangesCreate(false);
         setIsNewClicked(false);
       });
       

@@ -344,6 +344,7 @@ const updateCallback = () => {
         setDisabledForm(false);
         setDisabledId(true);
         setHasChangesUpdate(false);
+        setHasChangesCreate(false);
         setIsNewClicked(false);
       });
     } else {
