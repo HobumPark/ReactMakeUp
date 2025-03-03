@@ -277,10 +277,10 @@ const SiteManagement = () => {
         incoming_direction_sub5:'', //진입방향5
         incoming_direction_sub6:'', //진입방향6
         incoming_direction:'',//방향 모두 합친 값
-        crosswalk:'105002',//횡단보도 유무
+        crosswalk:'',//횡단보도 유무 - 105002
         crosswalk_length:'',//횡단보도 길이
         crosswalk_width:'',//횡단보도 폭
-        traffic_light:'106002',//보행자 신호등 유무
+        traffic_light:'',//보행자 신호등 유무 - 106002
         mapped_detector:'',//매핑 검지기
         mapped_vms:'', //매핑 전광판
         mapped_speaker:'',//매핑 스피커
@@ -293,8 +293,6 @@ const SiteManagement = () => {
   // road list 삭제
   const deleteDynamicGroup = (mode, road_id, index) => {
     //alert('roadList delete')
-    //const newGroupList = groupList.filter((_, i) => i !== index); 
-    //setGroupList(newGroupList);
     //roadList delete button
     console.log('입력 모드:'+mode)
     console.log('접근로 아이디:'+road_id)
@@ -336,8 +334,7 @@ const SiteManagement = () => {
     address:'',
     lat:'',
     lng:'',
-    type:'102001',
-    type_value:'Intersection',
+    type:'',
     number_road:0,
     mapped_box:'',
     description:'description'
@@ -346,22 +343,15 @@ const SiteManagement = () => {
   // select on change - intersection and crosswalk
   const handleSiteInputChange = (e) => {
     const { name, value } = e.target;
-  
-    // If the number_of_access_roads is being changed, reset the dynamic groups
-    if (name === "number_road") {
-      console.log("number_road")
-      console.log(value)
-      setSiteInputFormValues((prevValues) => ({
-        ...prevValues,
-        [name]: value,
-      }));
+    console.log('handleSiteInputChange')
+    console.log(name)
+    console.log(value)
 
-    } else {
-      setSiteInputFormValues((prevValues) => ({
-        ...prevValues,
-        [name]: value,
-      }));
-    }
+    setSiteInputFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+
 
     if (isNewClicked) {//new버튼 클릭했을때만
       console.log('생성버튼을 누른상태에서 입력변화')
@@ -375,6 +365,7 @@ const SiteManagement = () => {
       
     }
     //setHasChangesUpdate(true); 
+    console.log('siteInputFormValues')
     console.log(siteInputFormValues)
   };
 
@@ -512,8 +503,7 @@ const SiteManagement = () => {
     address: rowData.address,
     lat: rowData.lat,
     lng: rowData.lng,
-    type:'102001',
-    type_value: rowData.type_value || "교차로",
+    type:'',
     number_road: rowData.number_road || "",
     mapped_box: rowData.mapped_box || "",
     description:"description"
@@ -526,41 +516,28 @@ const SiteManagement = () => {
   
   // select site type - Intersection or Crosswalk
   const getSiteTypeOptions = () => {
+    console.log('getSiteTypeOptions')
+    console.log(siteInputFormValues.type)
     if (siteInputFormValues.type === '102001') {
       console.log('Intersection');
 
       return [
-        { label: '교차로', value: '교차로' },
-        { label: '횡단보도', value: '횡단보도' }
+        { label: '교차로', value: '102001' },
+        { label: '횡단보도', value: '102002' }
       ];
     } else if (siteInputFormValues.type === '102002') {
       console.log('Crosswalk');
 
       return [
-        { label: '횡단보도', value: '횡단보도' },
-        { label: '교차로', value: '교차로' }
+        { label: '횡단보도', value: '102002' },
+        { label: '교차로', value: '102001' }
       ];
     }
     return [];
   };
     
-  // Use useEffect to trigger the update when type_value changes
-  useEffect(() => {
-    if (siteInputFormValues.type_value === 'Intersection') {
-      setSiteInputFormValues((prevValues) => ({
-        ...prevValues,
-        type: '102001',
-      }));
-    } else if (siteInputFormValues.type_value === 'Crosswalk') {
-      setSiteInputFormValues((prevValues) => ({
-        ...prevValues,
-        type: '102002',
-      }));
-    }
-  }, [siteInputFormValues.type_value]); // Dependency array ensures this runs when `type_value` changes
 
-  //CRUD Button Group
-  //Button State
+  //CRUD Button Group - Button State
   const [buttonState, setButtonState] = useState({
     confirm: true,
     cancel: true,
@@ -579,7 +556,6 @@ const SiteManagement = () => {
   const [isRequired, setIsRequired] = useState(false);
   const hasChangesUpdateRef = useRef(hasChangesUpdate);
   const hasChangesCreateRef = useRef(hasChangesCreate);
-  const [newId, setNewId] = useState('');
   const [isNewClicked, setIsNewClicked] = useState(false);
 
   //site입력폼 비우기
@@ -591,8 +567,7 @@ const SiteManagement = () => {
       address:'',
       lat:'',
       lng:'',
-      type:'102001',
-      type_value:'Intersection',
+      type:'',
       number_road:0,
       mapped_box:'',
       description:'description'
@@ -683,7 +658,6 @@ const SiteManagement = () => {
       emptyDetail() // 사이트 입력폼 모두 비우기
       setSiteId(null) //사이트 아이디 해제
       
-
       disableConfirmButtons() //확인버튼 비활성화
       disableCancelButtons()//취소버튼 비활성화
       disableDeleteButtons()//삭제버튼 비활성화
@@ -702,8 +676,7 @@ const SiteManagement = () => {
       address:'',
       lat:'',
       lng:'',
-      type:'102001',
-      type_value:'Intersection',
+      type:'',
       number_road:'',
       mapped_box:'',
       description:'description'
@@ -713,7 +686,6 @@ const SiteManagement = () => {
   //등록버튼 클릭시
   const handleRegistButtonClick = async () => {
     //alert('regist!');
-  
     // 입력폼 검사
     const isSiteRoadInputFormValid = siteRoadInputFormCheck();
     if (!isSiteRoadInputFormValid) {
@@ -727,7 +699,6 @@ const SiteManagement = () => {
     //site추가한다음 아이디를 받아서 해야해서... 한번에 처리하는게 불가능할듯
     //site먼저 처리하고 road를 처리할수밖에
     //createSite -> get site id -> create road with site id
-
     try {
       // createSite 호출 후, 결과를 처리하는 방법
       createSite(createSiteFormValues, {
@@ -771,42 +742,42 @@ const SiteManagement = () => {
   
   const siteRoadInputFormCheck = () =>{//사이트 정보, 접근로 정보 입력필드 검사 함수
     // 제외할 필드들
-    const excludedFields = ['site_id', 'mapped_box'];//입력검사시에 제외할 필드 - site check exclude field
+    const excludedFields = ['site_id', 'type', 'number_road', 'mapped_box'];//입력검사시에 제외할 필드 - site check exclude field
     //사이트 아이디는 자동으로 생성됨, 함체정보는 입력하지 않음
 
-    // 사이트정보 입력 폼검사 - 제외할 필드를 제외한 나머지 필드들만 검사 - siteInputForm Check
-    const isEmptyField = Object.keys(siteInputFormValues)
+     // 사이트정보 입력 폼검사 - 제외할 필드를 제외한 나머지 필드들만 검사
+      const emptyFields = Object.keys(siteInputFormValues)
       .filter(key => !excludedFields.includes(key))  // 제외할 필드를 필터링
-      .some(key => siteInputFormValues[key] === null || siteInputFormValues[key] === '');
+      .filter(key => siteInputFormValues[key] === null || siteInputFormValues[key] === '');  // 비어있는 필드만 필터링
 
-    //사이트정보 입력 폼검사 - 값이 모두 채워졌는지 검사한다
-    if (isEmptyField) {
-      //alert('비어있음!')
-      new NoticeMessage(t('모든 필드에 값을 채우세요'));
-      return false;
+    // 비어있는 필드 출력
+    if (emptyFields.length > 0) {
+      console.log('비어있는 필드들:', emptyFields);
+      // 비어있는 필드들의 이름을 알림으로 띄우거나 처리
+      new NoticeMessage(t('다음 필드들이 비어있습니다: ' + emptyFields.join(', ')));
+    } else {
+      console.log('모든 필드가 채워졌습니다.');
     }
 
-    //접근로 갯수 검사 - 접근로 입력 갯수만큼 동적박스가 생성되었는지도 검사해야한다.
-    var roadListLen = roadInputList?.length
-    var number_road = siteInputFormValues?.number_road
-
-    if(number_road > roadListLen){//생성한 접근로 갯수가 부족하면
-      //console.log('접근로 정보를 더 생성하세요!')
-      new NoticeMessage(t('접근로 정보를 더 생성하세요!'));
-      return false
+    // 사이트 정보 입력 폼이 모두 채워졌는지 확인
+    if (emptyFields.length > 0) {
+      new NoticeMessage(t('모든 필드에 값을 채우세요'));
+      return false;  // 비어있는 필드가 있으면 false 리턴
     }
 
     //접근로 입력 갯수만큼 생성된 동적박스에 입력값이 모두 채워졌는지도 검사해야한다.
     const isRoadFieldsFilled = roadInputList?.every((item, index) => {
 
       return Object.entries(item).every(([key, value]) => {
+         // exclude filed dont check - 제외할 필드는 체크하지 않음
+         // like input - disabled={true}
         const excludedFields = ['site_id','road_id', 'mapped_detector', 'mapped_vms', 'mapped_speaker',
           'incoming_direction_sub3','incoming_direction_sub4','incoming_direction_sub5','incoming_direction_sub6'];
         //접근방향 1,2,3,4,5,6 은 모두 채우지 않아도 상관없다. 일단 1,2만 필수 3,4,5,6은 제외시켜둠
         //접근방향 모두 합친값(incoming_direction)은 입력할때마다 새로 갱신
         //road check exclude field
 
-        // 제외할 필드는 체크하지 않음
+        // exclude filed dont check - 제외할 필드는 체크하지 않음
         if (excludedFields.includes(key)) {
           return true;
         }
@@ -823,7 +794,6 @@ const SiteManagement = () => {
     
     console.log("모든 값이 채워졌는지:", isRoadFieldsFilled);
     
-
     if (isRoadFieldsFilled) {
       console.log("모든 입력 값이 채워졌습니다.");
     } else {
@@ -831,8 +801,7 @@ const SiteManagement = () => {
       console.log("입력 값이 부족한 항목이 있습니다.");
       return false
     }
-
-    // 입력이 모두 완료되었으면
+    //input form fully filled completed - 입력이 모두 완료되었으면
     //new NoticeMessage(t('모든 필드가 올바르게 입력되었습니다.'));
     console.log("사이트, 접근로 관련 모든 필드가 올바르게 입력되었습니다.");
 
@@ -842,9 +811,6 @@ const SiteManagement = () => {
 
   const handleConfirmButtonClick = () => {
       //alert('confirm!')
-      //추가할때
-      //alert('진행')
-      
       const updatedSiteInputFormValues = {
         ...siteInputFormValues
       }
@@ -852,7 +818,7 @@ const SiteManagement = () => {
       
       //alert('변경될값 확인')
       const siteId = updatedSiteInputFormValues.site_id
-      console.log('변경될값 확인')
+      console.log('변경될 값 확인')
       console.log(updatedSiteInputFormValues)
       console.log(siteId)
       
@@ -865,8 +831,11 @@ const SiteManagement = () => {
       console.log('siteRoadInfo')
       console.log(siteRoadInfo)
       updateSiteRoad(siteRoadInfo)
-      tbRef.current.deselectRow();
-
+      //tbRef.current.deselectRow();
+      setTimeout(()=>{
+        window.location.reload()
+      },1000)
+     
   }
   
   //취소 버튼 클릭시
@@ -899,6 +868,7 @@ const SiteManagement = () => {
           setDisabledForm(false);
           emptyDetail()
           setSiteId(null)
+           //siteId -> null : road list empty - siteId를 null로 하면 road 데이터 초기화
           setRoadInputList([])
           //siteId를 null로 하면 road 데이터 초기화
         });
@@ -906,7 +876,7 @@ const SiteManagement = () => {
         setDisabledForm(false);
         emptyDetail()
         setSiteId(null)
-        //siteId를 null로 하면 road 데이터 초기화
+        //siteId -> null : road list empty - siteId를 null로 하면 road 데이터 초기화
       }
   };
 
@@ -924,11 +894,8 @@ const SiteManagement = () => {
       const roadIdList = roadInputList.map(item => item.road_id);
       console.log(roadIdList);
       const siteRoadInfo = {siteId:siteId,roadIdList:roadIdList}
-      //deleteSite(siteId)
 
-      //delete site and road
       deleteSiteRoad(siteRoadInfo)
-
     });
   };
 
@@ -954,21 +921,8 @@ const SiteManagement = () => {
       if (detailSiteData) {
         console.log('useEffect detailSiteData')
         console.log(detailSiteData)
-        /*
-        setSiteInputFormValues({
-          site_id:detailSiteData.data.site_id,
-          name:detailSiteData.data.name,
-          address:detailSiteData.data.address,
-          lat:detailSiteData.data.lat,
-          lng:detailSiteData.data.lng,
-          type:detailSiteData.data.type,
-          mapped_box:detailSiteData.data.mapped_box,
-          description:detailSiteData.data.description,
-          ...siteInputFormValues
-        })
-        */
       }
-    }, [detailSiteData]); 
+  }, [detailSiteData]); 
   
     const logData = detailSiteData?.data
     ? [
@@ -979,10 +933,6 @@ const SiteManagement = () => {
       ]
     : [];
     
-  // 로컬 환경은 바로 배열 사용 가능, 배포 환경은 roadInputList.data 사용
-  const listToMap = Array.isArray(roadInputList) ? roadInputList : roadInputList?.data || [];
-
-
   return (
     <>
       <section className="wrap">
@@ -994,7 +944,6 @@ const SiteManagement = () => {
 
         <ContainerCard>
           <Filtering
-            // labelSelect="매핑 사이트 타입"
             placeholder="사이트ID / 명칭 / 주소"
             disableFiltering={true}
             onSearch={handleSearch}
@@ -1078,7 +1027,7 @@ const SiteManagement = () => {
                         onChange={handleSiteInputChange} 
                         name="lat"
                         maxLength={10}
-                        pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
+                        pattern="^[0-9]*\.?[0-9]*$" // number and . - 숫자와 온점만 허용하는 정규식
                         title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
                         value={siteInputFormValues.lat || ''}
                         disabled={disabledForm}
@@ -1089,7 +1038,7 @@ const SiteManagement = () => {
                         onChange={handleSiteInputChange} 
                         name="lng"
                         maxLength={10}
-                        pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
+                        pattern="^[0-9]*\.?[0-9]*$" // number and . - 숫자와 온점만 허용하는 정규식
                         title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
                         value={siteInputFormValues.lng || ''}
                         disabled={disabledForm}
@@ -1103,8 +1052,12 @@ const SiteManagement = () => {
                 className="items-center!"
                 label="타입"
                 required={true}
-                optionSelect={getSiteTypeOptions()} // Dynamic options based on site_type
-                onChange={handleSiteInputChange} name="site_type"
+                optionSelect={[
+                  { label: '교차로', value: '102001' },
+                  { label: '횡단보도', value: '102002' }
+                ]} // Dynamic options based on site_type
+                onChange={handleSiteInputChange} name="type"
+                value={siteInputFormValues.type || '102001'}
                 disabled={disabledForm}
               />
 
@@ -1117,8 +1070,7 @@ const SiteManagement = () => {
                 pattern={/^[0-9]*$/} 
                 maxLength={2}
                 value={siteInputFormValues.number_road || ''}
-                disabled={true}
-                //목록은 비활성화, 입력시에는 활성화
+                disabled={true}//road_number input is disabled
               />
             </div>
 
@@ -1153,9 +1105,11 @@ const SiteManagement = () => {
                   <DynamicForm index={index} 
                   onDelete={() => {
                     if (isNewClicked) {
-                      ()=>deleteDynamicGroup('input_mode', data.road_id, index);
+                      deleteDynamicGroup('input_mode', data.road_id, index);
+                      //input_mode -> just delete box
                     } else {
-                      ()=>deleteDynamicGroup('list_mode', data.road_id, index);
+                      deleteDynamicGroup('list_mode', data.road_id, index);
+                      //liste_mode -> delete API + just delete box 
                     }
                   }}
                   handleRoadInputChange={(e) => handleRoadInputChange(e, 'input_mode', index)}
