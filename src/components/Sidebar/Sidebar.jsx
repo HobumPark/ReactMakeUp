@@ -186,20 +186,18 @@ const Sidebar = ({ userInfo, commonData, navbarList }) => {
           <div className={classes["box-toggle-dropdown"]}>
           {(categories && categories.length > 0 && links && links.length > 0) && (
               <div className={classes["box-system-management"]}>
-                <div className={classes["title-system-management"]}>
-                  <span
-                    onClick={() => {
-                      if (dashboardCategory) {
-                        window.open(dashboardCategory.path, "_blank");
-                      }
-                    }}
-                  >
-                    {dashboardCategory?.label}
-                  </span>
-                </div>
-
-                {/* Render categories only if categories is not null or undefined */}
-                {categories.slice(1).map((category) => (
+                  {dashboardCategory && (
+                    <div className={classes["title-system-management"]}>
+                      <span
+                        onClick={() => {
+                          window.open(dashboardCategory.path, "_blank");
+                        }}
+                      >
+                        {dashboardCategory.label}
+                      </span>
+                    </div>
+                  )}
+                {categories.filter(category => category.name !== "DASHBOARD").map((category) => (
                   <div key={category.name}>
                     <span
                       className={`${classes["title-system-management"]} ${
