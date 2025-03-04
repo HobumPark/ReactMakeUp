@@ -374,29 +374,32 @@ const SiteManagement = () => {
   //진입, 진출방향 상태값
   const handleRoadInputChange = (e, mode, index) =>{
     console.log('접근로 정보 입력 change')
-    console.log(e.target.name)
-    console.log(e.target.value)
+    const name = e.target.name
+    const value = e.target.value
+    console.log(name)
+    console.log(value)
     console.log(mode)
     console.log(index)
-    
-    const inComingCompass = roadInputList[index]?.incoming_compass
-    const outGoingCompass = e.target.value
-    
-    console.log('inComingCompass')
-    console.log(inComingCompass)
-    console.log('outGoingCompass')
-    console.log(outGoingCompass)
-    console.log('roadInputList')
-    console.log(roadInputList)
-    console.log(roadInputList[index].crosswalk)
-    if(e.target.name == 'outgoing_compass' ){
+
+    if(name == 'outgoing_compass' ){
       //alert('진출 방향 선택중')
       //진출방향 선택하면 진입방향 검사하여 둘의 일치여부 확인
+      const inComingCompass = roadInputList[index]?.incoming_compass
+      const outGoingCompass = value
+
       if(outGoingCompass===inComingCompass){
         alert('진출방향과 진입방향은 일치하면 안됩니다. 다시선택하세요!')
         return
       }
 
+    }else if(name == 'incoming_compass'){
+      const inComingCompass = value
+      const outGoingCompass = roadInputList[index]?.outgoing_compass
+
+      if(outGoingCompass===inComingCompass){
+        alert('진출방향과 진입방향은 일치하면 안됩니다. 다시선택하세요!')
+        return
+      }
     }
 
     // 복사본을 만들어서 해당 index에 있는 원소를 업데이트
@@ -404,12 +407,12 @@ const SiteManagement = () => {
     console.log('initial updatedRoadInputList')
     console.log(updatedRoadInputList)
     console.log('handleRoadInputChange')
-    console.log(e.target.name+' 수정')
-    console.log(e.target.value+' 수정')
+    console.log(name+' 수정')
+    console.log(value+' 수정')
     
     updatedRoadInputList[index] = {
         ...updatedRoadInputList[index], // 해당 index의 기존 데이터 복사
-        [e.target.name]: e.target.value, // 변경된 값을 넣어줌
+        [name]: value, // 변경된 값을 넣어줌
     };
 
     console.log('updatedRoadInputList111')
