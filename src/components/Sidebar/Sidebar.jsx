@@ -80,8 +80,6 @@ const Sidebar = ({ userInfo, commonData, navbarList }) => {
     }))
   );
   
-  console.log(navbarList);
-  
 
   // const links = [
   //   // {id: "main-dashboard", label: "Main dashboard", path: "/dashboard/main-dashboard", category: "dashboard"},
