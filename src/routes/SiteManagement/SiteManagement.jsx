@@ -300,7 +300,7 @@ const SiteManagement = () => {
   };
 
   // road list 삭제
-  const deleteDynamicGroup = (mode, road_id, index) => {
+  const deleteDynamicGroup = (mode, road_id, index, reloadCallback) => {
     //alert('roadList delete')
     //roadList delete button
     console.log('입력 모드:'+mode)
@@ -332,7 +332,8 @@ const SiteManagement = () => {
       const updatedRoadInputList = roadInputList.filter((_, i) => i !== index);
       // 상태 업데이트
       setRoadInputList(updatedRoadInputList);
-   
+      
+      reloadCallback()
     }
   };
 
@@ -732,6 +733,12 @@ const SiteManagement = () => {
           //등록후 입력폼 초기화 - init site, road form
           InitSiteRoadInputForm()
           
+          reloadCallback()
+          /*
+          setTimeout(()=>{
+            window.location.reload()
+          },1000) 
+          */
         },
         onError: (error) => {
           console.error('createSite onError:', error);
@@ -847,12 +854,15 @@ const SiteManagement = () => {
       console.log('siteRoadInfo')
       console.log(siteRoadInfo)
       updateSiteRoad(siteRoadInfo)
+      
+      reloadCallback()
       //tbRef.current.deselectRow();
+      /*
       setTimeout(()=>{
         //alert('reload')
-        //window.location.reload()
+        window.location.reload()
       },1000)
-     
+      */
   }
   
   //취소 버튼 클릭시
@@ -913,6 +923,13 @@ const SiteManagement = () => {
       const siteRoadInfo = {siteId:siteId,roadIdList:roadIdList}
 
       deleteSiteRoad(siteRoadInfo)
+
+      reloadCallback()
+      /*
+      setTimeout(()=>{
+        window.location.reload()
+      },1000) 
+      */
     });
   };
 
@@ -1122,10 +1139,10 @@ const SiteManagement = () => {
                   <DynamicForm index={index} 
                   onDelete={() => {
                     if (isNewClicked) {
-                      deleteDynamicGroup('input_mode', data.road_id, index);
+                      deleteDynamicGroup('input_mode', data.road_id, index, reloadCallback);
                       //input_mode -> just delete box
                     } else {
-                      deleteDynamicGroup('list_mode', data.road_id, index);
+                      deleteDynamicGroup('list_mode', data.road_id, index, reloadCallback);
                       //liste_mode -> delete API + just delete box 
                     }
                   }}
