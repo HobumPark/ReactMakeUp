@@ -93,6 +93,20 @@ const boxTabulator = [
 ];
 
 const SiteManagement = () => {
+
+  //site input form values, row data to display
+  const [siteInputFormValues, setSiteInputFormValues] = useState({
+    site_id:'',
+    name:'',
+    address:'',
+    lat:'',
+    lng:'',
+    type:'102001',
+    number_road:0,
+    mapped_box:'',
+    description:'description'
+  })
+
   const { t, i18n } = useTranslation();
   // queryClient 가져오기
   const queryClient = useQueryClient();
@@ -277,10 +291,10 @@ const SiteManagement = () => {
         incoming_direction_sub5:'', //진입방향5
         incoming_direction_sub6:'', //진입방향6
         incoming_direction:'',//방향 모두 합친 값
-        crosswalk:'',//횡단보도 유무 - 105002
+        crosswalk:'105002',//횡단보도 유무 - 105002
         crosswalk_length:'',//횡단보도 길이
         crosswalk_width:'',//횡단보도 폭
-        traffic_light:'',//보행자 신호등 유무 - 106002
+        traffic_light:'106002',//보행자 신호등 유무 - 106002
         mapped_detector:'',//매핑 검지기
         mapped_vms:'', //매핑 전광판
         mapped_speaker:'',//매핑 스피커
@@ -327,18 +341,6 @@ const SiteManagement = () => {
     }
   };
 
-  //site input form values, row data to display
-  const [siteInputFormValues, setSiteInputFormValues] = useState({
-    site_id:'',
-    name:'',
-    address:'',
-    lat:'',
-    lng:'',
-    type:'',
-    number_road:0,
-    mapped_box:'',
-    description:'description'
-  })
 
   // select on change - intersection and crosswalk
   const handleSiteInputChange = (e) => {
@@ -509,7 +511,7 @@ const SiteManagement = () => {
     lat: rowData.lat,
     lng: rowData.lng,
     type:rowData.type,
-    number_road: rowData.number_road || "",
+    number_road: rowData.number_road || 0,
     mapped_box: rowData.mapped_box || "",
     description:"description"
   });
@@ -572,7 +574,7 @@ const SiteManagement = () => {
       address:'',
       lat:'',
       lng:'',
-      type:'',
+      type:'102001',
       number_road:0,
       mapped_box:'',
       description:'description'
@@ -681,8 +683,8 @@ const SiteManagement = () => {
       address:'',
       lat:'',
       lng:'',
-      type:'',
-      number_road:'',
+      type:'102001',
+      number_road:0,
       mapped_box:'',
       description:'description'
     })
@@ -759,18 +761,23 @@ const SiteManagement = () => {
     if (emptyFields.length > 0) {
       console.log('비어있는 필드들:', emptyFields);
       // 비어있는 필드들의 이름을 알림으로 띄우거나 처리
-      new NoticeMessage(t('다음 필드들이 비어있습니다: ' + emptyFields.join(', ')));
+      const siteFieldName={'name':'명칭','lat':'위도','lng':'경도','address':'주소'}
+      // 빈 필드에 대한 메시지 생성
+      const emptyFieldName = emptyFields.map(field => `${siteFieldName[field]}`).join(', ');
+
+      new NoticeMessage(t('필수 값을 모두 입력해주세요(사이트): ' + emptyFieldName) );
+      return false;  // 비어있는 필드가 있으면 false 리턴
     } else {
       console.log('모든 필드가 채워졌습니다.');
     }
 
-    // 사이트 정보 입력 폼이 모두 채워졌는지 확인
-    if (emptyFields.length > 0) {
-      new NoticeMessage(t('모든 필드에 값을 채우세요'));
-      return false;  // 비어있는 필드가 있으면 false 리턴
-    }
+
+    
 
     //접근로 입력 갯수만큼 생성된 동적박스에 입력값이 모두 채워졌는지도 검사해야한다.
+    const roadFieldName={'name':'명칭','incoming_direction_sub1':'진입 진행방향1','incoming_direction_sub2':'진입 진행방향2',
+      'crosswalk_length':'횡단 보도 길이','crosswalk_width':'횡단 보도 폭'}
+    var emptyRoadFieldName=''
     const isRoadFieldsFilled = roadInputList?.every((item, index) => {
 
       return Object.entries(item).every(([key, value]) => {
@@ -790,6 +797,7 @@ const SiteManagement = () => {
         // 빈 값, null, undefined 확인
         if (value === '' || value === null || value === undefined) {
           console.log(`Row ${index + 1}: 필드 "${key}" 가 비어 있습니다.`); // 어떤 필드가 비어있는지 출력
+          emptyRoadFieldName= `${index+1}번째 ${roadFieldName[key]}`
           return false;
         }
         
@@ -802,7 +810,7 @@ const SiteManagement = () => {
     if (isRoadFieldsFilled) {
       console.log("모든 입력 값이 채워졌습니다.");
     } else {
-      new NoticeMessage(t('접근로 관련 모든 정보를 입력하세요.'));
+      new NoticeMessage(t('필수 값을 모두 입력해주세요(접근로): '+ emptyRoadFieldName));
       console.log("입력 값이 부족한 항목이 있습니다.");
       return false
     }
@@ -849,7 +857,7 @@ const SiteManagement = () => {
       //alert('cancel!')
       if (hasChangesUpdate){//변경된 상태일때
         const message = new NoticeMessage(
-          t('msg > flush confirm'),
+          t('입력하신 내용이 저장되지 않습니다. 계속하시겠습니까?'),
           {
             mode: "confirm",
           }
@@ -864,7 +872,7 @@ const SiteManagement = () => {
       }
       else if(isNewClicked){//new를 누른상태일때
         const message = new NoticeMessage(
-          t('msg > flush confirm'),
+          t('입력하신 내용이 저장되지 않습니다. 계속하시겠습니까?'),
           {
             mode: "confirm",
           }
@@ -889,7 +897,7 @@ const SiteManagement = () => {
   const handleDeleteButtonClick = () => {
       //alert('delete!')
       const message = new NoticeMessage(
-      t('msg > delete confirm'),
+      t('정말로 삭제하시겠습니까?'),
       {
         mode: "confirm",
       }
