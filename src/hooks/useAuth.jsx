@@ -22,7 +22,14 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
           sessionStorage.setItem("isLogin", true);
         }
         queryClient.clear();
-        navigate("/system-management/user");
+        if (data.group_id == 1) {
+          navigate("/system-management/user");
+        } else if (data.group_id == 2) {
+          navigate("/asset-management/box")
+        } else {
+          navigate("/management/unauthorized")
+        }
+        
       })
       .catch((err) => {
         onLoginFail(err);

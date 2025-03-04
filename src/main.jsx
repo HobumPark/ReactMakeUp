@@ -41,6 +41,7 @@ import AccessRoadDashboard from './routes/AccessRoadDashboard/AccessRoadDashboar
 import VideoModal from './components/Modal/VideoModal/VideoModal.jsx';
 
 import "./utils/i18n.js";
+import Unauthorized from './routes/Unauthorized/Unauthorized.jsx';
 
 
 const queryClient = new QueryClient();
@@ -55,6 +56,16 @@ const router = createBrowserRouter([
    {
     path: "/img-modal",
     element: <VideoModal/>
+   },
+   {
+    path:'management',
+    element: <ProtectedRoutes />, 
+    children: [ 
+      {
+      path: "unauthorized",
+      element: <Unauthorized></Unauthorized>,
+    }
+    ],
    },
    {
     path: "system-management",
