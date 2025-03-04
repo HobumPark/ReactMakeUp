@@ -508,7 +508,7 @@ const SiteManagement = () => {
     address: rowData.address,
     lat: rowData.lat,
     lng: rowData.lng,
-    type:'',
+    type:rowData.type,
     number_road: rowData.number_road || "",
     mapped_box: rowData.mapped_box || "",
     description:"description"
