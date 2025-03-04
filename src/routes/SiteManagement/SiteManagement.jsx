@@ -127,9 +127,6 @@ const SiteManagement = () => {
   //const [selectedSiteId, setSelectedSiteId]= useState(null)
   const [curRowId, setCurRowId] = useState(null); //현재 선택된 row번호
 
-  const [closeNoticeState,setCloseNoticeState]=useState(null);
-  //삭제 노티스 상태관리
-
   // site 데이터 가져오기
   const { siteListData, detailSiteData, updateSite, updateSiteRoad, deleteSite, createSite, createSiteRoad, deleteSiteRoad,  } = useSiteMgt({
     queryParams: queryParams || "", siteId, 
@@ -186,8 +183,6 @@ const SiteManagement = () => {
     { value: "교차로", label: "교차로" },
     { value: "횡단보도", label: "횡단보도" },
   ];
-
-
 
   const languageTabulator = () => {
     let datalanguage = {
@@ -694,8 +689,10 @@ const SiteManagement = () => {
   const handleRegistButtonClick = async () => {
     //alert('regist!');
     // 입력폼 검사
+    //alert('등록')
     const isSiteRoadInputFormValid = siteRoadInputFormCheck();
     if (!isSiteRoadInputFormValid) {
+      //alert('입력검사 통과못함')
       return; // 입력검사 통과 못하면 끝냄
     }
   
@@ -748,6 +745,7 @@ const SiteManagement = () => {
   };
   
   const siteRoadInputFormCheck = () =>{//사이트 정보, 접근로 정보 입력필드 검사 함수
+    console.log('siteRoadInputFormCheck')
     // 제외할 필드들
     const excludedFields = ['site_id', 'type', 'number_road', 'mapped_box'];//입력검사시에 제외할 필드 - site check exclude field
     //사이트 아이디는 자동으로 생성됨, 함체정보는 입력하지 않음
@@ -771,8 +769,6 @@ const SiteManagement = () => {
       console.log('모든 필드가 채워졌습니다.');
     }
 
-
-    
 
     //접근로 입력 갯수만큼 생성된 동적박스에 입력값이 모두 채워졌는지도 검사해야한다.
     const roadFieldName={'name':'명칭','incoming_direction_sub1':'진입 진행방향1','incoming_direction_sub2':'진입 진행방향2',
@@ -823,7 +819,14 @@ const SiteManagement = () => {
 
 
   const handleConfirmButtonClick = () => {
-      //alert('confirm!')
+      //alert('confirm!') 
+      //alert('확인!')
+      const isSiteRoadInputFormValid = siteRoadInputFormCheck();
+      if (!isSiteRoadInputFormValid) {
+        //alert('입력검사 통과못함')
+        return; // 입력검사 통과 못하면 끝냄
+      }
+
       const updatedSiteInputFormValues = {
         ...siteInputFormValues
       }
@@ -847,7 +850,7 @@ const SiteManagement = () => {
       //tbRef.current.deselectRow();
       setTimeout(()=>{
         //alert('reload')
-        window.location.reload()
+        //window.location.reload()
       },1000)
      
   }
