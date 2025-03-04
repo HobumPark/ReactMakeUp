@@ -59,7 +59,10 @@ const Sidebar = ({ userInfo, commonData, navbarList }) => {
   //   { name: "site", label: "사이트 관리" },
   //   { name: "statistic", label: "통계" },
   // ]
-  const programOrder = ["DASHBOARD", "SYSTEM", "ASSET", "STATISTICS"];
+
+  console.log(navbarList);
+  
+  const programOrder = ["DASHBOARD", "SYSTEM", "ASSET", "SITE-MANAGEMENT", "STATISTICS"];
 
   const categories = navbarList
     ?.filter(item => programOrder.includes(item.program_id))  
