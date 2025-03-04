@@ -1,7 +1,19 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Unauthorized = () => {
- 
+  const navigate = useNavigate();
+  const group_id = JSON.parse(localStorage.getItem("group_id")); 
+
+
+  useEffect(() => {
+    if (group_id == 1) {
+      navigate("/system-management/user");
+    } else if (group_id == 2) {
+      navigate("/asset-management/box")
+    } 
+  }, [group_id, navigate]);
+
   return (
       <>
         <div id="alert-additional-content-2" className="p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">

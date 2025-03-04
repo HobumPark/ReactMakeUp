@@ -16,9 +16,11 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
       .then((data) => {
         if (accountDT?.remember_me === true) {
           localStorage.setItem("user_id", data.user_id);
+          localStorage.setItem("group_id", data.group_id);
           localStorage.setItem("isLogin", true);
         } else {
           sessionStorage.setItem("user_id", data.user_id);
+          localStorage.setItem("group_id", data.group_id);
           sessionStorage.setItem("isLogin", true);
         }
         queryClient.clear();
