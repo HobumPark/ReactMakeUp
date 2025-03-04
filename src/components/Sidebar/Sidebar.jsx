@@ -60,7 +60,6 @@ const Sidebar = ({ userInfo, commonData, navbarList }) => {
   //   { name: "statistic", label: "통계" },
   // ]
 
-  console.log(navbarList);
   
   const programOrder = ["DASHBOARD", "SYSTEM", "ASSET", "SITE-MANAGEMENT", "STATISTICS"];
 
