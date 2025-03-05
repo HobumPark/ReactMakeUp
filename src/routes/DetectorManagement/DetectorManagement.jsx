@@ -372,7 +372,7 @@ const DetectorManagement = () => {
     selectableRowsCheck: (row) => {
       return !row.getElement().classList.contains("tabulator-selected");
     },
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">${t('cmn > total')} ${data?.length} ${t('cmn > results')}</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">${t('cmn > total')} ${data?.length || 0} ${t('cmn > results')}</div>`,
   };
 
   const handleSearch = useCallback((inputVal = null) => {
