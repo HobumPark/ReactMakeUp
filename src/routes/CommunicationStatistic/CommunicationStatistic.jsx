@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ContainerCard from "../../components/ContainerCard/ContainerCard";
 import Filtering from "../../components/Filtering/Filtering";
 import { ReactTabulator } from "react-tabulator";
@@ -19,32 +19,35 @@ import StatisticByLane from "../../components/Statistic/StatisticByLane/Statisti
 
 import Button from "../../components/Button/Button";
 import { formatDateTime } from "../../utils/date";
+import UseStatistic from "../../hooks/useStatistic";
 
 
 const CommunicationStatistic = () => {
-  const [activeButton, setActiveButton] = useState("5분");
-  const [interval, setInterval] = useState('');
-  const [dateTime, setDateTime] = useState({
-    start_date:'',
-    end_date:''
-  });
+  const { t, i18n } = useTranslation();
+  const [isResetClicked, setIsResetClicked] = useState(false)
   const today = new Date();
-  const fiveMinutesAgo = new Date(new Date().getTime() - 5 * 60 * 1000);
+  const midnight = new Date(new Date().setHours(0, 0, 0, 0));
+  const [activeButton, setActiveButton] = useState("5분");
+  const [interval, setInterval] = useState(5);
+  const [dateTime, setDateTime] = useState({
+    start_date:formatDateTime(midnight),
+    end_date:formatDateTime(today)
+  });
+
 
   const handleButtonClick = (label, interval) => {
     setActiveButton(label);
     setInterval(interval);
-    const startTime = new Date(today.getTime() - interval * 60 * 1000); 
-
-    setDateTime((prevValues) => ({
-      ...prevValues,
-      start_date: formatDateTime(startTime),
-      end_date: formatDateTime(today)
-    }));
   };
 
-  const { t, i18n } = useTranslation();
-  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;  
+      setDateTime((prevValues) => ({
+        ...prevValues,
+        [name]: value,
+      }));
+  };
+
     useEffect(() => {
       let locale;
       if (i18n.language === "eng") {
@@ -60,7 +63,7 @@ const CommunicationStatistic = () => {
         autoClose: true,
         locale: locale,
         position: "bottom center",
-        selectedDates: [fiveMinutesAgo],
+        selectedDates: [midnight],
         timepicker: true,
         timeFormat: "HH:mm",
         dateFormat: "yyyy-MM-dd",
@@ -92,29 +95,64 @@ const CommunicationStatistic = () => {
   
       const datepicker1 = new AirDatepicker('[name="start_date"]', optionsDate);
       const datepicker2 = new AirDatepicker('[name="end_date"]', optionsDateSecond);
-  
+      setIsResetClicked(false);
       return () => {
         datepicker1.destroy();
         datepicker2.destroy();
       };
-    }, [i18n.language]);
+    }, [i18n.language,isResetClicked]);
 
 
     const [activeTab, setActiveTab] = useState(0);
+    const [queryParams, setQueryParams] = useState(`start_date=${dateTime.start_date}&end_date=${dateTime.end_date}&interval=${interval}`);
+
+
+    const { objectTrafficList, objectCntList, objectCntLaneList, objectTrafficChartList } = UseStatistic({
+      queryParams: queryParams,
+    });
+    
+    const objectTraffic = objectTrafficList?.data;
+    const objectCnt = objectCntList?.data;
+    const objectCntLane = objectCntLaneList?.data;
+    const objectTrafficChart = objectTrafficChartList?.data;
+
+  const handleReset= () => {
+    
+    setIsResetClicked(true);
+    setDateTime({
+      start_date:formatDateTime(midnight),
+      end_date:formatDateTime(today)
+    })
+    setActiveButton('5분')
+    setInterval(5);
+
+  };
+
+  const handleSearch = useCallback((inputVal = null) => {
+    const resultInput = inputVal ? `input=${inputVal}` : "";
+    const { start_date, end_date } = dateTime;
+    const dateParams = [];
+    if (start_date) {
+      dateParams.push(`start_time=${start_date}`);
+    }
+
+    if (end_date) {
+      dateParams.push(`end_time=${end_date}`);
+    }
+    const intervalParam = interval ? `interval=${interval}` : "";
+    const result = [resultInput, ...dateParams, intervalParam].filter(Boolean).join("&");
+    setQueryParams(result); 
+  },[dateTime, interval]);
+    
+    
 
     const tabs = [
-      { label: "전체 통계", content: <AllStatistic />},
-      { label: "차종별 통계", content: <StatisticByType /> },
-      { label: "차로별 통계", content: <StatisticByLane /> },
+      { label: "전체 통계", content: <AllStatistic  data={objectTraffic} chartData = {objectTrafficChart} />},
+      { label: "차종별 통계", content: <StatisticByType  data={objectCnt}/> },
+      { label: "차로별 통계", content: <StatisticByLane data={objectCntLane}/> },
     ]
 
-    const handleInputChange = (e) => {
-      const { name, value } = e.target;  
-        setDateTime((prevValues) => ({
-          ...prevValues,
-          [name]: value,
-        }));
-    };
+
 
   return (
     <>
@@ -129,6 +167,8 @@ const CommunicationStatistic = () => {
             placeholder="사이트 / 접근로"
             customWidthInput=" flex xl:flex-[0.8] lg:flex-1 md:flex-1 "
             showLabel= {false} 
+            onSearch={handleSearch}
+            onReset={handleReset}
             disableFiltering={true} 
             customWidthSelect= "w-full flex flex-1 basis-[700px] ">
           {/* <Filtering 

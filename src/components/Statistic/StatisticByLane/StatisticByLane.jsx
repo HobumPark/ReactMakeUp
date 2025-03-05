@@ -10,7 +10,12 @@ import localeId from "air-datepicker/locale/id.js";
 const statisticByTypeTabulator = [
   {
     title: "No",
-    formatter: "rownum",
+    formatter: (cell) => {
+      let row = cell.getRow();
+      let page = row.getTable().getPage();
+      let pageSize = row.getTable().getPageSize();
+      return (page - 1) * pageSize + row.getPosition(true);
+    },
     width: 60,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -19,7 +24,7 @@ const statisticByTypeTabulator = [
   },
   {
     title: "집계시간",
-    field: "aggregation_time",
+    field: "aggregated_time",
     hozAlign: "center",
     widthGrow: 2,
     headerHozAlign: "center",
@@ -28,7 +33,7 @@ const statisticByTypeTabulator = [
   },
   {
     title: "사이트",
-    field: "site",
+    field: "site_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -37,7 +42,7 @@ const statisticByTypeTabulator = [
   },
   {
     title: "접근로",
-    field: "access",
+    field: "road_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -46,73 +51,66 @@ const statisticByTypeTabulator = [
   },
   {
     title: "차로 전체",
-    field: "all_car",
+    field: "lane_all",
     WidthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "1차로",
-    field: "first_lane",
+    field: "lane_1",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "2차로",
-    field: "second_lane",
+    field: "lane_2",
     WidthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "3차로",
-    field: "third_lane",
+    field: "lane_3",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "4차로",
-    field: "fourth_lane",
+    field: "lane_4",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "5차로",
-    field: "five_lane",
+    field: "lane_5",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
 ];
 
-const data = [
-  {
-    aggregation_time: "2025-01-20 12:30 ~ 2025-01-20 12:35",
-    site: "시청사거리",
-    access: "시청 방면",
-    all_car: "10",
-    first_lane: "4",
-    second_lane: "2",
-    third_lane: "1",
-    fourth_lane: "3",
-    five_lane: "-",
-  },
-];
 
 const options = {
   chart: {
@@ -162,9 +160,46 @@ const options = {
 };
 
 
-const StatisticByLane = () => {
+const StatisticByLane = ({data}) => {
  
   const { t, i18n } = useTranslation();
+  const flatData = data?.flat(Infinity);
+  const dataCntLane = flatData?.map(item => {
+    const { 
+      aggregate_end_time, 
+      aggregate_start_time, 
+      aggregated_time, 
+      lane_all,
+      lane_1,
+      lane_2,
+      lane_3,
+      lane_4,
+      lane_5,
+      road_id, 
+      road_name, 
+      site_id, 
+      site_name, 
+
+    } = item; 
+  
+    return {
+      aggregate_end_time,
+      aggregate_start_time,
+      aggregated_time,
+      lane_all,
+      lane_1,
+      lane_2,
+      lane_3,
+      lane_4,
+      lane_5,
+      road_id,
+      road_name,
+      site_id,
+      site_name,
+
+    };
+  });
+
   
   const languageTabulator = () => {
     let datalanguage = {
@@ -193,7 +228,7 @@ const StatisticByLane = () => {
       ko: languageTabulator(),
     },
     resizableRows: false,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${dataCntLane?.length || 0} 건</div>`,
   };
 
   const averageWaitTime = [
@@ -228,7 +263,7 @@ const StatisticByLane = () => {
     <>
           <section>
             <ReactTabulator
-              data={data}
+              data={dataCntLane}
               columns={statisticByTypeTabulator}
               layout={"fitColumns"}
               className="tabulator-custom w-full "

@@ -15,6 +15,7 @@ import AirDatepicker from "air-datepicker";
 import Button from "../../components/Button/Button";
 import UseStatistic from "../../hooks/useStatistic";
 import { formatDateTime, getLocalISOString } from "../../utils/date";
+import useHistory from "../../hooks/useHistory";
 
 const communityHistoryTabulator = [
   {
@@ -113,8 +114,8 @@ const CommunicationHistory = () => {
 
   const getYesterdayMidnight = () => {
     const date = new Date();
-    date.setDate(date.getDate() - 1); 
-    date.setHours(23, 59, 59, 999);
+    date.setDate(date.getDate()); 
+    date.setHours(0, 0, 0, 999);
     return date;
   };
 
@@ -125,7 +126,7 @@ const CommunicationHistory = () => {
   });
 
   const [queryParams, setQueryParams] = useState(`start_date=${getLocalISOString(yesterdayMidnight)}&end_date=${getLocalISOString(today)}`);
-  const { objectListData } = UseStatistic({
+  const { objectListData } = useHistory({
     queryParams: queryParams
   })
 

@@ -9,7 +9,12 @@ import Chart from "react-apexcharts";
 const allStatisticTabulator = [
   {
     title: "No",
-    formatter: "rownum",
+    formatter: (cell) => {
+      let row = cell.getRow();
+      let page = row.getTable().getPage();
+      let pageSize = row.getTable().getPageSize();
+      return (page - 1) * pageSize + row.getPosition(true);
+    },
     width: 60,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -18,7 +23,7 @@ const allStatisticTabulator = [
   },
   {
     title: "집계시간",
-    field: "aggregation_time",
+    field: "aggregated_time",
     hozAlign: "center",
     widthGrow: "2",
     headerHozAlign: "center",
@@ -27,7 +32,7 @@ const allStatisticTabulator = [
   },
   {
     title: "사이트",
-    field: "site",
+    field: "site_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -36,7 +41,7 @@ const allStatisticTabulator = [
   },
   {
     title: "접근로",
-    field: "access",
+    field: "road_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -45,65 +50,112 @@ const allStatisticTabulator = [
   },
   {
     title: "평균 대기길이(m)",
-    field: "average_wait",
+    field: "que_len_avg",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "최대 대기길이(m)",
-    field: "maximum_wait",
+    field: "que_len_max",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "평균 점유율(%)",
-    field: "average_ocupancy",
+    field: "occupancy_avg",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "평균속도(km/h)",
-    field: "average_speed",
+    field: "speed_avg",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "최고속도(km/h)",
-    field: "peek_speed",
+    field: "speed_max",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
 ];
 
-const data = [
-  {
-    aggregation_time: "2025-01-20 12:30 ~ 2025-01-20 12:35",
-    site: "시청사거리",
-    access: "시청 방면",
-    average_wait: "51.89",
-    maximum_wait: "121",
-    average_ocupancy: "0.42 ",
-    average_speed: "55",
-    peek_speed: "80",
-  },
-];
 
-const options = {
+
+
+const AllStatistic = ({data, chartData}) => {
+  
+  const flatData = data?.flat(Infinity);
+  const dataTraffic = flatData?.map(item => {
+    const { 
+      aggregate_end_time, 
+      aggregate_start_time, 
+      aggregated_time, 
+      occupancy_avg, 
+      que_len_avg, 
+      que_len_max, 
+      road_id, 
+      road_name, 
+      site_id, 
+      site_name, 
+      speed_avg, 
+      speed_max 
+    } = item; 
+  
+    return {
+      aggregate_end_time,
+      aggregate_start_time,
+      aggregated_time,
+      occupancy_avg,
+      que_len_avg,
+      que_len_max,
+      road_id,
+      road_name,
+      site_id,
+      site_name,
+      speed_avg,
+      speed_max
+    };
+  });  
+  const dataTrafficChart = chartData?.length
+  ? {
+      ...Object.fromEntries(
+        Object.keys(chartData[0]).map((key) => [
+          key,
+          chartData.map((item) => item[key] ?? 0), 
+        ])
+      ),
+    }
+  : null;
+
+console.log(dataTrafficChart);
+
+
+
+
+  const { t, i18n } = useTranslation();
+
+  const options = {
     chart: {
       type: "line",
       zoom: {
@@ -132,48 +184,43 @@ const options = {
       width: 2,
     },
     xaxis: {
-      categories: ["01-20 12:30", "01-20 12:35", "01-20 12:40", "01-20 12:45", "01-20 12:50"],
+      categories: dataTrafficChart?.aggregate_start_time,
     },
   };
+    
 
-
-
-
-const AllStatistic = () => {
-
-  const { t, i18n } = useTranslation();
 
     const averageWaitTime = [
         {
-          data: [30, 40, 25, 50, 49, 21],
+          data: dataTrafficChart?.que_len_avg,
         },
       
       ];
 
     const maximumWait= [
         {
-          data: [30, 40, 25, 50, 49, 21],
+          data: dataTrafficChart?.que_len_max,
         },
       
       ]
 
     const averageOccupancy= [
         {
-          data: [30, 40, 25, 50, 49, 21],
+          data: dataTrafficChart?.occupancy_avg,
         },
       
       ];
 
     const averageSpeed= [
         {
-          data: [30, 40, 25, 50, 49, 21],
+          data: dataTrafficChart?.speed_avg,
         },
       
       ];
 
     const maximumSpeed= [
         {
-          data: [30, 40, 25, 50, 49, 21],
+          data: dataTrafficChart?.speed_max,
         },
       
       ];
@@ -206,13 +253,13 @@ const AllStatistic = () => {
       ko: languageTabulator(),
     },
     resizableRows: false,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${dataTraffic?.length || 0} 건</div>`,
   };
   return (
     <>
       <section>
         <ReactTabulator
-          data={data}
+          data={dataTraffic}
           columns={allStatisticTabulator}
           layout={"fitColumns"}
           className="tabulator-custom w-full "
@@ -230,6 +277,7 @@ const AllStatistic = () => {
                     series={averageWaitTime}
                     height={244}
                     className={"flex !min-h-[0]"}
+                    type="line"
                 />
             </div>
             <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
@@ -239,6 +287,7 @@ const AllStatistic = () => {
                     series={maximumWait}
                     height={244}
                     className={"flex !min-h-[0]"}
+                    type="line"
                 />
             </div>
             <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
@@ -248,6 +297,7 @@ const AllStatistic = () => {
                     series={averageOccupancy}
                     height={244}
                     className={"flex !min-h-[0]"}
+                    type="line"
                 />
             </div>
             
@@ -262,6 +312,7 @@ const AllStatistic = () => {
                     series={averageSpeed}
                     height={244}
                     className={"flex !min-h-[0]"}
+                    type="line"
                 />
             </div>
             <div className="border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">
@@ -271,6 +322,7 @@ const AllStatistic = () => {
                     series={maximumSpeed}
                     height={244}
                     className={"flex !min-h-[0]"}
+                    type="line"
                 />
             </div>
             </div>

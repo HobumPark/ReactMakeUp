@@ -11,7 +11,12 @@ import localeId from "air-datepicker/locale/id.js";
 const statisticByTypeTabulator = [
   {
     title: "No",
-    formatter: "rownum",
+    formatter: (cell) => {
+      let row = cell.getRow();
+      let page = row.getTable().getPage();
+      let pageSize = row.getTable().getPageSize();
+      return (page - 1) * pageSize + row.getPosition(true);
+    },
     width: 60,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -20,7 +25,7 @@ const statisticByTypeTabulator = [
   },
   {
     title: "집계시간",
-    field: "aggregation_time",
+    field: "aggregated_time",
     hozAlign: "center",
     widthGrow: 2.5,
     headerHozAlign: "center",
@@ -29,7 +34,7 @@ const statisticByTypeTabulator = [
   },
   {
     title: "사이트",
-    field: "site",
+    field: "site_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -38,7 +43,7 @@ const statisticByTypeTabulator = [
   },
   {
     title: "접근로",
-    field: "access",
+    field: "road_name",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -47,103 +52,96 @@ const statisticByTypeTabulator = [
   },
   {
     title: "차종 전체",
-    field: "all_vehicles",
+    field: "all_cnt",
     WidthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "승용차",
-    field: "passenger",
+    field: "car_cnt",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "승합차",
-    field: "van",
+    field: "van_cnt",
     WidthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "트럭",
-    field: "truck",
+    field: "truck_cnt",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "대형 트럭",
-    field: "large_truck",
+    field: "long_truck_cnt",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "버스",
-    field: "bus",
+    field: "bus_cnt",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "오토바이",
-    field: "motorcycles",
+    field: "motorcycle_cnt",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "자전거",
-    field: "bicycles",
+    field: "bicycle_cnt",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
   {
     title: "기타",
-    field: "other_vehicles",
+    field: "unknown_cnt",
     widthGrow: 1,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    formatter: (cell) => cell.getValue() ? cell.getValue() : "-"
   },
 ];
 
-const data = [
-  {
-    aggregation_time: "2025-01-20 12:30 ~ 2025-01-20 12:35",
-    site: "시청사거리",
-    access: "시청 방면",
-    all_vehicles: "5",
-    passenger: "2",
-    van: "1",
-    truck: "1",
-    large_truck: "-",
-    bus: "1",
-    motorcycles: "1",
-    bicycles: "-",
-    other_vehicles: "-",
-  },
-];
 
 const options = {
   chart: {
@@ -194,9 +192,50 @@ const options = {
   },
 };
 
-const StatisticByType = () => {
+const StatisticByType = ({data}) => {
   
   const { t, i18n } = useTranslation();
+  const flatData = data?.flat(Infinity);
+  const dataCnt = flatData?.map(item => {
+    const { 
+      aggregate_end_time, 
+      aggregate_start_time, 
+      aggregated_time, 
+      all_cnt, 
+      car_cnt, 
+      van_cnt, 
+      truck_cnt,
+      long_truck_cnt,
+      bus_cnt,
+      motorcycle_cnt,
+      bicycle_cnt,
+      unknown_cnt,
+      road_id, 
+      road_name, 
+      site_id, 
+      site_name, 
+    } = item; 
+  
+    return {
+      aggregate_end_time,
+      aggregate_start_time,
+      aggregated_time,
+      all_cnt, 
+      car_cnt, 
+      van_cnt, 
+      truck_cnt,
+      long_truck_cnt,
+      bus_cnt,
+      motorcycle_cnt,
+      bicycle_cnt,
+      unknown_cnt,
+      road_id,
+      road_name,
+      site_id,
+      site_name,
+    };
+  });
+
 
 
   const languageTabulator = () => {
@@ -227,7 +266,7 @@ const StatisticByType = () => {
       ko: languageTabulator(),
     },
     resizableRows: false,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data.length} 건</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${dataCnt?.length || 0} 건</div>`,
   };
 
   const averageWaitTime = [
@@ -273,7 +312,7 @@ const StatisticByType = () => {
     <>
       <section>
         <ReactTabulator
-          data={data}
+          data={dataCnt}
           columns={statisticByTypeTabulator}
           layout={"fitColumns"}
           className="tabulator-custom w-full "
