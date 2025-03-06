@@ -31,7 +31,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
     onSelect: (date) => {
       setFormData((prevValues) => ({
         ...prevValues,
-        birth: date.formattedDate, 
+        birth: formatDateToYYYYMMDD(date.formattedDate), 
       }));
     },
   };
@@ -59,7 +59,7 @@ const ModalForgotPassword = ({ isOpen, onClose, optionsSelect }) => {
     const dataToSend = {
       user_id: formData.user_id,
       name: formData.name,
-      birth: formatDateToYYYYMMDD(formData.birth),
+      birth: formData.birth,
       org: formData.org,
       email: formData.email,
       phone: formData.phone,

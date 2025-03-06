@@ -17,7 +17,7 @@ import localeKo from 'air-datepicker/locale/ko.js';
 import localeId from 'air-datepicker/locale/id.js';
 import useUnmappedSiteRoad from "../../hooks/useUnmappedSiteRoad";
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
-import { formatDateKor, formatDateToYYYYMMDD } from "../../utils/date";
+import { formatDateToYYYYMMDD } from "../../utils/date";
 
 
 const facilityTabulator = [
@@ -191,12 +191,12 @@ const FacilityManagement = () => {
         handleInputChange({
           target: {
             name: "installed_date",
-            value: date.formattedDate,
+            value: formatDateToYYYYMMDD(date.formattedDate),
           },
         });
         setFormValues((prevValues) => ({
           ...prevValues,
-          installed_date: date.formattedDate,
+          installed_date: formatDateToYYYYMMDD(date.formattedDate),
         }));
       },
     };
@@ -512,9 +512,8 @@ const FacilityManagement = () => {
       );
       message.confirmClicked().then(() => {
         setDisabledForm(false);
-        const formattedData = detailFacility(dataFacility);
-        formattedData.installed_date = formatDateKor(formattedData.installed_date);
-        setFormValues(formattedData);
+        const data = detailFacility(dataFacility);
+        setFormValues(data);
         setHasChangesUpdate(false);
         setSelectedSiteId(dataFacility.site_id);
         requestAnimationFrame(() => {
@@ -569,7 +568,6 @@ const FacilityManagement = () => {
       ...formValues,
       road_id: !formValues.road_id || formValues.road_id === "NO_MAPPING" ? null : formValues.road_id,
       site_id: !formValues.site_id || formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
-      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
     };
     console.log(updatedFormValues);
     createFacility(updatedFormValues);
@@ -585,14 +583,11 @@ const FacilityManagement = () => {
       new NoticeMessage('필수 값을 모두 입력해주세요.')
       return;
     }
-    console.log("Installed Date:", formValues.installed_date);
 
     const updatedFormValues = {
       ...formValues,
       road_id: !formValues.road_id || formValues.road_id === "NO_MAPPING" ? null : formValues.road_id,
       site_id: !formValues.site_id || formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
-
-      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
     };
     console.log(updatedFormValues);
     updateFacility(updatedFormValues);
@@ -629,9 +624,8 @@ const FacilityManagement = () => {
   
   useEffect(() => {
     if (dataFacility) {
-      const formattedData = detailFacility(dataFacility);
-      formattedData.installed_date = formatDateKor(formattedData.installed_date);
-      setFormValues(formattedData);
+      const data = detailFacility(dataFacility);
+      setFormValues(data);
     }
   }, [dataFacility]);
   

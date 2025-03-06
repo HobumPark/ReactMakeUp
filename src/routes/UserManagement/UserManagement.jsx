@@ -13,9 +13,8 @@ import 'air-datepicker/air-datepicker.css';
 import localeEn from 'air-datepicker/locale/en.js'; 
 import localeKo from 'air-datepicker/locale/ko.js'; 
 import localeId from 'air-datepicker/locale/id.js'; 
-import { faL } from '@fortawesome/free-solid-svg-icons';
 import Common from '../../utils/standard';
-import { formatDateToDDMMYYYY, formatDateToMMDDYYYY } from '../../utils/date';
+import { formatDateToDDMMYYYY, formatDateToMMDDYYYY, formatDateToYYYYMMDD } from '../../utils/date';
 import { useTranslation } from 'react-i18next';
 
 
@@ -130,12 +129,12 @@ const columnsHistory = [
         handleInputChange({
           target: {
             name: "birth",
-            value: date.formattedDate,
+            value: formatDateToYYYYMMDD(date.formattedDate),
           },
         });
         setFormValues((prevValues) => ({
           ...prevValues,
-          birth: date.formattedDate,
+          birth: formatDateToYYYYMMDD(date.formattedDate),
         }));
       },
     };
@@ -471,7 +470,7 @@ const updateCallback = () => {
           name: detailUserData.name,
           password: '', 
           organization: detailUserData.organization,
-          birth: formatDateToDDMMYYYY(detailUserData.birth),
+          birth: detailUserData.birth,
           position: detailUserData.position,
         });
         setHasChangesUpdate(false);
@@ -537,7 +536,7 @@ const updateCallback = () => {
         phone_no: detailUserData.phone_no,
         name: detailUserData.name,
         organization: detailUserData.organization,
-        birth: formatDateToDDMMYYYY(detailUserData.birth),
+        birth: detailUserData.birth,
         position: detailUserData.position,
       });
     }

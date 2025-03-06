@@ -16,7 +16,7 @@ import localeEn from 'air-datepicker/locale/en.js';
 import localeKo from 'air-datepicker/locale/ko.js'; 
 import localeId from 'air-datepicker/locale/id.js'; 
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
-import { formatDateKor, formatDateToYYYYMMDD } from "../../utils/date";
+import { formatDateToYYYYMMDD } from "../../utils/date";
 import useUnmappedSiteRoad from "../../hooks/useUnmappedSiteRoad";
 
 
@@ -173,12 +173,12 @@ const DetectorManagement = () => {
         handleInputChange({
           target: {
             name: "installed_date",
-            value: date.formattedDate,
+            value: formatDateToYYYYMMDD(date.formattedDate),
           },
         });
         setFormValues((prevValues) => ({
           ...prevValues,
-          installed_date: date.formattedDate,
+          installed_date: formatDateToYYYYMMDD(date.formattedDate),
         }));
       },
     };
@@ -479,9 +479,8 @@ const DetectorManagement = () => {
       );
       message.confirmClicked().then(() => {
         setDisabledForm(false);
-        const formattedData = detailDetector(dataDetector);
-        formattedData.installed_date = formatDateKor(formattedData.installed_date);
-        setFormValues(formattedData);
+        const data = detailDetector(dataDetector);
+        setFormValues(data);
         setHasChangesUpdate(false);
         setSelectedSiteId(dataDetector.site_id);
         requestAnimationFrame(() => {
@@ -537,8 +536,6 @@ const DetectorManagement = () => {
       ...formValues,
       road_id: !formValues.road_id || formValues.road_id === "NO_MAPPING" ? null : formValues.road_id,
       site_id: !formValues.site_id || formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
-
-      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
     };
     console.log(updatedFormValues);
     createDetector(updatedFormValues);
@@ -559,7 +556,6 @@ const DetectorManagement = () => {
       ...formValues,
       road_id: formValues.road_id === "NO_MAPPING" ? null : formValues.road_id,
       site_id: formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
-      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
     };
     console.log(updatedFormValues);
     updateDetector(updatedFormValues);
@@ -598,9 +594,8 @@ const DetectorManagement = () => {
 
   useEffect(() => {
     if (dataDetector) {
-      const formattedData = detailDetector(dataDetector);
-      formattedData.installed_date = formatDateKor(formattedData.installed_date);
-      setFormValues(formattedData);
+      const data = detailDetector(dataDetector);
+      setFormValues(data);
     }
   }, [dataDetector]);
   

@@ -17,7 +17,7 @@ import localeKo from 'air-datepicker/locale/ko.js';
 import localeId from 'air-datepicker/locale/id.js'; 
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
 import useSiteMgt from "../../hooks/useSiteMgt";
-import { formatDateKor, formatDateToDDMMYYYY, formatDateToMMDDYYYY, formatDateToYYYYMMDD } from "../../utils/date";
+import { formatDateToYYYYMMDD } from "../../utils/date";
 
 
 const boxTabulator = [
@@ -166,12 +166,12 @@ const BoxManagement = () => {
         handleInputChange({
           target: {
             name: "installed_date",
-            value: date.formattedDate,
+            value: formatDateToYYYYMMDD(date.formattedDate),
           },
         });
         setFormValues((prevValues) => ({
           ...prevValues,
-          installed_date: date.formattedDate,
+          installed_date: formatDateToYYYYMMDD(date.formattedDate),
         }));
       },
     };
@@ -345,13 +345,6 @@ const BoxManagement = () => {
   }
 
 
-  // useEffect(() => {
-  //   if (tbRef.current) {
-  //       tbRef.current.setSort("updated_time", "desc"); 
-  //   }
-  // }, []);
-  
-
   const optionsTabulator = {
     debugInvalidOptions: true,
     pagination: true,
@@ -464,9 +457,8 @@ const BoxManagement = () => {
       );
       message.confirmClicked().then(() => {
         setDisabledForm(false);
-        const formattedData = detailBox(dataBox);
-        formattedData.installed_date = formatDateKor(formattedData.installed_date);
-        setFormValues(formattedData);
+        const data = detailBox(dataBox);
+        setFormValues(data);
         setHasChangesUpdate(false);
         requestAnimationFrame(() => {
           if (nameRef.current) {
@@ -515,12 +507,8 @@ const BoxManagement = () => {
       return;
     }
 
-    const updatedFormValues = {
-      ...formValues,
-      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
-    };
-    console.log(updatedFormValues);
-    createBox(updatedFormValues);
+    console.log(formValues);
+    createBox(formValues);
   }  
 
   const handleConfirmButtonClick = () => {
@@ -533,16 +521,9 @@ const BoxManagement = () => {
       return;
     }
     
+    console.log(formValues);
     
-    console.log(formValues.installed_date);
-    
-    const updatedFormValues = {
-      ...formValues,
-      installed_date: formatDateToYYYYMMDD(formValues.installed_date)
-    };
-    console.log(updatedFormValues);
-    
-    updateBox(updatedFormValues);
+    updateBox(formValues);
 
   }
  
@@ -562,9 +543,8 @@ const BoxManagement = () => {
 
   useEffect(() => {
     if (dataBox) {
-      const formattedData = detailBox(dataBox);
-      formattedData.installed_date = formatDateKor(formattedData.installed_date);
-      setFormValues(formattedData);
+      const data = detailBox(dataBox);
+      setFormValues(data);
     }
   }, [dataBox]);
   
