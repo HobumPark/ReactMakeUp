@@ -665,6 +665,7 @@ const DetectorManagement = () => {
             events={{
               rowSelected: handleRowSelected,
               tableBuilt: () => {
+                tbRef.current.setSort("updated_time", "desc"); 
                 if (selectedDetector?.dt_id) {
                   const row = tbRef.current.getRow(selectedDetector?.dt_id);
                   row && row.select();

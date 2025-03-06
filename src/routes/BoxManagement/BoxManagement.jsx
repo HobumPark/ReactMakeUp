@@ -344,6 +344,14 @@ const BoxManagement = () => {
     return datalanguage
   }
 
+
+  // useEffect(() => {
+  //   if (tbRef.current) {
+  //       tbRef.current.setSort("updated_time", "desc"); 
+  //   }
+  // }, []);
+  
+
   const optionsTabulator = {
     debugInvalidOptions: true,
     pagination: true,
@@ -622,6 +630,7 @@ const BoxManagement = () => {
             events={{
               rowSelected: handleRowSelected,
               tableBuilt: () => {
+                tbRef.current.setSort("updated_time", "desc"); 
                 if (selectedBox?.rtu_id) {
                   const row = tbRef.current.getRow(selectedBox?.rtu_id);
                   row && row.select();

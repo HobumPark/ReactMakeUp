@@ -400,7 +400,7 @@ const FacilityManagement = () => {
     selectableRowsCheck: (row) => {
       return !row.getElement().classList.contains("tabulator-selected");
     },
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">${t('cmn > total')} ${data?.length} ${t('cmn > results')}</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">${t('cmn > total')} ${data?.length || 0} ${t('cmn > results')}</div>`,
   };
 
   const handleSearch = useCallback((inputVal = null) => {
@@ -694,6 +694,7 @@ const FacilityManagement = () => {
         events={{
           rowSelected: handleRowSelected,
           tableBuilt: () => {
+            tbRef.current.setSort("updated_time", "desc"); 
             if (selectedFacility?.fc_id) {
               const row = tbRef.current.getRow(selectedFacility?.fc_id);
               row && row.select();
