@@ -6,7 +6,7 @@ import { URLS, APIS } from "../config/urls.js";
 import { reqGet, reqPost, reqPut } from "../utils/request.js";
 import NoticeMessage from "../plugin/noticemessage/noticemessage.js";
 
-const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpdate = () => {} } = {}) => {
+const useAuth = ({   userID = null, onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpdate = () => {} } = {}) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -55,6 +55,7 @@ const useAuth = ({ onLoginFail = () => {} ,onResetFail = () => {}, onSuccessUpda
       const response = await reqGet(requestURL);
       return response;
     },
+    enabled: !!userID,
     staleTime: 1000 * 60 * 1,
   });
   

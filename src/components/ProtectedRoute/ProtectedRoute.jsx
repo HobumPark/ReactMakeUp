@@ -15,14 +15,19 @@ const ProtectedRoutes = () => {
     userID: user_id,
   });
 
-  const { checkStatus, handleAuthority } = useAuth({});
+  const { checkStatus, handleAuthority } = useAuth({
+    userID: user_id,
+  });
 
   const [optionParams, setOptionParams] = useState("upper-code=021&upper-code=ORG");
   const { commonListData } = useCommonCodes({ optionParams });
 
-  if (!isLogin) {
-    return <Navigate to="/" />;
-  }
+  useEffect(() => {
+    if (!isLogin) {
+      window.location.href = "/"; 
+    }
+  }, [isLogin]);
+
   const [isLanguageReady, setIsLanguageReady] = useState(false);
   const titleMap = {
     eng: "Management Page",
