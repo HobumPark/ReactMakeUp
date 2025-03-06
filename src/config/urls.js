@@ -104,8 +104,10 @@ export const APIS = {
   updateRoad: (roadId)=>`/road/${roadId}`,
   //statistic
   object:(filterParams) => `/object?${filterParams}`,
-  objectChart:(filterParams) => `/object-traffic/all?${filterParams}`,
+  objectTrafficAll:(filterParams) => `/object-traffic/all?${filterParams}`,
   objectTraffic:(filterParams) => `/object-traffic/aggregated?${filterParams}`,
   objectCnt:(filterParams) => `/object-cnt/vehicle?${filterParams}`,
+  objectCntAll:(filterParams) => `/object-cnt/vehicle-all?${filterParams}`,
   objectCntLane:(filterParams) => `/object-cnt/lane?${filterParams}`,
+  objectCntLaneAll:(filterParams) => `/object-cnt/lane-all?${filterParams}`,
 }

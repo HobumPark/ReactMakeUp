@@ -107,7 +107,7 @@ const CommunicationStatistic = () => {
     const [queryParams, setQueryParams] = useState(`start_date=${dateTime.start_date}&end_date=${dateTime.end_date}&interval=${interval}`);
 
 
-    const { objectTrafficList, objectCntList, objectCntLaneList, objectTrafficChartList } = UseStatistic({
+    const { objectTrafficList, objectCntList, objectCntLaneList, objectTrafficChartList, objectCntChartList, objectCntLaneChartList } = UseStatistic({
       queryParams: queryParams,
     });
     
@@ -115,18 +115,20 @@ const CommunicationStatistic = () => {
     const objectCnt = objectCntList?.data;
     const objectCntLane = objectCntLaneList?.data;
     const objectTrafficChart = objectTrafficChartList?.data;
+    const objectCntChart = objectCntChartList?.data;
+    const objectCntLaneChart = objectCntLaneChartList?.data;
 
-  const handleReset= () => {
-    
-    setIsResetClicked(true);
-    setDateTime({
-      start_date:formatDateTime(midnight),
-      end_date:formatDateTime(today)
-    })
-    setActiveButton('5분')
-    setInterval(5);
+    const handleReset= () => {
+      
+      setIsResetClicked(true);
+      setDateTime({
+        start_date:formatDateTime(midnight),
+        end_date:formatDateTime(today)
+      })
+      setActiveButton('5분')
+      setInterval(5);
 
-  };
+    };
 
   const handleSearch = useCallback((inputVal = null) => {
     const resultInput = inputVal ? `input=${inputVal}` : "";
@@ -148,8 +150,8 @@ const CommunicationStatistic = () => {
 
     const tabs = [
       { label: "전체 통계", content: <AllStatistic  data={objectTraffic} chartData = {objectTrafficChart} />},
-      { label: "차종별 통계", content: <StatisticByType  data={objectCnt}/> },
-      { label: "차로별 통계", content: <StatisticByLane data={objectCntLane}/> },
+      { label: "차종별 통계", content: <StatisticByType  data={objectCnt} chartData = {objectCntChart}/> },
+      { label: "차로별 통계", content: <StatisticByLane data={objectCntLane} chartData = {objectCntLaneChart}/> },
     ]
 
 

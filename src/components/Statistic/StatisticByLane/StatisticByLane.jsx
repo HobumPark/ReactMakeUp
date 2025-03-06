@@ -112,55 +112,7 @@ const statisticByTypeTabulator = [
 ];
 
 
-const options = {
-  chart: {
-    type: "line",
-    zoom: {
-      enabled: false,
-    },
-    fontFamily: "Noto Sans KR",
-    toolbar: {
-      show: false,
-    },
-  },
-  colors: [
-    "#171616",
-    "#07C403",
-    "#BBBE09",
-    "#C4032B",
-    "#C47703",
-    "#29688C",
-
-  ], // ini buat bg warna legend
-  markers: {
-    size: 4,
-    // colors: ["#EA494E", "#FDCA6A", "#439C50"],
-    // strokeColors: ["#EA494E", "#FDCA6A", "#439C50"], // ini buat stroke bg warna legend
-  },
-  stroke: {
-    show: true,
-    curve: "straight",
-    width: 1.5,
-  },
-  xaxis: {
-    categories: [
-      "01-20 12:30",
-      "01-20 12:35",
-      "01-20 12:40",
-      "01-20 12:45",
-      "01-20 12:50",
-      "01-20 12:55",
-      "01-20 13:00",
-      "01-20 13:05",
-      "01-20 13:10",
-      "01-20 13:15",
-      "01-20 13:20",
-    ],
-  },
-};
-
-
-const StatisticByLane = ({data}) => {
+const StatisticByLane = ({data, chartData}) => {
  
   const { t, i18n } = useTranslation();
   const flatData = data?.flat(Infinity);
@@ -200,6 +152,17 @@ const StatisticByLane = ({data}) => {
     };
   });
 
+  const dataCntLaneChart = chartData?.length
+  ? {
+      ...Object.fromEntries(
+        Object.keys(chartData[0]).map((key) => [
+          key,
+          chartData.map((item) => item[key] ?? 0), 
+        ])
+      ),
+    }
+  : null;
+
   
   const languageTabulator = () => {
     let datalanguage = {
@@ -231,30 +194,66 @@ const StatisticByLane = ({data}) => {
     footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${dataCntLane?.length || 0} 건</div>`,
   };
 
+  const options = {
+    chart: {
+      type: "line",
+      zoom: {
+        enabled: false,
+      },
+      fontFamily: "Noto Sans KR",
+      toolbar: {
+        show: false,
+      },
+    },
+    colors: [
+      "#171616",
+      "#07C403",
+      "#BBBE09",
+      "#C4032B",
+      "#C47703",
+      "#29688C",
+  
+    ], // ini buat bg warna legend
+    markers: {
+      size: 4,
+      // colors: ["#EA494E", "#FDCA6A", "#439C50"],
+      // strokeColors: ["#EA494E", "#FDCA6A", "#439C50"], // ini buat stroke bg warna legend
+    },
+    stroke: {
+      show: true,
+      curve: "straight",
+      width: 1.5,
+    },
+    xaxis: {
+      categories: dataCntLaneChart?.aggregate_start_time,
+    },
+  };
+  
+
   const averageWaitTime = [
     {
       name: "전체",
-      data: [30, 40, 25, 50, 49, 21, 35, 40, 23, 12, 54, 61],
+      data: dataCntLaneChart?.lane_all,
     },
     {
       name: "1차로",
-      data: [23, 12, 54, 61, 32, 56, 42, 33, 28, 18, 65, 47],
+      data: dataCntLaneChart?.lane_1,
     },
     {
       name: "2차로",
-      data: [24, 20, 5, 75, 42, 79, 10, 24, 33, 45, 12, 34],
+      data: dataCntLaneChart?.lane_2,
     },
     {
       name: "3차로",
-      data: [24, 20, 5, 5, 42, 79, 8, 19, 25, 35, 47, 53],
+      data: dataCntLaneChart?.lane_3,
     },
     {
       name: "4차로",
-      data: [2, 20, 25, 55, 42, 79, 9, 23, 38, 48, 54, 63],
+      data: dataCntLaneChart?.lane_4,
     },
     {
       name: "5차로",
-      data: [2, 0, 25, 55, 102, 79, 30, 60, 45, 35, 25, 15],
+      data: dataCntLaneChart?.lane_5,
     },
 
   ];

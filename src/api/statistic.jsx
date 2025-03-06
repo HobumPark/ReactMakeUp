@@ -12,11 +12,10 @@ export const fetchObjectTraffic = async (params = "") => {
   return await reqGet(url);
 };
 
-export const fetchObjectChart = async (params = "") => {
-  const url = `${URLS.BACK_DSH}${APIS.objectChart(params)}`;
+export const fetchObjectTrafficAll= async (params = "") => {
+  const url = `${URLS.BACK_DSH}${APIS.objectTrafficAll(params)}`;
   return await reqGet(url);
 };
-
 
 
 export const fetchObjectCnt = async (params = "") => {
@@ -24,7 +23,17 @@ export const fetchObjectCnt = async (params = "") => {
   return await reqGet(url);
 };
 
+export const fetchObjectCntAll= async (params = "") => {
+  const url = `${URLS.BACK_DSH}${APIS.objectCntAll(params)}`;
+  return await reqGet(url);
+};
+
 export const fetchObjectCntLane = async (params = "") => {
   const url = `${URLS.BACK_DSH}${APIS.objectCntLane(params)}`;
+  return await reqGet(url);
+};
+
+export const fetchObjectCntLaneAll= async (params = "") => {
+  const url = `${URLS.BACK_DSH}${APIS.objectCntLaneAll(params)}`;
   return await reqGet(url);
 };

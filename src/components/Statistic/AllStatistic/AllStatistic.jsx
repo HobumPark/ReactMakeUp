@@ -148,10 +148,6 @@ const AllStatistic = ({data, chartData}) => {
     }
   : null;
 
-console.log(dataTrafficChart);
-
-
-
 
   const { t, i18n } = useTranslation();
 

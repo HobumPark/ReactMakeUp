@@ -1,6 +1,6 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";  
-import { fetchObject, fetchObjectChart, fetchObjectCnt, fetchObjectCntLane, fetchObjectTraffic } from "../api/statistic";
+import { fetchObjectCnt, fetchObjectCntAll, fetchObjectCntLane, fetchObjectCntLaneAll, fetchObjectTraffic, fetchObjectTrafficAll } from "../api/statistic";
 
 const UseStatistic = ({
   queryParams =  "",
@@ -16,7 +16,7 @@ const UseStatistic = ({
 
   const { data: objectTrafficChartList} = useQuery({
     queryKey: ["objectTrafficChartList", queryParams],
-    queryFn: () => fetchObjectChart(queryParams),
+    queryFn: () => fetchObjectTrafficAll(queryParams),
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
   });
@@ -28,19 +28,36 @@ const UseStatistic = ({
     cacheTime: 1000 * 60 * 10,
   });
 
+  const { data: objectCntChartList} = useQuery({
+    queryKey: ["objectCntChartList", queryParams],
+    queryFn: () => fetchObjectCntAll(queryParams),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+  });
+
   const { data: objectCntLaneList } = useQuery({
     queryKey: ["objectCntLaneList", queryParams],
     queryFn: () => fetchObjectCntLane(queryParams),
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
   });
+
+  const { data: objectCntLaneChartList} = useQuery({
+    queryKey: ["objectCntLaneChartList", queryParams],
+    queryFn: () => fetchObjectCntLaneAll(queryParams),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+  });
+
   
 
   return {
     objectTrafficList,
     objectCntList,
     objectCntLaneList,
-    objectTrafficChartList
+    objectTrafficChartList,
+    objectCntChartList,
+    objectCntLaneChartList
   };
 };
 
