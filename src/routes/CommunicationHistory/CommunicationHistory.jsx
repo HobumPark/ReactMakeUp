@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import ContainerCard from "../../components/ContainerCard/ContainerCard";
 import Filtering from "../../components/Filtering/Filtering";
 import { ReactTabulator } from "react-tabulator";
@@ -108,7 +108,7 @@ const communityHistoryTabulator = [
 
 const CommunicationHistory = () => {
   const { t, i18n } = useTranslation();
-
+  const tbRef = useRef(null);
   const today = new Date();
   const [isResetClicked, setIsResetClicked] = useState(false)
 
@@ -300,8 +300,15 @@ const CommunicationHistory = () => {
             columns={communityHistoryTabulator}
             layout={"fitColumns"}
             className="tabulator-custom w-full "
-            //   pagination="local"
+            onRef={(r) => {
+              tbRef.current = r.current;
+            }}
             options={optionsTabulator}
+            events={{
+            tableBuilt: () => {
+                tbRef.current.setSort("timestamp", "desc"); 
+            }
+            }}
           />
         </ContainerCard>
       </section>

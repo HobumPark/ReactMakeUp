@@ -112,6 +112,8 @@ const Sidebar = ({ userInfo, commonData, navbarList }) => {
   // ];
   
   const [openMenu, setOpenMenu] = useState("");
+  const [isLinksReady, setIsLinksReady] = useState(false);
+
 
   const toggleVisibility = (menu) => {
     setOpenMenu((prevMenu) => (prevMenu === menu ? null : menu));
@@ -141,12 +143,22 @@ const Sidebar = ({ userInfo, commonData, navbarList }) => {
   };  
 
   useEffect(() => {
-    const currentPath = location.pathname;
-    const matchedLink = links?.find((link) => link.path === currentPath);
-    if (matchedLink) {
-      setOpenMenu(matchedLink.category);
+    if (links && links.length > 0) {
+      setIsLinksReady(true); 
     }
-  }, [location.pathname]);
+  }, [links]);  
+  
+  useEffect(() => {
+    if (isLinksReady) {  
+      const currentPath = location.pathname;
+      const matchedLink = links.find((link) => link.path === currentPath);
+  
+      if (matchedLink) {
+        setOpenMenu(matchedLink.category);
+      }
+    }
+  }, [location.pathname, isLinksReady]);  
+  
 
 
   const dashboardCategory = categories?.find(category => category.name === "DASHBOARD");
