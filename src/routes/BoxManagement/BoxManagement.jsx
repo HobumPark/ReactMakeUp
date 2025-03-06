@@ -126,7 +126,7 @@ const BoxManagement = () => {
   const detailBox = (data) => {
     return {
       remote_terminal_unit_id: data.remote_terminal_unit_id || null,
-      site_id: data.site_id || null,
+      site_id: data.site_id || 'NO_MAPPING',
       name: data.name || null,
       description: data.description || null,
       installed_date: data.installed_date || null,
@@ -498,7 +498,7 @@ const BoxManagement = () => {
 
 
   const handleRegistButtonClick = () => {
-    const { remote_terminal_unit_id, description, ...fieldsToCheck } = formValues;
+    const { remote_terminal_unit_id, description, site_id, ...fieldsToCheck } = formValues;
 
     const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
   
@@ -507,12 +507,16 @@ const BoxManagement = () => {
       return;
     }
 
-    console.log(formValues);
-    createBox(formValues);
+    const updatedFormValues = {
+      ...formValues,
+      site_id: !formValues.site_id || formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
+    };
+    console.log(updatedFormValues);
+    createBox(updatedFormValues);
   }  
 
   const handleConfirmButtonClick = () => {
-    const { remote_terminal_unit_id, description, ...fieldsToCheck } = formValues;
+    const { remote_terminal_unit_id, description, site_id, ...fieldsToCheck } = formValues;
 
     const isEmptyField = Object.values(fieldsToCheck).some(value => value === null || value === '');
   
@@ -521,14 +525,23 @@ const BoxManagement = () => {
       return;
     }
     
-    console.log(formValues);
+    const updatedFormValues = {
+      ...formValues,
+      site_id: !formValues.site_id || formValues.site_id === "NO_MAPPING" ? null : formValues.site_id,
+    };
+    console.log(updatedFormValues);
     
-    updateBox(formValues);
+    updateBox(updatedFormValues);
 
   }
  
 
  const handleDeleteButtonClick = () => {
+
+    if (formValues.site_id !== 'NO_MAPPING'){
+      new NoticeMessage('해당 함체에 매핑된 사이트가 존재합니다. 먼저 매핑을 해제해주세요')
+      return;
+    }
     const message = new NoticeMessage(
       t('msg > delete confirm'),
       {
@@ -684,7 +697,6 @@ const BoxManagement = () => {
                 inputType={'select'}
                 className="items-center!"
                 label="매핑 사이트"
-                required={true}
                 value={formValues.site_id || ""}
                 name='site_id'
                 disabled={disabledForm}
@@ -693,6 +705,7 @@ const BoxManagement = () => {
                   siteData
                     ? [
                         { value: "", label: "" },
+                        { value: "NO_MAPPING", label: "매핑 없음" }, 
                         ...siteData.map((site) => ({
                           value: site.site_id, 
                           label: `${site.name} (${site.site_id})`, 
