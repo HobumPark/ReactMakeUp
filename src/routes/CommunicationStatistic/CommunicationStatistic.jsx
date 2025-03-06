@@ -72,7 +72,6 @@ const CommunicationStatistic = () => {
             ...prevValues,
             start_date: date.formattedDate,
           }));
-          setActiveButton('');
         },
       };
   
@@ -89,7 +88,6 @@ const CommunicationStatistic = () => {
             ...prevValues,
             end_date: date.formattedDate,
           }));
-          setActiveButton('');
         },
       };
   
