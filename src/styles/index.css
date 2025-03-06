@@ -206,6 +206,13 @@
 	
 }
 
+input[type="password"]::-ms-reveal,
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+}
+
+
 .button.filtering.active:hover, 
 .button.filtering:hover  {
 	opacity: 70%;
