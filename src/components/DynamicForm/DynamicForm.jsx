@@ -24,12 +24,12 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
  }) => {
   
     const [directionValues, setDirectionValues] = useState({
-      firstDirection: '',
-      secondDirection: '',
-      thirdDirection:'',
-      fourthDirection:'',
-      fifthDirection:'',
-      sixthDirection:''
+      'incoming_direction_sub1': '',
+      'incoming_direction_sub2': '',
+      'incoming_direction_sub3': '',
+      'incoming_direction_sub4': '',
+      'incoming_direction_sub5': '',
+      'incoming_direction_sub6': ''
     });
 
     useEffect(() => {
@@ -38,12 +38,12 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
         const directions = incoming_direction.split('|');
 
         setDirectionValues({
-          firstDirection: directions[0] || '',  // 첫 번째 부분
-          secondDirection: directions[1] || '',  // 두 번째 부분
-          thirdDirection:directions[2] || '',  // 세 번째 부분
-          fourthDirection:directions[3] || '',  // 네 번째 부분
-          fifthDirection:directions[4] || '',  // 다섯 번째 부분
-          sixthDirection:directions[5] || '',  // 여섯 번째 부분
+          'incoming_direction_sub1': directions[0] || '',  // 첫 번째 부분
+          'incoming_direction_sub2': directions[1] || '',  // 두 번째 부분
+          'incoming_direction_sub3': directions[2] || '',  // 세 번째 부분
+          'incoming_direction_sub4': directions[3] || '',  // 네 번째 부분
+          'incoming_direction_sub5': directions[4] || '',  // 다섯 번째 부분
+          'incoming_direction_sub6': directions[5] || '',  // 여섯 번째 부분
         });
       }
     }, [incoming_direction]);
@@ -65,6 +65,26 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
 
     // 2. `outgoing_compass` 값이 있다면 그 값을 앞에 두고 나머지 옵션은 뒤에 배치
     return selectedOption ? [selectedOption, ...otherOptions] : allCompassOptions;
+  };
+
+  // 진입 진행 방향 도엊ㄱ으로 생성
+  const generateInputFields = () => {
+    const fields = [];
+    for (let i = 1; i <= incoming_lane_cnt; i++) {
+      fields.push(
+        <GeneralInput
+          inputFormStyle={"w-[80px]"}
+          key={`incoming_direction_sub${i}`}  // key는 고유하게 설정
+          customInput=""
+          placeholder={`좌,우,직`}  // placeholder에 번호 추가
+          name={`incoming_direction_sub${i}`}  // name을 동적으로 설정
+          pattern="^(?!.*\d).*$"  // 숫자가 포함되지 않도록 하는 패턴
+          onChange={handleRoadInputChange}
+          value={directionValues[`incoming_direction_sub${i}`]}  // 동적으로 값을 바인딩
+        />
+      );
+    }
+    return fields;
   };
 
   return (
@@ -257,18 +277,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
               showInput={false}
             >
               <div className="flex w-full flex-row gap-x-2">
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub1" 
-                onChange={handleRoadInputChange} value={directionValues.firstDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub2" 
-                onChange={handleRoadInputChange} value={directionValues.secondDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub3" 
-                onChange={handleRoadInputChange} value={directionValues.thirdDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub4" 
-                onChange={handleRoadInputChange} value={directionValues.fourthDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub5" 
-                onChange={handleRoadInputChange} value={directionValues.fifthDirection}/>
-                <GeneralInput customInput="w-full" placeholder="좌, 직" name="incoming_direction_sub6" 
-                onChange={handleRoadInputChange} value={directionValues.sixthDirection}/>
+                {generateInputFields()}
               </div>
             </DetailForm>
           </div>
@@ -290,6 +299,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       name="crosswalk_length" 
                       pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
                       title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
+                      disabled={crosswalk=='105002'? true:false}
                       onChange={handleRoadInputChange} value={crosswalk_length}/>
                     <GeneralInput 
                       customInput="w-full" 
@@ -297,6 +307,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       name="crosswalk_width" 
                       pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
                       title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
+                      disabled={crosswalk=='105002'? true:false}
                       onChange={handleRoadInputChange} value={crosswalk_width}/>
                   </div>
                 </DetailForm>

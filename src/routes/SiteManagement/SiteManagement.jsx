@@ -287,8 +287,8 @@ const SiteManagement = () => {
         incoming_direction_sub6:'', //진입방향6
         incoming_direction:'',//방향 모두 합친 값
         crosswalk:'105002',//횡단보도 유무 - 105002
-        crosswalk_length:'',//횡단보도 길이
-        crosswalk_width:'',//횡단보도 폭
+        crosswalk_length:0,//횡단보도 길이
+        crosswalk_width:0,//횡단보도 폭
         traffic_light:'106002',//보행자 신호등 유무 - 106002
         mapped_detector:'',//매핑 검지기
         mapped_vms:'', //매핑 전광판
@@ -317,7 +317,14 @@ const SiteManagement = () => {
       // 상태 업데이트
       setRoadInputList(updatedRoadInputList);
       console.log(updatedRoadInputList)
-    
+      
+      //delete - decrease number-road
+      const number_road=parseInt(siteInputFormValues.number_road)-1
+      setSiteInputFormValues({
+        ...siteInputFormValues,
+        number_road:number_road,
+      })
+
     }else if(mode == 'list_mode'){
       //상세보기 목록 모드에서도
       //기존데이터 + 새로 입력한 데이터 섞여있으므로 is_new로 검사해서
@@ -341,7 +348,14 @@ const SiteManagement = () => {
       // 상태 업데이트
       setRoadInputList(updatedRoadInputList);
       
-      reloadCallback()
+      //delete - decrease number-road
+      const number_road=parseInt(siteInputFormValues.number_road)-1
+      setSiteInputFormValues({
+        ...siteInputFormValues,
+        number_road:number_road,
+      })
+
+      //reloadCallback()
     }
   };
 
@@ -394,7 +408,7 @@ const SiteManagement = () => {
       const outGoingCompass = value
 
       if(outGoingCompass===inComingCompass){
-        alert('진출방향과 진입방향은 일치하면 안됩니다. 다시선택하세요!')
+        new NoticeMessage(t('진출방향과 진입방향은 일치하면 안됩니다. 다시선택하세요!'))
         return
       }
 
@@ -403,7 +417,7 @@ const SiteManagement = () => {
       const outGoingCompass = roadInputList[index]?.outgoing_compass
 
       if(outGoingCompass===inComingCompass){
-        alert('진출방향과 진입방향은 일치하면 안됩니다. 다시선택하세요!')
+        new NoticeMessage(t('진출방향과 진입방향은 일치하면 안됩니다. 다시선택하세요!'))
         return
       }
     }
@@ -525,29 +539,6 @@ const SiteManagement = () => {
   console.log(roadListData)
   }, []);
   
-  // select site type - Intersection or Crosswalk
-  const getSiteTypeOptions = () => {
-    console.log('getSiteTypeOptions')
-    console.log(siteInputFormValues.type)
-    if (siteInputFormValues.type === '102001') {
-      console.log('Intersection');
-
-      return [
-        { label: '교차로', value: '102001' },
-        { label: '횡단보도', value: '102002' }
-      ];
-    } else if (siteInputFormValues.type === '102002') {
-      console.log('Crosswalk');
-
-      return [
-        { label: '횡단보도', value: '102002' },
-        { label: '교차로', value: '102001' }
-      ];
-    }
-    return [];
-  };
-    
-
   //CRUD Button Group - Button State
   const [buttonState, setButtonState] = useState({
     confirm: true,
@@ -670,7 +661,7 @@ const SiteManagement = () => {
       setSiteId(null) //사이트 아이디 해제
       
       disableConfirmButtons() //확인버튼 비활성화
-      disableCancelButtons()//취소버튼 비활성화
+      //disableCancelButtons() 취소버튼 비활성화
       disableDeleteButtons()//삭제버튼 비활성화
       //siteId를 null로 하면 road 데이터 초기화
       //alert('handleNewButtonClick 로드입력 값변경')
@@ -742,11 +733,7 @@ const SiteManagement = () => {
           InitSiteRoadInputForm()
           
           reloadCallback()
-          /*
-          setTimeout(()=>{
-            window.location.reload()
-          },1000) 
-          */
+
         },
         onError: (error) => {
           console.error('createSite onError:', error);
@@ -791,11 +778,21 @@ const SiteManagement = () => {
     var emptyRoadFieldName=''
     const isRoadFieldsFilled = roadInputList?.every((item, index) => {
 
+      
+
       return Object.entries(item).every(([key, value]) => {
          // exclude filed dont check - 제외할 필드는 체크하지 않음
          // like input - disabled={true}
-        const excludedFields = ['site_id','road_id', 'mapped_detector', 'mapped_vms', 'mapped_speaker',
+        var excludedFields = ['site_id','road_id', 'mapped_detector', 'mapped_vms', 'mapped_speaker',
           'incoming_direction_sub3','incoming_direction_sub4','incoming_direction_sub5','incoming_direction_sub6'];
+
+
+        if (item.crosswalk === '105002') {//미존재할경우 -횡단보도 길이,폭 제외에 추가
+          excludedFields.push('crosswalk_width','crosswalk_length')
+        }else if(item.crosswalk === '105002'){//존재할 경우 - 제외 항목에서 제거
+          excludedFields = excludedFields.filter(field => field !== 'crosswalk_width' && field !== 'crosswalk_length');
+        }
+
         //접근방향 1,2,3,4,5,6 은 모두 채우지 않아도 상관없다. 일단 1,2만 필수 3,4,5,6은 제외시켜둠
         //접근방향 모두 합친값(incoming_direction)은 입력할때마다 새로 갱신
         //road check exclude field
@@ -864,13 +861,7 @@ const SiteManagement = () => {
       updateSiteRoad(siteRoadInfo)
       
       reloadCallback()
-      //tbRef.current.deselectRow();
-      /*
-      setTimeout(()=>{
-        //alert('reload')
-        window.location.reload()
-      },1000)
-      */
+ 
   }
   
   //취소 버튼 클릭시
@@ -913,6 +904,7 @@ const SiteManagement = () => {
         setSiteId(null)
         //siteId -> null : road list empty - siteId를 null로 하면 road 데이터 초기화
       }
+      reloadCallback()
   };
 
   const handleDeleteButtonClick = () => {
@@ -942,17 +934,13 @@ const SiteManagement = () => {
       deleteSiteRoad(siteRoadInfo)
 
       reloadCallback()
-      /*
-      setTimeout(()=>{
-        window.location.reload()
-      },1000) 
-      */
+
     });
   };
 
   const reloadCallback = () => {
     enableInitialButtons();
-    tbRef.current.deselectRow();
+    //tbRef.current.deselectRow();
     setIsRequired(false);
     emptyDetail();
     setDisabledForm(true);
@@ -1146,8 +1134,9 @@ const SiteManagement = () => {
             <div className="gap-2.5 flex flex-row items-center">
               <span className="title2bold ">접근로</span>
               <span
-                className="body1bold px-[20px] py-[3px] bg-[#3D6B85] text-[#FEFEFE] cursor-pointer hover:opacity-80"
-                onClick={addDynamicGroup}
+                className={`body1bold px-[20px] py-[3px] text-[#FEFEFE] cursor-pointer 
+                  ${isNewClicked==true || siteId != null? 'bg-[#3D6B85] hover:opacity-80' : 'bg-[#D3D3D3] cursor-not-allowed opacity-50'}`}
+                onClick={isNewClicked || siteId != null? addDynamicGroup:true}
               >
                 Add +
               </span>
