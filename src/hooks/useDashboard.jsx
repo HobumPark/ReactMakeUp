@@ -7,7 +7,8 @@ const useDashboard = ({
   id ="",
   queryParams =  "",
   objectUnqCntRoadParams = "",
-  objectUnqCntParams = ""
+  objectUnqCntParams = "",
+  siteRoadParams = ""
 }) => {
   const queryClient = useQueryClient();
 
@@ -26,8 +27,8 @@ const useDashboard = ({
   });
 
    const { data: siteRoad  } = useQuery({
-    queryKey: ["siteRoad", queryParams],
-    queryFn: () => fetchSiteRoad(queryParams),
+    queryKey: ["siteRoad", siteRoadParams],
+    queryFn: () => fetchSiteRoad(siteRoadParams),
     staleTime: 1000 * 60 * 1,
  });
 

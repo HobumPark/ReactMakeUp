@@ -62,12 +62,14 @@ const MainDashboard = () => {
     start_date:formatFullDateTime(midnight),
     end_date:formatFullDateTime(today)
   });
+  const[siteRoadParams, setSiteRoadParams] = useState('site_type=102001&site_type=102002')
 
   
   const {mapInitialView, mapDisplayPOI, siteRoad, trafficEventTime, objectUnqCntRoad, objectUnqCnt, trafficEvent } = useDashboard({
     id: id,
     objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
     objectUnqCntRoadParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&top=5`,
+    siteRoadParams: siteRoadParams
   });
   
   const mapInitial = mapInitialView?.data;
@@ -77,7 +79,6 @@ const MainDashboard = () => {
   const trafficEventData = trafficEvent?.data;
   const objectUnqCntData = objectUnqCnt?.data;
   const objectUnqCntRoadData = objectUnqCntRoad?.data; 
-
 
   const [selectedButtons, setSelectedButtons] = useState({
     button1: false,
@@ -239,16 +240,13 @@ const MainDashboard = () => {
         ];
 
         icons.forEach((iconData) => {
-          // Buat elemen tombol untuk setiap ikon
           const newButton = document.createElement("button");
           newButton.innerHTML = `<img src="${iconData.src}" alt="${iconData.title}" width="20" height="20">`;
           newButton.className = "custom-icon-button";
           newButton.title = iconData.title;
 
-          // Tambahkan event click ke masing-masing tombol
           newButton.onclick = iconData.action;
 
-          // Masukkan ikon ke dalam kontrol zoom
           zoomControl.appendChild(newButton);
         });
       }
@@ -299,12 +297,15 @@ const MainDashboard = () => {
           switch (clickedItem.type) {
             case "box":
               alert("Icon Box clicked!");
+              window.open("/dashboard/equipment-info", "_blank", "width=800,height=600");
               break;
             case "102001":
-              alert("Icon Intersection clicked!");
+              alert("Icon crossroad clicked!");
+              window.open("/dashboard/crossroad", "_blank", "width=800,height=600");
               break;
             case "102002":
               alert("Icon Crosswalk clicked!");
+              window.open("/dashboard/crosswalk", "_blank", "width=800,height=600");
               break;
             case "221001":
               alert("Icon Speaker clicked!");
@@ -337,6 +338,8 @@ const MainDashboard = () => {
     { label: "대형 트럭", icon: IconHeavyTruck, count: objectUnqCntData?.["301004"] },
     { label: "기타", icon: IconUnknown, count: objectUnqCntData?.["301008"] },
   ];
+  const maxYValue = Math.max(...(objectUnqCntRoadData?.map(item => item.total_cnt) || [0]));
+
 
   const options = {
     chart: {
@@ -365,13 +368,7 @@ const MainDashboard = () => {
       },
     },
     xaxis: {
-      categories: [
-        "서울특별시청 방면",
-        "갈현교차로 방면",
-        "자유로 방면",
-        "금촌 방면",
-        "제 2자유로 방면",
-      ],
+      categories: objectUnqCntRoadData?.map(item => item.road_name),
       labels: {
         style: { colors: "#D1D2D3", fontSize: "10px" },
       },
@@ -380,10 +377,11 @@ const MainDashboard = () => {
         color: "#343A3F",
       },
       min: 0,
-      max: 240,
-      tickAmount: 6,
+      max: maxYValue,
+      tickAmount: 6
     },
     yaxis: {
+
       labels: {
         style: { colors: "#D1D2D3", fontSize: "10px" },
       },
@@ -401,13 +399,13 @@ const MainDashboard = () => {
   const series = [
     {
       name: "Data",
-      data: [200, 129, 120, 100, 80], // Nilai masing-masing bar
+      data: objectUnqCntRoadData?.map(item => item.total_cnt), 
     },
   ];
 
   const [openSections, setOpenSections] = useState([]);
   const [activeCard, setActiveCard] = useState(null);
-  // Fungsi untuk toggle status accordion
+
   const toggleAccordion = (id) => {
     setOpenSections((prev) =>
       prev.includes(id)
@@ -420,69 +418,29 @@ const MainDashboard = () => {
     setActiveCard((prev) => (prev === cardId ? null : cardId));
   };
 
-  const accordionData = [
-    {
-      id: 1,
-      title: "횡단보도",
-      subtitle: "제 2자유로 방면",
-      count: 400,
-      cardData: [
-        {
-          id: "ACCID0001",
+  const accordionData = siteRoadData?.sites?.map((site) => {
+    const borderStyle = site.type === '102001' ? 'border-[#ED3131]' : 'border-[#EE9F17]';
+  
+    const cardData = site.roads && site.roads.length > 0
+    ? site.roads.map((road) => ({
+        id: `ACCID${road.incoming_compass}`,
+        title: road.name,
+        subtitle: `${road.incoming_compass} / ${road.outgoing_compass}`,
+        borderStyle: borderStyle,
+      }))
+    : [];
+  
+    return {
+      id: site.site_id,
+      title: site.name,
+      subtitle: `Road Count: ${site.road_cnt}`,
+      count: site.road_cnt,
+      cardData: cardData,
+    };
+  });
 
-          title: "북 (6차선) / 남(6차선)",
-          subtitle: "제 2자유로 방면",
-          borderStyle: "border-[#ED3131]",
-        },
-        {
-          id: "ACCID0002",
-          title: "동 (4차선) / 서(4차선)",
-          subtitle: "제 3자유로 방면",
-          borderStyle: "border-[#ED3131]",
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: "횡단보도",
-      subtitle: "제 3자유로 방면",
-      count: 250,
-      cardData: [
-        {
-          id: "ACCID0003",
-          title: "남 (3차선) / 북(3차선)",
-          subtitle: "제 1자유로 방면",
-          borderStyle: "border-[#EE9F17]",
-        },
-        {
-          id: "ACCID0004",
-          title: "북 (6차선) / 남(6차선)",
-          subtitle: "제 2자유로 방면",
-          borderStyle: "border-[#EE9F17]",
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "Palangkaraya",
-      subtitle: "제 1자유로 방면",
-      count: 150,
-      cardData: [
-        {
-          id: "ACCID0005",
-          title: "남 (3차선) / 북(3차선)",
-          subtitle: "제 1자유로 방면",
-          borderStyle: "border-[#EE9F17]",
-        },
-        {
-          id: "ACCID0006",
-          title: "동 (4차선) / 서(4차선)",
-          subtitle: "제 3자유로 방면",
-          borderStyle: "border-[#EE9F17]",
-        },
-      ],
-    },
-  ];
+  console.log(selectedButtons);
+  
 
   return (
     <>
@@ -624,7 +582,7 @@ const MainDashboard = () => {
                     }`}
                     onClick={() => handleSelect("button2")}
                   >
-                    교차로
+                  횡단보도
                   </button>
                   <input
                     type="text"
@@ -634,7 +592,7 @@ const MainDashboard = () => {
                 </div>
 
                 <div className="_contentCardList w-full  flex flex-col gap-[5px] overflow-auto h-full">
-                  {accordionData.map(({ id, title, count, cardData }) => (
+                  {accordionData?.map(({ id, title, count, cardData }) => (
                     <div key={id} className="w-full">
                       {/* Accordion Header */}
                       <div
