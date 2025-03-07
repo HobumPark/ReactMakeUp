@@ -304,7 +304,6 @@ const DetectorManagement = () => {
   const data = detectorListData?.data;
   const dataDetector = detailDetectorData?.data;
 
-
   const { commonListData } = useCommonCodes({ optionParams });
   const { unmappedSiteRoad } = useUnmappedSiteRoad({ resource });
 
@@ -575,7 +574,7 @@ const DetectorManagement = () => {
   }
 
  const handleDeleteButtonClick = () => {
-  if (formValues.site_id !== 'NO_MAPPING' || formValues.road_id !== 'NO_MAPPING') {
+  if (dataDetector.site_id || dataDetector.road_id) {
       new NoticeMessage('해당 함체에 매핑된 사이트가 존재합니다. 먼저 매핑을 해제해주세요')
       return;
     }

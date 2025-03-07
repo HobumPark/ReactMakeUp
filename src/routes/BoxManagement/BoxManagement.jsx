@@ -538,7 +538,7 @@ const BoxManagement = () => {
 
  const handleDeleteButtonClick = () => {
 
-    if (formValues.site_id !== 'NO_MAPPING'){
+    if (dataBox.site_id){
       new NoticeMessage('해당 함체에 매핑된 사이트가 존재합니다. 먼저 매핑을 해제해주세요')
       return;
     }
