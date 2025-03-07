@@ -20,7 +20,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
   //road info props
   road_id, name, crosswalk_length, crosswalk_width, traffic_light, incoming_direction, site_id, crosswalk,
   incoming_compass,outgoing_compass,incoming_lane_cnt, outgoing_lane_cnt,
-  mapped_vms, mapped_speaker
+  mapped_detector, mapped_vms, mapped_speaker
  }) => {
   
     const [directionValues, setDirectionValues] = useState({
@@ -186,6 +186,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                 styleLabel="w-[124px]!"
                 label="매핑 검지기"
                 //placeholder="DT01001(ID0003)"
+                value={mapped_detector || ""}
                 name="mapped_detector"
                 disabled={true}
                 onChange={handleRoadInputChange}

@@ -325,6 +325,14 @@ const SiteManagement = () => {
 
       const roadToDelete = roadInputList[index];
 
+      //check if there is mapped_vms, speaker, ...
+      //
+      if(roadToDelete.mapped_detector || roadToDelete.mapped_vms || roadToDelete.mapped_speaker){
+        new NoticeMessage(t('삭제 불가능 (관련 검지기,전광판,스피커 존재)'))
+        return
+      }
+
+
       if (roadToDelete.is_new==false) {
         //기존에 존재하던 데이터면 삭제 API
         deleteRoad(road_id)
@@ -916,6 +924,15 @@ const SiteManagement = () => {
       }
     );
     message.confirmClicked().then(() => {
+
+      if(siteInputFormValues?.mapped_box){//check if there is mapped_box
+        const {mapped_box}=siteInputFormValues
+        console.log('삭제 mapped_box')
+        console.log(mapped_box)
+        new NoticeMessage(t('함체 정보가 존재하므로 삭제 불가능'))
+        return
+      }
+
       //alert('삭제 진행!')
       const siteId=siteInputFormValues?.site_id
       const roadIdList = roadInputList.map(item => item.road_id);
@@ -955,6 +972,10 @@ const SiteManagement = () => {
       if (detailSiteData) {
         console.log('useEffect detailSiteData')
         console.log(detailSiteData)
+        setSiteInputFormValues((prevValues) => ({
+          ...prevValues,
+          mapped_box: detailSiteData?.data.mapped_box,//set box info from detailSite mgt
+        }));
       }
   }, [detailSiteData]); 
   
