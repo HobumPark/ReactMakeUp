@@ -24,12 +24,12 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
  }) => {
   
     const [directionValues, setDirectionValues] = useState({
-      firstDirection: '',
-      secondDirection: '',
-      thirdDirection:'',
-      fourthDirection:'',
-      fifthDirection:'',
-      sixthDirection:''
+      'incoming_direction_sub1': '',
+      'incoming_direction_sub2': '',
+      'incoming_direction_sub3': '',
+      'incoming_direction_sub4': '',
+      'incoming_direction_sub5': '',
+      'incoming_direction_sub6': ''
     });
 
     useEffect(() => {
@@ -38,12 +38,12 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
         const directions = incoming_direction.split('|');
 
         setDirectionValues({
-          firstDirection: directions[0] || '',  // 첫 번째 부분
-          secondDirection: directions[1] || '',  // 두 번째 부분
-          thirdDirection:directions[2] || '',  // 세 번째 부분
-          fourthDirection:directions[3] || '',  // 네 번째 부분
-          fifthDirection:directions[4] || '',  // 다섯 번째 부분
-          sixthDirection:directions[5] || '',  // 여섯 번째 부분
+          'incoming_direction_sub1': directions[0] || '',  // 첫 번째 부분
+          'incoming_direction_sub2': directions[1] || '',  // 두 번째 부분
+          'incoming_direction_sub3': directions[2] || '',  // 세 번째 부분
+          'incoming_direction_sub4': directions[3] || '',  // 네 번째 부분
+          'incoming_direction_sub5': directions[4] || '',  // 다섯 번째 부분
+          'incoming_direction_sub6': directions[5] || '',  // 여섯 번째 부분
         });
       }
     }, [incoming_direction]);
@@ -73,7 +73,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
     for (let i = 1; i <= incoming_lane_cnt; i++) {
       fields.push(
         <GeneralInput
-          inputFormStyle={"w-[100px]"}
+          inputFormStyle={"w-[80px]"}
           key={`incoming_direction_sub${i}`}  // key는 고유하게 설정
           customInput=""
           placeholder={`좌,우,직`}  // placeholder에 번호 추가

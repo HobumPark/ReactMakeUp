@@ -661,7 +661,7 @@ const SiteManagement = () => {
       setSiteId(null) //사이트 아이디 해제
       
       disableConfirmButtons() //확인버튼 비활성화
-      disableCancelButtons()//취소버튼 비활성화
+      //disableCancelButtons() 취소버튼 비활성화
       disableDeleteButtons()//삭제버튼 비활성화
       //siteId를 null로 하면 road 데이터 초기화
       //alert('handleNewButtonClick 로드입력 값변경')
