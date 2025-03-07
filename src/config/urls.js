@@ -110,4 +110,12 @@ export const APIS = {
   objectCntAll:(filterParams) => `/object-cnt/vehicle-all?${filterParams}`,
   objectCntLane:(filterParams) => `/object-cnt/lane?${filterParams}`,
   objectCntLaneAll:(filterParams) => `/object-cnt/lane-all?${filterParams}`,
+  //Main dashboard
+  mapInitialView:'/map/initial-view',
+  mapDisplayPOI: '/map/poi',
+  siteRoad:(filterParams) => `/site-road?${filterParams}`,
+  trafficEventTime:(filterParams) => `/traffic-event-list/by-time?${filterParams}`,
+  trafficEvent: (id) =>`/traffic-event/${id}`,
+  objectUnqCnt:(filterParams) => `/object-unq-cnt/vehicle/total?${filterParams}`,
+  objectUnqCntRoad:(filterParams) => `/object-unq-cnt/road-vehicle?${filterParams}`,
 }

@@ -6,7 +6,6 @@ import Map from "ol/Map";
 import View from "ol/View";
 // import { Tile as TileLayer } from "ol/layer";
 import { Tile as TileLayer } from "ol/layer";
-import { XYZ } from "ol/source"; // Untuk menggunakan tile sumber XYZ
 import { OSM } from "ol/source";
 import { fromLonLat } from "ol/proj";
 import Feature from "ol/Feature";
@@ -16,13 +15,15 @@ import VectorSource from "ol/source/Vector";
 import Style from "ol/style/Style";
 import Icon from "ol/style/Icon";
 import DbVideoModal from "../../components/Modal/DbVideoModal/DbVideoModal";
-
 import CardList from "../../components/CardList/CardList";
-
 import Chart from "react-apexcharts";
 
 import IconCrosswalk from "../../assets/icon/icon-db-crosswalk.svg";
 import IconIntersection from "../../assets/icon/icon-db-intersection.svg";
+import IconDetector from "../../assets/icon/icon-db-detector.svg";
+import IconVms  from "../../assets/icon/icon-db-vms.svg";
+import IconBox from "../../assets/icon/icon-db-box.svg";
+import IconSpeaker from "../../assets/icon/icon-db-speaker.svg";
 
 import IconCar from "../../assets/icon/icon-db-car.svg";
 import IconMotor from "../../assets/icon/icon-db-motorcycles.svg";
@@ -49,10 +50,35 @@ import IconDarkMap from "../../assets/icon/icon-dark-map.svg";
 import IconSatelite from "../../assets/icon/icon-satelite-map.svg";
 
 import Colorize from "ol-ext/filter/Colorize";
-import CanvasFilter from "ol-ext/filter/CanvasFilter";
-import id from "air-datepicker/locale/id";
+import useDashboard from "../../hooks/useDashboard";
+import { formatFullDateTime } from "../../utils/date";
 
 const MainDashboard = () => {
+  const [id, setId] = useState('');
+  const [POIData, setPOIData] = useState("");
+  const today = new Date();
+  const midnight = new Date(new Date().setHours(0, 0, 0, 0));
+  const [dateTime] = useState({
+    start_date:formatFullDateTime(midnight),
+    end_date:formatFullDateTime(today)
+  });
+
+  
+  const {mapInitialView, mapDisplayPOI, siteRoad, trafficEventTime, objectUnqCntRoad, objectUnqCnt, trafficEvent } = useDashboard({
+    id: id,
+    objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
+    objectUnqCntRoadParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&top=5`,
+  });
+  
+  const mapInitial = mapInitialView?.data;
+  const mapDisplay = mapDisplayPOI?.data;
+  const siteRoadData = siteRoad?.data;
+  const trafficEventTimeData = trafficEventTime?.data;
+  const trafficEventData = trafficEvent?.data;
+  const objectUnqCntData = objectUnqCnt?.data;
+  const objectUnqCntRoadData = objectUnqCntRoad?.data; 
+
+
   const [selectedButtons, setSelectedButtons] = useState({
     button1: false,
     button2: false,
@@ -110,7 +136,6 @@ const MainDashboard = () => {
 
   const mapRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
-
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -170,8 +195,8 @@ const MainDashboard = () => {
       layers: [tileLayer],
 
       view: new View({
-        center: fromLonLat([106.8456, -6.2088]),
-        zoom: 10,
+        center: fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]),
+        zoom: mapInitial?.[0]?.view_zoom,
       }),
     });
 
@@ -229,77 +254,88 @@ const MainDashboard = () => {
       }
     }, 100);
 
+    const iconMapping = {
+      "102001": IconIntersection,  
+      "102002": IconCrosswalk,     
+      "221001": IconSpeaker,     
+      "221002": IconVms,         
+      "detector": IconDetector,  
+      "box": IconBox               
+    };
+
+    const features = mapDisplay?.poi?.map(item => {
+      const iconSrc = iconMapping[item.type] || IconDefault;  
     const iconFeature = new Feature({
-      geometry: new Point(fromLonLat([106.8456, -6.2088])), // Lokasi Jakarta
+        geometry: new Point(fromLonLat([item.lng, item.lat])),
     });
-
+    
     iconFeature.setStyle(
-      new Style({
-        image: new Icon({
-          src: IconCrosswalk,
-          scale: 1,
-        }),
-      })
-    );
-
-    const iconFeature2 = new Feature({
-      geometry: new Point(fromLonLat([106.85, -6.21])),
+        new Style({
+          image: new Icon({
+            src: iconSrc,
+            scale: 1,
+          }),
+        })
+      );
+      iconFeature.setId(item.type);
+      return iconFeature;
     });
-
-    iconFeature2.setStyle(
-      new Style({
-        image: new Icon({
-          src: IconIntersection,
-          scale: 1,
-        }),
-      })
-    );
 
     const vectorLayer = new VectorLayer({
       source: new VectorSource({
-        features: [iconFeature, iconFeature2],
+        features: features,  
       }),
     });
+    
 
     olMap.addLayer(vectorLayer);
 
-    olMap.on("click", (event) => {
-      const feature = olMap.forEachFeatureAtPixel(
-        event.pixel,
-        (feature) => feature
-      );
-
-      if (feature) {
-        setShowModal(true); // Tampilkan modal saat ikon diklik
-      }
+    olMap.on('click', (event) => {
+      olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
+        const featureId = feature.getId();
+        const clickedItem = mapDisplay.poi?.find(item => item.type === featureId);
+        
+        if (clickedItem) {
+          switch (clickedItem.type) {
+            case "box":
+              alert("Icon Box clicked!");
+              break;
+            case "102001":
+              alert("Icon Intersection clicked!");
+              break;
+            case "102002":
+              alert("Icon Crosswalk clicked!");
+              break;
+            case "221001":
+              alert("Icon Speaker clicked!");
+              break;
+            case "221002":
+              alert("Icon VMS clicked!");
+              break;
+            case "detector":
+              alert("Icon Detector clicked!");
+              setPOIData(clickedItem);
+              setShowModal(true); 
+              break;
+            default:
+              alert("Unknown icon clicked!");
+          }
+        }
+      });
     });
 
-    // olMap.on("click", (event) => {
-    //   const feature = olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
-    //     return feature;
-    //   });
-
-    //   if (feature) {
-    //     if (feature === iconFeature) {
-    //       alert("Icon Crosswalk clicked!");
-    //     } else if (feature === iconFeature2) {
-    //       alert("Icon Intersection clicked!");
-    //     }
-    //   }
-    // });
-
     return () => olMap.setTarget(null);
-  }, []);
+  }, [mapInitial, mapDisplay]);
 
   const vehicleData = [
-    { label: "승용차", icon: IconCar, count: 300 },
-    { label: "오토바이", icon: IconMotor, count: 300 },
-    { label: "버스", icon: IconBus, count: 300 },
-    { label: "트럭", icon: IconTruck, count: 300 },
-    { label: "승합차", icon: IconVan, count: 300 },
-    { label: "자전거", icon: IconBicycles, count: 300 },
-    { label: "대형 트럭", icon: IconHeavyTruck, count: 300 },
-    { label: "기타", icon: IconUnknown, count: 300 },
+    { label: "승용차", icon: IconCar, count: objectUnqCntData?.["301000"] },
+    { label: "오토바이", icon: IconMotor, count: objectUnqCntData?.["301006"] },
+    { label: "버스", icon: IconBus, count: objectUnqCntData?.["301005"] },
+    { label: "트럭", icon: IconTruck, count: objectUnqCntData?.["301003"] },
+    { label: "승합차", icon: IconVan, count: objectUnqCntData?.["301002"] },
+    { label: "자전거", icon: IconBicycles, count: objectUnqCntData?.["301007"] },
+    { label: "대형 트럭", icon: IconHeavyTruck, count: objectUnqCntData?.["301004"] },
+    { label: "기타", icon: IconUnknown, count: objectUnqCntData?.["301008"] },
   ];
 
   const options = {
@@ -486,32 +522,32 @@ const MainDashboard = () => {
                     <img src={LegendBillboard} alt="" />
                     <span className="title3 text-[#4B3C3C]">전광판</span>
                     <span className="title3 text-[#4B3C3C]">
-                      ( <span className="text-text-danger-500">3</span> /{" "}
-                      <span>30</span> )
+                      ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.vms_error ?? 0}</span> /{" "}
+                      <span>{mapDisplay?.cnt?.[0]?.vms_total ?? 0}</span> )
                     </span>
                   </div>
                   <div className="flex flex-row gap-[5px]">
                     <img src={LegendSpeaker} alt="" />
                     <span className="title3 text-[#4B3C3C]">전광판</span>
                     <span className="title3 text-[#4B3C3C]">
-                      ( <span className="text-text-danger-500">3</span> /{" "}
-                      <span>30</span> )
+                      ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.speaker_error ?? 0}</span> /{" "}
+                      <span>{mapDisplay?.cnt?.[0]?.speaker_total ?? 0}</span> )
                     </span>
                   </div>
                   <div className="flex flex-row gap-[5px]">
                     <img src={LegendSignal} alt="" />
                     <span className="title3 text-[#4B3C3C]">레이더</span>
                     <span className="title3 text-[#4B3C3C]">
-                      ( <span className="text-text-danger-500">3</span> /{" "}
-                      <span>30</span> )
+                      ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.detector_error ?? 0}</span> /{" "}
+                      <span>{mapDisplay?.cnt?.[0]?.detector_total ?? 0}</span> )
                     </span>
                   </div>
                   <div className="flex flex-row gap-[5px]">
                     <img src={LegendBox} alt="" />
                     <span className="title3 text-[#4B3C3C]">함체</span>
                     <span className="title3 text-[#4B3C3C]">
-                      ( <span className="text-text-danger-500">3</span> /{" "}
-                      <span>30</span> )
+                      ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.box_error ?? 0}</span> /{" "}
+                      <span>{mapDisplay?.cnt?.[0]?.box_total ?? 0}</span> )
                     </span>
                   </div>
                 </div>
@@ -520,7 +556,7 @@ const MainDashboard = () => {
           </div>
 
           {/* bg-left */}
-          <div class="flex flex-col gap-[5px] overflow-hidden p-[10px] top-[10px] left-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+          <div className="flex flex-col gap-[5px] overflow-hidden p-[10px] top-[10px] left-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
             <div className="_boxTrafficVihacle flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden">
               <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                 <span className="title3bold text-text-white">
@@ -643,7 +679,7 @@ const MainDashboard = () => {
           </div>
 
           {/* bg-right */}
-          <div class="overflow-hidden top-[10px] p-[10px] right-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+          <div className="overflow-hidden top-[10px] p-[10px] right-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
             <div className="_eventListRight flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden h-full">
               <div className="bg-header-content w-full h-[36px] flex items-center px-[15px] justify-between">
                 <span className="title3bold text-text-white">
@@ -742,7 +778,7 @@ const MainDashboard = () => {
             </div>
           </div>
 
-          {showModal && <DbVideoModal onClose={() => setShowModal(false)} />}
+          {showModal && <DbVideoModal data={POIData} onClose={() => setShowModal(false)} />}
         </div>
       </section>
     </>

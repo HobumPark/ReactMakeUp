@@ -50,7 +50,8 @@ const ProtectedRoutes = () => {
 
   const isDashboard = location.pathname.startsWith("/dashboard");
   if (isDashboard) {
-    return isLanguageReady ? <Outlet /> : null;
+    return isLanguageReady ? <Outlet context={{ userInfo: detailUserData }} /> : null;
+
   }
   
   return (
