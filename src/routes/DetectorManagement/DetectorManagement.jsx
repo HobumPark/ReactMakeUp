@@ -332,7 +332,19 @@ const DetectorManagement = () => {
     if (selectedDetectorRef.current?.dt_id) {
       setHasChangesUpdate(true);
     }
+
+
   };
+
+  useEffect(() => {
+    if (selectedSiteId == "NO_MAPPING") {
+      setFormValues(prevValues => ({
+        ...prevValues,
+        road_id: "NO_MAPPING", 
+      }));
+    }
+  }, [selectedSiteId]);
+  
 
   const handleOnChangeInputSelect = useCallback(({ target }) => {
     const { value } = target;
@@ -563,6 +575,10 @@ const DetectorManagement = () => {
   }
 
  const handleDeleteButtonClick = () => {
+    if (formValues.site_id && formValues.road_id !== 'NO_MAPPING'){
+      new NoticeMessage('해당 함체에 매핑된 사이트가 존재합니다. 먼저 매핑을 해제해주세요')
+      return;
+    }
     const message = new NoticeMessage(
       t('msg > delete confirm'),
       {
@@ -588,7 +604,6 @@ const DetectorManagement = () => {
         })) || [])
     ]
   : [{ value: "", label: "" }]; 
-;
 
 
 

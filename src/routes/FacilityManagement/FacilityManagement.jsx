@@ -306,7 +306,6 @@ const FacilityManagement = () => {
     },
     onCreateSuccess: (responseData) => {
       reloadCallback();
-      console.log(responseData);
       const newID = responseData.facility_id;
       setNewId(newID);
     },
@@ -329,7 +328,6 @@ const FacilityManagement = () => {
 
   
     if (name === "site_id") {
-      console.log("Site changed:", value);
       setSelectedSiteId(value);
     }
 
@@ -366,6 +364,15 @@ const FacilityManagement = () => {
     const { value } = target;
     setSelectedOption(value);
   }, []); 
+
+  useEffect(() => {
+    if (selectedSiteId == "NO_MAPPING") {
+      setFormValues(prevValues => ({
+        ...prevValues,
+        road_id: "NO_MAPPING", 
+      }));
+    }
+  }, [selectedSiteId]);
 
   
   const languageTabulator = () => {
@@ -464,7 +471,6 @@ const FacilityManagement = () => {
     }); 
   }, []);
 
-  console.log(selectedSiteId);
 
   const handleNewButtonClick = () => {
     if(hasChangesCreate || hasChangesUpdate){
@@ -595,6 +601,11 @@ const FacilityManagement = () => {
   }
 
  const handleDeleteButtonClick = () => {
+    if (formValues.site_id && formValues.road_id !== 'NO_MAPPING'){
+      new NoticeMessage('해당 함체에 매핑된 사이트가 존재합니다. 먼저 매핑을 해제해주세요')
+      return;
+    }
+
     const message = new NoticeMessage(
       t('msg > delete confirm'),
       {
@@ -693,7 +704,6 @@ const FacilityManagement = () => {
               const row = tbRef.current.getRow(selectedFacility?.fc_id);
               row && row.select();
             }else if (newId){
-              console.log(newId)
               const row = tbRef.current.getRow(newId);
               tbRef.current.scrollToRow(row, "bottom", true);
               tbRef.current.selectRow(newId);

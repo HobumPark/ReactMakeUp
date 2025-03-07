@@ -2110,6 +2110,30 @@ textarea {
   }
   
 
+  .tabulator-tooltip {
+    max-width: 200px !important;  
+    word-wrap: break-word;  
+    white-space: normal; 
+    position: absolute !important;  
+    z-index: 9999;  
+    background-color: #F9F9FA;  
+    color: black;
+    border-radius: 4px;  
+    padding: 5px;  
+	border: 1px solid #135A78;
+	box-shadow: 0px 4px 7.3px 0px rgba(0, 0, 0, 0.16);
+	font-size: 12px;
+	transform: translate(-50%, -50%);
+    left: 50%; 
+    top: 50%;  
+	pointer-events: none;  
+
+	
+}
+
+
+  
+  
 /* ----------------------------- */
 /* Custom Scroll setting (Start) */
 .tabulator-tableholder::-webkit-scrollbar{
