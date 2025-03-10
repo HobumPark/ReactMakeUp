@@ -116,6 +116,7 @@ export const APIS = {
   siteRoad:(filterParams) => `/site-road?${filterParams}`,
   trafficEventTime:(filterParams) => `/traffic-event-list/by-time?${filterParams}`,
   trafficEvent: (id) =>`/traffic-event/${id}`,
+  trafficEventCnt: (filterParams)=>`/traffic-event-cnt?${filterParams}`,
   objectUnqCnt:(filterParams) => `/object-unq-cnt/vehicle/total?${filterParams}`,
   objectUnqCntRoad:(filterParams) => `/object-unq-cnt/road-vehicle?${filterParams}`,
 }

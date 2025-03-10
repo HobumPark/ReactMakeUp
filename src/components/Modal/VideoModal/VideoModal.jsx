@@ -12,7 +12,7 @@ const VideoModal = ({videoUrl}) => {
           {/* <img src={IconClose} alt="" srcset="" /> */}
         </div>
         <div className="container-video flex w-full h-full bg-[#000]">
-            <img src={ImgDummy} alt="" srcset="" className="w-full h-full bg-cover bg-no-repeat object-cover"/>
+            <img src={videoUrl} alt="" srcset="" className="w-full h-full bg-cover bg-no-repeat object-cover"/>
         </div>
       </section>
     </>
