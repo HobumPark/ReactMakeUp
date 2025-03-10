@@ -384,15 +384,12 @@ const MainDashboard = () => {
         if (clickedItem) {
           switch (clickedItem.type) {
             case "box":
-              alert("Icon Box clicked!");
               window.open("/dashboard/equipment-info", "_blank", "width=800,height=600");
               break;
             case "102001":
-              alert("Icon crossroad clicked!");
               window.open("/dashboard/crossroad", "_blank", "width=800,height=600");
               break;
             case "102002":
-              alert("Icon Crosswalk clicked!");
               window.open("/dashboard/crosswalk", "_blank", "width=800,height=600");
               break;
             case "221001":
@@ -400,7 +397,6 @@ const MainDashboard = () => {
             case "221002":
               break;
             case "detector":
-              alert("Icon Detector clicked!");
               setPOIData(clickedItem);
               setShowModal(true); 
               break;
