@@ -17,6 +17,8 @@ export const fetchSiteRoad= async (params = "") => {
 };
 
 export const fetchTrafficEventTime= async (params = "") => {
+  console.log('fetchTrafficEventTime')
+  console.log(params)
   const url = `${URLS.BACK_DSH}${APIS.trafficEventTime(params)}`;
   return await reqGet(url);
 };

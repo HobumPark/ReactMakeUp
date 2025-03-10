@@ -19,6 +19,9 @@ export const handleErrorCode = (errCode) => {
   };
   
   export const reqGet = async (url) => {
+    console.log('reqGet')
+    console.log(url)
+    //alert(url)
     return await fetch(url, {
       method: "GET",
       credentials: "include",
