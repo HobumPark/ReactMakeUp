@@ -7,6 +7,8 @@ import View from "ol/View";
 // import { Tile as TileLayer } from "ol/layer";
 import { Tile as TileLayer } from "ol/layer";
 import { OSM } from "ol/source";
+import BingMaps from 'ol/source/BingMaps';  
+
 import { fromLonLat } from "ol/proj";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
@@ -53,6 +55,7 @@ import Colorize from "ol-ext/filter/Colorize";
 import useDashboard from "../../hooks/useDashboard";
 import { formatFullDateTime } from "../../utils/date";
 import { useTranslation } from "react-i18next";
+import useTrafficEvent from "../../hooks/useTrafficEvent";
 
 const MainDashboard = () => {
   const {t} = useTranslation();
@@ -72,17 +75,18 @@ const MainDashboard = () => {
     button2: "102002",
   };
   const [inputValue, setInputValue] = useState("");
-  const [eventID, setEventID] = useState("");
-
   const[siteRoadParams, setSiteRoadParams] = useState('site_type=102001&site_type=102002');
   const [trafficEventParams, setTrafficEventParams] = useState('')
   
   
-  const {mapInitialView, mapDisplayPOI, siteRoad, trafficEventTime, objectUnqCntRoad, objectUnqCnt, trafficEvent } = useDashboard({
-    id: eventID,
+  const {mapInitialView, mapDisplayPOI, siteRoad, objectUnqCntRoad, objectUnqCnt } = useDashboard({
     objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
     objectUnqCntRoadParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&top=5`,
     siteRoadParams: siteRoadParams,
+    trafficEventParams: trafficEventParams
+  });
+
+  const {trafficEventTime } = useTrafficEvent({
     trafficEventParams: trafficEventParams
   });
   
@@ -90,7 +94,6 @@ const MainDashboard = () => {
   const mapDisplay = mapDisplayPOI?.data;
   const siteRoadData = siteRoad?.data;
   const trafficEventTimeData = trafficEventTime?.data;
-  const trafficEventData = trafficEvent?.data;
   const objectUnqCntData = objectUnqCnt?.data;
   const objectUnqCntRoadData = objectUnqCntRoad?.data; 
 
@@ -185,31 +188,41 @@ const MainDashboard = () => {
   useEffect(() => {
     if (!mapRef.current) return;
 
-    const tileLayer = new TileLayer({
-      source: new OSM(),
-    });
+    const layerMap = {
+      osm: new TileLayer({
+        title: "osm",
+        visible: true,
+        source: new OSM(),
+      }),
+      road: new TileLayer({
+        title: "road",
+        visible: false,
+        source: new BingMaps({
+          key: "Ag0RC261GIS2piKGzsg9RmnvrT8GHg9jVY27kPWUs28axMxdSfGJhCf2unSg6eeg",  
+        }),
+      }),
+      canvaslight: new TileLayer({
+        title: "canvaslight",
+        visible: false,
+        source: new OSM(),
+      }),
+      satellite: new TileLayer({
+        title: "satellite",
+        visible: false,
+        source: new BingMaps({
+          key: "Ag0RC261GIS2piKGzsg9RmnvrT8GHg9jVY27kPWUs28axMxdSfGJhCf2unSg6eeg",  
+          imagerySet: "AerialWithLabelsOnDemand",  
+        }),
+      }),
+    };
 
-    // Black (Dark Mode)
-    // tileLayer.on("prerender", (event) => {
-    //   if (event.context) {
-    //     const ctx = event.context;
-    //     ctx.filter = "grayscale(100%) invert(100%) contrast(120%)";
-    //   }
-    // });
-
-    // tileLayer.on("postrender", (event) => {
-    //   if (event.context) {
-    //     const ctx = event.context;
-    //     ctx.filter = "none";
-    //   }
-    // });
 
     const enhanceOption = new Colorize();
     enhanceOption.setFilter({
       operation: "enhance",
       value: Number("0.1"),
     });
-    tileLayer.addFilter(enhanceOption);
+    layerMap.osm.addFilter(enhanceOption);
 
     // alt black mode (30, 20, 10)
     // 'color' option - RGB4 ( Blue Dark =  50, 30, 0 )
@@ -221,7 +234,7 @@ const MainDashboard = () => {
       blue: Number("0"),
       value: Number("1"),
     });
-    tileLayer.addFilter(colorOption);
+    layerMap.osm.addFilter(colorOption);
 
     // 'saturation' option => highlight lines on the land
     const saturationOption = new Colorize();
@@ -229,16 +242,23 @@ const MainDashboard = () => {
       operation: "enhance",
       value: Number("0.1"),
     });
-    tileLayer.addFilter(saturationOption);
+    layerMap.osm.addFilter(saturationOption);
 
     var invert_filter = new Colorize();
-    tileLayer.addFilter(invert_filter);
+    layerMap.osm.addFilter(invert_filter);
     invert_filter.setFilter("invert");
 
-    // ✅ Inisialisasi peta
+    const layers = [
+      layerMap["osm"],
+      layerMap["road"],
+      layerMap["canvaslight"],
+      layerMap["satellite"],
+    ];
+
+    // Map definition
     const olMap = new Map({
       target: mapRef.current,
-      layers: [tileLayer],
+      layers: layers,
 
       view: new View({
         center: fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]),
@@ -247,13 +267,34 @@ const MainDashboard = () => {
       
     });
 
+    const changeMapView = () => {
+      if (olMap) {
+        const newCenter = fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]);
+        const newZoom = mapInitial?.[0]?.view_zoom || 5;
+  
+        olMap.getView().animate({
+          center: newCenter,
+          zoom: newZoom,
+          duration: 1000, 
+        });
+      }
+    };
+
+    const changeLayer = (layerTitle) => {
+      Object.keys(layerMap).forEach((title) => {
+        const layer = layerMap[title];
+        if (title === layerTitle) {
+          layer.setVisible(true); 
+        } else {
+          layer.setVisible(false); 
+        }
+      });
+    };
 
     setTimeout(() => {
-      // Ambil elemen kontrol zoom
       const zoomControl = document.querySelector(".ol-zoom");
 
       if (zoomControl) {
-        // ✅ Hapus semua tombol ikon lama sebelum menambahkan yang baru
         zoomControl
           .querySelectorAll(".custom-icon-button")
           .forEach((btn) => btn.remove());
@@ -262,27 +303,27 @@ const MainDashboard = () => {
           {
             src: IconReturn,
             title: "return",
-            action: () => alert("Arrow clicked!"),
+            action: () => changeMapView(),
           },
           {
             src: IconDefault,
             title: "default",
-            action: () => alert("Home clicked!"),
+            action: () => changeLayer("osm"),
           },
           {
             src: IconRoadMap,
             title: "Location Icon",
-            action: () => alert("Location clicked!"),
+            action: () => changeLayer("canvaslight"),
           },
           {
             src: IconDarkMap,
-            title: "Dark MAp",
-            action: () => alert("Settings clicked!"),
+            title: "Dark Map",
+            action: () => changeLayer("osm"),
           },
           {
             src: IconSatelite,
             title: "satelit",
-            action: () => alert("Settings clicked!"),
+            action: () => changeLayer("satellite"),
           },
         ];
 
@@ -514,16 +555,14 @@ const MainDashboard = () => {
   };
 
   const handleDoubleClick = (data) => {
-    setEventID(data._id)
-    if (trafficEventData) {
-      sessionStorage.setItem("eventData", JSON.stringify(trafficEventData))
-      const newWindow = window.open(
-        "/img-modal",
-        "_blank",
-        "width=800,height=600,left=200,top=100"
-      );
-      
-      if (newWindow) newWindow.focus();
+    const newWindow = window.open(
+      `/img-modal?id=${data._id}`,
+      "_blank",
+      "width=800,height=600,left=200,top=100"
+    );
+    if (newWindow) {
+      newWindow.dataId = data._id; 
+      newWindow.focus();
     }
   };
  

@@ -1,6 +1,5 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";  
-import { fetchObjectCnt, fetchObjectCntAll, fetchObjectCntLane, fetchObjectCntLaneAll, fetchObjectTraffic, fetchObjectTrafficAll } from "../api/statistic";
 import { fetchMapDisplayPOI, fetchMapInitial, fetchObjectUnqCnt, fetchObjectUnqCntRoad, fetchSiteRoad, fetchTrafficEvent, fetchTrafficEventTime } from "../api/dashboard";
 
 const useDashboard = ({
@@ -33,14 +32,13 @@ const useDashboard = ({
     staleTime: 1000 * 60 * 1,
  });
 
-    const { data: trafficEventTime,  } = useQuery({
+    const { data: trafficEventTime  } = useQuery({
      queryKey: ["trafficEventTime", trafficEventParams],
      queryFn: () => fetchTrafficEventTime(trafficEventParams),
     staleTime: 1000 * 60 * 1,
     });
 
-  
-    const { data: trafficEvent, } = useQuery({
+    const { data: trafficEvent } = useQuery({
       queryKey: ["trafficEvent", id],
       queryFn: () => fetchTrafficEvent(id),
       retry: false, 
@@ -64,8 +62,6 @@ const useDashboard = ({
     });
 
 
-
-  
 
   return {
     mapInitialView,
