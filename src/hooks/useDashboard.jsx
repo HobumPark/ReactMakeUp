@@ -8,7 +8,8 @@ const useDashboard = ({
   queryParams =  "",
   objectUnqCntRoadParams = "",
   objectUnqCntParams = "",
-  siteRoadParams = ""
+  siteRoadParams = "",
+  trafficEventParams = ""
 }) => {
   const queryClient = useQueryClient();
 
@@ -33,8 +34,8 @@ const useDashboard = ({
  });
 
     const { data: trafficEventTime,  } = useQuery({
-     queryKey: ["trafficEventTime", queryParams],
-     queryFn: () => fetchTrafficEventTime(queryParams),
+     queryKey: ["trafficEventTime", trafficEventParams],
+     queryFn: () => fetchTrafficEventTime(trafficEventParams),
     staleTime: 1000 * 60 * 1,
     });
 

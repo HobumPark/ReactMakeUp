@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Header from "../../components/Header/Header";
 import "./MainDashboard.css";
 import "ol/ol.css";
@@ -52,9 +52,10 @@ import IconSatelite from "../../assets/icon/icon-satelite-map.svg";
 import Colorize from "ol-ext/filter/Colorize";
 import useDashboard from "../../hooks/useDashboard";
 import { formatFullDateTime } from "../../utils/date";
+import { useTranslation } from "react-i18next";
 
 const MainDashboard = () => {
-  const [id, setId] = useState('');
+  const {t} = useTranslation();
   const [POIData, setPOIData] = useState("");
   const today = new Date();
   const midnight = new Date(new Date().setHours(0, 0, 0, 0));
@@ -62,14 +63,27 @@ const MainDashboard = () => {
     start_date:formatFullDateTime(midnight),
     end_date:formatFullDateTime(today)
   });
-  const[siteRoadParams, setSiteRoadParams] = useState('site_type=102001&site_type=102002')
+  const [selectedButtons, setSelectedButtons] = useState({
+    button1: false,
+    button2: false,
+  });
+  const siteTypeMap = {
+    button1: "102001",
+    button2: "102002",
+  };
+  const [inputValue, setInputValue] = useState("");
+  const [eventID, setEventID] = useState("");
 
+  const[siteRoadParams, setSiteRoadParams] = useState('site_type=102001&site_type=102002');
+  const [trafficEventParams, setTrafficEventParams] = useState('')
+  
   
   const {mapInitialView, mapDisplayPOI, siteRoad, trafficEventTime, objectUnqCntRoad, objectUnqCnt, trafficEvent } = useDashboard({
-    id: id,
+    id: eventID,
     objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
     objectUnqCntRoadParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&top=5`,
-    siteRoadParams: siteRoadParams
+    siteRoadParams: siteRoadParams,
+    trafficEventParams: trafficEventParams
   });
   
   const mapInitial = mapInitialView?.data;
@@ -80,10 +94,23 @@ const MainDashboard = () => {
   const objectUnqCntData = objectUnqCnt?.data;
   const objectUnqCntRoadData = objectUnqCntRoad?.data; 
 
-  const [selectedButtons, setSelectedButtons] = useState({
-    button1: false,
-    button2: false,
-  });
+  const updateSiteRoadParams = () => {
+    const resultInput = inputValue ? `input=${inputValue}` : "";
+    const siteType = Object.keys(selectedButtons)
+      .filter((key) => !selectedButtons[key]) 
+      .map((key) => siteTypeMap[key]);
+  
+    const resultSelect = siteType.length > 0 ? `&site_type=${siteType.join("&site_type=")}` : "";
+    const result = resultInput + resultSelect;
+    setSiteRoadParams(result);
+  };
+  
+
+  const handleSearch = useCallback((event) => {
+    if (event.key === "Enter") {
+      updateSiteRoadParams();
+    }
+  }, [inputValue]);
 
   const handleSelect = (button) => {
     setSelectedButtons((prev) => ({
@@ -92,13 +119,17 @@ const MainDashboard = () => {
     }));
   };
 
+  useEffect(() => {
+    updateSiteRoadParams(); 
+  }, [selectedButtons, inputValue]);
+
   const [selectBtnEvent, setselectBtnEvent] = useState({
-    btnEvent1: false,
-    btnEvent2: false,
-    btnEvent3: false,
-    btnEvent4: false,
-    btnEvent5: false,
-    btnEvent6: false,
+    EVT_TP_WWD: false,
+    EVT_TP_STP: false,
+    EVT_TP_SPD: false,
+    EVT_TP_JW: false,
+    EVT_TP_ILP: false,
+    EVT_TP_SLV: false,
   });
 
   const handleBtnEventList = (button) => {
@@ -108,35 +139,49 @@ const MainDashboard = () => {
     }));
   };
 
-  const [activeIndex, setActiveIndex] = useState(null);
-
-  const handleCardClick = (index) => {
-    setActiveIndex(index);
+  const updateTrafficEventParams = () => {
+    const resultInput = dateTime
+      ? `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`
+      : "";
+    const typeKeys = Object.keys(selectBtnEvent).filter((key) => !selectBtnEvent[key]);
+    const resultSelect = typeKeys.length > 0 ? `&type=${typeKeys.join("&type=")}` : "";
+    const result = resultInput + resultSelect;
+    setTrafficEventParams(result);
   };
 
-  const cardDataEvent = [
-    {
-      customCard: "border-[#135A78]",
-      title: "삼성역 사거리 교차로 / 시청 방면",
-      subtitle: "승용차 / 진입 / 1차로",
-      date: "2025-01-20 12:30:00",
-    },
-    {
-      customCard: "border-[#ED3131]",
-      title: "강남역 사거리 교차로 / 시청 방면",
-      subtitle: "버스 / 진입 / 2차로",
-      date: "2025-01-21 14:45:00",
-    },
-    {
-      customCard: "border-[#1D7E46]",
-      title: "서울역 사거리 교차로 / 시청 방면",
-      subtitle: "택시 / 진입 / 3차로",
-      date: "2025-01-22 10:15:00",
-    },
-  ];
+  useEffect(() => {
+    updateTrafficEventParams(); 
+  }, [selectBtnEvent]);
+
+  const [activeIndex, setActiveIndex] = useState(null);
+
+
+  const eventTypeColorMap = {
+    EVT_TP_WWD: "border-[#135A78]",
+    EVT_TP_STP: "border-[#ED3131]",
+    EVT_TP_SPD: "border-[#1D7E46]",
+    EVT_TP_JW:  "border-[#5791AA]",
+    EVT_TP_ILP: "border-[#EE9F17]",
+    EVT_TP_SLV: "border-[#F35A19]",  
+  };
+  
+  
+  const cardDataEvent = (trafficEventTimeData?.events?.length > 0 
+    ? trafficEventTimeData.events.map((event) => ({
+        customCard: eventTypeColorMap[event.type_code] || "border-[#000000]",
+        title: `${event.site_name} ${event.road_name} / ${event.vehicle_type}`,
+        subtitle: `${event.lane_direction} ${event.lane_moving_direction} / ${event.lane_number}`,
+        date: event.timestamp,
+        data: event
+      }))
+    : []);
 
   const mapRef = useRef(null);
+  const olMapRef = useRef(null);
+  
   const [showModal, setShowModal] = useState(false);
+
+
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -199,7 +244,9 @@ const MainDashboard = () => {
         center: fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]),
         zoom: mapInitial?.[0]?.view_zoom,
       }),
+      
     });
+
 
     setTimeout(() => {
       // Ambil elemen kontrol zoom
@@ -252,6 +299,7 @@ const MainDashboard = () => {
       }
     }, 100);
 
+
     const iconMapping = {
       "102001": IconIntersection,  
       "102002": IconCrosswalk,     
@@ -285,7 +333,6 @@ const MainDashboard = () => {
       }),
     });
     
-
     olMap.addLayer(vectorLayer);
 
     olMap.on('click', (event) => {
@@ -308,10 +355,8 @@ const MainDashboard = () => {
               window.open("/dashboard/crosswalk", "_blank", "width=800,height=600");
               break;
             case "221001":
-              alert("Icon Speaker clicked!");
               break;
             case "221002":
-              alert("Icon VMS clicked!");
               break;
             case "detector":
               alert("Icon Detector clicked!");
@@ -324,9 +369,31 @@ const MainDashboard = () => {
         }
       });
     });
+    olMapRef.current = olMap;
 
-    return () => olMap.setTarget(null);
+    return () => {
+      if (olMapRef.current) {
+        olMapRef.current.setTarget(null);
+        olMapRef.current = null; // Reset the map reference
+      }
+    };
   }, [mapInitial, mapDisplay]);
+
+  const moveMapToPOI = (id) => {
+    const mapEntry = mapDisplay?.poi?.find((entry) => entry.id === id);
+    if (mapEntry) {
+      const { lat, lng } = mapEntry;
+      if (lat && lng) {
+        olMapRef.current.getView().setCenter(fromLonLat([lng, lat]))
+        olMapRef.current.getView().setZoom(6);
+      } else {
+        console.error("Invalid coordinates for the selected POI");
+      }
+    } else {
+      console.error("No POI found with the given id");
+    }
+  };
+
 
   const vehicleData = [
     { label: "승용차", icon: IconCar, count: objectUnqCntData?.["301000"] },
@@ -412,10 +479,12 @@ const MainDashboard = () => {
         ? prev.filter((sectionId) => sectionId !== id)
         : [...prev, id]
     );
+    moveMapToPOI(id);
   };
 
-  const handleCardClickSiteList = (cardId) => {
+  const handleCardClickSiteList = (cardId, id) => {
     setActiveCard((prev) => (prev === cardId ? null : cardId));
+    moveMapToPOI(id);
   };
 
   const accordionData = siteRoadData?.sites?.map((site) => {
@@ -423,7 +492,7 @@ const MainDashboard = () => {
   
     const cardData = site.roads && site.roads.length > 0
     ? site.roads.map((road) => ({
-        id: `ACCID${road.incoming_compass}`,
+        id: road.road_id,
         title: road.name,
         subtitle: `${road.incoming_compass} / ${road.outgoing_compass}`,
         borderStyle: borderStyle,
@@ -439,8 +508,35 @@ const MainDashboard = () => {
     };
   });
 
-  console.log(selectedButtons);
-  
+  const handleCardClick = (index, data) => {
+    setActiveIndex(index);
+    moveMapToPOI(data.site_id)
+  };
+
+  const handleDoubleClick = (data) => {
+    setEventID(data._id)
+    if (trafficEventData) {
+      sessionStorage.setItem("eventData", JSON.stringify(trafficEventData))
+      const newWindow = window.open(
+        "/img-modal",
+        "_blank",
+        "width=800,height=600,left=200,top=100"
+      );
+      
+      if (newWindow) newWindow.focus();
+    }
+  };
+ 
+
+  const totalEVT = [
+    "EVT_TP_WWD",
+    "EVT_TP_STP",
+    "EVT_TP_SPD",
+    "EVT_TP_JW",
+    "EVT_TP_ILP",
+    "EVT_TP_SLV"
+  ].reduce((sum, eventType) => sum + (trafficEventTimeData?.cnt?.[eventType] || 0), 0);
+   
 
   return (
     <>
@@ -571,7 +667,7 @@ const MainDashboard = () => {
                     }`}
                     onClick={() => handleSelect("button1")}
                   >
-                    교차로
+                    교차로  {siteRoadData?.crosswalk_cnt ?? 0}
                   </button>
 
                   <button
@@ -582,12 +678,15 @@ const MainDashboard = () => {
                     }`}
                     onClick={() => handleSelect("button2")}
                   >
-                  횡단보도
+                  횡단보도  {siteRoadData?.intersection_cnt ?? 0}
                   </button>
                   <input
                     type="text"
                     className="input-db-text w-full col-span-2"
                     placeholder="number event"
+                    onKeyUp={handleSearch}
+                    value={inputValue} 
+                    onChange={(e) => setInputValue(e.target.value)}
                   />
                 </div>
 
@@ -623,7 +722,7 @@ const MainDashboard = () => {
                                 id={cardId}
                                 subtitle={subtitle}
                                 isActive={activeCard === cardId}
-                                onClick={() => handleCardClickSiteList(cardId)}
+                                onClick={() => handleCardClickSiteList(cardId, id)}
                               />
                             )
                           )}
@@ -643,80 +742,80 @@ const MainDashboard = () => {
                 <span className="title3bold text-text-white">
                   이벤트 리스트
                 </span>
-                <span className="title3bold text-text-white">600</span>
+                <span className="title3bold text-text-white">{totalEVT}</span>
               </div>
               <div className="flex flex-col w-full py-[15px] px-[10px] gap-[15px] overflow-hidden flex-1">
                 <div className="grid grid-cols-3 gap-[5px]">
                   <button
                     className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.btnEvent1
+                      selectBtnEvent.EVT_TP_WWD
                         ? "bg-transparent border-[#135A78] text-text-white"
                         : "bg-[#135A78] text-text-white border-[#135A78]"
                     }`}
-                    onClick={() => handleBtnEventList("btnEvent1")}
+                    onClick={() => handleBtnEventList("EVT_TP_WWD")}
                   >
-                    <span className="text-text-white title3">역주행</span>
-                    <span className="text-text-white title2bold">500</span>
+                    <span className="text-text-white title3">{t('EVT_TP_WWD')}</span>
+                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_WWD}</span>
                   </button>
 
                   <button
                     className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.btnEvent2
+                      selectBtnEvent.EVT_TP_STP
                         ? "bg-transparent border-text-danger-500 text-text-danger-500 text-text-white"
                         : "bg-text-danger-500 text-text-white border-text-danger-500"
                     }`}
-                    onClick={() => handleBtnEventList("btnEvent2")}
+                    onClick={() => handleBtnEventList("EVT_TP_STP")}
                   >
-                    <span className="text-text-white title3">정차</span>
-                    <span className="text-text-white title2bold">500</span>
+                    <span className="text-text-white title3">{t('EVT_TP_STP')}</span>
+                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_STP}</span>
                   </button>
 
                   <button
                     className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.btnEvent3
+                      selectBtnEvent.EVT_TP_SPD
                         ? "bg-transparent border-[#1D7E46]  text-text-white"
                         : "bg-[#1D7E46] text-text-white border-[#1D7E46]"
                     }`}
-                    onClick={() => handleBtnEventList("btnEvent3")}
+                    onClick={() => handleBtnEventList("EVT_TP_SPD")}
                   >
-                    <span className="text-text-white title3">정차</span>
-                    <span className="text-text-white title2bold">500</span>
+                    <span className="text-text-white title3">{t('EVT_TP_SPD')}</span>
+                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_SPD}</span>
                   </button>
 
                   <button
                     className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.btnEvent4
+                      selectBtnEvent.EVT_TP_JW
                         ? "bg-transparent border-[#5791AA]  text-text-white"
                         : "bg-[#5791AA] text-text-white border-[#5791AA]"
                     }`}
-                    onClick={() => handleBtnEventList("btnEvent4")}
+                    onClick={() => handleBtnEventList("EVT_TP_JW")}
                   >
-                    <span className="text-text-white title3">보행자</span>
-                    <span className="text-text-white title2bold">500</span>
+                    <span className="text-text-white title3">{t('EVT_TP_JW')}</span>
+                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_JW}</span>
                   </button>
 
                   <button
                     className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.btnEvent5
+                      selectBtnEvent.EVT_TP_ILP
                         ? "bg-transparent border-[#EE9F17]  text-text-white"
                         : "bg-[#EE9F17] text-text-white border-[#EE9F17]"
                     }`}
-                    onClick={() => handleBtnEventList("btnEvent5")}
+                    onClick={() => handleBtnEventList("EVT_TP_ILP")}
                   >
-                    <span className="text-text-white title3">불법 주정차</span>
-                    <span className="text-text-white title2bold">500</span>
+                    <span className="text-text-white title3">{t('EVT_TP_ILP')}</span>
+                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_ILP}</span>
                   </button>
 
                   <button
                     className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.btnEvent6
+                      selectBtnEvent.EVT_TP_SLV
                         ? "bg-transparent border-[#F35A19]  text-text-white"
                         : "bg-[#F35A19] text-text-white border-[#F35A19]"
                     }`}
-                    onClick={() => handleBtnEventList("btnEvent6")}
+                    onClick={() => handleBtnEventList("EVT_TP_SLV")}
                   >
-                    <span className="text-text-white title3">정지선 위반</span>
-                    <span className="text-text-white title2bold">500</span>
+                    <span className="text-text-white title3">{t('EVT_TP_SLV')}</span>
+                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_SLV}</span>
                   </button>
                 </div>
 
@@ -728,7 +827,8 @@ const MainDashboard = () => {
                       key={index}
                       {...card}
                       isActive={activeIndex === index}
-                      onClick={() => handleCardClick(index)}
+                      onClick={() => handleCardClick(index, card.data)}
+                      onDoubleClick={() => handleDoubleClick(card.data)} 
                     />
                   ))}
                 </div>
