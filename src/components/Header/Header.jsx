@@ -55,7 +55,10 @@ const Header = () => {
 
     return () => clearInterval(intervalId);
   }, [i18n.language]);
-  
+
+  const handleNavigate = (url) => {
+    window.open(url, "_blank");
+  };
   return (
     <>
       <header className="w-full flex flex-row justify-between h-[62px] text-text-white bg-db-black ">
@@ -64,19 +67,19 @@ const Header = () => {
             <span className="m-auto h5bold">SMART TRAFFIC</span>
           </div>
           <div className="flex w-fit flex-row h-full items-center">
-            <div className="flex flex-col items-center gap-[5px] w-[97px]">
+            <div className="flex flex-col items-center gap-[5px] w-[97px]" onClick={() => handleNavigate("/statistic/communication-history")}>
               <img src={IconStatistic} alt="IconStatistic" />
               <span className="body1medium text-text-white">통계</span>
             </div>
-            <div className="flex flex-col items-center gap-[5px] w-[97px]">
+            <div className="flex flex-col items-center gap-[5px] w-[97px]"  onClick={() => handleNavigate("/system-management/user")}>
               <img src={IconSystem} alt="IconSystem" />
               <span className="body1medium text-text-white">시스템</span>
             </div>
-            <div className="flex flex-col items-center gap-[5px] w-[97px]">
+            <div className="flex flex-col items-center gap-[5px] w-[97px]"  onClick={() => handleNavigate("/site-management/site")}>
               <img src={IconSitus} alt="IconSitus" />
               <span className="body1medium text-text-white">사이트</span>
             </div>
-            <div className="flex flex-col items-center gap-[5px] w-[97px]">
+            <div className="flex flex-col items-center gap-[5px] w-[97px]"  onClick={() => handleNavigate("/asset-management/box")}>
               <img src={IconAsset} alt="IconAsset" />
               <span className="body1medium text-text-white">자산</span>
             </div>
