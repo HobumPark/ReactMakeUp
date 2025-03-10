@@ -124,6 +124,11 @@ const SiteManagement = () => {
 
   const [queryParams, setQueryParams] = useState(""); // queryParams 상태
   const [siteId, setSiteId] = useState(null); // siteId 상태
+  const [selectedSiteId, setSelectedSiteId]= useState({
+    site_id: null,
+  })
+  const [newId, setNewId] = useState('');
+
   //const [selectedSiteId, setSelectedSiteId]= useState(null)
   const [curRowId, setCurRowId] = useState(null); //현재 선택된 row번호
 
@@ -287,8 +292,8 @@ const SiteManagement = () => {
         incoming_direction_sub6:'', //진입방향6
         incoming_direction:'',//방향 모두 합친 값
         crosswalk:'105002',//횡단보도 유무 - 105002
-        crosswalk_length:0,//횡단보도 길이
-        crosswalk_width:0,//횡단보도 폭
+        crosswalk_length:null,//횡단보도 길이
+        crosswalk_width:null,//횡단보도 폭
         traffic_light:'106002',//보행자 신호등 유무 - 106002
         mapped_detector:'',//매핑 검지기
         mapped_vms:'', //매핑 전광판
@@ -521,6 +526,11 @@ const SiteManagement = () => {
   console.log('siteId:'+siteId);
   setSiteId(siteId)
 
+  //selectedSite set
+  setSelectedSiteId({
+    site_id: rowData.site_id,  
+  });
+
   // 바로 폼에 값을 설정하는 방식
   setSiteInputFormValues({
     site_id: rowData.site_id,
@@ -575,6 +585,7 @@ const SiteManagement = () => {
       description:'description'
     }));
   };
+  
 
   //CRUD Button Group Function
   const disableAllButtons = () => {
@@ -649,7 +660,9 @@ const SiteManagement = () => {
         //검색후 하단 박스 초기화
         enableInitialButtons()
         emptyDetail()
-        disabledForm()
+        //alert('empty road')
+        setRoadInputList([])
+        reloadCallback()
       }, []
   );
 
@@ -1008,7 +1021,21 @@ const SiteManagement = () => {
             events={{
               rowSelected: handleRowSelected,
               tableBuilt: () => {
-                console.log('tableBuilt')
+                if (selectedSiteId?.site_id) {
+                  //console.log('tablueBuilt selectedSiteId!')
+                  tbRef.current.getRows().forEach(row => {
+                    //console.log('finding~')
+                    console.log(row.getData())
+                    if (row.getData().site_id === selectedSiteId.site_id) {
+                      //console.log('selectedSiteId find!')
+                      row.select(); // site_id가 일치하는 행을 선택
+                    }
+                  });
+                } else if (newId){
+                    const row = tbRef.current.getRow(newId);
+                    tbRef.current.scrollToRow(row, "bottom", true);
+                    tbRef.current.selectRow(newId);
+              }
               },
             }}
           />
