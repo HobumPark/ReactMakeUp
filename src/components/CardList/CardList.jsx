@@ -14,6 +14,8 @@ const CardList = ({
   showId = true,
   isActive, 
   onClick,
+  onDoubleClick, 
+  data
 }) => {
 
 
@@ -30,6 +32,7 @@ const CardList = ({
             isActive ? "bg-[#5B5C5C]" : "bg-[#31363D]"
           } ${typeStyles.event}`}
           onClick={onClick}
+          onDoubleClick= {onDoubleClick}
         >
           <div className="w-full flex flex-row">
             <span
