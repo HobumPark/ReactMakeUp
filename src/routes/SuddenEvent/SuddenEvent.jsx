@@ -235,14 +235,19 @@ const SuddenEvent = () => {
   firstDate.setHours(today.getHours() - 1); // 1시간 뺀 값
 
   const secondDate = new Date(today);
-  const [dateTime,setDateTime] = useState({
+  //2개 시간 기준이 달라서
+  const [dateTime1,setDateTime1] = useState({
     start_date:formatFullDateTime(firstDate),
     end_date:formatFullDateTime(secondDate)
   });
+  const [dateTime2,setDateTime2] = useState({
+    start_date:formatDateTime(firstDate),
+    end_date:formatDateTime(secondDate)
+  });
 
   const {trafficEventTime,trafficEventCnt} = useSuddenMgt({
-    queryParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
-   
+    queryParamsTime: `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`,
+    queryParamsCnt: `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}`,
   });
 
   console.log('trafficEventTime')
@@ -289,7 +294,7 @@ const SuddenEvent = () => {
     // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
     const secondDate = new Date(today);
 
-    setDateTime({
+    setDateTime1({
       start_date: formatFullDateTime(firstDate),
       end_date: formatFullDateTime(secondDate)
     });
@@ -345,7 +350,7 @@ const SuddenEvent = () => {
       onSelect: (date) => {
         console.log('select start date')
         console.log(date.formattedDate)
-        setDateTime((prevValues) => ({
+        setDateTime1((prevValues) => ({
           ...prevValues,
           start_date: date.formattedDate,  // 날짜가 시분초 포함된 형식으로 반환됨
         }));
@@ -362,7 +367,7 @@ const SuddenEvent = () => {
       onSelect: (date) => {
         console.log('select end date')
         console.log(date.formattedDate)
-        setDateTime((prevValues) => ({
+        setDateTime1((prevValues) => ({
           ...prevValues,
           end_date: date.formattedDate,  // 날짜가 시분초 포함된 형식으로 반환됨
         }));
@@ -375,7 +380,7 @@ const SuddenEvent = () => {
     // 두 번째 날짜 선택기
     const datepicker2 = new AirDatepicker('[name="second-date"]', optionsDateSecond);
 
-    setDateTime({
+    setDateTime1({
       start_date: formatFullDateTime(firstDate),
       end_date: formatFullDateTime(secondDate)
     });
@@ -388,18 +393,18 @@ const SuddenEvent = () => {
   },[activeButton])
 
   useEffect(() => {
-    if (dateTime.start_date && dateTime.end_date) {
+    if (dateTime1.start_date && dateTime1.end_date) {
       // trafficEventTime 값이 배열이라면, 하나씩 출력
 
 
     }
-  }, [dateTime]); // dateTime 값이 변경될 때마다 실행
+  }, [dateTime1]); // dateTime 값이 변경될 때마다 실행
 
 
   useEffect(() => {
     // 두 날짜 간 차이를 계산
-    const startDate = new Date(dateTime.start_date);
-    const endDate = new Date(dateTime.end_date);
+    const startDate = new Date(dateTime1.start_date);
+    const endDate = new Date(dateTime1.end_date);
     const timeDifference = endDate - startDate; // 밀리초 단위 차이
     const timeInterval = timeDifference / 12; // 12개의 구간으로 나누기
 
@@ -422,7 +427,7 @@ const SuddenEvent = () => {
     setCategories(newCategories);
 
 
-  }, [dateTime]); // dateTime이 변경될 때마다 실행
+  }, [dateTime1]); // dateTime이 변경될 때마다 실행
 
   const languageTabulator = () => {
     let datalanguage = {
@@ -565,13 +570,13 @@ const SuddenEvent = () => {
               <GeneralInput 
                 isDob={true}
                 inputType="text"
-                value={dateTime?.start_date}
+                value={dateTime1?.start_date}
                 name={"first-date"} />
               <span>-</span>
               <GeneralInput
                 isDob={true}
                 inputType="text"
-                value={dateTime?.end_date}
+                value={dateTime1?.end_date}
                 name={"second-date"}
               />
             </div>

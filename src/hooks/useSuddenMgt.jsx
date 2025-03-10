@@ -3,19 +3,20 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchTrafficEventTime, fetchTrafficEventCnt } from "../api/sudden-mgt";
 
 const useSuddenMgt = ({
-  queryParams =  "",
+  queryParamsTime =  "",
+  queryParamsCnt = ""
 }) => {
     const queryClient = useQueryClient();
 
     const { data: trafficEventTime,  } = useQuery({
-        queryKey: ["trafficEventTime", queryParams],
-        queryFn: () => fetchTrafficEventTime(queryParams),
+        queryKey: ["trafficEventTime", queryParamsTime],
+        queryFn: () => fetchTrafficEventTime(queryParamsTime),
     staleTime: 1000 * 60 * 1,
     });
 
     const { data: trafficEventCnt,  } = useQuery({
-        queryKey: ["trafficEventCnt", queryParams],
-        queryFn: () => fetchTrafficEventCnt(queryParams),
+        queryKey: ["trafficEventCnt", queryParamsCnt],
+        queryFn: () => fetchTrafficEventCnt(queryParamsCnt),
     staleTime: 1000 * 60 * 1,
     });
 
