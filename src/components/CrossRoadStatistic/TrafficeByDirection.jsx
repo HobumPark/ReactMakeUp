@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import Chart from "react-apexcharts";
 import "./TrafficeByDirection.css";
 
-const TrafficeByDirection = () => {
+const TrafficeByDirection = ({data}) => {
+  console.log(data);
+  
   const options = {
     chart: {
       type: "line",

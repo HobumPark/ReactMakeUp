@@ -437,14 +437,14 @@ const MainDashboard = () => {
 
 
   const vehicleData = [
-    { label: "승용차", icon: IconCar, count: objectUnqCntData?.["301000"] },
+    { label: "승용차", icon: IconCar, count: objectUnqCntData?.["301001"] },
     { label: "오토바이", icon: IconMotor, count: objectUnqCntData?.["301006"] },
     { label: "버스", icon: IconBus, count: objectUnqCntData?.["301005"] },
     { label: "트럭", icon: IconTruck, count: objectUnqCntData?.["301003"] },
     { label: "승합차", icon: IconVan, count: objectUnqCntData?.["301002"] },
     { label: "자전거", icon: IconBicycles, count: objectUnqCntData?.["301007"] },
     { label: "대형 트럭", icon: IconHeavyTruck, count: objectUnqCntData?.["301004"] },
-    { label: "기타", icon: IconUnknown, count: objectUnqCntData?.["301008"] },
+    { label: "기타", icon: IconUnknown, count: objectUnqCntData?.["301000"] },
   ];
   const maxYValue = Math.max(...(objectUnqCntRoadData?.map(item => item.total_cnt) || [0]));
 

@@ -16,6 +16,7 @@ const useObjectCnt = ({
         queryFn: () => fetchObjectUnqCnt(objectUnqCntParams),
         staleTime: 1000 * 60 * 5,
         cacheTime: 1000 * 60 * 10,
+        enabled: !!objectUnqCntParams
     });
       
     const { data: objectUnqCntRoad} = useQuery({
@@ -23,6 +24,7 @@ const useObjectCnt = ({
         queryFn: () => fetchObjectUnqCntRoad(objectUnqCntRoadParams),
         staleTime: 1000 * 60 * 5,
         cacheTime: 1000 * 60 * 10,
+        enabled: !!objectUnqCntRoadParams,
     });
 
     const { data: objCntCompass} = useQuery({
