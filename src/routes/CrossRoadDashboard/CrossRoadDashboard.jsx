@@ -22,7 +22,7 @@ import ExitRate from "../../components/CrossRoadStatistic/ExitRate";
 import { useLocation } from "react-router-dom";
 import useSRDetector from "../../hooks/useSRDetector";
 import useObjectCnt from "../../hooks/useObjectCnt";
-import { formatFullDateTime } from "../../utils/date";
+import { getLocalISOString } from "../../utils/date";
 
 
 const CrossRoadDashboard = () => {
@@ -35,14 +35,16 @@ const CrossRoadDashboard = () => {
 
   const today = new Date();
   const midnight = new Date(new Date().setHours(0, 0, 0, 0));
+  const startTime = new Date(today.getTime() - 2 * 60 * 60 * 1000);
   const [dateTime] = useState({
-    start_date:formatFullDateTime(midnight),
-    end_date:formatFullDateTime(today)
+    start_date:getLocalISOString(midnight),
+    end_date:getLocalISOString(today),
+    start_time: getLocalISOString(startTime), 
   });
 
   const { objectUnqCnt, objCntCompassTime } = useObjectCnt({
     objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}`,
-    objCompassTimeParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}$interval=15`,
+    objCompassTimeParams: `start_time=${dateTime.start_time}&end_time=${dateTime.end_date}&site_id=${site_id}&interval=15`,
   })
 
   const srDetectorData = srDetector?.data;
@@ -139,8 +141,8 @@ const CrossRoadDashboard = () => {
                             <video src={video} className="w-full h-full object-cover" controls />
                               <img src={IconRightCircle} alt="" className="cursor-pointer absolute right-[20px] top-[10px]"
                                 onClick={() => {
-                                  window.open("/dashboard/accessroad", "_blank");
-                              }}
+                                  window.open("/dashboard/accessroad", "_blank", "width=800,height=600");
+                                }}
                               />
                             {/* <div className="text-text-white absolute right-[20px] top-[10px]">ok</div> */}
                           </div>

@@ -4,7 +4,34 @@ import "./TrafficeByDirection.css";
 
 const TrafficeByDirection = ({data}) => {
   console.log(data);
+
+  const getMaxValue = (data) => {
+    const values = [
+      ...data.map(item => item["103003"]), // East
+      ...data.map(item => item["103007"]), // West
+      ...data.map(item => item["103001"]), // North
+      ...data.map(item => item["103005"]), // South
+    ];
+    return Math.max(...values); 
+  };
+
+  let maxValue = 0; 
+
+  if (data && data.length > 0) {
+    maxValue = getMaxValue(data); 
+  }
   
+  const losLevels = ['A', 'B', 'C', 'D', 'E', 'F', 'FF'];
+
+  const convertLOSToNumber = (data) => {
+    if (!data || data.length === 0) return []; 
+  
+    return data.map(item => {
+      const index = losLevels.indexOf(item.los);
+      return index !== -1 ? index : null; 
+    });
+  };
+
   const options = {
     chart: {
       type: "line",
@@ -15,39 +42,32 @@ const TrafficeByDirection = ({data}) => {
       },
     },
     xaxis: {
-      categories: ["09:00", "09:15", "09:30", "10:00", "10:15", "10:30"],
+      categories: data?.map(item => item.aggregate_start_time.slice(11, 16)),
       labels: { style: { colors: "#fff" } },
     },
     yaxis: [
       {
         min: 0,
-        max: 24,
+        max: maxValue,
         labels: { style: { colors: "#fff" } },
         // title: { text: "Traffic Count", style: { color: "#fff" } }
       },
       {
         opposite: true,
         min: 0,
-        max: 24,
-        labels: {
-          style: { colors: "#fff" },
-          formatter: (value) => {
-            if (value >= 22) return "FFF";
-            if (value >= 20) return "FF";
-            if (value >= 18) return "F";
-            if (value >= 14) return "E";
-            if (value >= 10) return "D";
-            if (value >= 6) return "C";
-            if (value >= 2) return "B";
-            return "A";
-          },
-        },
+        max: 6,
+        tickAmount: 6, 
+       labels: {
+        formatter: function (value, index) {
+          return ['A', 'B', 'C', 'D', 'E', 'F', 'FF'][index] || value;
+        }
         // title: { text: "LOS Level", style: { color: "#fff" } }
       },
+    }
     ],
     colors: ["#28a745", "#007bff", "#ffc107", "#dc3545", "#fff"],
     stroke: {
-      width: [0, 0, 0, 0, 2], // Pastikan hanya seri LOS yang punya garis
+      width: [0, 0, 0, 0, 2], 
       curve: "smooth",
     },
     markers: {
@@ -74,69 +94,29 @@ const TrafficeByDirection = ({data}) => {
       },
       labels: { colors: "#fff" },
     },
-    annotations: {
-      points: [
-        {
-          x: "09:00",
-          y: 18,
-          marker: { size: 5, fillColor: "#fff" },
-          label: {
-            text: "A",
-            borderColor: "#dc3545",
-            style: { background: "#fff", color: "#000" },
-          },
-        },
-        {
-          x: "09:15",
-          y: 12,
-          marker: { size: 5, fillColor: "#fff" },
-          label: {
-            text: "B",
-            borderColor: "#dc3545",
-            style: { background: "#fff", color: "#000" },
-          },
-        },
-        {
-          x: "10:00",
-          y: 17,
-          marker: { size: 5, fillColor: "#fff" },
-          label: {
-            text: "F",
-            borderColor: "#dc3545",
-            style: { background: "#fff", color: "#000" },
-          },
-        },
-        {
-          x: "10:30",
-          y: 14,
-          marker: { size: 5, fillColor: "#fff" },
-          label: {
-            text: "C",
-            borderColor: "#dc3545",
-            style: { background: "#fff", color: "#000" },
-          },
-        },
-        {
-          x: "10:45",
-          y: 10,
-          marker: { size: 5, fillColor: "#fff" },
-          label: {
-            text: "D",
-            borderColor: "#dc3545",
-            style: { background: "#fff", color: "#000" },
-          },
-        },
-      ],
+    dataLabels: {
+      enabled: false, 
     },
+    tooltip: { 
+      y: {
+      formatter: function (value, { seriesIndex }) {
+        if (seriesIndex === 4) { 
+          return losLevels[Math.round(value)] || value;
+        }
+        return value;
+      }
+    }
+    }
   };
 
   const series = [
-    { name: "East", data: [6, 7, 8, 6, 7, 8] },
-    { name: "West", data: [10, 12, 14, 16, 18, 20] },
-    { name: "North", data: [12, 10, 14, 12, 14, 12] },
-    { name: "South", data: [14, 15, 13, 14, 13, 15] },
-    { name: "LOS", type: "line", data: [18, 12, 17, 9, 14, 10] },
+    { name: "East", data: data?.map(item => item["103003"]) },
+    { name: "West", data: data?.map(item => item["103007"]) },
+    { name: "North", data: data?.map(item => item["103001"]) },
+    { name: "South", data: data?.map(item => item["103005"]) },
+    { name: "LOS", type: "line", data: convertLOSToNumber(data) },
   ];
+
   return (
     <>
       <Chart

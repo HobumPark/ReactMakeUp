@@ -79,11 +79,7 @@ const TrafficeByVehicle = ({data}) => {
       formatter: (val) => (isAllZero ? "0%" : `${Math.round(val)}%`),
       style: { fontSize: "12px", fontWeight: "bold", colors: ["#fff"] },
     },
-    tooltip: {
-    y: {
-      formatter: (val) => (val < 0.01 ? "0%" : `${Math.round(val)}%`),
-    },
-  },
+
   };
 
 
