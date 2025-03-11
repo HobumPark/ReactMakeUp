@@ -16,94 +16,9 @@ import Button from "../../components/Button/Button";
 import UseStatistic from "../../hooks/useStatistic";
 import { formatDateTime, getLocalISOString } from "../../utils/date";
 import useHistory from "../../hooks/useHistory";
+import { URLS } from "../../config/urls";
 
-const communityHistoryTabulator = [
-  {
-    title: "No",
-    formatter: (cell) => {
-      let row = cell.getRow();
-      let page = row.getTable().getPage();
-      let pageSize = row.getTable().getPageSize();
-      return (page - 1) * pageSize + row.getPosition(true);
-    },
-    width: 60,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "수집시간",
-    field: "timestamp",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: true,
-    resizable: false,
-  },
-  {
-    title: "사이트",
-    field: "site_name",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "접근로",
-    field: "road_name",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "방위",
-    field: "lane_compass",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "차선방향",
-    field: "lane_moving_direction",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "차로",
-    field: "lane_number",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "차종",
-    field: "vehicle_type",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "속도(km/h)",
-    field: "speed",
-    widthGrow: 1,
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-];
+
 
 
 const CommunicationHistory = () => {
@@ -125,7 +40,9 @@ const CommunicationHistory = () => {
     end_date: formatDateTime(today)
   });
 
-  const [queryParams, setQueryParams] = useState(`start_date=${getLocalISOString(yesterdayMidnight)}&end_date=${getLocalISOString(today)}&page=1&pageSize=10`);
+  const [queryParams, setQueryParams] = useState(`start_date=${getLocalISOString(yesterdayMidnight)}&end_date=${getLocalISOString(today)}`);
+
+  
   const { objectListData } = useHistory({
     queryParams: queryParams
   })
@@ -207,11 +124,108 @@ const CommunicationHistory = () => {
     }
     return datalanguage
   }
+  const [sortDirection, setSortDirection] = useState('desc');
+
+  const communityHistoryTabulator = [
+    {
+      title: "No",
+      formatter: (cell) => {
+        let row = cell.getRow();
+        let page = row.getTable().getPage();
+        let pageSize = row.getTable().getPageSize();
+        return (page - 1) * pageSize + row.getPosition(true);
+      },
+      width: 60,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "수집시간",
+      field: "timestamp",
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: true,
+      // sorter: (column, dir, sorter) => {
+      //   const newSortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      //   setSortDirection(newSortDirection);
+      //   setQueryParams(queryParams+`&order=${sortDirection}&sort=timestamp`);        
+      // },
+      resizable: false,
+    },
+    {
+      title: "사이트",
+      field: "site_name",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "접근로",
+      field: "road_name",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "방위",
+      field: "lane_compass",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "차선방향",
+      field: "lane_moving_direction",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "차로",
+      field: "lane_number",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "차종",
+      field: "vehicle_type",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+    {
+      title: "속도(km/h)",
+      field: "speed",
+      widthGrow: 1,
+      hozAlign: "center",
+      headerHozAlign: "center",
+      headerSort: false,
+      resizable: false,
+    },
+  ];
+
+
 
   const optionsTabulator = {
-    pagination:"remote",
+    pagination:true, //enable pagination
+    paginationMode:"remote", 
     paginationSize: 10,
-    paginationInitialPage: 1,    
+    paginationInitialPage: 1,   
     rowHeight: 41,
     movableRows: false,
     index: "id",
@@ -220,8 +234,40 @@ const CommunicationHistory = () => {
       ko: languageTabulator(),
     },
     resizableRows: false,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data?.total_cnt || 0} 건</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 <a id="list_count"></a> 건</div>`,
+    ajaxURL: `${`${URLS.BACK_DSH}`}/object?${queryParams}`,
+    ajaxConfig: {
+      method: "GET",
+      credentials: "include",
+    },  
+    ajaxResponse: (url, params, response) => {
+      return {
+        data: response.data.items,
+        last: response.data.total_pages
+      };
+    }, 
+    dataReceiveParams: {
+      last_page: 'last',
+    },
+    ajaxURLGenerator: function (url, config, params) {
+      let myUrl = url;
+      
+      if (params['sort'].length > 0) {
+        let field = params['sort'][0]['field'];
+        let dir = params['sort'][0]['dir'];
+        myUrl += `&sort=${field}&order=${dir}`;
+      }
+
+      return myUrl;
+    },
+    dataLoader: false, 
+    sortMode:"remote"
+
   };
+  console.log(tbRef.current);
+  
+
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;  
@@ -254,16 +300,26 @@ const CommunicationHistory = () => {
     }
   
     const result = [resultInput, ...dateParams].join("&");
-    setQueryParams(result); 
+    setQueryParams(result);
+
   },[dateTime]);
 
-  const handlePageChange = (page, size) => {
-    const newParams = `start_date=${getLocalISOString(dateTime.start_date)}&end_date=${getLocalISOString(dateTime.end_date)}&page=${page}&size=${size}`;
-    setQueryParams(newParams);  // Update queryParams dengan halaman baru dan ukuran halaman baru
-  };
-console.log(tbRef.current);
-console.log(data?.total_pages); // Ensure this is set correctly
 
+  useEffect(() => {
+    console.log(queryParams);
+    if (tbRef.current) {
+        tbRef.current.setData(`${`${URLS.BACK_DSH}`}/object?${queryParams}`);
+    }
+}, [queryParams]);
+
+useEffect(() => {
+  if (data) {
+    const footerElement = document.getElementById('list_count');
+    if (footerElement) {
+      footerElement.textContent = data?.total_cnt;
+    }
+  }
+}, [data]); 
 
   return (
     <>
@@ -304,21 +360,21 @@ console.log(data?.total_pages); // Ensure this is set correctly
         </ContainerCard>
 
         <ContainerCard>
-          <ReactTabulator
-            data={data?.items}
+            <ReactTabulator
             paginationCounter={true}
             columns={communityHistoryTabulator}
-            onPageChanged={handlePageChange}
             layout={"fitColumns"}
             className="tabulator-custom w-full "
             onRef={(r) => {
               tbRef.current = r.current;
             }}
-            paginationMaxPage={data?.items}
             options={optionsTabulator}
             events={{
             tableBuilt: () => {
                 tbRef.current.setSort("timestamp", "desc"); 
+            },
+            dataLoaded: function (data) {
+              console.log('dataLoaded', data);
             },
             pageLoaded: (pageNumber) => {
               console.log("Current Page:", pageNumber);
