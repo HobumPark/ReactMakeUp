@@ -32,45 +32,12 @@ const useDashboard = ({
     staleTime: 1000 * 60 * 1,
  });
 
-    const { data: trafficEventTime  } = useQuery({
-     queryKey: ["trafficEventTime", trafficEventParams],
-     queryFn: () => fetchTrafficEventTime(trafficEventParams),
-    staleTime: 1000 * 60 * 1,
-    });
-
-    const { data: trafficEvent } = useQuery({
-      queryKey: ["trafficEvent", id],
-      queryFn: () => fetchTrafficEvent(id),
-      retry: false, 
-      enabled: !!id,
-      onError: () => {
-      },
-    });
-
-    const { data: objectUnqCnt} = useQuery({
-        queryKey: ["objectUnqCnt", objectUnqCntParams],
-        queryFn: () => fetchObjectUnqCnt(objectUnqCntParams),
-        staleTime: 1000 * 60 * 5,
-        cacheTime: 1000 * 60 * 10,
-    });
-      
-    const { data: objectUnqCntRoad} = useQuery({
-        queryKey: ["objectUnqCntRoad", objectUnqCntRoadParams],
-        queryFn: () => fetchObjectUnqCntRoad(objectUnqCntRoadParams),
-        staleTime: 1000 * 60 * 5,
-        cacheTime: 1000 * 60 * 10,
-    });
-
 
 
   return {
     mapInitialView,
     mapDisplayPOI,
-    siteRoad,
-    trafficEventTime,
-    trafficEvent,
-    objectUnqCnt,
-    objectUnqCntRoad
+    siteRoad
   };
 };
 

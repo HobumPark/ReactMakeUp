@@ -19,8 +19,8 @@ import TrafficeByDirection from "../../components/CrossRoadStatistic/TrafficeByD
 import TrafficeByVehicle from "../../components/CrossRoadStatistic/TrafficeByVehicle";
 import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
 import ExitRate from "../../components/CrossRoadStatistic/ExitRate";
-
-
+import { useLocation } from "react-router-dom";
+import useSRDetector from "../../hooks/useSRDetector";
 
 
 const CrossRoadDashboard = () => {
@@ -28,6 +28,15 @@ const CrossRoadDashboard = () => {
     "video1.mp4",
     "video1.mp4",
   ]);
+
+  const location = useLocation();
+  const site_id = new URLSearchParams(location.search);
+  const { srDetector }  = useSRDetector({
+    id: site_id
+  })
+  const srDetectorData = srDetector?.data;
+  console.log(srDetectorData);
+  
 
   // Fungsi untuk menentukan jumlah kolom grid berdasarkan jumlah video
   const getGridCols = (count) => {
