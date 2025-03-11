@@ -56,6 +56,7 @@ import useDashboard from "../../hooks/useDashboard";
 import { formatFullDateTime } from "../../utils/date";
 import { useTranslation } from "react-i18next";
 import useTrafficEvent from "../../hooks/useTrafficEvent";
+import useObjectCnt from "../../hooks/useObjectCnt";
 
 const MainDashboard = () => {
   const {t} = useTranslation();
@@ -79,11 +80,14 @@ const MainDashboard = () => {
   const [trafficEventParams, setTrafficEventParams] = useState('')
   
   
-  const {mapInitialView, mapDisplayPOI, siteRoad, objectUnqCntRoad, objectUnqCnt } = useDashboard({
-    objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
-    objectUnqCntRoadParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&top=5`,
+  const {mapInitialView, mapDisplayPOI, siteRoad } = useDashboard({
     siteRoadParams: siteRoadParams,
     trafficEventParams: trafficEventParams
+  });
+
+  const {objectUnqCntRoad, objectUnqCnt } = useObjectCnt({
+    objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
+    objectUnqCntRoadParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&top=5`,
   });
 
   const {trafficEventTime } = useTrafficEvent({
