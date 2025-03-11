@@ -190,7 +190,10 @@ const optionsChart = {
     "#C47703", 
     "#29688C"], // ini buat bg warna legend
   markers: {
-    size: 4,
+    size: 2,
+    hover: {
+      size: 2, // 호버 시 마커 크기
+    },
     // colors: ["#EA494E", "#FDCA6A", "#439C50"],
     // strokeColors: ["#EA494E", "#FDCA6A", "#439C50"], // ini buat stroke bg warna legend
   },
@@ -217,7 +220,8 @@ const SuddenEvent = () => {
   const [trafficEventTimeValues,setTrafficEventTimeValues]=useState([])
   const [type,setType]=useState('')
   const [input,setInput]=useState('')
-
+  const [searchInput,setSearchInput]=useState('')
+  
   const [showModal, setShowModal] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
   const [averageWaitTimeValues, setAverageWaitTimeValues] = useState([
@@ -238,7 +242,8 @@ const SuddenEvent = () => {
   const [fullCategories, setFullCategories] = useState([]);//YYYY-MM-DD hh:mm - compare
   const [yaxisMax,setYaxisMax]=useState(100)
 
-  const [queryParams, setQueryParams] = useState(""); // queryParams 상태
+  const [queryParamsTime, setQueryParamsTime] = useState(""); // queryParams 상태
+  const [queryParamsCnt, setQueryParamsCnt] = useState(""); // queryParams 상태
   const [selectedOption, setSelectedOption] = useState("");
 
   const today = new Date();
@@ -247,36 +252,25 @@ const SuddenEvent = () => {
 
   const secondDate = new Date(today);
   //2개 시간 기준이 달라서
-  //1-trafficEventTime
+  //1-trafficEventTime - 시분초까지
   const [dateTime1,setDateTime1] = useState({
     start_date:formatFullDateTime(firstDate),
     end_date:formatFullDateTime(secondDate)
   });
-  //2-trafficEventCnt
+  //2-trafficEventCnt - 시분까지
+
   const [dateTime2,setDateTime2] = useState({
     start_date:formatDateTime(firstDate),
     end_date:formatDateTime(secondDate),
-    interval:5//기본 5분
+    interval:''//기본 5분
   });
 
-  const queryParamsTime = () => {
-    // 기본적인 날짜 파라미터
-    let params = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
-  
-    // 동적으로 추가할 파라미터
-    if (type) {
-      params += `&type=${type}`;
-    }
-    if(input){
-      params += `&input=${input}`;
-    }
 
-    return params;
-  };
 
   const {trafficEventTime,trafficEventCnt} = useSuddenMgt({
     //queryParamsTime: `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`,
-    queryParamsTime:queryParamsTime(),
+    queryParamsTime:queryParamsTime,
+    //
     queryParamsCnt: `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`,
   });
 
@@ -296,6 +290,11 @@ const SuddenEvent = () => {
     filterTableData(val)
 
   };
+  const handleChangeInput=(e)=>{
+    console.log('handleChangeInput')
+    console.log(e.target.value)
+    setInput(e.target.value)
+  }
 
   const options = [
     { value: "", label: "전체" },
@@ -316,7 +315,7 @@ const SuddenEvent = () => {
     setType(val)
   }
 
-  const [activeButton, setActiveButton] = useState("1시간");
+  const [activeButton, setActiveButton] = useState("");
 
   const handleButtonClick = (label) => {
     //alert("ButtonClick!")
@@ -329,7 +328,50 @@ const SuddenEvent = () => {
       }
     }, []);
 
-  useEffect(() => {
+  //initial date value
+  useEffect(()=>{
+    setDefaultTime()
+  },[])
+
+  //change date button
+  useEffect(()=>{
+    console.log('activeButton')
+    calendarChange()
+
+  },[activeButton])
+
+  const setDefaultTime=()=>{
+    console.log('setDefaultTime')
+    const today = new Date();
+
+    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
+    const firstDate = new Date(today);
+    firstDate.setHours(0, 0, 0, 0); // 자정으로 설정
+
+    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
+    const secondDate = new Date(today);
+
+    // 두 날짜의 차이를 밀리초 단위로 구함
+    const timeDifference = secondDate - firstDate; // 밀리초 단위 차이
+
+    // 각 구간의 시간 간격을 구함 (12개의 구간으로 나누기)
+    const interval = timeDifference / 12;
+    console.log('interval cal')
+    console.log(interval)
+    setDateTime1({
+      start_date: formatFullDateTime(firstDate),
+      end_date: formatFullDateTime(secondDate)
+    });
+    //
+    setDateTime2({
+      start_date: formatDateTime(firstDate),
+      end_date: formatDateTime(secondDate),
+      interval: interval
+    });
+
+  }
+
+  const setOneHour=()=>{
     const today = new Date();
 
     // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
@@ -343,27 +385,79 @@ const SuddenEvent = () => {
       start_date: formatFullDateTime(firstDate),
       end_date: formatFullDateTime(secondDate)
     });
+    //
+    setDateTime2({
+      start_date: formatDateTime(firstDate),
+      end_date: formatDateTime(secondDate),
+      interval: 5
+    });
 
-    if(trafficEventTime != null){
-      console.log('차트데이터 넣기!')
-      console.log(trafficEventTime)
-      //가져온 데이터 꺼내서검사
-    }
-    
+  }
 
-  }, []);  // 의존성 배열이 비어있으므로 컴포넌트 마운트 시 한 번만 실행
+  const setOneDay=()=>{
+    const today = new Date();
 
-  //initial date value
-  useEffect(()=>{
+    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
+    const firstDate = new Date(today);
+    firstDate.setDate(today.getDate() - 1);  // 1일을 빼기
 
-  },[])
+    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
+    const secondDate = new Date(today);
 
-  //change date button
-  useEffect(()=>{
-    
-    calendarChange()
+    setDateTime1({
+      start_date: formatFullDateTime(firstDate),
+      end_date: formatFullDateTime(secondDate)
+    });
+    //
+    setDateTime2({
+      start_date: formatDateTime(firstDate),
+      end_date: formatDateTime(secondDate),
+      interval: 60
+    });
+  }
+  
+  const setOneMonth=()=>{
+    const today = new Date();
 
-  },[activeButton])
+    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
+    const firstDate = new Date(today);
+    firstDate.setMonth(today.getMonth() - 1);  // 1개월을 빼기
+
+    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
+    const secondDate = new Date(today);
+
+    setDateTime1({
+      start_date: formatFullDateTime(firstDate),
+      end_date: formatFullDateTime(secondDate)
+    });
+    setDateTime2({
+      start_date: formatDateTime(firstDate),
+      end_date: formatDateTime(secondDate),
+      interval: 3600
+    });
+  }
+
+  const setCustomTime=()=>{
+    const today = new Date();
+
+    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
+    const firstDate = new Date(today);
+    firstDate.setHours(0, 0, 0, 0); // 자정으로 설정
+
+    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
+    const secondDate = new Date(today);
+
+    setDateTime1({
+      start_date: formatFullDateTime(firstDate),
+      end_date: formatFullDateTime(secondDate)
+    });
+    //
+    setDateTime2({
+      start_date: formatDateTime(firstDate),
+      end_date: formatDateTime(secondDate),
+      interval: 5
+    });
+  }
 
   const calendarChange=()=>{
     let locale;
@@ -381,14 +475,17 @@ const SuddenEvent = () => {
     let interval = 5
 
     if (activeButton === "1시간") {
-      firstDate.setHours(today.getHours() - 1);  // 1시간을 빼기
-      interval = 5
+      //alert('1시간')
+      setOneHour()
     } else if (activeButton === "1일") {
-      firstDate.setDate(today.getDate() - 1);  // 1일을 빼기
-      interval = 120
+      //alert('1일')
+      setOneDay()
     } else if (activeButton === "1개월") {
-      firstDate.setMonth(today.getMonth() - 1);  // 1개월을 빼기
-      interval = 3600
+      //alert('1개월')
+      setOneMonth()
+    } else if (activeButton === "") {
+      //alert('setCustomTime')
+      setCustomTime()
     }
 
 
@@ -404,11 +501,11 @@ const SuddenEvent = () => {
       onSelect: (date) => {
         console.log('select start date')
         console.log(date.formattedDate)
-        setDateTime1((prevValues) => ({
+        setDateTime2((prevValues) => ({
           ...prevValues,
           start_date: date.formattedDate,  // 날짜가 시분초 포함된 형식으로 반환됨
         }));
-
+        setActiveButton("")
       },
     };
 
@@ -421,10 +518,11 @@ const SuddenEvent = () => {
       onSelect: (date) => {
         console.log('select end date')
         console.log(date.formattedDate)
-        setDateTime1((prevValues) => ({
+        setDateTime2((prevValues) => ({
           ...prevValues,
           end_date: date.formattedDate,  // 날짜가 시분초 포함된 형식으로 반환됨
         }));
+        setActiveButton("")
       },
     };
 
@@ -433,17 +531,6 @@ const SuddenEvent = () => {
 
     // 두 번째 날짜 선택기
     const datepicker2 = new AirDatepicker('[name="second-date"]', optionsDateSecond);
-
-    setDateTime1({
-      start_date: formatFullDateTime(firstDate),
-      end_date: formatFullDateTime(secondDate)
-    });
-    //
-    setDateTime2({
-      start_date: formatDateTime(firstDate),
-      end_date: formatDateTime(secondDate),
-      interval: interval
-    });
 
     initAverageWaitTimeValues()
 
@@ -599,46 +686,35 @@ const SuddenEvent = () => {
     rowHeight: 41,
     footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${trafficEventTime?.data.events.length} 건</div>`,
   };
-
-  const averageWaitTime = [
-    {
-      name: "전체",
-      data: [30, 40, 25, 50, 49, 21, 35, 40, 23, 12, 54, 61],
-    },
-    {
-      name: "역주행",
-      data: [23, 12, 54, 61, 32, 56, 42, 33, 28, 18, 65, 47],
-    },
-    {
-      name: "정차",
-      data: [24, 20, 5, 75, 42, 79, 10, 24, 33, 45, 12, 34],
-    },
-    {
-      name: "정지선 위반",
-      data: [24, 20, 5, 5, 42, 79, 8, 19, 25, 35, 47, 53],
-    },
-    {
-      name: "불법 주정차",
-      data: [2, 20, 25, 55, 42, 79, 9, 23, 38, 48, 54, 63],
-    },
-    {
-      name: "속도 위반",
-      data: [2, 0, 25, 55, 102, 79, 30, 60, 45, 35, 25, 15],
-    },
-    {
-      name: "보행자",
-      data: [2, 0, 25, 55, 102, 79, 30, 60, 45, 35, 25, 15],
-    },
+   
+  const handleSearch = (inputVal="") =>{
+        let params = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
   
-  ];
+        // 동적으로 추가할 파라미터
+        if (type) {
+          params += `&type=${type}`;
+        }
+        if(inputVal){
+          params += `&input=${inputVal}`;
+        }
+        //alert(params)
+        setInput(inputVal)
+        setQueryParamsTime(params)
 
+        params = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
+  
+        // 동적으로 추가할 파라미터
+        if (type) {
+          params += `&type=${type}`;
+        }
+        if(inputVal){
+          params += `&input=${inputVal}`;
+        }
+        //alert(params)
+        setInput(inputVal)
+        setQueryParamsTime(params)
 
-    const handleSearch = useCallback(
-        (inputVal = null) => { 
-          //alert('검색!')
-          setInput(inputVal)
-        }, []
-    );
+  }
 
   // 외부에서 xaxis categories, yaxis(최대높이)를 설정하는 방식으로 차트 옵션을 변경
   const chartOptionsWithProps = (customCategories, customYAxisMax) => {
@@ -666,6 +742,15 @@ const SuddenEvent = () => {
     ]);
   }
 
+  const startCalendarChange=()=>{
+    //alert('startCalendarChange')
+    console.log('startCalendarChange')
+  }
+
+  const endCalendarChange=()=>{
+    console.log('endCalendarChange')
+  }
+
   return (
     <>
 
@@ -685,6 +770,8 @@ const SuddenEvent = () => {
             customWidthInput=" flex flex-1 w-full!"
             labelSelect="이벤트 유형  "
             onSearch={handleSearch}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           >
 
             <div className="flex w-full gap-4 flex-row items-center">
@@ -724,12 +811,14 @@ const SuddenEvent = () => {
                 isDob={true}
                 inputType="text"
                 value={dateTime2?.start_date}
+                onChange={()=>startCalendarChange()}
                 name={"first-date"} />
               <span>-</span>
               <GeneralInput
                 isDob={true}
                 inputType="text"
                 value={dateTime2?.end_date}
+                onChange={()=>endCalendarChange()}
                 name={"second-date"}
               />
             </div>
