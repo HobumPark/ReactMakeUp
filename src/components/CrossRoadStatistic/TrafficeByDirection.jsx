@@ -26,7 +26,7 @@ const TrafficeByDirection = ({data}) => {
   const convertLOSToNumber = (data) => {
     if (!data || data.length === 0) return []; 
   
-    return data.map(item => {
+    return data?.map(item => {
       const index = losLevels.indexOf(item.los);
       return index !== -1 ? index : null; 
     });
@@ -38,7 +38,7 @@ const TrafficeByDirection = ({data}) => {
       background: "transparent",
       foreColor: "#fff",
       toolbar: {
-        show: false, // ini buat icon burger biar gak mncul coyu
+        show: false,// Hide toolbar icon
       },
     },
     xaxis: {
@@ -97,25 +97,44 @@ const TrafficeByDirection = ({data}) => {
     dataLabels: {
       enabled: false, 
     },
-    tooltip: { 
+    tooltip: {
+      shared: true, 
+      intersect: false, 
       y: {
-      formatter: function (value, { seriesIndex }) {
-        if (seriesIndex === 4) { 
-          return losLevels[Math.round(value)] || value;
-        }
-        return value;
-      }
-    }
-    }
+        formatter: function (value, { seriesIndex }) {
+          if (seriesIndex === 4) {
+            return losLevels[Math.round(value)] || value;
+          }
+          return value;
+        },
+      },
+    },
   };
 
   const series = [
-    { name: "East", data: data?.map(item => item["103003"]) },
-    { name: "West", data: data?.map(item => item["103007"]) },
-    { name: "North", data: data?.map(item => item["103001"]) },
-    { name: "South", data: data?.map(item => item["103005"]) },
-    { name: "LOS", type: "line", data: convertLOSToNumber(data) },
+    { 
+      name: "East", 
+      data: data?.map(item => item["103003"] !== undefined ? item["103003"] : null) || [] 
+    },
+    { 
+      name: "West", 
+      data: data?.map(item => item["103007"] !== undefined ? item["103007"] : null) || [] 
+    },
+    { 
+      name: "North", 
+      data: data?.map(item => item["103001"] !== undefined ? item["103001"] : null) || [] 
+    },
+    { 
+      name: "South", 
+      data: data?.map(item => item["103005"] !== undefined ? item["103005"] : null) || [] 
+    },
+    { 
+      name: "LOS", 
+      type: "line", 
+      data: convertLOSToNumber(data) 
+    },
   ];
+  
 
   return (
     <>
