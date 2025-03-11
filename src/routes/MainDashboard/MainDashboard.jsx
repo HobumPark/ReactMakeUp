@@ -90,7 +90,7 @@ const MainDashboard = () => {
     objectUnqCntRoadParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&top=5`,
   });
 
-  const {trafficEventTime } = useTrafficEvent({
+  const { trafficEventTime } = useTrafficEvent({
     trafficEventParams: trafficEventParams
   });
   
@@ -391,7 +391,7 @@ const MainDashboard = () => {
               window.open("/dashboard/equipment-info", "_blank", "width=800,height=600");
               break;
             case "102001":
-              window.open("/dashboard/crossroad", "_blank", "width=800,height=600");
+              window.open(`/dashboard/crossroad?id=${clickedItem.id}`, "_blank", "width=800,height=600");
               break;
             case "102002":
               window.open("/dashboard/crosswalk", "_blank", "width=800,height=600");

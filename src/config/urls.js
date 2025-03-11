@@ -119,4 +119,9 @@ export const APIS = {
   trafficEventCnt: (filterParams)=>`/traffic-event-cnt?${filterParams}`,
   objectUnqCnt:(filterParams) => `/object-unq-cnt/vehicle/total?${filterParams}`,
   objectUnqCntRoad:(filterParams) => `/object-unq-cnt/road-vehicle?${filterParams}`,
+  //Crossroad 
+  siteRoadDetector: (id) =>`/site-road-detector/${id}`,
+  objectCntCompass:(filterParams) => `/object-unq-cnt/compass/total?${filterParams}`,
+  objectCntCompassTime:(filterParams) => `/object-unq-cnt/compass/time-series?${filterParams}`,
+  realTimeObject:(filterParams) => `/api/dsh/real-time-object?${filterParams}`,
 }
