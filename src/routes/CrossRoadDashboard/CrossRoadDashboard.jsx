@@ -21,21 +21,38 @@ import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
 import ExitRate from "../../components/CrossRoadStatistic/ExitRate";
 import { useLocation } from "react-router-dom";
 import useSRDetector from "../../hooks/useSRDetector";
+import useObjectCnt from "../../hooks/useObjectCnt";
+import { formatFullDateTime } from "../../utils/date";
 
 
 const CrossRoadDashboard = () => {
-  const [videos, setVideos] = useState([
-    "video1.mp4",
-    "video1.mp4",
-  ]);
-
   const location = useLocation();
-  const site_id = new URLSearchParams(location.search);
+  const queryParams = new URLSearchParams(location.search);
+  const site_id = queryParams.get('id'); 
   const { srDetector }  = useSRDetector({
     id: site_id
   })
+
+  const today = new Date();
+  const midnight = new Date(new Date().setHours(0, 0, 0, 0));
+  const [dateTime] = useState({
+    start_date:formatFullDateTime(midnight),
+    end_date:formatFullDateTime(today)
+  });
+
+  const { objectUnqCnt, objCntCompassTime } = useObjectCnt({
+    objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}`,
+    objCompassTimeParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}$interval=15`,
+  })
+
   const srDetectorData = srDetector?.data;
-  console.log(srDetectorData);
+  const objCntData = objectUnqCnt?.data;
+  const objCntCompassTimeData = objCntCompassTime?.data;
+
+
+  const [videos, setVideos] = useState([
+    srDetectorData?.roads?.map((road) => road.detector?.stream_url) || []
+  ]);
   
 
   // Fungsi untuk menentukan jumlah kolom grid berdasarkan jumlah video
@@ -121,9 +138,9 @@ const CrossRoadDashboard = () => {
                           <div key={index} className="_boxVideo w-full h-full relative flex bg-[] overflow-hidden">
                             <video src={video} className="w-full h-full object-cover" controls />
                               <img src={IconRightCircle} alt="" className="cursor-pointer absolute right-[20px] top-[10px]"
-                              //   onClick={() => {
-                              //     window.open("/statistic/sudden-event", "_blank");
-                              // }}
+                                onClick={() => {
+                                  window.open("/dashboard/accessroad", "_blank");
+                              }}
                               />
                             {/* <div className="text-text-white absolute right-[20px] top-[10px]">ok</div> */}
                           </div>
@@ -294,7 +311,7 @@ const CrossRoadDashboard = () => {
                 </span>
               </div>
               <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                <TrafficeByDirection />
+                <TrafficeByDirection data = {objCntCompassTimeData} />
               </div>
             </section>
             <section className=" flex flex-1/12 h-[full] overflow-hidden bg-[#000] rounded-[5px]">
@@ -313,7 +330,7 @@ const CrossRoadDashboard = () => {
                           <img src={IconCar} alt="" />
                           <span className="text-text-white body2">/</span>
                           <span className="text-text-white body2 title3bold">
-                            300
+                         { objCntData?.["301001"]}
                           </span>
                         </div>
                       </div>
@@ -323,7 +340,7 @@ const CrossRoadDashboard = () => {
                           <img src={IconMotor} alt="" />
                           <span className="text-text-white body2">/</span>
                           <span className="text-text-white body2 title3bold">
-                            300
+                          { objCntData?.["301006"]}
                           </span>
                         </div>
                       </div>
@@ -333,7 +350,7 @@ const CrossRoadDashboard = () => {
                           <img src={IconBus} alt="" />
                           <span className="text-text-white body2">/</span>
                           <span className="text-text-white body2 title3bold">
-                            300
+                          { objCntData?.["301005"]}
                           </span>
                         </div>
                       </div>
@@ -343,7 +360,7 @@ const CrossRoadDashboard = () => {
                           <img src={IconTruck} alt="" />
                           <span className="text-text-white body2">/</span>
                           <span className="text-text-white body2 title3bold">
-                            300
+                          { objCntData?.["301003"]}
                           </span>
                         </div>
                       </div>
@@ -355,7 +372,7 @@ const CrossRoadDashboard = () => {
                           <img src={IconVan} alt="" />
                           <span className="text-text-white body2">/</span>
                           <span className="text-text-white body2 title3bold">
-                            300
+                          { objCntData?.["301002"]}
                           </span>
                         </div>
                       </div>
@@ -365,7 +382,7 @@ const CrossRoadDashboard = () => {
                           <img src={IconBicycles} alt="" />
                           <span className="text-text-white body2">/</span>
                           <span className="text-text-white body2 title3bold">
-                            300
+                          { objCntData?.["301007"]}
                           </span>
                         </div>
                       </div>
@@ -375,7 +392,7 @@ const CrossRoadDashboard = () => {
                           <img src={IconHeavyTruck} alt="" />
                           <span className="text-text-white body2">/</span>
                           <span className="text-text-white body2 title3bold">
-                            300
+                          { objCntData?.["301004"]}
                           </span>
                         </div>
                       </div>
@@ -385,14 +402,14 @@ const CrossRoadDashboard = () => {
                           <img src={IconUnknown} alt="" />
                           <span className="text-text-white body2">/</span>
                           <span className="text-text-white body2 title3bold">
-                            300
+                          { objCntData?.["301008"]}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center flex-1/2 w-full h-full relative">
-                    <TrafficeByVehicle />
+                    <TrafficeByVehicle data={objCntData} />
                   </div>
                 </div>
               </div>

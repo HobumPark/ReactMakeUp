@@ -2,11 +2,36 @@ import React from "react";
 import Chart from "react-apexcharts";
 import "./TrafficeByVehicle.css"
 
-const TrafficeByVehicle = () => {
+const TrafficeByVehicle = ({data}) => {
+  
+  const categoryMapping = {
+    "301000": 7, // 기타 (Etc)
+    "301001": 0, // 승용차 (Car)
+    "301002": 4, // 승합차 (Van)
+    "301003": 3, // 트럭 (Truck)
+    "301004": 6, // 대형 트럭 (Large Truck)
+    "301005": 2, // 버스 (Bus)
+    "301006": 1, // 오토바이 (Motorcycle)
+    "301007": 5  // 자전거 (Bicycle)
+  };
+  
+  const series = new Array(8).fill(0);
+  
+  Object.keys(data || {}).forEach((key) => {
+    if (categoryMapping[key] !== undefined) {
+      series[categoryMapping[key]] = data[key] ;
+    }
+  });
+  
+  const isAllZero = series.every((val) => val === 0);
+  const adjustedSeries = series.map((val) => (val === 0 ? 0.01 : val));
+
+
   const options = {
     chart: {
       type: "pie",
       background: "transparent",
+      
     },
     labels: [
       "승용차",
@@ -51,18 +76,22 @@ const TrafficeByVehicle = () => {
     },
     dataLabels: {
       enabled: true,
-      formatter: (val) => `${Math.round(val)}%`,
+      formatter: (val) => (isAllZero ? "0%" : `${Math.round(val)}%`),
       style: { fontSize: "12px", fontWeight: "bold", colors: ["#fff"] },
     },
+    tooltip: {
+    y: {
+      formatter: (val) => (val < 0.01 ? "0%" : `${Math.round(val)}%`),
+    },
+  },
   };
 
-  const series = [35, 30, 20, 30, 15, 10, 10, 5]; 
 
   return (
     <>
       <Chart
         options={options}
-        series={series}
+        series={adjustedSeries}
         type="pie"
         height={"100%"}
         className={"_chartTrafficevehicle flex w-full !min-h-[0] h-fit!"}
