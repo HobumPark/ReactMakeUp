@@ -125,7 +125,7 @@ const CommunicationHistory = () => {
     end_date: formatDateTime(today)
   });
 
-  const [queryParams, setQueryParams] = useState(`start_date=${getLocalISOString(yesterdayMidnight)}&end_date=${getLocalISOString(today)}`);
+  const [queryParams, setQueryParams] = useState(`start_date=${getLocalISOString(yesterdayMidnight)}&end_date=${getLocalISOString(today)}&page=1&pageSize=10`);
   const { objectListData } = useHistory({
     queryParams: queryParams
   })
@@ -209,8 +209,9 @@ const CommunicationHistory = () => {
   }
 
   const optionsTabulator = {
-    pagination: true,
+    pagination:"remote",
     paginationSize: 10,
+    paginationInitialPage: 1,    
     rowHeight: 41,
     movableRows: false,
     index: "id",
@@ -219,7 +220,7 @@ const CommunicationHistory = () => {
       ko: languageTabulator(),
     },
     resizableRows: false,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data?.length || 0} 건</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${data?.total_cnt || 0} 건</div>`,
   };
 
   const handleInputChange = (e) => {
@@ -239,7 +240,7 @@ const CommunicationHistory = () => {
     })
 
   };
-
+  
   const handleSearch = useCallback((inputVal = null) => {
     const resultInput = inputVal ? `input=${inputVal}` : "";
     const { start_date, end_date } = dateTime;
@@ -255,6 +256,14 @@ const CommunicationHistory = () => {
     const result = [resultInput, ...dateParams].join("&");
     setQueryParams(result); 
   },[dateTime]);
+
+  const handlePageChange = (page, size) => {
+    const newParams = `start_date=${getLocalISOString(dateTime.start_date)}&end_date=${getLocalISOString(dateTime.end_date)}&page=${page}&size=${size}`;
+    setQueryParams(newParams);  // Update queryParams dengan halaman baru dan ukuran halaman baru
+  };
+console.log(tbRef.current);
+console.log(data?.total_pages); // Ensure this is set correctly
+
 
   return (
     <>
@@ -296,18 +305,25 @@ const CommunicationHistory = () => {
 
         <ContainerCard>
           <ReactTabulator
-            data={data}
+            data={data?.items}
+            paginationCounter={true}
             columns={communityHistoryTabulator}
+            onPageChanged={handlePageChange}
             layout={"fitColumns"}
             className="tabulator-custom w-full "
             onRef={(r) => {
               tbRef.current = r.current;
             }}
+            paginationMaxPage={data?.items}
             options={optionsTabulator}
             events={{
             tableBuilt: () => {
                 tbRef.current.setSort("timestamp", "desc"); 
-            }
+            },
+            pageLoaded: (pageNumber) => {
+              console.log("Current Page:", pageNumber);
+              console.log("Max Page:", tbRef.current.getPageMax()); // Logs the max pages after the page is loaded
+                }
             }}
           />
         </ContainerCard>

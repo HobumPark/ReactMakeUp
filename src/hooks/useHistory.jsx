@@ -11,6 +11,7 @@ const useHistory = ({
     queryKey: ["objectListData", queryParams],
     queryFn: () => fetchObject(queryParams),
     staleTime: 1000 * 60 * 1,
+    keepPreviousData: true,
   });
 
   return {
