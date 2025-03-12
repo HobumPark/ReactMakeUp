@@ -37,7 +37,7 @@ const useSiteMgt = ({
         mutationFn: (siteData) => updateSite(siteData),
         onSuccess: (responseData) => {
           //alert('updateSiteMutation onSuccess!')
-          new NoticeMessage(t('수정 성공'), {
+          new NoticeMessage(t('정상적으로 정보가 입력되었습니다.'), {
             callback() {
               queryClient.invalidateQueries(["siteListData", queryParams]);
               onUpdateSuccess(responseData);
@@ -84,7 +84,7 @@ const useSiteMgt = ({
         },
         
         onSuccess:(responseData) =>{
-          new NoticeMessage(t('msg > update success'), {
+          new NoticeMessage(t('정상적으로 정보가 입력되었습니다.'), {
             callback() {
               queryClient.invalidateQueries(["siteListData", queryParams]);
               onUpdateSuccess(responseData);
@@ -100,7 +100,7 @@ const useSiteMgt = ({
   const deleteSiteMutation = useMutation({
       mutationFn: (siteId) => deleteSite(siteId),
       onSuccess: () => {
-        new NoticeMessage(t('msg > delete success'), {
+        new NoticeMessage(t('정상적으로 삭제되었습니다.'), {
           callback() {
             onDeleteSuccess();
             queryClient.invalidateQueries(["siteListData", queryParams]);
@@ -130,7 +130,7 @@ const useSiteMgt = ({
       }
     },
     onSuccess: (responseData) => {
-      new NoticeMessage(t('msg > registration success'), {
+      new NoticeMessage(t('정상적으로 정보가 입력되었습니다.'), {
         callback() {
           queryClient.invalidateQueries(["siteListData", queryParams]);
           onCreateSuccess(responseData);
@@ -170,7 +170,7 @@ const useSiteMgt = ({
     },
     
     onSuccess:(responseData) =>{
-      new NoticeMessage(t('msg > registration success'), {
+      new NoticeMessage(t('정상적으로 정보가 입력되었습니다.'), {
         callback() {
           queryClient.invalidateQueries(["siteListData", queryParams]);
           onUpdateSuccess(responseData);
@@ -207,7 +207,7 @@ const useSiteMgt = ({
     },
     
     onSuccess:(responseData) =>{
-      new NoticeMessage(t('msg > delete success'), {
+      new NoticeMessage(t('정상적으로 삭제되었습니다.'), {
         callback() {
           queryClient.invalidateQueries(["siteListData", queryParams]);
           onDeleteSuccess(responseData);
