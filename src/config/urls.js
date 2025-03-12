@@ -124,4 +124,10 @@ export const APIS = {
   objectCntCompass:(filterParams) => `/object-unq-cnt/compass/total?${filterParams}`,
   objectCntCompassTime:(filterParams) => `/object-unq-cnt/compass/time-series?${filterParams}`,
   realTimeObject:(filterParams) => `/api/dsh/real-time-object?${filterParams}`,
+  //Equipment Info 
+  boxStatus: (id) =>`/box-status/${id}`,
+  box: (id) =>`/box/${id}`,
+  boxEvent: (id,filterParams) =>`/box-event/${id}?${filterParams}`,
+  boxEventCnt: (id) =>`/box-event-cnt/${id}`,
+  boxTempHum: (id, filterParams) =>`/box-temp-hum/${id}?${filterParams}`,
 }

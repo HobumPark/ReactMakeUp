@@ -42,15 +42,18 @@ const CrossRoadDashboard = () => {
     start_time: getLocalISOString(startTime), 
   });
 
-  const { objectUnqCnt, objCntCompassTime } = useObjectCnt({
+  const { objectUnqCnt, objCntCompassTime, objCntCompassEntry,objCntCompassExit } = useObjectCnt({
     objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}`,
     objCompassTimeParams: `start_time=${dateTime.start_time}&end_time=${dateTime.end_date}&site_id=${site_id}&interval=15`,
+    objCompassParamsExit: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}&moving_direction=108002`,
+    objCompassParamsEntry: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}&moving_direction=108001`
   })
 
   const srDetectorData = srDetector?.data;
   const objCntData = objectUnqCnt?.data;
   const objCntCompassTimeData = objCntCompassTime?.data;
-
+  const objCompassEntry = objCntCompassEntry?.data;
+  const objCompassExit = objCntCompassExit?.data;
 
   const [videos, setVideos] = useState([
     srDetectorData?.roads?.map((road) => road.detector?.stream_url) || []
@@ -423,7 +426,7 @@ const CrossRoadDashboard = () => {
                 </span>
               </div>
               <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                <EntryRate />
+                <EntryRate data={objCompassEntry}/>
               </div>
             </section>
             <section className=" flex flex-1 h-[full] overflow-hidden bg-[#000] rounded-[5px]">
@@ -433,7 +436,7 @@ const CrossRoadDashboard = () => {
                 </span>
               </div>
               <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                <ExitRate />
+                <ExitRate data={objCompassExit} />
               </div>
             </section>
           </div>

@@ -2,7 +2,8 @@ import React, {useState, useEffect} from "react";
 import Chart from "react-apexcharts";
 import "./TemperatureHum.css"
 
-const TemperatureHum = () => {
+const TemperatureHum = ({data}) => {
+
   const optionsChart = {
     chart: {
       type: "line",
@@ -26,24 +27,30 @@ const TemperatureHum = () => {
       yaxis: { lines: { show: true } },
     },
     xaxis: {
-      categories: [
-        "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00",
-      ],
+      categories: data?.map(item => item.timestamp.slice(11, 16)),
       labels: { style: { colors: "#fff" } },
     },
     yaxis: [
       {
         // title: { text: "Temperature", style: { color: "#007BFF" } },
         labels: { style: { colors: "#007BFF" } },
-        min: -30,
-        max: 35,
+        min:  data && data?.length > 0
+        ? -Math.min(...data?.map(item => item.temp), ...data?.map(item => item.hum))
+        : -30,
+        max: data && data?.length > 0
+        ? Math.max(...data?.map(item => item.temp), ...data?.map(item => item.hum))
+        : 35,
         opposite: false, // Temperature di kiri
       },
       {
         // title: { text: "Humidity", style: { color: "#28A745" } },
         labels: { style: { colors: "#28A745" } },
-        min: 0,
-        max: 35,
+        min: data && data?.length > 0
+        ? -Math.min(...data?.map(item => item.temp), ...data?.map(item => item.hum))
+        : 0,
+        max: data && data?.length > 0
+        ? Math.max(...data?.map(item => item.temp), ...data?.map(item => item.hum))
+        : 35,
         opposite: true, // Humidity di kanan
       },
     ],
@@ -61,13 +68,14 @@ const TemperatureHum = () => {
   };
 
   const series = [
-    { name: "Temperature", data: [5, 10, 15, 8, 12, 20, 17, 22] },
-    { name: "Humidity", data: [15, 20, 10, 18, 25, 28, 22, 30] },
+    { name: "Temperature", data: data?.map(item => item.temp !== undefined ? item.temp : null) || []  },
+    { name: "Humidity", data: data?.map(item => item.hum !== undefined ? item.hum : null) || []  },
   ];
 
   return (
     <>
       <Chart
+        type="line"
         options={optionsChart}
         series={series}
         height={"100%"}

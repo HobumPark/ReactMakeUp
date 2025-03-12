@@ -6,7 +6,8 @@ import { fetchObjectCntCompass, fetchObjectCntCompassTime } from "../api/crossro
 const useObjectCnt = ({
   objectUnqCntRoadParams = "",
   objectUnqCntParams = "",
-  objCompassParams = "",
+  objCompassParamsEntry = "",
+  objCompassParamsExit = "",
   objCompassTimeParams = "",
 }) => {
   const queryClient = useQueryClient();
@@ -27,13 +28,21 @@ const useObjectCnt = ({
         enabled: !!objectUnqCntRoadParams,
     });
 
-    const { data: objCntCompass} = useQuery({
-        queryKey: ["objCntCompass", objCompassParams],
-        queryFn: () => fetchObjectCntCompass(objCompassParams),
+    const { data: objCntCompassEntry} = useQuery({
+        queryKey: ["objCntCompassEntry", objCompassParamsEntry],
+        queryFn: () => fetchObjectCntCompass(objCompassParamsEntry),
         staleTime: 1000 * 60 * 5,
         cacheTime: 1000 * 60 * 10,
-        enabled: !!objCompassParams,
+        enabled: !!objCompassParamsEntry,
     });
+
+    const { data: objCntCompassExit} = useQuery({
+      queryKey: ["objCntCompassExit", objCompassParamsExit],
+      queryFn: () => fetchObjectCntCompass(objCompassParamsExit),
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 10,
+      enabled: !!objCompassParamsExit,
+  });
 
 
     const { data: objCntCompassTime} = useQuery({
@@ -48,7 +57,8 @@ const useObjectCnt = ({
   return {
     objectUnqCnt,
     objectUnqCntRoad,
-    objCntCompass,
+    objCntCompassEntry,
+    objCntCompassExit,
     objCntCompassTime
   };
 };

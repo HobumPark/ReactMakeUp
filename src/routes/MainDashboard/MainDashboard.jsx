@@ -388,7 +388,7 @@ const MainDashboard = () => {
         if (clickedItem) {
           switch (clickedItem.type) {
             case "box":
-              window.open("/dashboard/equipment-info", "_blank", "width=800,height=600");
+              window.open(`/dashboard/equipment-info?id=${clickedItem.id}`, "_blank", "width=800,height=600");
               break;
             case "102001":
               window.open(`/dashboard/crossroad?id=${clickedItem.id}`, "_blank", "width=800,height=600");

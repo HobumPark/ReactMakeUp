@@ -36,6 +36,16 @@ import VideoRecord from "../../assets/icon/icon-video.svg";
 import IconTemp from "../../assets/icon/icon-temp.svg";
 import IconHum from "../../assets/icon/icon-hum.svg";
 import IconTempHum from "../../assets/icon/icon-db-temp-hum.svg";
+import { useLocation } from "react-router-dom";
+import useBox from "../../hooks/useBox";
+import { useTranslation } from "react-i18next";
+import { formatDateToYYYYMMDD, getLocalISOString } from "../../utils/date";
+import AirDatepicker from "air-datepicker";
+import localeEn from "air-datepicker/locale/en.js";
+import localeKo from "air-datepicker/locale/ko.js";
+import localeId from "air-datepicker/locale/id.js";
+import DbVideoModal from "../../components/Modal/DbVideoModal/DbVideoModal";
+import useSRDetector from "../../hooks/useSRDetector";
 
 // ini copmponent proggresbar ya
 const ProgressBar = ({ label, percentage, showLabel = true }) => {
@@ -44,18 +54,18 @@ const ProgressBar = ({ label, percentage, showLabel = true }) => {
     if (percentage <= 80) return "bg-[#FFA500]";
     return "bg-[#E94545]";
   };
-
+  const displayPercentage = percentage === null ? '-' : `${percentage}%`;
   return (
     <div className="w-full flex flex-col gap-[5px]">
       {showLabel && (
         <div className="text-text-white title3">
-          {label} <span className="title3bold">{percentage}%</span>
+          {label} <span className="title3bold">{displayPercentage}</span>
         </div>
       )}
       <div className="w-full h-[6px] bg-gray-300 rounded-full overflow-hidden">
         <div
           className={`h-full ${getColor()} transition-all duration-300`}
-          style={{ width: `${percentage}%` }}
+          style={{ width: percentage === null ? 0 : `${percentage}%` }}
         ></div>
       </div>
     </div>
@@ -64,22 +74,46 @@ const ProgressBar = ({ label, percentage, showLabel = true }) => {
 // ini copmponent proggresbar ya
 
 const EquipmentInfoDashboard = () => {
-  const [isOn, setIsOn] = useState(false);
-  const [isOnFan, setIsOnFan] = useState(false);
+  const { t, i18n } = useTranslation();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const rtu_id = queryParams.get('id'); 
 
-  const mapRef = useRef(null);
-  const [showModal, setShowModal] = useState(false);
-  const iconFeatureRef = useRef(null);
+  const today = new Date();
+  const oneWeekAgo = new Date(today); 
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  
+  const startTime = new Date(today.getTime() - 8 * 60 * 60 * 1000);
+  const [dateTime] = useState({
+    start_date:getLocalISOString(startTime),
+    end_date:getLocalISOString(today),
+  });
+  
+  const [date, setDate] = useState({
+    start_date:formatDateToYYYYMMDD(oneWeekAgo),
+    end_date:formatDateToYYYYMMDD(today),
+  });
+  const [inputValue, setInputValue] = useState("");
 
   // ini buat filtering btnevent ya fren
 
   const [selectBtnFilter, setSelectBtnFilter] = useState({
-    btnTemperature: false,
-    btnHumidity: false,
-    btnNetwork: false,
-    btnDoorOpen: false,
-    btnPower: false,
+    EVT_TP_TMP: false,
+    EVT_TP_HUM: false,
+    EVT_TP_NW: false,
+    EVT_TP_DO: false,
+    EVT_TP_PW: false,
   });
+
+  const eventTypeMap = {
+    EVT_TP_TMP: "EVT_TP_TMP",
+    EVT_TP_HUM: "EVT_TP_HUM",
+    EVT_TP_NW: "EVT_TP_NW",
+    EVT_TP_DO: "EVT_TP_DO",
+    EVT_TP_PW: "EVT_TP_PW",
+  };
+
+  const eventTypes = Object.keys(eventTypeMap);
 
   const handleBtnFilter = (button) => {
     setSelectBtnFilter((prev) => ({
@@ -89,7 +123,94 @@ const EquipmentInfoDashboard = () => {
   };
 
   // ini buat filtering btnevent ya fren
+  
+  useEffect(() => {
+    let locale;
+    if (i18n.language === "eng") {
+      locale = localeEn;
+    } else if (i18n.language === "ind") {
+      locale = localeId;
+    } else {
+      locale = localeKo;
+    }
 
+    const optionsDate = {
+      autoClose: true,
+      locale: locale,
+      position: "bottom left",
+      selectedDates: [oneWeekAgo],
+      dateFormat: "yyyy-MM-dd",
+      onSelect: (date) => {
+        setDate((prevValues) => ({
+          ...prevValues,
+          start_date: date.formattedDate,
+        }));
+      },
+    };
+
+    const optionsDateSecond = {
+      autoClose: true,
+      locale: locale,
+      position: "bottom right",
+      selectedDates: [today],
+      dateFormat: "yyyy-MM-dd",
+      onSelect: (date) => {
+        setDate((prevValues) => ({
+          ...prevValues,
+          end_date: date.formattedDate,
+        }));
+      },
+    };
+
+    const datepicker1 = new AirDatepicker('[name="start_date"]', optionsDate);
+    const datepicker2 = new AirDatepicker('[name="end_date"]',optionsDateSecond);
+
+    return () => {
+      datepicker1.destroy();
+      datepicker2.destroy();
+    };
+  }, [i18n.language]);
+
+
+  const [ boxEventParams, setBoxEventParams ] = useState(`start_time=${date.start_date}&end_time=${date.end_date}&event_type=${eventTypes.join("&event_type=")}`);
+
+  const { boxData, boxStatusData, BoxEventDataList, boxEventCntData, boxTempHumData } = useBox({
+    id: rtu_id,
+    boxTempHumpParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
+    boxEventParams: boxEventParams
+  })
+  
+  const box = boxData?.data[0];
+  const boxStatus = boxStatusData?.data;
+  const boxEvent = BoxEventDataList?.data;
+  const boxEventCnt = boxEventCntData?.data[0];
+  const boxTempHump = boxTempHumData?.data;
+  const site_id = boxStatus.site_id;
+
+  const { srDetector }  = useSRDetector({
+    id: site_id
+  });
+
+  const siteRoadDetector = srDetector?.data;
+  
+
+  const [isOn, setIsOn] = useState(false);
+  const [isOnFan, setIsOnFan] = useState(false);
+
+  const updateStatus = (status) => status === '203002';
+
+  useEffect(() => {
+    setIsOnFan(updateStatus(boxStatus?.fan_status));
+    setIsOn(updateStatus(boxStatus?.heater_status));
+  }, [boxStatus]);
+
+
+  const mapRef = useRef(null);
+  const [showModal, setShowModal] = useState(false);
+  const iconFeatureRef = useRef(null);
+  
+  
+  //Ini Map
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -101,33 +222,39 @@ const EquipmentInfoDashboard = () => {
         }),
       ],
       view: new View({
-        center: fromLonLat([106.8456, -6.2088]),
-        zoom: 10,
+        center: fromLonLat([128.0, 36.0]),
+        zoom: 7,
       }),
     });
 
-    // Buat ikon pertama
-    const iconFeature = new Feature({
-      geometry: new Point(fromLonLat([106.8456, -6.2088])),
+    const vectorSource = new VectorSource();
+    siteRoadDetector.roads.forEach((road) => {
+      if (road.detector) {
+        const { lat, lng } = road.detector;
+    
+        const iconFeature = new Feature({
+          geometry: new Point(fromLonLat([lng, lat])), 
+        });
+    
+        iconFeature.setStyle(
+          new Style({
+            image: new Icon({
+              src: IconVideo,
+              scale: 1,
+            }),
+          })
+        );
+    
+  
+        vectorSource.addFeature(iconFeature);
+      }
     });
-
-    iconFeature.setStyle(
-      new Style({
-        image: new Icon({
-          src: IconVideo, // Ikon default
-          scale: 1,
-        }),
-      })
-    );
-
-    iconFeatureRef.current = iconFeature; // Simpan referensi ikon
+    
 
     const vectorLayer = new VectorLayer({
-      source: new VectorSource({
-        features: [iconFeature],
-      }),
+      source: vectorSource, 
     });
-
+    
     olMap.addLayer(vectorLayer);
 
     // Tambahkan event listener klik
@@ -153,6 +280,72 @@ const EquipmentInfoDashboard = () => {
       olMap.setTarget(null);
     };
   }, []); // Tidak ada dependensi agar tidak re-render ulang
+
+
+  useEffect(() => {
+    const resultInput = inputValue ? `input=${inputValue}` : "";
+    const dateParams = `start_date=${date.start_date}&end_date=${date.end_date}`;
+  
+    const eventType = Object.keys(selectBtnFilter)
+      .filter((key) => !selectBtnFilter[key]) 
+      .map((key) => eventTypeMap[key]);
+  
+    const resultSelect = eventType.length > 0 ? `&event_type=${eventType.join("&event_type=")}` : "";
+    
+    const result = `${resultInput}&${dateParams}&${resultSelect}`;
+    setBoxEventParams(result);
+  }, [selectBtnFilter, inputValue,date]);  
+
+
+  useEffect(() => {
+    console.log(boxEventParams);
+  }, [boxEventParams]);
+  
+
+  const eventData = boxEvent?.map((event, index) => {
+    let customCard = '';
+    let subtitle = '';
+    let title = '';
+    const eventType = t(event.type);
+    const doorOpen = t(event.front_door_status);
+    const power = event.dc_24v_input_volt ? 'ON' : 'OFF';
+    const network = t(event.network_status);
+
+    if (event.type === "EVT_TP_TMP") {
+      title = event.message
+      customCard = "border-[#135A78]";
+      subtitle = `${eventType} | ${event.temp} ℃`;
+    } else if (event.type === "EVT_TP_HUM") {
+      title = event.message
+      customCard = "border-[#1D7E46]";
+      subtitle = `${eventType} | ${event.hum} %`;
+    } else if (event.type === "EVT_TP_NW") {
+      title = event.message
+      customCard = "border-[#D32F2F]";
+      subtitle = `${eventType} | ${network}`;
+    } else if (event.type === "EVT_TP_DO") {
+      title = event.message
+      customCard = "border-[#F35A19]";
+      subtitle = `${eventType} | ${doorOpen}`;
+    } else if (event.type === "EVT_TP_PW") {
+      title = event.message
+      customCard = "border-[#EE9F17]";
+      subtitle = `${eventType} | ${power}`;
+    } else {
+      title = event.message
+      customCard = "border-[#000]";
+      subtitle = "알 수 없는 이벤트";
+    }
+
+    return {
+      ...event,
+      title,
+      customCard,
+      subtitle,
+      date: event.occurred_time, 
+      index
+    };
+  });
 
   return (
     <>
@@ -181,10 +374,10 @@ const EquipmentInfoDashboard = () => {
                   <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
                     <div className="ml-auto flex flex-col justify-end items-end">
                       <span className="title2bold text-text-danger-400">
-                        OFF
+                      {(boxStatus?.dc_24v_input_volt === null || boxStatus?.dc_24v_input_volt === 0) ? 'OFF' : 'ON'}
                       </span>
                       <span className="title2bold text-text-white">
-                        199 Volt
+                        {boxStatus?.dc_24v_input_volt} Volt
                       </span>
                     </div>
                   </div>
@@ -206,7 +399,7 @@ const EquipmentInfoDashboard = () => {
                   <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
                     <div className="ml-auto flex flex-col justify-end items-end">
                       <span className="title2bold text-text-danger-400">
-                        OFF
+                        {t(boxStatus?.network_status)}
                       </span>
                     </div>
                   </div>
@@ -228,8 +421,8 @@ const EquipmentInfoDashboard = () => {
                   </div>
                   <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
                     <div className="ml-auto flex flex-col justify-end items-end">
-                      <span className="title2bold text-[#8AC63F]">75°C </span>
-                      <span className="title2bold text-text-white"> 50%</span>
+                      <span className="title2bold text-[#8AC63F]">{boxStatus?.temp}°C </span>
+                      <span className="title2bold text-text-white"> {boxStatus?.hum}%</span>
                     </div>
                   </div>
                 </div>
@@ -301,11 +494,12 @@ const EquipmentInfoDashboard = () => {
                       </span>
                     </div>
                   </div>
+            
                   <div className="flex w-fit flex-col justify-between flex-row gap-[3px] items-center">
                     <div className="ml-auto w-full flex flex-col justify-center items-center bg-bg-grey-500 rounded-[5px] p-[5px]">
-                      <span className="title3 text-text-white">OFF</span>
+                      <span className="title3 text-text-white">{boxStatus?.back_door_status === '204001' ? 'ON' : 'OFF'} </span>
                       <span className="title3bold text-text-danger-400 ">
-                        Open
+                        {t(boxStatus?.back_door_status)}
                       </span>
                     </div>
                   </div>
@@ -322,7 +516,7 @@ const EquipmentInfoDashboard = () => {
                       <span className="title2bold text-text-white">Edge</span>
                     </div>
                     <div className="ml-auto flex flex-col  gap-[5px] justify-end items-end">
-                      <span className="title2bold text-text-white">ON</span>
+                      <span className="title2bold text-text-white"> {t(boxStatus?.edge1_network_status)}</span>
                       <button className="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
                         Restart
                       </button>
@@ -330,13 +524,13 @@ const EquipmentInfoDashboard = () => {
                   </div>
 
                   <div className="_bxStorage flex flex-col justify-around h-full gap-[5px]">
-                    <ProgressBar label="CPU" percentage={40} />
-                    <ProgressBar label="RAM" percentage={60} />
-                    <ProgressBar label="Storage" percentage={90} />
+                    <ProgressBar label="CPU" percentage={boxStatus?.edge1_cpu} />
+                    <ProgressBar label="RAM" percentage={boxStatus?.edge1_memory} />
+                    <ProgressBar label="Storage" percentage={boxStatus?.edge1_disk_used} />
                     <div className="flex flex-row gap-[2px]">
-                      <span className="title3bold text-text-white">241</span>
+                      <span className="title3bold text-text-white mr-2">{!boxStatus?.edge_disk ? '-' : boxStatus?.edge_disk}</span>
                       <span className="title3 text-text-white">free of</span>
-                      <span className="title3bold text-text-white">480GB</span>
+                      <span className="title3bold text-text-white ml-2">{!boxStatus?.edge_disk_size ? '-' : boxStatus?.edge_disk_size}</span>
                     </div>
                   </div>
                 </div>
@@ -349,166 +543,44 @@ const EquipmentInfoDashboard = () => {
                 <span className="title3bold text-text-white">총 4개</span>
               </div>
               <div className="w-full h-[calc(100%-30px)] grid grid-cols-1 gap-[8px]  overflow-auto p-[10px]">
-                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[5px] items-center">
-                      <img
-                        src={IconCameraVideo}
-                        alt=""
-                        className="w-[35px] h-[35px]"
-                      />
-                      <div className="flex flex-col">
-                        <span className="title2bold text-text-white">
-                          BXID0010 | 남쪽 접근로{" "}
-                        </span>
-                        <span className="title2 text-text-white">
-                          2025-01-20 12:30:00
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
-                    <div className="ml-auto flex flex-col justify-end items-end">
-                      <span className="title2bold text-text-white">ON </span>
-                      <div className="ml-auto flex flex-row gap-[5px]">
-                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          <img src={VideoRecord} alt="" />
-                        </button>
-                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          Restart
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[5px] items-center">
-                      <img
-                        src={IconCameraVideo}
-                        alt=""
-                        className="w-[35px] h-[35px]"
-                      />
-                      <div className="flex flex-col">
-                        <span className="title2bold text-text-white">
-                          BXID0010 | 남쪽 접근로{" "}
-                        </span>
-                        <span className="title2 text-text-white">
-                          2025-01-20 12:30:00
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
-                    <div className="ml-auto flex flex-col justify-end items-end">
-                      <span className="title2bold text-text-white">ON </span>
-                      <div className="ml-auto flex flex-row gap-[5px]">
-                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          <img src={VideoRecord} alt="" />
-                        </button>
-                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          Restart
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[5px] items-center">
-                      <img
-                        src={IconCameraVideo}
-                        alt=""
-                        className="w-[35px] h-[35px]"
-                      />
-                      <div className="flex flex-col">
-                        <span className="title2bold text-text-white">
-                          BXID0010 | 남쪽 접근로{" "}
-                        </span>
-                        <span className="title2 text-text-white">
-                          2025-01-20 12:30:00
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
-                    <div className="ml-auto flex flex-col justify-end items-end">
-                      <span className="title2bold text-text-white">ON </span>
-                      <div className="ml-auto flex flex-row gap-[5px]">
-                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          <img src={VideoRecord} alt="" />
-                        </button>
-                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          Restart
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[5px] items-center">
-                      <img
-                        src={IconCameraVideo}
-                        alt=""
-                        className="w-[35px] h-[35px]"
-                      />
-                      <div className="flex flex-col">
-                        <span className="title2bold text-text-white">
-                          BXID0010 | 남쪽 접근로{" "}
-                        </span>
-                        <span className="title2 text-text-white">
-                          2025-01-20 12:30:00
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
-                    <div className="ml-auto flex flex-col justify-end items-end">
-                      <span className="title2bold text-text-white">ON </span>
-                      <div className="ml-auto flex flex-row gap-[5px]">
-                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          <img src={VideoRecord} alt="" />
-                        </button>
-                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          Restart
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[5px] items-center">
-                      <img
-                        src={IconCameraVideo}
-                        alt=""
-                        className="w-[35px] h-[35px]"
-                      />
-                      <div className="flex flex-col">
-                        <span className="title2bold text-text-white">
-                          BXID0010 | 남쪽 접근로{" "}
-                        </span>
-                        <span className="title2 text-text-white">
-                          2025-01-20 12:30:00
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
-                    <div className="ml-auto flex flex-col justify-end items-end">
-                      <span className="title2bold text-text-white">ON </span>
-                      <div className="ml-auto flex flex-row gap-[5px]">
-                        <button class="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          <img src={VideoRecord} alt="" />
-                        </button>
-                        <button class="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
-                          Restart
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {siteRoadDetector.roads.map((road, index) => (
+                      road.detector && (
+                        <div key={index} className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                          <div className="flex w-full justify-between flex-row gap-[3px] items-center">
+                            <div className="flex flex-row gap-[5px] items-center">
+                              <img
+                                src={IconCameraVideo}
+                                alt=""
+                                className="w-[35px] h-[35px]"
+                              />
+                              <div className="flex flex-col">
+                                <span className="title2bold text-text-white">
+                                  {road.detector.detector_id} |  {road.name} 
+                                </span>
+                                <span className="title2 text-text-white">
+                                {road.detector.installed_date} 
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
+                            <div className="ml-auto flex flex-col justify-end items-end">
+                              <span className="title2bold text-text-white">ON</span> 
+                              <div className="ml-auto flex flex-row gap-[5px]">
+                                <button className="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]" onClick={() => { setShowModal(true); }}>
+                                  <img src={VideoRecord} alt="" />
+                                </button>
+                                <button className="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                                  Restart
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    ))}
+
+
               </div>
             </div>
           </section>
@@ -542,14 +614,14 @@ const EquipmentInfoDashboard = () => {
                       <span className="text-text-white body2  min-w-[160px]">
                         함체 ID
                       </span>
-                      <span className="text-text-white title3bold">01111</span>
+                      <span className="text-text-white title3bold">{box?.remote_terminal_unit_id}</span>
                     </div>
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
                       <span className="text-text-white body2  min-w-[160px]">
                         명칭
                       </span>
                       <span className="text-text-white title3bold">
-                        BOXID10010
+                        {box?.name}
                       </span>
                     </div>
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
@@ -557,7 +629,7 @@ const EquipmentInfoDashboard = () => {
                         매핑 사이트
                       </span>
                       <span className="text-text-white title3bold">
-                        삼성역 사거리 교차로(SITEID0001)
+                        {box?.site_name}({box?.site_id})
                       </span>
                     </div>
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
@@ -565,7 +637,7 @@ const EquipmentInfoDashboard = () => {
                         설치 위/경도
                       </span>
                       <span className="text-text-white title3bold">
-                        5.555323232 / 27.21829828
+                        {box?.lat} / {box?.lng}
                       </span>
                     </div>
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
@@ -573,7 +645,7 @@ const EquipmentInfoDashboard = () => {
                         설치 일시
                       </span>
                       <span className="text-text-white title3bold">
-                        2025.01.20
+                        {box?.installed_date}
                       </span>
                     </div>
                   </div>
@@ -589,7 +661,7 @@ const EquipmentInfoDashboard = () => {
                         Edge IP
                       </span>
                       <span className="text-text-white title3bold">
-                        192.168.1.1
+                        {box?.edge1_ip}
                       </span>
                     </div>
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
@@ -597,7 +669,7 @@ const EquipmentInfoDashboard = () => {
                         Switch IP
                       </span>
                       <span className="text-text-white title3bold">
-                        192.168.1.1
+                        {box?.switch_ip}
                       </span>
                     </div>
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
@@ -605,15 +677,15 @@ const EquipmentInfoDashboard = () => {
                         Router IP
                       </span>
                       <span className="text-text-white title3bold">
-                        192.168.1.1
+                        {box?.router_ip}
                       </span>
                     </div>
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
                       <span className="text-text-white body2  min-w-[160px]">
-                        설치 위/경도
+                       Env Board IP/Port
                       </span>
                       <span className="text-text-white title3bold">
-                        5.555323232 / 27.21829828
+                        {box?.env_board_ip}:{box?.env_board_port}
                       </span>
                     </div>
                     <div className="flex flex-1 flex-row gap-[5px] items-baseline">
@@ -621,7 +693,7 @@ const EquipmentInfoDashboard = () => {
                         Env Board Mac address
                       </span>
                       <span className="text-text-white title3bold">
-                        2025.01.20
+                        {box?.env_board_mac}
                       </span>
                     </div>
                   </div>
@@ -633,10 +705,11 @@ const EquipmentInfoDashboard = () => {
                   <span className="title3bold text-text-white">온/습도</span>
                 </div>
                 <div className="flex flex-col w-full p-[10px]  h-[calc(100%-40px)] overflow-hidden">
-                  <TemperatureHum />
+                  <TemperatureHum data={boxTempHump}/>
                 </div>
               </div>
             </div>
+            {showModal && <DbVideoModal onClose={() => setShowModal(false)} />}
           </section>
           {/* center */}
 
@@ -647,7 +720,7 @@ const EquipmentInfoDashboard = () => {
                 <span className="title3bold text-text-white">
                   금일 이벤트 현황
                 </span>
-                <span className="title3bold text-text-white">105</span>
+                <span className="title3bold text-text-white">{boxEventCnt ? Object.values(boxEventCnt).reduce((sum, value) => sum + value, 0) : 0}</span>
               </div>
               <div className="w-full grid grid-cols-6 gap-[5px] items-center p-[10px]">
                 <div className="bx-card-status col-span-3 w-full h-full justify-center items-center flex flex-col gap-[5px] p-[10px] border border-[#4D5152] bg-[#2D3238]">
@@ -655,7 +728,7 @@ const EquipmentInfoDashboard = () => {
                   <div className="w-full flex flex-row gap-[5px] justify-center items-center">
                     <img src={IconNetwork} alt="" />
                     <span className="text-text-white title3bold">/</span>
-                    <span className="text-text-white title3bold">200</span>
+                    <span className="text-text-white title3bold">{boxEventCnt?.EVT_TP_NW}</span>
                   </div>
                 </div>
                 <div className="bx-card-status col-span-3 w-full h-full justify-center items-center flex flex-col gap-[5px] p-[10px] border border-[#4D5152] bg-[#2D3238]">
@@ -663,7 +736,7 @@ const EquipmentInfoDashboard = () => {
                   <div className="w-full flex flex-row gap-[5px] justify-center items-center">
                     <img src={IconPower} alt="" />
                     <span className="text-text-white title3bold">/</span>
-                    <span className="text-text-white title3bold">200</span>
+                    <span className="text-text-white title3bold">{boxEventCnt?.EVT_TP_PW}</span>
                   </div>
                 </div>
                 <div className="bx-card-status col-span-2 w-full h-full justify-center items-center flex flex-col gap-[5px] p-[10px] border border-[#4D5152] bg-[#2D3238]">
@@ -671,7 +744,7 @@ const EquipmentInfoDashboard = () => {
                   <div className="w-full flex flex-row gap-[5px] justify-center items-center">
                     <img src={IconTemp} alt="" />
                     <span className="text-text-white title3bold">/</span>
-                    <span className="text-text-white title3bold">200</span>
+                    <span className="text-text-white title3bold">{boxEventCnt?.EVT_TP_TMP}</span>
                   </div>
                 </div>
                 <div className="bx-card-status col-span-2 w-full h-full justify-center items-center flex flex-col gap-[5px] p-[10px] border border-[#4D5152] bg-[#2D3238]">
@@ -679,7 +752,7 @@ const EquipmentInfoDashboard = () => {
                   <div className="w-full flex flex-row gap-[5px] justify-center items-center">
                     <img src={IconHum} alt="" />
                     <span className="text-text-white title3bold">/</span>
-                    <span className="text-text-white title3bold">200</span>
+                    <span className="text-text-white title3bold">{boxEventCnt?.EVT_TP_HUM}</span>
                   </div>
                 </div>
                 <div className="bx-card-status col-span-2 w-full h-full justify-center items-center flex flex-col gap-[5px] p-[10px] border border-[#4D5152] bg-[#2D3238]">
@@ -687,7 +760,7 @@ const EquipmentInfoDashboard = () => {
                   <div className="w-full flex flex-row gap-[5px] justify-center items-center">
                     <img src={IconDoorOpen} alt="" />
                     <span className="text-text-white title3bold">/</span>
-                    <span className="text-text-white title3bold">200</span>
+                    <span className="text-text-white title3bold">{boxEventCnt?.EVT_TP_DO}</span>
                   </div>
                 </div>
               </div>
@@ -704,19 +777,25 @@ const EquipmentInfoDashboard = () => {
                     <input
                       type="text"
                       className="input-db-date"
-                      value="22-04-2003"
+                      name="start_date"
+                      value={date.start_date}
+                      readOnly={true}
                     />
                     <span className="text-text-white">-</span>
                     <input
                       type="text"
                       className="input-db-date"
-                      value="22-04-2003"
+                      value={date.end_date}
+                      name="end_date"
+                      readOnly={true}
                     />
                   </div>
                   <input
                     type="text"
                     className="input-db-text w-full"
                     placeholder="Search, Number Event"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
                   />
                 </div>
 
@@ -724,133 +803,73 @@ const EquipmentInfoDashboard = () => {
                   {/* <button class="w-full title3 py-[5px] border bg-[#135A78] text-text-white border-[#135A78]">온도</button> */}
                   <button
                     className={`w-full title3 py-[5px] border ${
-                      selectBtnFilter.btnTemperature
+                      selectBtnFilter.EVT_TP_TMP
                         ? "bg-transparent text-white border-[#135A78]"
                         : "bg-[#135A78] text-white border-[#135A78]"
                     }`}
-                    onClick={() => handleBtnFilter("btnTemperature")}
+                    onClick={() => handleBtnFilter("EVT_TP_TMP")}
                   >
                     온도
                   </button>
 
                   <button
                     className={`w-full title3 py-[5px] border ${
-                      selectBtnFilter.btnHumidity
+                      selectBtnFilter.EVT_TP_HUM
                         ? "bg-transparent text-white border-[#1D7E46]"
                         : "bg-[#1D7E46] text-white border-[#1D7E46]"
                     }`}
-                    onClick={() => handleBtnFilter("btnHumidity")}
+                    onClick={() => handleBtnFilter("EVT_TP_HUM")}
                   >
                     습도
                   </button>
 
                   <button
                     className={`w-full title3 py-[5px] border ${
-                      selectBtnFilter.btnNetwork
+                      selectBtnFilter.EVT_TP_NW
                         ? "bg-transparent text-white border-[#D32F2F]"
                         : "bg-[#D32F2F] text-white border-[#D32F2F]"
                     }`}
-                    onClick={() => handleBtnFilter("btnNetwork")}
+                    onClick={() => handleBtnFilter("EVT_TP_NW")}
                   >
                     네트워크
                   </button>
 
                   <button
                     className={`w-full title3 py-[5px] border ${
-                      selectBtnFilter.btnDoorOpen
+                      selectBtnFilter.EVT_TP_DO
                         ? "bg-transparent text-white border-[#F35A19]"
                         : "bg-[#F35A19] text-white border-[#F35A19]"
                     }`}
-                    onClick={() => handleBtnFilter("btnDoorOpen")}
+                    onClick={() => handleBtnFilter("EVT_TP_DO")}
                   >
                     교차로
                   </button>
 
                   <button
                     className={`w-full title3 py-[5px] border ${
-                      selectBtnFilter.btnPower
+                      selectBtnFilter.EVT_TP_PW
                         ? "bg-transparent text-white border-[#EE9F17]"
                         : "bg-[#EE9F17] text-white border-[#EE9F17]"
                     }`}
-                    onClick={() => handleBtnFilter("btnPower")}
+                    onClick={() => handleBtnFilter("EVT_TP_PW")}
                   >
                     전원
                   </button>
                 </div>
 
                 <div className="_bxCardEventList w-full flex flex-col gap-[3px] h-full  overflow-auto">
-                  <CardList
-                    type="event"
-                    title="삼성역 사거리 교차로"
-                    showID="true"
-                    id="BX10010"
-                    customCard="border-[#1D7E46]"
-                    subtitle="온도   |  95 ℃"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    title="삼성역 사거리 교차로"
-                    showID="true"
-                    id="BX10010"
-                    customCard="border-[#1D7E46]"
-                    subtitle="온도   |  95 ℃"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    title="삼성역 사거리 교차로"
-                    showID="true"
-                    id="BX10010"
-                    customCard="border-[#135A78]"
-                    subtitle="습도  |  85 %"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    title="삼성역 사거리 교차로"
-                    showID="true"
-                    id="BX10010"
-                    customCard="border-[#135A78]"
-                    subtitle="습도  |  85 %"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    title="삼성역 사거리 교차로"
-                    showID="true"
-                    id="BX10010"
-                    customCard="border-[#ED3131]"
-                    subtitle="네트워크 | Disconnected"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    title="삼성역 사거리 교차로"
-                    showID="true"
-                    id="BX10010"
-                    customCard="border-[#ED3131]"
-                    subtitle="네트워크 | Disconnected"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    title="삼성역 사거리 교차로"
-                    showID="true"
-                    id="BX10010"
-                    customCard="border-[#F35A19]"
-                    subtitle="문열림 | Open"
-                    date="2025-01-20 12:30:00"
-                  />
-                  <CardList
-                    type="event"
-                    title="삼성역 사거리 교차로"
-                    showID="true"
-                    id="BX10010"
-                    customCard="border-[#EE9F17]"
-                    subtitle="전원 | 262.3v"
-                    date="2025-01-20 12:30:00"
-                  />
+                {eventData?.map((event,index) => (
+                    <CardList
+                      key={index}
+                      type="event"
+                      title={event.title}
+                      showID={true}
+                      id={event.event_id}
+                      customCard={event.customCard}
+                      subtitle={event.subtitle}
+                      date={event.date}
+                    />
+                ))}
                 </div>
               </div>
             </div>

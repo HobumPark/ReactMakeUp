@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import Chart from "react-apexcharts";
-const EntryRate = () => {
+const EntryRate = ({data}) => {
+  console.log(data);
+  
   const options = {
     chart: {
       type: "pie",

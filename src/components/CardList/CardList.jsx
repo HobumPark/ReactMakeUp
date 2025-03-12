@@ -38,7 +38,7 @@ const CardList = ({
             <span
               className={`title3bold ${customTitle} text-text-white flex-1`}
             >
-              [이벤트] {title}
+             {title}
             </span>
 
             { showId && (
