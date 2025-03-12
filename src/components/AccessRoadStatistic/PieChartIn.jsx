@@ -57,7 +57,7 @@ const options = {
 
 const series = [35, 30, 20, 30, 15, 10, 10, 5];
 
-const PieChartIn = () => {
+const PieChartIn = ({series}) => {
   return (
     <>
       <Chart
