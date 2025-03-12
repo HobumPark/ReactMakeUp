@@ -3,9 +3,6 @@ import IconPlay from "../../assets/icon/icon-play-tabulator.svg";
 import ContainerCard from "../../components/ContainerCard/ContainerCard";
 import Filtering from "../../components/Filtering/Filtering";
 import { ReactTabulator } from "react-tabulator";
-import DetailForm from "../../components/DetailForm/DetailForm";
-import LogList from "../../components/LogList/LogList";
-import ButtonGroup from "../../components/ButtonGroup/ButtonGroup";
 import Select from "../../components/Select/Select";
 import GeneralInput from "../../components/GeneralInput/GeneralInput";
 import { useTranslation } from "react-i18next";
@@ -13,11 +10,8 @@ import localeEn from "air-datepicker/locale/en.js";
 import localeKo from "air-datepicker/locale/ko.js";
 import localeId from "air-datepicker/locale/id.js";
 import AirDatepicker from "air-datepicker";
-import { formatDateToYYYYMMDD, formatFullDateTime, formatDateTime } from "../../utils/date";
+import { formatFullDateTime, formatDateTime } from "../../utils/date";
 import Button from "../../components/Button/Button";
-
-import VideoModal from "../../components/Modal/VideoModal/VideoModal";
-
 import Chart from "react-apexcharts";
 import useSuddenMgt from "../../hooks/useSuddenMgt";
 
@@ -30,19 +24,21 @@ const suddenEventTabulator = [
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
+    
   },
   {
     title: "발생일시",
     field: "timestamp",
+    widthGrow: 2,
     hozAlign: "center",
     headerHozAlign: "center",
-    headerSort: true,
+    headerSort: false,
     resizable: false,
   },
   {
     title: "사이트",
     field: "site_name",
-    widthGrow: 1,
+    widthGrow: 2,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -51,7 +47,7 @@ const suddenEventTabulator = [
   {
     title: "접근로",
     field: "road_name",
-    widthGrow: 1,
+    widthGrow: 2,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -133,43 +129,6 @@ const suddenEventTabulator = [
 ];
 
 
-
-const data = [
-  {
-    event_time: "2025-01-24 23:10:11",
-    site: "시청사거리",
-    access: "시청 방면",
-    vehicle_type: "승용차",
-    event_type: "역주행",
-    lane_direction: "진입",
-    lane: "3",
-    direction: "좌회전",
-    img_play: "",
-  },
-  {
-    event_time: "2025-01-24 23:10:11",
-    site: "시청사거리",
-    access: "시청 방면",
-    vehicle_type: "승용차",
-    event_type: "역주행",
-    lane_direction: "진입",
-    lane: "3",
-    direction: "좌회전",
-    img_play: "",
-  },
-  {
-    event_time: "2025-01-24 23:10:11",
-    site: "시청사거리",
-    access: "시청 방면",
-    vehicle_type: "승용차",
-    event_type: "역주행",
-    lane_direction: "진입",
-    lane: "3",
-    direction: "좌회전",
-    img_play: "",
-  },
-];
-
 const optionsChart = {
   chart: {
     type: "line",
@@ -189,11 +148,13 @@ const optionsChart = {
     "#9D03C4", 
     "#C47703", 
     "#29688C"], // ini buat bg warna legend
-  markers: {
-    size: 2,
-    hover: {
-      size: 2, // 호버 시 마커 크기
-    },
+    markers: {
+      size: 8, // Set the size of the points (increase or decrease as needed)
+      hover: {
+        size: 8, // Set the hover size (bigger when hovering)
+        //fillOpacity: 1, // Optionally change the fill opacity when hovering
+      },
+
     // colors: ["#EA494E", "#FDCA6A", "#439C50"],
     // strokeColors: ["#EA494E", "#FDCA6A", "#439C50"], // ini buat stroke bg warna legend
   },
@@ -217,13 +178,10 @@ const SuddenEvent = () => {
   const { t, i18n } = useTranslation();
   const searchRef = useRef(null);
 
-  const [trafficEventTimeValues,setTrafficEventTimeValues]=useState([])
   const [type,setType]=useState('')
   const [input,setInput]=useState('')
   const [searchInput,setSearchInput]=useState('')
-  
-  const [showModal, setShowModal] = useState(false);
-  const [imageUrl, setImageUrl] = useState(null);
+
   const [averageWaitTimeValues, setAverageWaitTimeValues] = useState([
     { name: "전체", data: new Array(12).fill(0) },
     { name: "역주행", data: new Array(12).fill(0) },
@@ -242,36 +200,52 @@ const SuddenEvent = () => {
   const [fullCategories, setFullCategories] = useState([]);//YYYY-MM-DD hh:mm - compare
   const [yaxisMax,setYaxisMax]=useState(100)
 
-  const [queryParamsTime, setQueryParamsTime] = useState(""); // queryParams 상태
-  const [queryParamsCnt, setQueryParamsCnt] = useState(""); // queryParams 상태
   const [selectedOption, setSelectedOption] = useState("");
 
   const today = new Date();
-  const firstDate = new Date();
-  firstDate.setHours(today.getHours() - 1); // 1시간 뺀 값
-
+  const firstDate = new Date(today);
+  firstDate.setHours(0, 0, 0, 0); // 자정으로 설정
+  //firstDate.setDate(today.getDate() - 1);  // 1일을 빼기
   const secondDate = new Date(today);
-  //2개 시간 기준이 달라서
-  //1-trafficEventTime - 시분초까지
-  const [dateTime1,setDateTime1] = useState({
-    start_date:formatFullDateTime(firstDate),
-    end_date:formatFullDateTime(secondDate)
+
+  // Utility function to calculate interval (difference in minutes, divided by 12)
+  const calculateInterval = (startDate, endDate) => {
+    const timeDifference = endDate - startDate;
+    const interval = timeDifference / 12 / 60000; // Convert milliseconds to minutes
+    //const interval=60
+    return interval;
+  };
+
+  const [dateTime1, setDateTime1] = useState({
+    start_date: formatFullDateTime(firstDate),
+    end_date: formatFullDateTime(secondDate)
   });
-  //2-trafficEventCnt - 시분까지
-
-  const [dateTime2,setDateTime2] = useState({
-    start_date:formatDateTime(firstDate),
-    end_date:formatDateTime(secondDate),
-    interval:''//기본 5분
+  
+  const [dateTime2, setDateTime2] = useState({
+    start_date: formatDateTime(firstDate),
+    end_date: formatDateTime(secondDate),
+    interval: calculateInterval(firstDate, secondDate) // Initial interval calculation
   });
+  
+  // For queryParams
+  const [queryParamsTime, setQueryParamsTime] = useState(""); // queryParams 상태
+  const [queryParamsCnt, setQueryParamsCnt] = useState(""); // queryParams 상태
+  
 
-
-
+  // Update the queryParams whenever dateTime1 or dateTime2 changes
+  useEffect(() => {
+    const timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
+    const cntQuery = `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`;
+    
+    setQueryParamsTime(timeQuery);
+    setQueryParamsCnt(cntQuery);
+  }, []); // Dependency on dateTime1 and dateTime2
+  
   const {trafficEventTime,trafficEventCnt} = useSuddenMgt({
     //queryParamsTime: `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`,
     queryParamsTime:queryParamsTime,
-    //
-    queryParamsCnt: `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`,
+    //queryParamsCnt: `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`,
+    queryParamsCnt: queryParamsCnt,
   });
 
   console.log('trafficEventTime')
@@ -280,21 +254,14 @@ const SuddenEvent = () => {
   console.log('trafficEventCnt')
   console.log(trafficEventCnt)
 
-  
   //이벤트 유형 선택
-  const handleChange = (e) => {
-    console.log('handleChange')
+  const handleFilterChange = (e) => {
+    console.log('handleFilterChange')
     console.log(e.target.value)
     setSelectedOption(e.target.value);
     const val=e.target.value
-    filterTableData(val)
-
+    setType(val)
   };
-  const handleChangeInput=(e)=>{
-    console.log('handleChangeInput')
-    console.log(e.target.value)
-    setInput(e.target.value)
-  }
 
   const options = [
     { value: "", label: "전체" },
@@ -309,17 +276,25 @@ const SuddenEvent = () => {
     { value: "EVT_TP_UT", label: "U턴" },
   ];
 
-  const filterTableData=(val)=>{
-    console.log('filterTableData')
-    console.log(val)
-    setType(val)
-  }
-
   const [activeButton, setActiveButton] = useState("");
 
   const handleButtonClick = (label) => {
     //alert("ButtonClick!")
     setActiveButton(label);
+
+    if (label === "1시간") {
+      //alert('1시간')
+      setOneHour()
+    } else if (label === "1일") {
+      //alert('1일')
+      setOneDay()
+    } else if (label === "1개월") {
+      //alert('1개월')
+      setOneMonth()
+    } else if (label === "") {
+      //alert('setCustomTime')
+      setCustomTime()
+    }
   };
 
   useEffect(() => {
@@ -330,136 +305,11 @@ const SuddenEvent = () => {
 
   //initial date value
   useEffect(()=>{
-    setDefaultTime()
+    handleSearch()
+    calendarMake()
   },[])
 
-  //change date button
-  useEffect(()=>{
-    console.log('activeButton')
-    calendarChange()
-
-  },[activeButton])
-
-  const setDefaultTime=()=>{
-    console.log('setDefaultTime')
-    const today = new Date();
-
-    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
-    const firstDate = new Date(today);
-    firstDate.setHours(0, 0, 0, 0); // 자정으로 설정
-
-    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
-    const secondDate = new Date(today);
-
-    // 두 날짜의 차이를 밀리초 단위로 구함
-    const timeDifference = secondDate - firstDate; // 밀리초 단위 차이
-
-    // 각 구간의 시간 간격을 구함 (12개의 구간으로 나누기)
-    const interval = timeDifference / 12;
-    console.log('interval cal')
-    console.log(interval)
-    setDateTime1({
-      start_date: formatFullDateTime(firstDate),
-      end_date: formatFullDateTime(secondDate)
-    });
-    //
-    setDateTime2({
-      start_date: formatDateTime(firstDate),
-      end_date: formatDateTime(secondDate),
-      interval: interval
-    });
-
-  }
-
-  const setOneHour=()=>{
-    const today = new Date();
-
-    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
-    const firstDate = new Date(today);
-    firstDate.setHours(today.getHours() - 1);
-
-    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
-    const secondDate = new Date(today);
-
-    setDateTime1({
-      start_date: formatFullDateTime(firstDate),
-      end_date: formatFullDateTime(secondDate)
-    });
-    //
-    setDateTime2({
-      start_date: formatDateTime(firstDate),
-      end_date: formatDateTime(secondDate),
-      interval: 5
-    });
-
-  }
-
-  const setOneDay=()=>{
-    const today = new Date();
-
-    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
-    const firstDate = new Date(today);
-    firstDate.setDate(today.getDate() - 1);  // 1일을 빼기
-
-    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
-    const secondDate = new Date(today);
-
-    setDateTime1({
-      start_date: formatFullDateTime(firstDate),
-      end_date: formatFullDateTime(secondDate)
-    });
-    //
-    setDateTime2({
-      start_date: formatDateTime(firstDate),
-      end_date: formatDateTime(secondDate),
-      interval: 60
-    });
-  }
-  
-  const setOneMonth=()=>{
-    const today = new Date();
-
-    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
-    const firstDate = new Date(today);
-    firstDate.setMonth(today.getMonth() - 1);  // 1개월을 빼기
-
-    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
-    const secondDate = new Date(today);
-
-    setDateTime1({
-      start_date: formatFullDateTime(firstDate),
-      end_date: formatFullDateTime(secondDate)
-    });
-    setDateTime2({
-      start_date: formatDateTime(firstDate),
-      end_date: formatDateTime(secondDate),
-      interval: 3600
-    });
-  }
-
-  const setCustomTime=()=>{
-    const today = new Date();
-
-    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
-    const firstDate = new Date(today);
-    firstDate.setHours(0, 0, 0, 0); // 자정으로 설정
-
-    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
-    const secondDate = new Date(today);
-
-    setDateTime1({
-      start_date: formatFullDateTime(firstDate),
-      end_date: formatFullDateTime(secondDate)
-    });
-    //
-    setDateTime2({
-      start_date: formatDateTime(firstDate),
-      end_date: formatDateTime(secondDate),
-      interval: 5
-    });
-  }
-
-  const calendarChange=()=>{
+  const calendarMake=()=>{
     let locale;
     if (i18n.language === "eng") {
       locale = localeEn;
@@ -469,29 +319,6 @@ const SuddenEvent = () => {
       locale = localeKo;
     }
 
-    // 첫 번째 날짜는 현재 시간에서 -1시간, -1일, -1개월
-    const today = new Date();
-    let firstDate = new Date(today); // today 값을 복사하여 사용
-    let interval = 5
-
-    if (activeButton === "1시간") {
-      //alert('1시간')
-      setOneHour()
-    } else if (activeButton === "1일") {
-      //alert('1일')
-      setOneDay()
-    } else if (activeButton === "1개월") {
-      //alert('1개월')
-      setOneMonth()
-    } else if (activeButton === "") {
-      //alert('setCustomTime')
-      setCustomTime()
-    }
-
-
-    // 두 번째 날짜는 현재 시간 그대로
-    const secondDate = new Date(today);
-
     const optionsDate = {
       autoClose: true,
       locale: locale,
@@ -500,7 +327,12 @@ const SuddenEvent = () => {
       dateFormat: "yyyy-MM-dd hh:mm",  // 시, 분, 초까지 포함한 날짜 포맷
       onSelect: (date) => {
         console.log('select start date')
+        console.log(date)
         console.log(date.formattedDate)
+        setDateTime1((prevValues) => ({
+          ...prevValues,
+          start_date: date.formattedDate+":00",  // 날짜가 시분초 포함된 형식으로 반환됨
+        }));
         setDateTime2((prevValues) => ({
           ...prevValues,
           start_date: date.formattedDate,  // 날짜가 시분초 포함된 형식으로 반환됨
@@ -517,7 +349,12 @@ const SuddenEvent = () => {
       dateFormat: "yyyy-MM-dd hh:mm",  // 시, 분, 초까지 포함한 날짜 포맷 
       onSelect: (date) => {
         console.log('select end date')
+        console.log(date)
         console.log(date.formattedDate)
+        setDateTime1((prevValues) => ({
+          ...prevValues,
+          end_date: date.formattedDate+":00",  // 날짜가 시분초 포함된 형식으로 반환됨
+        }));
         setDateTime2((prevValues) => ({
           ...prevValues,
           end_date: date.formattedDate,  // 날짜가 시분초 포함된 형식으로 반환됨
@@ -532,18 +369,178 @@ const SuddenEvent = () => {
     // 두 번째 날짜 선택기
     const datepicker2 = new AirDatepicker('[name="second-date"]', optionsDateSecond);
 
-    initAverageWaitTimeValues()
+    //initAverageWaitTimeValues()
 
     return () => {
       datepicker1.destroy();
       datepicker2.destroy();
     };
   }
+
+  const setOneHour = () => {
+    const today = new Date();
   
- 
-  useEffect(() => {
-    console.log('trafficEventCnt useEffect1');
+    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
+    const firstDate = new Date(today);
+    firstDate.setHours(today.getHours() - 1);
+  
+    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
+    const secondDate = new Date(today);
+  
+    setTimeAndQuery(firstDate,secondDate,5)
+  };
+  
+
+  const setOneDay=()=>{
+    const today = new Date();
+
+    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
+    const firstDate = new Date(today);
+    firstDate.setDate(today.getDate() - 1);  // 1일을 빼기
+
+    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
+    const secondDate = new Date(today);
+
+    setTimeAndQuery(firstDate,secondDate,60)
+  }
+  
+  const setOneMonth=()=>{
+    const today = new Date();
+
+    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
+    const firstDate = new Date(today);
+    firstDate.setMonth(today.getMonth() - 1);  // 1개월을 빼기
+
+    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
+    const secondDate = new Date(today);
+
+    setTimeAndQuery(firstDate,secondDate,3600)
+  }
+
+  const setCustomTime=()=>{
+    const today = new Date();
+
+    // 첫 번째 날짜: 현재 시간에서 1시간을 뺀 값
+    const firstDate = new Date(today);
+    firstDate.setHours(0, 0, 0, 0); // 자정으로 설정
+
+    // 두 번째 날짜: 현재 날짜의 년, 월, 일, 시, 분, 초, 밀리초 모두 설정
+    const secondDate = new Date(today);
     
+    const interval = (secondDate-firstDate/12) / 60000
+    
+    setTimeAndQuery(firstDate,secondDate,interval)
+  }
+
+  const setTimeAndQuery=(firstDate,secondDate,interval)=>{
+    setDateTime1({
+      start_date: formatFullDateTime(firstDate),
+      end_date: formatFullDateTime(secondDate)
+    });
+    //
+    setDateTime2({
+      start_date: formatDateTime(firstDate),
+      end_date: formatDateTime(secondDate),
+      interval: interval
+    });
+
+  }
+
+  useEffect(() => {
+    //alert('y축변경 데이터 다시 가져오기')
+    handleSearch()
+  }, [trafficEventCnt]); // trafficEventCnt 값이 변경될 때마다 실행
+
+  const languageTabulator = () => {
+    let datalanguage = {
+      pagination: {
+        first: t('cmn > first page'), //text for the first page button
+        first_title:t('cmn > first page'), //tooltip text for the first page button
+        last:t('cmn > last page'),
+        last_title: t('cmn > last page'),
+        prev: t('cmn > page before'),
+        prev_title: t('cmn > page before'),
+        next: t('cmn > next page'),
+        next_title: t('cmn > next page'),
+      },
+    }
+    return datalanguage
+  }
+
+
+  const optionsTabulator = {
+    debugInvalidOptions: true,
+    pagination: true,
+    movableRows: false,
+    resizableRows: false,
+    index: "id",
+    locale: "ko",
+    langs: {
+      ko: {
+        // Custom Korean translations for Tabulator
+        pagination: {
+          first: "처음",   // Custom "First" button text
+          prev: "이전",    // Custom "Previous" button text
+          next: "다음",    // Custom "Next" button text
+          last: "마지막",  // Custom "Last" button text
+        },
+        // You can add other language keys for other parts of Tabulator here if necessary.
+        // For example:
+        // "loading": "로딩중",
+        // "noData": "데이터 없음"
+        // ...
+      },
+    },
+    paginationSize: 10,
+    selectableRows: 1,
+    rowHeight: 41,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">전체 ${trafficEventTime?.data.events.length} 개</div>`,
+  };
+   
+ 
+  const handleSearch = (inputVal="") =>{
+        console.log('handleSearch')
+        console.log(queryParamsTime)
+        console.log(queryParamsCnt)
+
+        console.log('trafficEventCnt useEffect1');
+    
+        console.log('newCategories')
+        // 두 날짜 간 차이를 계산
+        const startDate = new Date(dateTime2.start_date);
+        const endDate = new Date(dateTime2.end_date);
+        const timeDifference = endDate - startDate; // 밀리초 단위 차이
+        const timeInterval = timeDifference / 12; // 12개의 구간으로 나누기
+    
+        // 12개 구간을 담을 빈 배열을 선언
+        const newCategories = new Array(12);
+        const fullCategories = new Array(12); // 새로운 fullCategories 배열 (년도까지 추가)
+    
+        // 12개의 구간을 뒤에서부터 계산
+        for (let i = 11; i >= 0; i--) {
+          // 각 구간의 끝 시간을 기준으로 5분씩 이전으로 설정
+          const intervalEnd = new Date(endDate.getTime() - timeInterval * (11 - i));
+          const intervalStart = new Date(intervalEnd.getTime() - timeInterval);
+    
+          // 각 구간의 시작 시간을 'MM-DD hh:mm' 형식으로 저장
+          const categoryLabel = `${String(intervalEnd.getMonth() + 1).padStart(2, "0")}-${intervalEnd.getDate()} ${String(intervalEnd.getHours()).padStart(2, "0")}:${String(intervalEnd.getMinutes()).padStart(2, "0")}`;
+          
+          // fullCategories에 값 넣기 (YYYY-MM-DD hh:mm 형식)
+          const fullCategoryLabel = `${intervalEnd.getFullYear()}-${String(intervalEnd.getMonth() + 1).padStart(2, "0")}-${String(intervalEnd.getDate()).padStart(2, "0")} ${String(intervalEnd.getHours()).padStart(2, "0")}:${String(intervalEnd.getMinutes()).padStart(2, "0")}`;
+    
+          // 끝에서부터 배열에 값 할당
+          newCategories[i] = categoryLabel;
+          fullCategories[i] = fullCategoryLabel;
+    
+          // 예시로 각 구간에 무작위 값을 넣는 코드입니다. 실제 로직으로 대체 가능.
+          console.log(`Interval ${i + 1}:`, intervalStart, "to", intervalEnd);
+        }
+    
+        // categories 업데이트
+        setCategories(newCategories);
+        setFullCategories(fullCategories);
+
+    //
     if (trafficEventCnt?.data) {
       console.log('trafficEventCnt useEffect2');
       console.log('trafficEventCnt 존재');
@@ -608,111 +605,20 @@ const SuddenEvent = () => {
       console.log("전체 항목에서의 최대값:", findMaxValue);
       setYaxisMax(findMaxValue);
     }
-  }, [trafficEventCnt,yaxisMax]); // trafficEventCnt 값이 변경될 때마다 실행
-  
-  
 
-
-
-  useEffect(() => {
-    console.log('newCategories')
-    // 두 날짜 간 차이를 계산
-    const startDate = new Date(dateTime2.start_date);
-    const endDate = new Date(dateTime2.end_date);
-    const timeDifference = endDate - startDate; // 밀리초 단위 차이
-    const timeInterval = timeDifference / 12; // 12개의 구간으로 나누기
-
-    // 12개 구간을 담을 빈 배열을 선언
-    const newCategories = new Array(12);
-    const fullCategories = new Array(12); // 새로운 fullCategories 배열 (년도까지 추가)
-
-    // 12개의 구간을 뒤에서부터 계산
-    for (let i = 11; i >= 0; i--) {
-      // 각 구간의 끝 시간을 기준으로 5분씩 이전으로 설정
-      const intervalEnd = new Date(endDate.getTime() - timeInterval * (11 - i));
-      const intervalStart = new Date(intervalEnd.getTime() - timeInterval);
-
-      // 각 구간의 시작 시간을 'MM-DD hh:mm' 형식으로 저장
-      const categoryLabel = `${String(intervalEnd.getMonth() + 1).padStart(2, "0")}-${intervalEnd.getDate()} ${String(intervalEnd.getHours()).padStart(2, "0")}:${String(intervalEnd.getMinutes()).padStart(2, "0")}`;
-      
-      // fullCategories에 값 넣기 (YYYY-MM-DD hh:mm 형식)
-      const fullCategoryLabel = `${intervalEnd.getFullYear()}-${String(intervalEnd.getMonth() + 1).padStart(2, "0")}-${String(intervalEnd.getDate()).padStart(2, "0")} ${String(intervalEnd.getHours()).padStart(2, "0")}:${String(intervalEnd.getMinutes()).padStart(2, "0")}`;
-
-      // 끝에서부터 배열에 값 할당
-      newCategories[i] = categoryLabel;
-      fullCategories[i] = fullCategoryLabel;
-
-      // 예시로 각 구간에 무작위 값을 넣는 코드입니다. 실제 로직으로 대체 가능.
-      console.log(`Interval ${i + 1}:`, intervalStart, "to", intervalEnd);
+    let timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
+    if(inputVal!=''){
+      timeQuery+=`&input=${inputVal}`
+      setInput(inputVal)
+    } 
+    if(type!=''){
+      timeQuery+=`&type=${type}`
     }
 
-    // categories 업데이트
-    setCategories(newCategories);
-    setFullCategories(fullCategories);
-
-  }, [dateTime1, dateTime2]); // dateTime이 변경될 때마다 실행
-
-
-
-  const languageTabulator = () => {
-    let datalanguage = {
-      pagination: {
-        first: t('cmn > first page'), //text for the first page button
-        first_title:t('cmn > first page'), //tooltip text for the first page button
-        last:t('cmn > last page'),
-        last_title: t('cmn > last page'),
-        prev: t('cmn > page before'),
-        prev_title: t('cmn > page before'),
-        next: t('cmn > next page'),
-        next_title: t('cmn > next page'),
-      },
-    }
-    return datalanguage
-  }
-
-
-  const optionsTabulator = {
-    debugInvalidOptions: true,
-    pagination: true,
-    movableRows: false,
-    resizableRows: false,
-    index: "id",
-    locale: "ko",
-    langs: {
-      ko: languageTabulator(),
-    },
-    paginationSize: 10,
-    selectableRows: 1,
-    rowHeight: 41,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 ${trafficEventTime?.data.events.length} 건</div>`,
-  };
-   
-  const handleSearch = (inputVal="") =>{
-        let params = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
-  
-        // 동적으로 추가할 파라미터
-        if (type) {
-          params += `&type=${type}`;
-        }
-        if(inputVal){
-          params += `&input=${inputVal}`;
-        }
-        //alert(params)
-        setInput(inputVal)
-        setQueryParamsTime(params)
-
-        params = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
-  
-        // 동적으로 추가할 파라미터
-        if (type) {
-          params += `&type=${type}`;
-        }
-        if(inputVal){
-          params += `&input=${inputVal}`;
-        }
-        //alert(params)
-        setInput(inputVal)
-        setQueryParamsTime(params)
+    const cntQuery = `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`;
+    
+    setQueryParamsTime(timeQuery);
+    setQueryParamsCnt(cntQuery);
 
   }
 
@@ -742,18 +648,9 @@ const SuddenEvent = () => {
     ]);
   }
 
-  const startCalendarChange=()=>{
-    //alert('startCalendarChange')
-    console.log('startCalendarChange')
-  }
-
-  const endCalendarChange=()=>{
-    console.log('endCalendarChange')
-  }
 
   return (
     <>
-
       <section className="wrap">
         <div className="header-title">
           <h3>돌발이벤트</h3>
@@ -765,12 +662,16 @@ const SuddenEvent = () => {
           <Filtering
             searchRef={searchRef}
             placeholder="사이트 / 접근로"
-            
-            customWidthSelect= "w-full flex flex-1 basis-[750px] "
+            disableFiltering={true}
+            customWidthSelect= "w-full flex flex-1 basis-[650px] "
             customWidthInput=" flex flex-1 w-full!"
             labelSelect="이벤트 유형  "
             onSearch={handleSearch}
             value={searchInput}
+            onReset={()=>{
+              setSearchInput("")
+              setSelectedOption("")
+            }}
             onChange={(e) => setSearchInput(e.target.value)}
           >
 
@@ -781,7 +682,7 @@ const SuddenEvent = () => {
               label="Pilih Opsi"
               name="contoh aja coy"
               value={selectedOption}
-              onChange={handleChange}
+              onChange={handleFilterChange}
             />
            <div className="flex w-[60%] gap-[12px]">
            <Button
@@ -811,14 +712,14 @@ const SuddenEvent = () => {
                 isDob={true}
                 inputType="text"
                 value={dateTime2?.start_date}
-                onChange={()=>startCalendarChange()}
+                
                 name={"first-date"} />
               <span>-</span>
               <GeneralInput
                 isDob={true}
                 inputType="text"
                 value={dateTime2?.end_date}
-                onChange={()=>endCalendarChange()}
+                
                 name={"second-date"}
               />
             </div>
