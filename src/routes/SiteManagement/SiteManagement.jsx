@@ -340,7 +340,7 @@ const SiteManagement = () => {
       //check if there is mapped_vms, speaker, ...
       //
       if(roadToDelete.mapped_detector || roadToDelete.mapped_vms || roadToDelete.mapped_speaker){
-        new NoticeMessage(t('삭제 불가능 (관련 검지기,전광판,스피커 존재)'))
+        new NoticeMessage(t('해당 사이트에 매핑된 [#검지기 or 전광판 or 스피커] 이(가) 존재합니다. 먼저 매핑을 해제해주세요'))
         return
       }
 
@@ -500,7 +500,7 @@ const SiteManagement = () => {
 
     if(hasChangesCreateRef.current || hasChangesUpdateRef.current){{
       const message = new NoticeMessage(
-          t('msg > flush confirm'),
+          t('입력하신 내용이 저장되지 않습니다. 계속하시겠습니까?'),
           {
             mode: "confirm",
           }
@@ -777,8 +777,8 @@ const SiteManagement = () => {
       const siteFieldName={'name':'명칭','lat':'위도','lng':'경도','address':'주소'}
       // 빈 필드에 대한 메시지 생성
       const emptyFieldName = emptyFields.map(field => `${siteFieldName[field]}`).join(', ');
-
-      new NoticeMessage(t('필수 값을 모두 입력해주세요(사이트): ' + emptyFieldName) );
+      console.log(('필수 값을 모두 입력해주세요(사이트): ' + emptyFieldName) );
+      new NoticeMessage(t('필수 값을 모두 입력해주세요'));
       return false;  // 비어있는 필드가 있으면 false 리턴
     } else {
       console.log('모든 필드가 채워졌습니다.');
@@ -934,7 +934,7 @@ const SiteManagement = () => {
         const {mapped_box}=siteInputFormValues
         console.log('삭제 mapped_box')
         console.log(mapped_box)
-        new NoticeMessage(t('함체 정보가 존재하므로 삭제 불가능'))
+        new NoticeMessage(t('해당 사이트에 매핑된 함체가 존재합니다.먼저 매핑을 해제해주세요'))
         return
       }
 
@@ -1062,7 +1062,7 @@ const SiteManagement = () => {
                 className="items-center!"
                 label="명칭"
                 required={true}
-                placeholder="삼성역 사거리 교차로"
+                placeholder=""
                 onChange={handleSiteInputChange}
                 name="name"
                 maxLength={100}
@@ -1074,7 +1074,7 @@ const SiteManagement = () => {
                 className="items-center!"
                 label="주소"
                 required={true}
-                placeholder="서울시 강남구 삼성동"
+                placeholder=""
                 onChange={handleSiteInputChange}
                 name="address"
                 value={siteInputFormValues.address || ''}
@@ -1093,7 +1093,7 @@ const SiteManagement = () => {
                   <div className="flex w-full flex-row gap-x-2">
                     <GeneralInput 
                         customInput="w-full" 
-                        placeholder="5.55555" 
+                        placeholder="" 
                         onChange={handleSiteInputChange} 
                         name="lat"
                         maxLength={10}
@@ -1104,7 +1104,7 @@ const SiteManagement = () => {
                       />
                       <GeneralInput 
                         customInput="w-full" 
-                        placeholder="5.55555" 
+                        placeholder="" 
                         onChange={handleSiteInputChange} 
                         name="lng"
                         maxLength={10}
@@ -1148,7 +1148,7 @@ const SiteManagement = () => {
               <DetailForm
                 className="items-center!"
                 label="매핑 함체"
-                placeholder="BX01001(ID0001)"
+                placeholder=""
                 onChange={handleSiteInputChange} 
                 name="mapped_box"
                 disabled={true}

@@ -295,7 +295,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                   <div className="flex w-full flex-row gap-x-2">
                     <GeneralInput 
                       customInput="w-full" 
-                      placeholder="5m" 
+                      placeholder="" 
                       name="crosswalk_length" 
                       pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
                       title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
@@ -303,7 +303,7 @@ const DynamicForm = ({ index, onDelete, handleRoadInputChange,
                       onChange={handleRoadInputChange} value={crosswalk_length}/>
                     <GeneralInput 
                       customInput="w-full" 
-                      placeholder="2.5m" 
+                      placeholder="" 
                       name="crosswalk_width" 
                       pattern="^[0-9]*\.?[0-9]*$" // 숫자와 온점만 허용하는 정규식
                       title="숫자와 온점만 입력 가능합니다." // 사용자가 잘못된 값을 입력할 경우 안내
