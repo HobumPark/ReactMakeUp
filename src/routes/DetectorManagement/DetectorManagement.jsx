@@ -575,7 +575,7 @@ const DetectorManagement = () => {
 
  const handleDeleteButtonClick = () => {
   if (dataDetector.site_id || dataDetector.road_id) {
-      new NoticeMessage('해당 함체에 매핑된 사이트가 존재합니다. 먼저 매핑을 해제해주세요')
+      new NoticeMessage('현재 검지기에 매핑된 사이트가 존재합니다. 먼저 매핑을 해제해주세요')
       return;
     }
     const message = new NoticeMessage(
