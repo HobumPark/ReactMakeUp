@@ -1062,7 +1062,7 @@ const SiteManagement = () => {
                 className="items-center!"
                 label="명칭"
                 required={true}
-                placeholder="삼성역 사거리 교차로"
+                placeholder=""
                 onChange={handleSiteInputChange}
                 name="name"
                 maxLength={100}
@@ -1074,7 +1074,7 @@ const SiteManagement = () => {
                 className="items-center!"
                 label="주소"
                 required={true}
-                placeholder="서울시 강남구 삼성동"
+                placeholder=""
                 onChange={handleSiteInputChange}
                 name="address"
                 value={siteInputFormValues.address || ''}
@@ -1093,7 +1093,7 @@ const SiteManagement = () => {
                   <div className="flex w-full flex-row gap-x-2">
                     <GeneralInput 
                         customInput="w-full" 
-                        placeholder="5.55555" 
+                        placeholder="" 
                         onChange={handleSiteInputChange} 
                         name="lat"
                         maxLength={10}
@@ -1104,7 +1104,7 @@ const SiteManagement = () => {
                       />
                       <GeneralInput 
                         customInput="w-full" 
-                        placeholder="5.55555" 
+                        placeholder="" 
                         onChange={handleSiteInputChange} 
                         name="lng"
                         maxLength={10}
@@ -1148,7 +1148,7 @@ const SiteManagement = () => {
               <DetailForm
                 className="items-center!"
                 label="매핑 함체"
-                placeholder="BX01001(ID0001)"
+                placeholder=""
                 onChange={handleSiteInputChange} 
                 name="mapped_box"
                 disabled={true}
