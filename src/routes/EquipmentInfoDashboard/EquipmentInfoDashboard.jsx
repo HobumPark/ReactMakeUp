@@ -78,7 +78,7 @@ const EquipmentInfoDashboard = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const rtu_id = queryParams.get('id'); 
-
+  const [detectorData, setDetectorData] = useState(null);
   const today = new Date();
   const oneWeekAgo = new Date(today); 
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -185,14 +185,13 @@ const EquipmentInfoDashboard = () => {
   const boxEvent = BoxEventDataList?.data;
   const boxEventCnt = boxEventCntData?.data[0];
   const boxTempHump = boxTempHumData?.data;
-  const site_id = boxStatus.site_id;
+  const site_id = boxStatus?.site_id;
 
   const { srDetector }  = useSRDetector({
     id: site_id
   });
 
   const siteRoadDetector = srDetector?.data;
-  
 
   const [isOn, setIsOn] = useState(false);
   const [isOnFan, setIsOnFan] = useState(false);
@@ -228,7 +227,7 @@ const EquipmentInfoDashboard = () => {
     });
 
     const vectorSource = new VectorSource();
-    siteRoadDetector.roads.forEach((road) => {
+    siteRoadDetector?.roads?.forEach((road) => {
       if (road.detector) {
         const { lat, lng } = road.detector;
     
@@ -297,11 +296,6 @@ const EquipmentInfoDashboard = () => {
   }, [selectBtnFilter, inputValue,date]);  
 
 
-  useEffect(() => {
-    console.log(boxEventParams);
-  }, [boxEventParams]);
-  
-
   const eventData = boxEvent?.map((event, index) => {
     let customCard = '';
     let subtitle = '';
@@ -346,6 +340,15 @@ const EquipmentInfoDashboard = () => {
       index
     };
   });
+
+  const openModal = (road) => {
+    const { name, detector } = road;
+    setDetectorData({
+      road_name: name,
+      stream_url: detector.stream_url,  // Ambil stream_url dari detector
+    });
+    setShowModal(true);  // Tampilkan modal
+  };
 
   return (
     <>
@@ -543,8 +546,8 @@ const EquipmentInfoDashboard = () => {
                 <span className="title3bold text-text-white">총 4개</span>
               </div>
               <div className="w-full h-[calc(100%-30px)] grid grid-cols-1 gap-[8px]  overflow-auto p-[10px]">
-              {siteRoadDetector.roads.map((road, index) => (
-                      road.detector && (
+              {siteRoadDetector?.roads?.map((road, index) => (
+                      road?.detector && (
                         <div key={index} className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                           <div className="flex w-full justify-between flex-row gap-[3px] items-center">
                             <div className="flex flex-row gap-[5px] items-center">
@@ -555,10 +558,10 @@ const EquipmentInfoDashboard = () => {
                               />
                               <div className="flex flex-col">
                                 <span className="title2bold text-text-white">
-                                  {road.detector.detector_id} |  {road.name} 
+                                  {road?.detector?.detector_id} |  {road?.name} 
                                 </span>
                                 <span className="title2 text-text-white">
-                                {road.detector.installed_date} 
+                                {road?.detector?.installed_date} 
                                 </span>
                               </div>
                             </div>
@@ -567,7 +570,7 @@ const EquipmentInfoDashboard = () => {
                             <div className="ml-auto flex flex-col justify-end items-end">
                               <span className="title2bold text-text-white">ON</span> 
                               <div className="ml-auto flex flex-row gap-[5px]">
-                                <button className="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]" onClick={() => { setShowModal(true); }}>
+                                <button className="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]" onClick={() => openModal(road)}>
                                   <img src={VideoRecord} alt="" />
                                 </button>
                                 <button className="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
@@ -709,7 +712,7 @@ const EquipmentInfoDashboard = () => {
                 </div>
               </div>
             </div>
-            {showModal && <DbVideoModal onClose={() => setShowModal(false)} />}
+            {showModal && <DbVideoModal data= {detectorData} onClose={() => setShowModal(false)} />}
           </section>
           {/* center */}
 

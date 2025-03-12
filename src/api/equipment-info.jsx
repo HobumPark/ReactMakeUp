@@ -1,8 +1,6 @@
 import { URLS, APIS } from "../config/urls";
 import {reqGet} from "../utils/request";
 
-
-
 export const fetchBox= async (id) => {
     const url = `${URLS.BACK_DSH}${APIS.box(id)}`;
     return await reqGet(url);
