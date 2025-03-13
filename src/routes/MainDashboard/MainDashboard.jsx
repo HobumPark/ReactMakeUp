@@ -632,7 +632,7 @@ console.log(isHidden);
   
     const cardData = site.roads && site.roads.length > 0
     ? site.roads.map((road) => ({
-        id: road.road_id,
+        id: `ACCID${road.road_id}`,
         title: `${road.incoming_compass} / ${road.outgoing_compass} / ${road.incoming_lane_cnt} / ${road.outgoing_lane_cnt}`,
         subtitle: road.name,
         borderStyle: borderStyle,
