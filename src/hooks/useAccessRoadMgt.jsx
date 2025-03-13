@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLocation, useNavigate } from "react-router-dom";
+import { fetchObjectUnqCnt } from "../api/dashboard";
+import { fetchObjectCntMovingDirectionTime, fetchSiteRoadDetector } from "../api/crossroad.js";
 
-import { URLS, APIS } from "../config/urls.js";
-import { reqGet, reqPost, reqPut } from "../utils/request.js";
-import NoticeMessage from "../plugin/noticemessage/noticemessage.js";
-import { fetchTrafficEvent, fetchTrafficEventTime } from "../api/dashboard";
-import { fetchObjectUnqCnt} from "../api/dashboard";
-
-const useAccessRoadMgt = ( {objectUnqCntPie1Params,objectUnqCntPie2Params,
+const useAccessRoadMgt = ( {
+  siteRoadParams,
+  objectUnqCntPie1Params,objectUnqCntPie2Params,
   objectUnqCntTable1TodayParams,objectUnqCntTable1YesterdayParams,objectUnqCntTable1OneWeekParams,
-  objectUnqCntTable2TodayParams,objectUnqCntTable2YesterdayParams,objectUnqCntTable2OneWeekParams
+  objectUnqCntTable2TodayParams,objectUnqCntTable2YesterdayParams,objectUnqCntTable2OneWeekParams,
+  objectUnqCntMovingDirectionParams
 }  ) => {
-  const queryClient = useQueryClient();
+  //접근로 관련 정보
+  const { data: roadData} = useQuery({
+    queryKey: ["siteRoadParams", siteRoadParams],
+    queryFn: () => fetchSiteRoadDetector(siteRoadParams),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+    enabled: !!siteRoadParams
+  });
 
   //파이차트1
   const { data: objectUnqCntPie1} = useQuery({
@@ -77,15 +81,37 @@ const useAccessRoadMgt = ( {objectUnqCntPie1Params,objectUnqCntPie2Params,
     enabled: !!objectUnqCntTable2OneWeekParams
   });
 
+  //시간별 진입/진출 교통량
+  const { data: objectUnqCntMovingDirection} = useQuery({
+    queryKey: ["objectUnqCntMovingDirectionParams", objectUnqCntMovingDirectionParams],
+    queryFn: () => fetchObjectCntMovingDirectionTime(objectUnqCntMovingDirectionParams),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+    enabled: !!objectUnqCntMovingDirectionParams
+  });
+  
+  //이동류별 차종 교통량
+
+  //이동류 교통량 그래프
+
   return {
+    //접근로 관련 데이터
+    roadData,
+    //파이차트 1,2
     objectUnqCntPie1,
     objectUnqCntPie2,
+    //테이블 1,2
     objectUnqCntTable1Today,
     objectUnqCntTable1Yesterday,
     objectUnqCntTable1OneWeek,
     objectUnqCntTable2Today,
     objectUnqCntTable2Yesterday,
-    objectUnqCntTable2OneWeek
+    objectUnqCntTable2OneWeek,
+    //시간별 진입/진출 교통량
+    objectUnqCntMovingDirection,
+    //이동류별 차종 교통량
+
+     //이동류 교통량 그래프
   };
 };
 
