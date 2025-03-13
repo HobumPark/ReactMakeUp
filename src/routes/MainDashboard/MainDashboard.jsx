@@ -9,6 +9,9 @@ import { Tile as TileLayer } from "ol/layer";
 import { OSM } from "ol/source";
 import BingMaps from 'ol/source/BingMaps';  
 
+
+import Cluster from "ol/source/Cluster";
+import { Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
 import { fromLonLat } from "ol/proj";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
@@ -373,31 +376,76 @@ const MainDashboard = () => {
       "box": IconBox               
     };
 
+
     const features = mapDisplay?.poi?.map(item => {
       const iconSrc = iconMapping[item.type] || IconDefault;  
-    const iconFeature = new Feature({
+      const iconFeature = new Feature({
         geometry: new Point(fromLonLat([item.lng, item.lat])),
-    });
-    
-    iconFeature.setStyle(
+      });
+
+      iconFeature.setStyle(
         new Style({
           image: new Icon({
             src: iconSrc,
-            scale: 1,
+            scale: 1 + (olMap.getView().getZoom() - 10) * 0.1,
           }),
         })
       );
+      
       iconFeature.setId(item.type);
       return iconFeature;
     });
 
-    const vectorLayer = new VectorLayer({
+
+    const view = olMap.getView();
+    const resolution = view.getResolution(); 
+    const distanceInMeters = 5000; 
+    const distanceInPixels = distanceInMeters / resolution; 
+
+    const clusterSource = new Cluster({
+      distance: distanceInPixels, 
       source: new VectorSource({
-        features: features,  
+        features: features,
       }),
     });
-    
-    olMap.addLayer(vectorLayer);
+
+    // **Layer Clustering**
+    const clusterLayer = new VectorLayer({
+      source: clusterSource,
+      style: function (feature) {
+        const clusteredFeatures = feature.get("features");
+        const size = clusteredFeatures.length;
+
+        if (size > 1) {
+          return new Style({
+            image: new CircleStyle({
+              radius: 50,
+              fill: new Fill({ color: "rgba(255, 0, 0, 2)" }),
+              stroke: new Stroke({ color: "#fff", width: 2 }),
+            }),
+            text: new Text({
+              text: size.toString(),
+              fill: new Fill({ color: "#fff" }),
+              stroke: new Stroke({ color: "#000", width: 2 }),
+              font: 'bold 25px Arial',
+            }),
+          });
+        } else {
+          return clusteredFeatures[0].getStyle();
+        }
+      },
+    });
+
+    const poiLayer = new VectorLayer({
+      source: new VectorSource({
+        features: features,
+      }),
+    });
+
+
+    olMap.addLayer(poiLayer);   
+    olMap.addLayer(clusterLayer);
+
 
     olMap.on('click', (event) => {
       olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
