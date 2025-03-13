@@ -1,31 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import IconClose from "../../../assets/icon/icon-close-white.svg";
 import ImgDummy from "../../../assets/img/img-dummy.png";
-import gsap from "gsap"
 import Draggable from "react-draggable";
 
 const DbVideoModal = ({onClose, data}) => {
   const modalRef = useRef(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [position, setPosition] = useState({ x: "50%", y: "30" }); 
-  const [dragging, setDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 1543,
+    height: 800,
   });
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isFullScreen]);
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
@@ -38,7 +23,7 @@ const DbVideoModal = ({onClose, data}) => {
    <section
         ref={modalRef}
         className={`_dbVideoModalContainer flex flex-col bg-center bg-blue-800 overflow-hidden absolute z-10 ${
-          isFullScreen ? "top-0 left-0" : "w-[286px] h-[200px] top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          isFullScreen ? "top-10 left-50" : "w-[286px] h-[200px] top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         }`}
         style={{
           width: isFullScreen ? `${windowSize.width}px` : "286px", // Adjust width when in full-screen
