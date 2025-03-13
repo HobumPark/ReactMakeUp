@@ -3,7 +3,9 @@ import IconClose from "../../../assets/icon/icon-close-white.svg";
 import ImgDummy from "../../../assets/img/img-dummy.png";
 import Draggable from "react-draggable";
 
-const DbVideoModal = ({onClose, data}) => {
+const DbVideoModal = ({onClose, data, currentPage}) => {
+  console.log(data);
+  
   const modalRef = useRef(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [windowSize, setWindowSize] = useState({
@@ -23,8 +25,12 @@ const DbVideoModal = ({onClose, data}) => {
    <section
         ref={modalRef}
         className={`_dbVideoModalContainer flex flex-col bg-center bg-blue-800 overflow-hidden absolute z-10 ${
-          isFullScreen ? "top-10 left-50" : "w-[286px] h-[200px] top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        }`}
+                !isFullScreen 
+                    ? "w-[286px] h-[200px] top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2" // Not fullscreen
+                    : currentPage === "equipment" 
+                    ? "top-30 left-50" // Fullscreen and page is "equipment"
+                    : "top-10 left-50" // Fullscreen only
+            }`}
         style={{
           width: isFullScreen ? `${windowSize.width}px` : "286px", // Adjust width when in full-screen
           height: isFullScreen ? `${windowSize.height}px` : "200px", // Adjust height when in full-screen

@@ -880,7 +880,7 @@ const EquipmentInfoDashboard = () => {
           {/* end right */}
         </div>
       </section>
-      {showModal && <DbVideoModal data= {detectorData} onClose={() => setShowModal(false)} />}
+      {showModal && <DbVideoModal data= {detectorData} currentPage={'equipment'} onClose={() => setShowModal(false)} />}
     </>
   );
 };
