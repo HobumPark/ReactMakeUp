@@ -14,6 +14,8 @@ import { formatFullDateTime, formatDateTime } from "../../utils/date";
 import Button from "../../components/Button/Button";
 import Chart from "react-apexcharts";
 import useSuddenMgt from "../../hooks/useSuddenMgt";
+import { URLS } from "../../config/urls";
+
 
 const suddenEventTabulator = [
   {
@@ -178,6 +180,12 @@ const SuddenEvent = () => {
   const { t, i18n } = useTranslation();
   const searchRef = useRef(null);
 
+  const [page, setPage] = useState(1); // 현재 페이지 번호
+  const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수
+  const [paginationData, setPaginationData] = useState([]); // 페이지에 맞는 데이터
+
+  const rowsPerPage = 10; // 한 페이지에 표시할 데이터 개수
+
   const [type,setType]=useState('')
   const [input,setInput]=useState('')
   const [searchInput,setSearchInput]=useState('')
@@ -201,6 +209,7 @@ const SuddenEvent = () => {
   const [yaxisMax,setYaxisMax]=useState(100)
 
   const [selectedOption, setSelectedOption] = useState("");
+  const tbRef = useRef(null);
 
   const today = new Date();
   const firstDate = new Date(today);
@@ -234,7 +243,7 @@ const SuddenEvent = () => {
 
   // Update the queryParams whenever dateTime1 or dateTime2 changes
   useEffect(() => {
-    const timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
+    const timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}&page=${page}&size=${10}`;
     const cntQuery = `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`;
     
     setQueryParamsTime(timeQuery);
@@ -264,7 +273,7 @@ const SuddenEvent = () => {
   };
 
   const options = [
-    { value: "", label: "전체" },
+    { value: "All", label: "전체" },
     { value: "EVT_TP_WWD", label: "역주행" },
     { value: "EVT_TP_STP", label: "정차" },
     { value: "EVT_TP_SLV", label: "정지선 위반" },
@@ -470,7 +479,7 @@ const SuddenEvent = () => {
 
   const optionsTabulator = {
     debugInvalidOptions: true,
-    pagination: true,
+    pagination: "remote",
     movableRows: false,
     resizableRows: false,
     index: "id",
@@ -494,7 +503,35 @@ const SuddenEvent = () => {
     paginationSize: 10,
     selectableRows: 1,
     rowHeight: 41,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">전체 ${trafficEventTime?.data.events.length} 개</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">전체 ${trafficEventTime?.data.total_cnt} 개</div>`,
+    ajaxURL: `${`${URLS.BACK_DSH}`}/traffic-event-list/by-time?${queryParamsTime}`,
+    ajaxConfig: {
+      method: "GET",
+      credentials: "include",
+    },  
+    ajaxResponse: (url, params, response) => {
+      return {
+        data: response.data.items,
+        last: response.data.total_pages
+      };
+    }, 
+    dataReceiveParams: {
+      last_page: 'last',
+    },
+    ajaxURLGenerator: function (url, config, params) {
+      let myUrl = url;
+      
+      if (params['sort'].length > 0) {
+        let field = params['sort'][0]['field'];
+        let dir = params['sort'][0]['dir'];
+        myUrl += `&sort=${field}&order=${dir}`;
+      }
+
+      return myUrl;
+    },
+    dataLoader: false, 
+    sortMode:"remote"
+    
   };
    
  
@@ -611,8 +648,12 @@ const SuddenEvent = () => {
       timeQuery+=`&input=${inputVal}`
       setInput(inputVal)
     } 
-    if(type!=''){
+    if(type=='All'){
+      timeQuery+=`&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP`
+    }else if(type!=""){
       timeQuery+=`&type=${type}`
+    }else if(type==""){
+      timeQuery+=``
     }
 
     const cntQuery = `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`;
@@ -621,6 +662,13 @@ const SuddenEvent = () => {
     setQueryParamsCnt(cntQuery);
 
   }
+
+  useEffect(() => {
+      console.log(queryParamsTime);
+      if (tbRef.current) {
+          tbRef.current.setData(`${`${URLS.BACK_DSH}`}/object?${queryParamsTime}`);
+      }
+  }, [queryParamsTime]);
 
   // 외부에서 xaxis categories, yaxis(최대높이)를 설정하는 방식으로 차트 옵션을 변경
   const chartOptionsWithProps = (customCategories, customYAxisMax) => {
@@ -672,7 +720,8 @@ const SuddenEvent = () => {
               setSearchInput("")
               setSelectedOption("")
             }}
-            onChange={(e) => setSearchInput(e.target.value)}
+            onChange={(e) => setSearchInput(val)
+            }
           >
 
             <div className="flex w-full gap-4 flex-row items-center">
@@ -730,12 +779,25 @@ const SuddenEvent = () => {
 
         <ContainerCard>
           <ReactTabulator
-            data={trafficEventTime?.data.events || []}
+            data={trafficEventTime?.data.items || []}
             columns={suddenEventTabulator}
             layout={"fitColumns"}
             className="tabulator-custom w-full "
-            //   pagination="local"
+            paginationMode="remote"
+            total={trafficEventTime?.data.total_cnt || 100}
             options={optionsTabulator}
+            events={{
+              tableBuilt: () => {
+                  tbRef.current.setSort("timestamp", "desc"); 
+              },
+              dataLoaded: function (data) {
+                console.log('dataLoaded', data);
+              },
+              pageLoaded: (pageNumber) => {
+                console.log("Current Page:", pageNumber);
+                console.log("Max Page:", tbRef.current.getPageMax()); // Logs the max pages after the page is loaded
+                  }
+              }}
           />
 
           <div className=" mt-[40px] flex flex-col border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">

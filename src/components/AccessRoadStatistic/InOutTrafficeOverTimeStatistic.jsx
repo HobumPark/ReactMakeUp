@@ -27,7 +27,7 @@ const InOutTrafficeOverTimeStatistic = ({series, xAxisCategories }) => {
       // max: 24,
       labels: { style: { colors: "#fff" } },
     },
-    colors: ["#FFA500", "#FB5555"],
+    colors: ["#E0E0E0", "#4682B4"],
     grid: {
       borderColor: "#343A3F",
       xaxis: { lines: { show: true } },
