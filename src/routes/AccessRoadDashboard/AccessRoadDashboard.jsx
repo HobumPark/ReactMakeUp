@@ -30,6 +30,8 @@ import IconBicycles from "../../assets/icon/icon-db-bicycles.svg";
 import IconHeavyTruck from "../../assets/icon/icon-db-heavy-truck.svg";
 import IconUnknown from "../../assets/icon/icon-db-unknown.svg";
 
+import IconDetector from "../../assets/icon/icon-db-detector.svg";
+
 import imgMaps from "../../assets/icon/img-lane-maps.svg";
 
 import VehicleCount from "../../components/VehicleCount/VehicleCount";
@@ -113,11 +115,20 @@ const AccessRoadDashboard = () => {
 
   const location = useLocation();  // Get the current location
   const queryParams = new URLSearchParams(location.search);  // Parse query string
+  const site_id = queryParams.get('site_id');  // Get road_id from the query string
   const road_id = queryParams.get('road_id');  // Get road_id from the query string
-
+  // /dashboard/accessroad?site_id=1&road_id=2
+  console.log("Accessing site_id:", site_id); // Use road_id here
   console.log("Accessing road_id:", road_id); // Use road_id here
   const mapRef = useRef(null);
-  
+
+  const [roads,setRoads]=useState("")
+
+  const [roadName,setRoadName]=useState("")
+  const [roadStreamUrl,setRoadStreamUrl]=useState("")
+  const [detectorLat,setDetectorLat]=useState("")
+  const [detectorLon,setDetectorLng]=useState("")
+
   const [radioTimeValue, setRadioTimeValue] = useState("5"); // Initial time is 5 minutes
 
   const today = new Date();
@@ -137,87 +148,133 @@ const AccessRoadDashboard = () => {
   });
 
   // State for the query parameters
-  //파이차트 1,2에 사용할 파라미터
+   //접근로 정보 파라미터
+  const [siteRoadParams, setSiteRoadParams] = useState("");
+
+  //파이차트 1,2에 사용할 파라미터 parameters
   const [objectUnqCntPie1Params, setObjectUnqCntPie1Params] = useState("");
   const [objectUnqCntPie2Params, setObjectUnqCntPie2Params] = useState("");
   
   //테이블 1,2에 사용할 파라미터
-  //테이블1 - 오늘,어제,일주일전
+  //테이블1 - 오늘,어제,일주일전 parameters
   const [objectUnqCntTable1TodayParams, setObjectUnqCntTable1TodayParams] = useState("");
   const [objectUnqCntTable1YesterdayParams, setObjectUnqCntTable1YesterdayParams] = useState("");
   const [objectUnqCntTable1OneWeekParams, setObjectUnqCntTable1OnedWeekParams] = useState("");
 
-  //테이블2 - 오늘,어제,일주일전
+  //테이블2 - 오늘,어제,일주일전 parameters
   const [objectUnqCntTable2TodayParams, setObjectUnqCntTable2TodayParams] = useState("");
   const [objectUnqCntTable2YesterdayParams, setObjectUnqCntTable2YesterdayParams] = useState("");
   const [objectUnqCntTable2OneWeekParams, setObjectUnqCntTable2OneWeekParams] = useState("");
 
+  //시간별 진입/진출 교통량 parameters
+  const [objectUnqCntMovingDirectionParams, setObjectUnqCntMovingDirectionParams] = useState("");
+  //이동류별 차종 교통량 parameters
+
+  //이동류 교통량 그래프 parameters
+
   const [roadId, setRoadId] = useState(road_id); // Assuming `road_id` is passed as a prop or from context
 
-  // Recalculate dates whenever radioTimeValue changes
+  useEffect(() => {
+    //road정보 가져오기
+    setSiteRoadParams(`${site_id}`)
+  }, [radioTimeValue, roadId]);
+
+  // 파이차트 1,2 파라미터 설정
   useEffect(() => {
     const firstDate = new Date(today);
     firstDate.setMinutes(firstDate.getMinutes() - radioTimeValue); // Subtract radioTimeValue minutes from today
-
+  
     const secondDate = new Date(today);
-
+  
+    // Format the date once and store in variables
+    const formattedFirstDate = formatFullDateTime(firstDate);
+    const formattedSecondDate = formatFullDateTime(secondDate);
+  
     // Update query params based on the new date range and moving_direction values
     setObjectUnqCntPie1Params(
-      `start_time=${formatFullDateTime(firstDate)}&end_time=${formatFullDateTime(secondDate)}&road_id=${roadId}&moving_direction=${108001}`
+      `start_time=${formattedFirstDate}&end_time=${formattedSecondDate}&road_id=${roadId}&moving_direction=${108001}`
     );
     setObjectUnqCntPie2Params(
-      `start_time=${formatFullDateTime(firstDate)}&end_time=${formatFullDateTime(secondDate)}&road_id=${roadId}&moving_direction=${108002}`
+      `start_time=${formattedFirstDate}&end_time=${formattedSecondDate}&road_id=${roadId}&moving_direction=${108002}`
     );
-
+  
     setDateTime1({
-      start_date: formatFullDateTime(firstDate),
-      end_date: formatFullDateTime(secondDate)
+      start_date: formattedFirstDate,
+      end_date: formattedSecondDate
     });
+  
+  }, [radioTimeValue, roadId]);
+  
 
-  }, [radioTimeValue, roadId]); // Re-run whenever radioTimeValue or roadId changes
-
-  //table date time set
-  useEffect(()=>{
-    //현재-5분전~현재
-    //어제-5분전~현재
-    //일주일전-5분전~현재
-
-    // startDate1
+  // 테이블 1,2 파라미터 설정
+  useEffect(() => {
+    // 현재 날짜와 시간을 기준으로 시작 시간 계산
     const startDateToday = new Date(today);
     startDateToday.setMinutes(startDateToday.getMinutes() - radioTimeValue);  // radioTimeValue 만큼 분을 빼기
-
-    // startDate2
+  
+    // 어제 날짜와 시간을 기준으로 시작 시간 계산
     const startDateYesterDay = new Date(today);
     startDateYesterDay.setDate(startDateYesterDay.getDate() - 1);  // 1일을 빼기
     startDateYesterDay.setMinutes(startDateYesterDay.getMinutes() - radioTimeValue);  // radioTimeValue 만큼 분을 빼기
-
-    // startDate3
+  
+    // 일주일 전 날짜와 시간을 기준으로 시작 시간 계산
     const startDateOneWeek = new Date(today);
-    startDateOneWeek.setDate(startDateOneWeek.getDate() - 7);  // 1일을 빼기
+    startDateOneWeek.setDate(startDateOneWeek.getDate() - 7);  // 7일을 빼기
     startDateOneWeek.setMinutes(startDateOneWeek.getMinutes() - radioTimeValue);  // radioTimeValue 만큼 분을 빼기
-
-
+  
+    // 현재 시간
     const secondDate = new Date(today);
-    
-    setObjectUnqCntTable1TodayParams(`start_time=${formatFullDateTime(startDateToday)}&end_time=${formatFullDateTime(secondDate)}&road_id=${roadId}&moving_direction=${108001}`)
-    setObjectUnqCntTable1YesterdayParams(`start_time=${formatFullDateTime(startDateYesterDay)}&end_time=${formatFullDateTime(secondDate)}&road_id=${roadId}&moving_direction=${108001}`)
-    setObjectUnqCntTable1OnedWeekParams(`start_time=${formatFullDateTime(startDateOneWeek)}&end_time=${formatFullDateTime(secondDate)}&road_id=${roadId}&moving_direction=${108001}`)
-
-    setObjectUnqCntTable2TodayParams(`start_time=${formatFullDateTime(startDateToday)}&end_time=${formatFullDateTime(secondDate)}&road_id=${roadId}&moving_direction=${108002}`)
-    setObjectUnqCntTable2YesterdayParams(`start_time=${formatFullDateTime(startDateYesterDay)}&end_time=${formatFullDateTime(secondDate)}&road_id=${roadId}&moving_direction=${108002}`)
-    setObjectUnqCntTable2OneWeekParams(`start_time=${formatFullDateTime(startDateOneWeek)}&end_time=${formatFullDateTime(secondDate)}&road_id=${roadId}&moving_direction=${108002}`)
-
+  
+    // formatFullDateTime을 한 번만 호출하여 중복을 줄임
+    const formattedStartDateToday = formatFullDateTime(startDateToday);
+    const formattedStartDateYesterDay = formatFullDateTime(startDateYesterDay);
+    const formattedStartDateOneWeek = formatFullDateTime(startDateOneWeek);
+    const formattedSecondDate = formatFullDateTime(secondDate);
+  
+    // 파라미터 업데이트
+    setObjectUnqCntTable1TodayParams(`start_time=${formattedStartDateToday}&end_time=${formattedSecondDate}&road_id=${roadId}&moving_direction=${108001}`);
+    setObjectUnqCntTable1YesterdayParams(`start_time=${formattedStartDateYesterDay}&end_time=${formattedSecondDate}&road_id=${roadId}&moving_direction=${108001}`);
+    setObjectUnqCntTable1OnedWeekParams(`start_time=${formattedStartDateOneWeek}&end_time=${formattedSecondDate}&road_id=${roadId}&moving_direction=${108001}`);
+  
+    setObjectUnqCntTable2TodayParams(`start_time=${formattedStartDateToday}&end_time=${formattedSecondDate}&road_id=${roadId}&moving_direction=${108002}`);
+    setObjectUnqCntTable2YesterdayParams(`start_time=${formattedStartDateYesterDay}&end_time=${formattedSecondDate}&road_id=${roadId}&moving_direction=${108002}`);
+    setObjectUnqCntTable2OneWeekParams(`start_time=${formattedStartDateOneWeek}&end_time=${formattedSecondDate}&road_id=${roadId}&moving_direction=${108002}`);
+  
     setDateTime2({
-      start_date_today:formatFullDateTime(startDateToday),
-      start_date_yesterday:formatFullDateTime(startDateYesterDay),
-      start_date_one_week:formatFullDateTime(startDateOneWeek),
-      end_date: formatFullDateTime(secondDate)
+      start_date_today: formattedStartDateToday,
+      start_date_yesterday: formattedStartDateYesterDay,
+      start_date_one_week: formattedStartDateOneWeek,
+      end_date: formattedSecondDate
     });
+  }, [radioTimeValue, roadId]);
+  
 
+  useEffect(()=>{
+    console.log("3333")
+    //시작-현재-8시간
+    //끝-현재
+    const firstDate = new Date(today);
+    firstDate.setHours(firstDate.getHours() - 8); 
+    const secondDate = new Date(today);
+
+
+    const formattedStartDate= formatFullDateTime(firstDate);
+    const formattedEndDate = formatFullDateTime(secondDate);
+    const interval=60
+    // 파라미터 업데이트
+    setObjectUnqCntMovingDirectionParams(`start_time=${formattedStartDate}&end_time=${formattedEndDate}&road_id=${roadId}&interval=${interval}`);
+
+  },[radioTimeValue, roadId])
+
+  //시간별 이동류 교통량
+  useEffect(()=>{
+    
   },[radioTimeValue, roadId])
 
   //기본 5분
   const {
+        //접근로 관련 데이터
+        roadData,
         //파이차트 데이터
         objectUnqCntPie1,objectUnqCntPie2,
         //테이블1 데이터
@@ -227,55 +284,132 @@ const AccessRoadDashboard = () => {
         //테이블2 데이터
         objectUnqCntTable2Today,
         objectUnqCntTable2Yesterday,
-        objectUnqCntTable2OneWeek
-  }=useAccessRoadMgt({objectUnqCntPie1Params,objectUnqCntPie2Params,
+        objectUnqCntTable2OneWeek,
+        //시간별 진입/진출 교통량
+        objectUnqCntMovingDirection
+        //이동류별 차종 교통량
+
+        //이동류 교통량 그래프
+  }=useAccessRoadMgt({
+    siteRoadParams,
+    objectUnqCntPie1Params,objectUnqCntPie2Params,
     objectUnqCntTable1TodayParams,objectUnqCntTable1YesterdayParams,objectUnqCntTable1OneWeekParams,
-    objectUnqCntTable2TodayParams,objectUnqCntTable2YesterdayParams,objectUnqCntTable2OneWeekParams
+    objectUnqCntTable2TodayParams,objectUnqCntTable2YesterdayParams,objectUnqCntTable2OneWeekParams,
+    objectUnqCntMovingDirectionParams
+
   })
-  console.log('objectUnqCnt1')
-  console.log(objectUnqCntPie1)//진입
-  console.log('objectUnqCnt2')
-  console.log(objectUnqCntPie2)//진출
+  console.log('roadData')
+  console.log(roadData)//진입
+  //console.log('objectUnqCnt1')
+  //console.log(objectUnqCntPie1)//진입
+  //console.log('objectUnqCnt2')
+  //console.log(objectUnqCntPie2)//진출
 
-  console.log('objectUnqCntTable1Today')
-  console.log(objectUnqCntTable1Today)
-  console.log('objectUnqCntTable1Yesterday')
-  console.log(objectUnqCntTable1Yesterday)
-  console.log('objectUnqCntTable1OneWeek')
-  console.log(objectUnqCntTable1OneWeek)
+  //console.log('objectUnqCntTable1Today')
+  //console.log(objectUnqCntTable1Today)
+  //console.log('objectUnqCntTable1Yesterday')
+  //console.log(objectUnqCntTable1Yesterday)
+  //console.log('objectUnqCntTable1OneWeek')
+  //console.log(objectUnqCntTable1OneWeek)
 
-  console.log('objectUnqCntTable2Today')
-  console.log(objectUnqCntTable2Today)
-  console.log('objectUnqCntTable2Yesterday')
-  console.log(objectUnqCntTable2Yesterday)
-  console.log('objectUnqCntTable2OneWeek')
-  console.log(objectUnqCntTable2OneWeek)
+  //console.log('objectUnqCntTable2Today')
+  //console.log(objectUnqCntTable2Today)
+  //console.log('objectUnqCntTable2Yesterday')
+  //console.log(objectUnqCntTable2Yesterday)
+  //console.log('objectUnqCntTable2OneWeek')
+  //console.log(objectUnqCntTable2OneWeek)
+
+  //console.log('objectUnqCntMovingDirection')
+  //console.log(objectUnqCntMovingDirection)
 
 
   const handleRadioChange = (e) => {
     //alert(e.target.value)
     //console.log(e.target.value)
     setRadioTimeValue(e.target.value)
-    //console.log(event.target.value); // Update state with the selected value
   };
 
+  //접근로 정보 useEffect
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // ✅ Inisialisasi peta
-    const olMap = new Map({
-      target: mapRef.current,
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-        }),
-      ],
+    if(roadData == null)//데이터가 없으면 종료
+      return
 
-      view: new View({
-        center: fromLonLat([106.8456, -6.2088]),
-        zoom: 10,
+  //접근로 데이터 뽑기
+  //접근로 이름, 스트림url
+  //사이트 관련 접근로 배열에서 특정 접근로 찾기
+  const { data: { roads } = {} } = roadData || {}; // roadData에서 data->roads 추출
+
+  const findRoadData = roads?.find(item => item.road_id == road_id) || null;
+
+  console.log('찾은 road데이터')
+  console.log(findRoadData)
+
+  setRoadName(findRoadData.name)
+  setRoadStreamUrl(findRoadData.detector?.stream_url) 
+  
+  const lat = findRoadData.detector?.lat || "";
+  const lng = findRoadData.detector?.lng || "";
+
+  setDetectorLat(lat);  // Lat 업데이트
+  setDetectorLng(lng);  // Lng 업데이트
+
+  // roads 배열에서 각 도로의 detector 정보에서 위도(lat), 경도(lng)를 추출하여 새로운 배열을 생성
+  console.log('detectorList1')
+  setRoads(roads)
+  const markerList = roads.map((data) => {
+    const { detector } = data; // 데이터에서 detector 객체 추출
+    //const road_id = data.road_id
+    const lat = detector?.lat; // 위도(lat)
+    const lng = detector?.lng; // 경도(lon)
+    
+    if (lat && lng) {
+      // 마커 표시하기
+      const markerFeature = new Feature({
+        geometry: new Point(fromLonLat([lng, lat])), // 마커의 위치 (경도, 위도)
+      });
+  
+      markerFeature.setStyle(
+        new Style({
+          image: new Icon({
+            src: IconDetector, // 사용할 마커 아이콘 URL
+            scale: 1, // 아이콘 크기 조절
+          }),
+        })
+      );
+  
+      return markerFeature; // 마커 객체 반환
+    }
+  
+    return null; // lat 또는 lng가 없으면 null 반환
+  }).filter(Boolean); // null을 필터링하여 실제 마커만 남김
+
+
+  // ✅ Inisialisasi peta
+  const olMap = new Map({
+    target: mapRef.current,
+    layers: [
+      new TileLayer({
+        source: new OSM(),
       }),
-    });
+      // 여기에서 마커 레이어를 추가
+      new VectorLayer({
+        source: new VectorSource({
+          features: markerList // 여기에 마커를 추가할 예정
+        }),
+      }),
+    ],
+
+    //126.9762, 37.5647
+    view: new View({
+      center: fromLonLat([lng, lat]),
+      zoom: 17,
+    }),
+  });
+
+
+
 
     // setTimeout(() => {
     //   // Ambil elemen kontrol zoom
@@ -330,9 +464,7 @@ const AccessRoadDashboard = () => {
     // }, 100);
     
 
-    const iconFeature = new Feature({
-      geometry: new Point(fromLonLat([106.8456, -6.2088])), // Lokasi Jakarta
-    });
+    
 
     // iconFeature.setStyle(
     //   new Style({
@@ -343,10 +475,6 @@ const AccessRoadDashboard = () => {
     //   })
     // );
 
-    const iconFeature2 = new Feature({
-      geometry: new Point(fromLonLat([106.85, -6.21])),
-    });
-
     // iconFeature2.setStyle(
     //   new Style({
     //     image: new Icon({
@@ -355,14 +483,6 @@ const AccessRoadDashboard = () => {
     //     }),
     //   })
     // );
-
-    const vectorLayer = new VectorLayer({
-      source: new VectorSource({
-        features: [iconFeature, iconFeature2],
-      }),
-    });
-
-    olMap.addLayer(vectorLayer);
 
     // olMap.on("click", (event) => {
     //   const feature = olMap.forEachFeatureAtPixel(
@@ -377,8 +497,9 @@ const AccessRoadDashboard = () => {
 
 
     return () => olMap.setTarget(null);
-  }, []);
+  }, [roadData]);
   
+
   //파이차트 데이터 뽑기
   const { data: incoming } = objectUnqCntPie1 || {}; // Destructure data from objectUnqCnt1 - incoming data
   const { data: outgoing } = objectUnqCntPie2 || {}; // Destructure data from objectUnqCnt2 - outcoming data
@@ -410,8 +531,8 @@ const AccessRoadDashboard = () => {
   //승용차,오토바이,버스,트럭,승합차,자전거,대형트럭,기타
   //301001 301006 301005 301003 301002 301007 301004 301000
 
-  const seriesIncoming=[incoming301000,incoming301006,incoming301005,incoming301003,incoming301002,incoming301007,incoming301004,incoming301000]
-  const seriesOutgoing=[incoming301000,incoming301006,incoming301005,incoming301003,incoming301002,incoming301007,incoming301004,incoming301000]
+  const seriesPieIncoming=[incoming301000,incoming301006,incoming301005,incoming301003,incoming301002,incoming301007,incoming301004,incoming301000]
+  const seriesPieOutgoing=[incoming301000,incoming301006,incoming301005,incoming301003,incoming301002,incoming301007,incoming301004,incoming301000]
 
   //테이블1 데이터 뽑기
   const { data: incomingTable1Today } = objectUnqCntTable1Today || {}; // Destructure data from objectUnqCnt1 - incoming data
@@ -612,6 +733,65 @@ const dataExit = [
   },
 ];
 
+//seriesMovingInOutTime
+/*
+const seriesMovingInOutTime = [
+  {
+    name: "East",
+    data: [6, 7, 8, 6, 7, 8, 7, 20],
+  },
+  {
+    name: "West",
+    data: [10, 12, 14, 16, 18, 20, 12, 15],
+  },
+];
+*/
+const { data: movingInOutGraphTemp } = objectUnqCntMovingDirection || {}; 
+//console.log('movingInOutGraphTemp')
+//console.log(movingInOutGraphTemp)
+// 108001과 108002를 해당 index별로 분리하여 처리
+const movingInOutGraph = movingInOutGraphTemp?.map(item => ({
+  "108001": item["108001"], // 108001을 301000으로 변환
+  "108002": item["108002"], // 108002을 301001으로 변환
+  "aggregate_start_time": item["aggregate_start_time"]
+    ? item["aggregate_start_time"].slice(5, 13) // "년-월-일 시" 부분만 추출
+    : "" // 시간도 포함
+})) || [];  // 데이터를 정상적으로 뽑지 못하면 빈 배열로 초기화
+
+// aggregate_start_time을 xAxisCategories로 그대로 사용
+const xAxisCategories = movingInOutGraph
+      ?.slice(0, 8) // 0번째부터 7번째까지 데이터만 추출
+      .map(item => item.aggregate_start_time) // 진입 (108001) 값만 추출
+      .reverse() || [] // 뒤집어서 넣기
+
+
+// 예시로 console에 출력
+//console.log('movingInOutGraph');
+//console.log(movingInOutGraph);
+  
+//0번째가 최신
+//0번째를 제일 오른쪽부터 - 7
+//1번째를 그 다음 - 6
+//역순 뒤집기 - 배열9일때, 8일때 다름
+const seriesMovingInOutTime = [
+  {
+    name: "진입", // 108001
+    data: movingInOutGraph
+      ?.slice(0, 8) // 0번째부터 7번째까지 데이터만 추출
+      .map(item => item["108001"]) // 진입 (108001) 값만 추출
+      .reverse() || [], // 뒤집어서 넣기
+  },
+  {
+    name: "진출", // 108002
+    data: movingInOutGraph
+      ?.slice(0, 8) // 0번째부터 7번째까지 데이터만 추출
+      .map(item => item["108002"]) // 진출 (108002) 값만 추출
+      .reverse() || [], // 뒤집어서 넣기
+  },
+];
+
+//console.log(seriesMovingInOutTime);
+//const [checkData,setCheckData]=useState(movingInOutGraphTemp)
 
   return (
     <>
@@ -623,13 +803,14 @@ const dataExit = [
             <section className="leftToproad flex flex-1 h-full bg-[#000] overflow-hidden rounded-[5px]">
               <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                 <span className="title3bold text-text-white">
-                  제 2자유로 방면
+                  {roadName}
                 </span>
               </div>
 
               <div className="w-full h-full  overflow-hidden p-[10px]">
                 <div className="_containerVideoAccerssRoad w-full h-[calc(100%-35px)] bg-[#171A1C]">
                   {/* you can fill in container */}
+                  <img src={roadStreamUrl} alt="스트리밍" className="w-full h-full object-cover"/>
                 </div>
               </div>
             </section>
@@ -681,7 +862,7 @@ const dataExit = [
                     <section className="_dataGraphTabulator flex flex-col mt-[15px] gap-[15px] w-full h-full overflow-hidden">
                       <div className="box-ChartPieAccessRoad gap-[20px] grid grid-cols-2 relative w-full justify-between">
                         <div className=" w-full flex items-start relative">
-                          <PieChartIn series={seriesIncoming}/>
+                          <PieChartIn series={seriesPieIncoming}/>
                           <div className="flex flex-col w-full gap-[2px]">
                             <div className="flex flex-row gap-[5px]">
                               <span className="text-text-white body2bold">
@@ -756,7 +937,7 @@ const dataExit = [
                           </div>
                         </div>
                         <div className=" w-full flex items-start relative">
-                          <PieChartOut series={seriesOutgoing}/>
+                          <PieChartOut series={seriesPieOutgoing}/>
                           <div className="flex flex-col w-full gap-[2px]">
                             <div className="flex flex-row gap-[5px]">
                               <span className="text-text-white body2bold">
@@ -881,11 +1062,11 @@ const dataExit = [
               <section className=" flex flex-1/6 h-[full] overflow-hidden bg-[#000] rounded-[5px]">
                 <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                   <span className="title3bold text-text-white">
-                    시간별 진입/진출 교통량 (Inbound/outbound traffic over time)
+                    시간별 진입/진출 교통량
                   </span>
                 </div>
                 <div className="_containerStatisticInOutTraffice overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                  <InOutTrafficeOverTimeStatistic />
+                  <InOutTrafficeOverTimeStatistic series={seriesMovingInOutTime} xAxisCategories={xAxisCategories}/>
                 </div>
               </section>
             </div>

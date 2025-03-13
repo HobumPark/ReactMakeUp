@@ -16,6 +16,11 @@ export const fetchObjectCntCompassTime = async (params = "") => {
     return await reqGet(url);
 };
 
+export const fetchObjectCntMovingDirectionTime = async (params = "") => {
+    const url = `${URLS.BACK_DSH}${APIS.objectCntMovingDirectionTime(params)}`;
+    return await reqGet(url);
+};
+
 export const realTimeObject = async (params = "") => {
     const url = `${URLS.BACK_DSH}${APIS.realTimeObject(params)}`;
     return await reqGet(url);

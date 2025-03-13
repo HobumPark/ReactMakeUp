@@ -2,17 +2,8 @@ import React from "react";
 import Chart from "react-apexcharts";
 import "./InOutTrafficeOverTimeStatistic.css"
 
-const InOutTrafficeOverTimeStatistic = () => {
-  const series = [
-    {
-      name: "East",
-      data: [6, 7, 8, 6, 7, 8, 7, 20],
-    },
-    {
-      name: "West",
-      data: [10, 12, 14, 16, 18, 20, 12, 15],
-    },
-  ];
+const InOutTrafficeOverTimeStatistic = ({series, xAxisCategories }) => {
+
 
   const options = {
     chart: {
@@ -23,16 +14,11 @@ const InOutTrafficeOverTimeStatistic = () => {
         show: false, // ini buat icon burger biar gak mncul coyu
       },
     },
+    dataLabels: {
+      enabled: false, // 데이터 레이블을 비활성화하여 값이 표시되지 않도록 함
+    },
     xaxis: {
-      categories: [
-        "09:00",
-        "10.00",
-        "11.00",
-        "12:00",
-        "13:00",
-        "14:00",
-        "15:00",
-        "16:00",
+      categories: xAxisCategories || [ // xAxisCategories가 전달되지 않으면 기본값 사용
       ],
       labels: { style: { colors: "#fff" } },
     },

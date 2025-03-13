@@ -123,6 +123,7 @@ export const APIS = {
   siteRoadDetector: (id) =>`/site-road-detector/${id}`,
   objectCntCompass:(filterParams) => `/object-unq-cnt/compass/total?${filterParams}`,
   objectCntCompassTime:(filterParams) => `/object-unq-cnt/compass/time-series?${filterParams}`,
+  objectCntMovingDirectionTime:(filterParams) => `/object-unq-cnt/moving-direction/time-series?${filterParams}`,
   realTimeObject:(filterParams) => `/api/dsh/real-time-object?${filterParams}`,
   //Equipment Info 
   boxStatus: (id) =>`/box-status/${id}`,
