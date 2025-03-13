@@ -173,11 +173,11 @@ const MainDashboard = () => {
   };
   
   
-  const cardDataEvent = (trafficEventTimeData?.events?.length > 0 
-    ? trafficEventTimeData.events.map((event) => ({
+  const cardDataEvent = (trafficEventTimeData?.items?.length > 0 
+    ? trafficEventTimeData.items.map((event) => ({
         customCard: eventTypeColorMap[event.type_code] || "border-[#000000]",
         title: `${event.site_name} ${event.road_name} / ${event.vehicle_type}`,
-        subtitle: `${event.lane_direction} ${event.lane_moving_direction} / ${event.lane_number}`,
+        subtitle: `${event.lane_direction} / ${event.lane_moving_direction}`,
         date: event.timestamp,
         data: event
       }))
@@ -210,6 +210,11 @@ const MainDashboard = () => {
         visible: false,
         source: new OSM(),
       }),
+      canvasdark: new TileLayer({
+        title: "canvasdark",
+        visible: false,
+        source: new OSM(),
+      }),
       satellite: new TileLayer({
         title: "satellite",
         visible: false,
@@ -227,6 +232,7 @@ const MainDashboard = () => {
       value: Number("0.1"),
     });
     layerMap.osm.addFilter(enhanceOption);
+    layerMap.canvasdark.addFilter(enhanceOption);
 
     // alt black mode (30, 20, 10)
     // 'color' option - RGB4 ( Blue Dark =  50, 30, 0 )
@@ -239,6 +245,15 @@ const MainDashboard = () => {
       value: Number("1"),
     });
     layerMap.osm.addFilter(colorOption);
+    const blueOption = new Colorize();
+    blueOption.setFilter({
+      operation: "color",
+      red: Number("50"),
+      green: Number("30"),
+      blue: Number("0"),
+      value: Number("1"),
+    });
+    layerMap.canvasdark.addFilter(blueOption);
 
     // 'saturation' option => highlight lines on the land
     const saturationOption = new Colorize();
@@ -247,9 +262,12 @@ const MainDashboard = () => {
       value: Number("0.1"),
     });
     layerMap.osm.addFilter(saturationOption);
+    layerMap.canvasdark.addFilter(saturationOption);
+
 
     var invert_filter = new Colorize();
     layerMap.osm.addFilter(invert_filter);
+    layerMap.canvasdark.addFilter(invert_filter);
     invert_filter.setFilter("invert");
 
     const layers = [
@@ -257,6 +275,7 @@ const MainDashboard = () => {
       layerMap["road"],
       layerMap["canvaslight"],
       layerMap["satellite"],
+      layerMap["canvasdark"],
     ];
 
     // Map definition
@@ -322,7 +341,7 @@ const MainDashboard = () => {
           {
             src: IconDarkMap,
             title: "Dark Map",
-            action: () => changeLayer("osm"),
+            action: () => changeLayer("canvasdark"),
           },
           {
             src: IconSatelite,
@@ -424,9 +443,15 @@ const MainDashboard = () => {
     const mapEntry = mapDisplay?.poi?.find((entry) => entry.id === id);
     if (mapEntry) {
       const { lat, lng } = mapEntry;
+      console.log(id, lat, lng);
+      
       if (lat && lng) {
         olMapRef.current.getView().setCenter(fromLonLat([lng, lat]))
         olMapRef.current.getView().setZoom(6);
+        olMapRef.current.getView().animate({
+          center: fromLonLat([lng, lat]),
+          zoom: 17,
+        });
       } else {
         console.error("Invalid coordinates for the selected POI");
       }
@@ -520,6 +545,7 @@ const MainDashboard = () => {
         ? prev.filter((sectionId) => sectionId !== id)
         : [...prev, id]
     );
+ 
     moveMapToPOI(id);
   };
 
@@ -534,8 +560,8 @@ const MainDashboard = () => {
     const cardData = site.roads && site.roads.length > 0
     ? site.roads.map((road) => ({
         id: road.road_id,
-        title: road.name,
-        subtitle: `${road.incoming_compass} / ${road.outgoing_compass}`,
+        title: `${road.incoming_compass} / ${road.outgoing_compass} / ${road.incoming_lane_cnt} / ${road.outgoing_lane_cnt}`,
+        subtitle: road.name,
         borderStyle: borderStyle,
       }))
     : [];
@@ -543,7 +569,6 @@ const MainDashboard = () => {
     return {
       id: site.site_id,
       title: site.name,
-      subtitle: `Road Count: ${site.road_cnt}`,
       count: site.road_cnt,
       cardData: cardData,
     };
@@ -722,7 +747,7 @@ const MainDashboard = () => {
                   <input
                     type="text"
                     className="input-db-text w-full col-span-2"
-                    placeholder="number event"
+                    placeholder="접근로명 / 접근로ID"
                     onKeyUp={handleSearch}
                     value={inputValue} 
                     onChange={(e) => setInputValue(e.target.value)}
