@@ -64,6 +64,8 @@ import useObjectCnt from "../../hooks/useObjectCnt";
 const MainDashboard = () => {
   const {t} = useTranslation();
   const [POIData, setPOIData] = useState("");
+  const [isHidden, setIsHidden] = useState([]);
+  const [poiItem, setPoiItem] = useState([]);
   const today = new Date();
   const midnight = new Date(new Date().setHours(0, 0, 0, 0));
   const [dateTime] = useState({
@@ -103,6 +105,14 @@ const MainDashboard = () => {
   const trafficEventTimeData = trafficEventTime?.data;
   const objectUnqCntData = objectUnqCnt?.data;
   const objectUnqCntRoadData = objectUnqCntRoad?.data; 
+
+  useEffect(() => {
+    if (mapDisplay?.poi) {
+      setPoiItem(mapDisplay.poi);
+    }
+  }, [mapDisplay]); 
+
+
 
   const updateSiteRoadParams = () => {
     const resultInput = inputValue ? `input=${inputValue}` : "";
@@ -191,6 +201,22 @@ const MainDashboard = () => {
   
   const [showModal, setShowModal] = useState(false);
 
+  const togglePOIVisibility = (type) => {
+    if (isHidden.includes(type)) {
+      setIsHidden(isHidden.filter(item => item !== type));
+    } else {
+      setIsHidden([...isHidden, type]);
+    }
+  };
+  
+  
+  useEffect(() => {
+    const updatedPoiData = mapDisplay?.poi.filter((item) => !isHidden.includes(item.type));
+    setPoiItem(updatedPoiData);
+  }, [isHidden, mapDisplay]); 
+
+console.log(poiItem);
+console.log(isHidden);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -377,7 +403,7 @@ const MainDashboard = () => {
     };
 
 
-    const features = mapDisplay?.poi?.map(item => {
+    const features = poiItem?.map(item => {
       const iconSrc = iconMapping[item.type] || IconDefault;  
       const iconFeature = new Feature({
         geometry: new Point(fromLonLat([item.lng, item.lat])),
@@ -442,7 +468,6 @@ const MainDashboard = () => {
       }),
     });
 
-
     olMap.addLayer(poiLayer);   
     olMap.addLayer(clusterLayer);
 
@@ -485,7 +510,7 @@ const MainDashboard = () => {
         olMapRef.current = null; // Reset the map reference
       }
     };
-  }, [mapInitial, mapDisplay]);
+  }, [mapInitial, mapDisplay, poiItem]);
 
   const moveMapToPOI = (id) => {
     const mapEntry = mapDisplay?.poi?.find((entry) => entry.id === id);
@@ -667,50 +692,50 @@ const MainDashboard = () => {
                   </span>
                 </div>
                 <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("102002")}>
                     <img src={LegendCrosswalk} alt="" />
-                    <span className="title3 text-[#4B3C3C]">횡단보도</span>
-                  </div>
-                  <div className="flex flex-row gap-[5px]">
+                    <span className={`title3 ${isHidden.includes('102002') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>횡단보도</span>
+                    </div>
+                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("102001")}>
                     <img src={LegendIntersection} alt="" />
-                    <span className="title3 text-[#4B3C3C]">교차로</span>
+                    <span className={`title3 ${isHidden.includes('102001') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>교차로</span>
                   </div>
                 </div>
               </div>
               <div className="bg-[#fff] w-fit h-full flex rounded-[4px] overflow-hidden">
-                <div className="flex items-center bg-[#212527] min-w-[60px] justify-center">
+                <div className="flex items-center bg-[#212527] min-w-[60px] justify-center" >
                   <span className="title3bold text-text-white text-center">
                     시설물
                   </span>
                 </div>
                 <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("221002")}>
                     <img src={LegendBillboard} alt="" />
-                    <span className="title3 text-[#4B3C3C]">전광판</span>
+                    <span className={`title3 ${isHidden.includes('221002') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>전광판</span>
                     <span className="title3 text-[#4B3C3C]">
                       ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.vms_error ?? 0}</span> /{" "}
                       <span>{mapDisplay?.cnt?.[0]?.vms_total ?? 0}</span> )
                     </span>
                   </div>
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("221001")}>
                     <img src={LegendSpeaker} alt="" />
-                    <span className="title3 text-[#4B3C3C]">전광판</span>
+                    <span className={`title3 ${isHidden.includes('221001') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>전광판</span>
                     <span className="title3 text-[#4B3C3C]">
                       ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.speaker_error ?? 0}</span> /{" "}
                       <span>{mapDisplay?.cnt?.[0]?.speaker_total ?? 0}</span> )
                     </span>
                   </div>
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("detector")}>
                     <img src={LegendSignal} alt="" />
-                    <span className="title3 text-[#4B3C3C]">레이더</span>
+                    <span className={`title3 ${isHidden.includes('detector') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>레이더</span>
                     <span className="title3 text-[#4B3C3C]">
                       ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.detector_error ?? 0}</span> /{" "}
                       <span>{mapDisplay?.cnt?.[0]?.detector_total ?? 0}</span> )
                     </span>
                   </div>
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("box")}>
                     <img src={LegendBox} alt="" />
-                    <span className="title3 text-[#4B3C3C]">함체</span>
+                    <span className={`title3 ${isHidden.includes('box') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>함체</span>
                     <span className="title3 text-[#4B3C3C]">
                       ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.box_error ?? 0}</span> /{" "}
                       <span>{mapDisplay?.cnt?.[0]?.box_total ?? 0}</span> )
