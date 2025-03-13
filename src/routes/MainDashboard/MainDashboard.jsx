@@ -9,7 +9,7 @@ import { Tile as TileLayer } from "ol/layer";
 import { OSM } from "ol/source";
 import BingMaps from 'ol/source/BingMaps';  
 
-
+import { boundingExtent } from "ol/extent";
 import Cluster from "ol/source/Cluster";
 import { Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
 import { fromLonLat } from "ol/proj";
@@ -472,11 +472,32 @@ console.log(isHidden);
     olMap.addLayer(clusterLayer);
 
 
-    olMap.on('click', (event) => {
+    olMap.on("click", (event) => {
+      let isClusterClicked = false;
+    
+      olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
+        const clusteredFeatures = feature.get("features");
+    
+        if (clusteredFeatures && clusteredFeatures.length > 1) {
+          // Jika fitur yang diklik adalah cluster, lakukan zoom-in
+          const extent = boundingExtent(
+            clusteredFeatures.map((f) => f.getGeometry().getCoordinates())
+          );
+          olMap.getView().fit(extent, { duration: 1000, padding: [50, 50, 50, 50] });
+    
+          isClusterClicked = true; // Tandai bahwa cluster sudah diklik
+          return true; // Menghentikan iterasi
+        }
+      });
+    
+      // Jika cluster diklik, hentikan event (hindari klik POI)
+      if (isClusterClicked) return;
+    
+      // Lanjutkan jika yang diklik bukan cluster
       olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
         const featureId = feature.getId();
-        const clickedItem = mapDisplay.poi?.find(item => item.type === featureId);
-        
+        const clickedItem = mapDisplay.poi?.find((item) => item.type === featureId);
+    
         if (clickedItem) {
           switch (clickedItem.type) {
             case "box":
@@ -488,13 +509,9 @@ console.log(isHidden);
             case "102002":
               window.open("/dashboard/crosswalk", "_blank", "width=800,height=600");
               break;
-            case "221001":
-              break;
-            case "221002":
-              break;
             case "detector":
               setPOIData(clickedItem);
-              setShowModal(true); 
+              setShowModal(true);
               break;
             default:
               alert("Unknown icon clicked!");
@@ -502,6 +519,7 @@ console.log(isHidden);
         }
       });
     });
+
     olMapRef.current = olMap;
 
     return () => {
@@ -973,7 +991,7 @@ console.log(isHidden);
             </div>
           </div>
 
-          {showModal && <DbVideoModal data={POIData} onClose={() => setShowModal(false)} />}
+          {showModal && <DbVideoModal data={POIData} currentPage={'main'} onClose={() => setShowModal(false)} />}
         </div>
       </section>
     </>
