@@ -7,10 +7,14 @@ const TrafficeByDirection = ({data}) => {
 
   const getMaxValue = (data) => {
     const values = [
-      ...data.map(item => item["103003"]), // East
-      ...data.map(item => item["103007"]), // West
-      ...data.map(item => item["103001"]), // North
-      ...data.map(item => item["103005"]), // South
+      ...data.map(item => item["103001"]), 
+      ...data.map(item => item["103002"]), 
+      ...data.map(item => item["103003"]), 
+      ...data.map(item => item["103004"]), 
+      ...data.map(item => item["103005"]), 
+      ...data.map(item => item["103006"]), 
+      ...data.map(item => item["103007"]), 
+      ...data.map(item => item["103008"]), 
     ];
     return Math.max(...values); 
   };
@@ -65,13 +69,13 @@ const TrafficeByDirection = ({data}) => {
       },
     }
     ],
-    colors: ["#28a745", "#007bff", "#ffc107", "#dc3545", "#fff"],
+    colors: ["#28a745", "#007bff", "#ffc107", "#dc3545", "#17a2b8", "#6c757d", "#6610f2", "#fd7e14", "#fff"],
     stroke: {
-      width: [0, 0, 0, 0, 2], 
+      width: [0, 0, 0, 0, 0, 0, 0, 0, 2], 
       curve: "smooth",
     },
     markers: {
-      size: [0, 0, 0, 0, 5],
+      size: [0, 0, 0, 0, 0, 0, 0, 0, 5],
       colors: ["#fff"],
       strokeWidth: 2,
     },
@@ -102,7 +106,8 @@ const TrafficeByDirection = ({data}) => {
       intersect: false, 
       y: {
         formatter: function (value, { seriesIndex }) {
-          if (seriesIndex === 4) {
+          const lastSeriesIndex = series.length - 1; 
+          if (seriesIndex === lastSeriesIndex) {
             return losLevels[Math.round(value)] || value;
           }
           return value;
@@ -112,28 +117,17 @@ const TrafficeByDirection = ({data}) => {
   };
 
   const series = [
-    { 
-      name: "East", 
-      data: data?.map(item => item["103003"] !== undefined ? item["103003"] : null) || [] 
-    },
-    { 
-      name: "West", 
-      data: data?.map(item => item["103007"] !== undefined ? item["103007"] : null) || [] 
-    },
-    { 
-      name: "North", 
-      data: data?.map(item => item["103001"] !== undefined ? item["103001"] : null) || [] 
-    },
-    { 
-      name: "South", 
-      data: data?.map(item => item["103005"] !== undefined ? item["103005"] : null) || [] 
-    },
-    { 
-      name: "LOS", 
-      type: "line", 
-      data: convertLOSToNumber(data) 
-    },
+    { name: "North", type: "bar", data: data?.map(item => item["103001"] ?? null) },
+    { name: "Northeast", type: "bar", data: data?.map(item => item["103002"] ?? null) },
+    { name: "East", type: "bar", data: data?.map(item => item["103003"] ?? null) },
+    { name: "Southeast", type: "bar", data: data?.map(item => item["103004"] ?? null) },
+    { name: "South", type: "bar", data: data?.map(item => item["103005"] ?? null) },
+    { name: "Southwest", type: "bar", data: data?.map(item => item["103006"] ?? null) },
+    { name: "West", type: "bar", data: data?.map(item => item["103007"] ?? null) },
+    { name: "Northwest", type: "bar", data: data?.map(item => item["103008"] ?? null) },
+    { name: "LOS", type: "line", data: convertLOSToNumber(data) },
   ];
+  
   
 
   return (
@@ -141,7 +135,6 @@ const TrafficeByDirection = ({data}) => {
       <Chart
         options={options}
         series={series}
-        type="bar"
         height={"100%"}
         className={
           "_chartTrafficeByDirectioncompo flex w-full !min-h-[0] h-fit!"

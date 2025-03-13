@@ -54,7 +54,7 @@ const ProgressBar = ({ label, percentage, showLabel = true }) => {
     if (percentage <= 80) return "bg-[#FFA500]";
     return "bg-[#E94545]";
   };
-  const displayPercentage = percentage === null ? '-' : `${percentage}%`;
+  const displayPercentage = percentage === null ? '0%' : `${percentage}%`;
   return (
     <div className="w-full flex flex-col gap-[5px]">
       {showLabel && (
@@ -192,6 +192,8 @@ const EquipmentInfoDashboard = () => {
   });
 
   const siteRoadDetector = srDetector?.data;
+  console.log(site_id);
+  
 
   const [isOn, setIsOn] = useState(false);
   const [isOnFan, setIsOnFan] = useState(false);
@@ -221,8 +223,8 @@ const EquipmentInfoDashboard = () => {
         }),
       ],
       view: new View({
-        center: fromLonLat([128.0, 36.0]),
-        zoom: 7,
+        center: fromLonLat([siteRoadDetector?.lng, siteRoadDetector?.lat]),
+        zoom: 6,
       }),
     });
 
@@ -243,8 +245,6 @@ const EquipmentInfoDashboard = () => {
             }),
           })
         );
-    
-  
         vectorSource.addFeature(iconFeature);
       }
     });
@@ -278,7 +278,7 @@ const EquipmentInfoDashboard = () => {
     return () => {
       olMap.setTarget(null);
     };
-  }, []); // Tidak ada dependensi agar tidak re-render ulang
+  }, [srDetector]); 
 
 
   useEffect(() => {
@@ -345,9 +345,9 @@ const EquipmentInfoDashboard = () => {
     const { name, detector } = road;
     setDetectorData({
       road_name: name,
-      stream_url: detector.stream_url,  // Ambil stream_url dari detector
+      stream_url: detector.stream_url,  
     });
-    setShowModal(true);  // Tampilkan modal
+    setShowModal(true);  
   };
 
   return (
@@ -568,7 +568,7 @@ const EquipmentInfoDashboard = () => {
                           </div>
                           <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
                             <div className="ml-auto flex flex-col justify-end items-end">
-                              <span className="title2bold text-text-white">ON</span> 
+                              <span className="title2bold text-text-white">  {t(road?.detector?.network_status)}</span> 
                               <div className="ml-auto flex flex-row gap-[5px]">
                                 <button className="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]" onClick={() => openModal(road)}>
                                   <img src={VideoRecord} alt="" />
@@ -712,7 +712,7 @@ const EquipmentInfoDashboard = () => {
                 </div>
               </div>
             </div>
-            {showModal && <DbVideoModal data= {detectorData} onClose={() => setShowModal(false)} />}
+         
           </section>
           {/* center */}
 
@@ -880,6 +880,7 @@ const EquipmentInfoDashboard = () => {
           {/* end right */}
         </div>
       </section>
+      {showModal && <DbVideoModal data= {detectorData} onClose={() => setShowModal(false)} />}
     </>
   );
 };

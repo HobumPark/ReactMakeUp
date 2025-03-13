@@ -12,6 +12,7 @@ const useSRDetector = ({
     queryKey: ["srDetector", id],
     queryFn: () => fetchSiteRoadDetector(id),
     staleTime: 1000 * 60 * 1,
+    enabled: !!id
  });
 
   return {

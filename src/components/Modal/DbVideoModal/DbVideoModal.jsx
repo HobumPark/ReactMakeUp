@@ -1,13 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import IconClose from "../../../assets/icon/icon-close-white.svg";
 import ImgDummy from "../../../assets/img/img-dummy.png";
+import gsap from "gsap"
+import Draggable from "react-draggable";
 
 const DbVideoModal = ({onClose, data}) => {
-  console.log(data);
-  
+  const modalRef = useRef(null);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [position, setPosition] = useState({ x: "50%", y: "30" }); 
+  const [dragging, setDragging] = useState(false);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isFullScreen]);
+
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
+  };
+
+
   return (
     <>
-      <section className="_dbVideoModalContainer w-[286px] flex flex-col h-[200px] bg-center bg-blue-800 overflow-hidden absolute z-10 top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+    <Draggable>
+   <section
+        ref={modalRef}
+        className={`_dbVideoModalContainer flex flex-col bg-center bg-blue-800 overflow-hidden absolute z-10 ${
+          isFullScreen ? "top-0 left-0" : "w-[286px] h-[200px] top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        }`}
+        style={{
+          width: isFullScreen ? `${windowSize.width}px` : "286px", // Adjust width when in full-screen
+          height: isFullScreen ? `${windowSize.height}px` : "200px", // Adjust height when in full-screen
+        }}
+        onDoubleClick={toggleFullScreen}
+      >
         <div className="title3medium text-[#FEFEFE] bg-[#3E464F] py-[5px] px-2.5 justify-between flex-row flex items-center">
           <span className="">{data.road_name}</span>
           <img src={IconClose} alt="" srcSet="" 
@@ -27,6 +65,7 @@ const DbVideoModal = ({onClose, data}) => {
           /> */}
         </div>
       </section>
+      </Draggable>
     </>
   );
 };
