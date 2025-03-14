@@ -26,7 +26,7 @@ function rotateAboutZero(m, n) {
     return rotation
 }
 
-export const CrossWalkCanvas = ({trafficPosData}) => {
+const CrossWalkCanvas = ({trafficPosData}) => {
     React.useEffect(() => {
         const w = 195
         const h = 555
@@ -80,3 +80,5 @@ export const CrossWalkCanvas = ({trafficPosData}) => {
         </>
     )
 }
+
+export default CrossWalkCanvas

@@ -174,7 +174,7 @@ const EquipmentInfoDashboard = () => {
 
   const [ boxEventParams, setBoxEventParams ] = useState(`start_time=${date.start_date}&end_time=${date.end_date}&event_type=${eventTypes.join("&event_type=")}`);
 
-  const { boxData, boxStatusData, BoxEventDataList, boxEventCntData, boxTempHumData } = useBox({
+  const { boxData, boxStatusData, BoxEventDataList, boxEventCntData, boxTempHumData, boxCommand, mosCommand } = useBox({
     id: rtu_id,
     boxTempHumpParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
     boxEventParams: boxEventParams
@@ -192,9 +192,6 @@ const EquipmentInfoDashboard = () => {
   });
 
   const siteRoadDetector = srDetector?.data;
-  console.log(site_id);
-  
-
   const [isOn, setIsOn] = useState(false);
   const [isOnFan, setIsOnFan] = useState(false);
 
@@ -302,7 +299,7 @@ const EquipmentInfoDashboard = () => {
     let title = '';
     const eventType = t(event.type);
     const doorOpen = t(event.front_door_status);
-    const power = event.dc_24v_input_volt ? 'ON' : 'OFF';
+    const power = event.ac_24v_input_volt ? 'ON' : 'OFF';
     const network = t(event.network_status);
 
     if (event.type === "EVT_TP_TMP") {
@@ -350,6 +347,56 @@ const EquipmentInfoDashboard = () => {
     setShowModal(true);  
   };
 
+
+  const handleRestart = (type, { target, action }) => {
+    const command = {
+      target,
+      action,
+    };
+
+    boxCommand(rtu_id,command)
+
+  };
+
+  const handlePowerHeater = () => {
+    if(isOn){
+      setIsOn(!isOn)
+      const command = {
+        target: boxStatus?.heater_mos,
+        action: 'Off'
+      }
+      console.log(command);
+      mosCommand(site_id,command)
+    }else {
+      const command = {
+        target: boxStatus?.heater_mos,
+        action: 'On'
+      }
+      console.log(command);
+      mosCommand(site_id,command)
+    }
+  };
+
+  const handlePowerFan = () => {
+    if(isOnFan){
+      setIsOnFan(!isOnFan)
+      const command = {
+        target: boxStatus?.fan_mos,
+        action: 'Off'
+      }
+      console.log(command);
+      mosCommand(site_id,command)
+    }else {
+      const command = {
+        target: boxStatus?.fan_mos,
+        action: 'On'
+      }
+      console.log(command);
+      mosCommand(site_id,command)
+    }
+  };
+
+
   return (
     <>
       <section className="_EquipmentInfContainer w-full h-screen overflow-hidden flex flex-col bg-bg-grey-400">
@@ -377,10 +424,10 @@ const EquipmentInfoDashboard = () => {
                   <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
                     <div className="ml-auto flex flex-col justify-end items-end">
                       <span className="title2bold text-text-danger-400">
-                      {(boxStatus?.dc_24v_input_volt === null || boxStatus?.dc_24v_input_volt === 0) ? 'OFF' : 'ON'}
+                      {(boxStatus?.ac_24v_input_volt === null || boxStatus?.ac_24v_input_volt === 0) ? 'OFF' : 'ON'}
                       </span>
                       <span className="title2bold text-text-white">
-                        {boxStatus?.dc_24v_input_volt} Volt
+                        {boxStatus?.ac_24v_input_volt} Volt
                       </span>
                     </div>
                   </div>
@@ -447,7 +494,7 @@ const EquipmentInfoDashboard = () => {
                         className={`w-14 h-8 flex items-center px-1 rounded-full cursor-pointer transition-all duration-300 ${
                           isOn ? "bg-[#8AC63F]" : "bg-[#BBC0C7]"
                         }`}
-                        onClick={() => setIsOn(!isOn)}
+                        onClick={() => handlePowerHeater()}
                       >
                         <div
                           className={`w-6 h-6 bg-white rounded-full shadow-md transform transition-all duration-300 ${
@@ -472,7 +519,7 @@ const EquipmentInfoDashboard = () => {
                         className={`w-14 h-8 flex items-center px-1 rounded-full cursor-pointer transition-all duration-300 ${
                           isOnFan ? "bg-[#8AC63F]" : "bg-[#BBC0C7]"
                         }`}
-                        onClick={() => setIsOnFan(!isOnFan)}
+                        onClick={() => handlePowerFan()}
                       >
                         <div
                           className={`w-6 h-6 bg-white rounded-full shadow-md transform transition-all duration-300 ${
@@ -520,7 +567,7 @@ const EquipmentInfoDashboard = () => {
                     </div>
                     <div className="ml-auto flex flex-col  gap-[5px] justify-end items-end">
                       <span className="title2bold text-text-white"> {t(boxStatus?.edge1_network_status)}</span>
-                      <button className="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                      <button className="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]"  onClick={() => handleRestart('edge', { target: 'AC24V', action: 'ON'})} >
                         Restart
                       </button>
                     </div>
@@ -573,7 +620,7 @@ const EquipmentInfoDashboard = () => {
                                 <button className="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]" onClick={() => openModal(road)}>
                                   <img src={VideoRecord} alt="" />
                                 </button>
-                                <button className="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]">
+                                <button className="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]" onClick={() => handleRestart('box', { target: road?.detector?.power_ch, action: 'ON'})}>
                                   Restart
                                 </button>
                               </div>

@@ -2,41 +2,6 @@ import React from "react";
 import Chart from "react-apexcharts";
 import "./TrafficeByVehicleTypeStatistic.css";
 
-const series = [
-  {
-    name: "승용차",
-    data: [60, 72, 80, 60],
-  },
-  {
-    name: "오토바이",
-    data: [100, 12, 14, 16],
-  },
-  {
-    name: "버스",
-    data: [60, 120, 14, 16],
-  },
-  {
-    name: "트럭",
-    data: [5, 19, 14, 16],
-  },
-  {
-    name: "승합차",
-    data: [5, 19, 74, 90],
-  },
-  {
-    name: "자전거",
-    data: [50, 19, 74, 90],
-  },
-  {
-    name: "대형 트럭",
-    data: [50, 47, 24, 90],
-  },
-  {
-    name: "기타",
-    data: [50, 47, 24, 90],
-  },
-];
-
 const options = {
   chart: {
     type: "bar",
@@ -88,9 +53,25 @@ const options = {
     },
     labels: { colors: "#fff" },
   },
+  tooltip: {
+    enabled: true,
+    theme: "dark", // 툴팁 배경색
+    style: {
+      fontSize: '12px',
+      fontFamily: 'Arial, sans-serif',
+    },
+    // tooltip 아이템에서 마커 없이 텍스트만 보여주기
+    custom: function ({ seriesIndex, dataPointIndex, w }) {
+      const seriesName = w.globals.seriesNames[seriesIndex];
+      const dataValue = w.globals.series[seriesIndex][dataPointIndex];
+      return `<div style="padding: 10px; background: #333; border-radius: 5px; color: #fff;">
+                <strong>${seriesName}</strong>: ${dataValue}
+            </div>`;
+    },
+  },
 };
 
-const TrafficeByVehicleTypeStatistic = () => {
+const TrafficeByVehicleTypeStatistic = ({series}) => {
   return (
     <>
       <Chart

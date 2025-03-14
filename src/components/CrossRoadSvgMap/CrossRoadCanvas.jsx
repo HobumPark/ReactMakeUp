@@ -9,6 +9,7 @@ import Truck from "../../assets/crossroad/truck.svg";
 import Van from "../../assets/crossroad/van.svg";
 import TrafficLight from "../../assets/crossroad/trafficLight.svg";
 export const CrossRoadCanvas = ({roads, trafficPosData}) => {
+
     React.useEffect(() => {
          // In the middle of the canvas
         const w = 786
@@ -159,7 +160,7 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
                 drawVehicle(ctx, roadObj, roadIdToRoad[road_id].incoming_compass)
             }
         }
-      }, []);
+      }, [trafficPosData]);
     return(
         <>
         <canvas id="canvas" height="555" width="786">

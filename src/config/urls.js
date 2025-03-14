@@ -5,17 +5,17 @@ export const DEBUG = isDebugMode;
 const host = location.protocol + "//" + location.hostname;
 let URLS = {
   FRONT: `${host}`,
-  BACK_CORE: `${host}/api/core`,
   BACK_DSH: `${host}/api/dsh`,
+  BACK_ENV: `${host}/api/env`,
 };
 
 if (DEBUG) {
   // for development
   URLS = {
-    // FRONT: `${host}:7100`,
     FRONT: `${host}:5173`,
-    BACK_CORE: `${host}:7100/api/core`,
     BACK_DSH: `${host}:7120/api/dsh`,
+    BACK_ENV: `${host}:7121/api/env`,
+    rl: 'http://192.168.20.200:7120/api/dsh'
   };
 }
 
@@ -65,6 +65,7 @@ export const APIS = {
     `/programs/lower/${programID}`,
   deleteProgram: (programID) =>
     `/programs/${programID}`,
+  //
   initialAuthorityUser: (filterParams) => `/authority/groups/users?${filterParams}`,
   authorityUserAssignInfo: (groupCode) => `/authority/groups/${groupCode}/users`,
   authorityUserInfo: (groupCode) => `/authority/groups/${groupCode}`,
@@ -72,6 +73,7 @@ export const APIS = {
   forgotPassword: '/forgot-password',
   updateProfileByUser :'/users/update-user',
   updateProfilePassword: '/users/update-password',
+  //
   unmappedSiteRoad: (filterParams) => `/unmapped-site-road?${filterParams}`,
   //box
   boxList: (filterParams) => `/box?${filterParams}`,
@@ -85,6 +87,8 @@ export const APIS = {
   deleteDetector: (dtID) =>`/detector/${dtID}`,
   createDetector: '/detector',
   updateDetector: (dtID) =>`/detector/${dtID}`,
+  //box-detector-facility
+  boxDetectorFacilityList: (siteId) =>`/box-detector-facility/${siteId}`,
   //site
   siteList:(filterParams) => `/site?${filterParams}`,
   detailSite: (siteId)=>`/site/${siteId}`,
@@ -114,21 +118,32 @@ export const APIS = {
   mapInitialView:'/map/initial-view',
   mapDisplayPOI: '/map/poi',
   siteRoad:(filterParams) => `/site-road?${filterParams}`,
+  //traffic event list
   trafficEventTime:(filterParams) => `/traffic-event-list/by-time?${filterParams}`,
+  trafficEventRecent:(filterParams) => `/traffic-event-list/recent?${filterParams}`,
+  //traffic event
   trafficEvent: (id) =>`/traffic-event/${id}`,
+  //traffic event count
   trafficEventCnt: (filterParams)=>`/traffic-event-cnt?${filterParams}`,
   objectUnqCnt:(filterParams) => `/object-unq-cnt/vehicle/total?${filterParams}`,
   objectUnqCntRoad:(filterParams) => `/object-unq-cnt/road-vehicle?${filterParams}`,
   //Crossroad 
   siteRoadDetector: (id) =>`/site-road-detector/${id}`,
+  //object unq cnt
   objectCntCompass:(filterParams) => `/object-unq-cnt/compass/total?${filterParams}`,
   objectCntCompassTime:(filterParams) => `/object-unq-cnt/compass/time-series?${filterParams}`,
   objectCntMovingDirectionTime:(filterParams) => `/object-unq-cnt/moving-direction/time-series?${filterParams}`,
-  realTimeObject:(filterParams) => `/api/dsh/real-time-object?${filterParams}`,
+  objectCntVehicleDirectionTime:(filterParams) => `/object-unq-cnt/vehicle-direction/time-series?${filterParams}`,
+  objectCntDirectionTime:(filterParams) => `/object-unq-cnt/direction/time-series?${filterParams}`,
+  //real time object position
+  realTimeObject:(filterParams) => `/real-time-object?${filterParams}`,
   //Equipment Info 
   boxStatus: (id) =>`/box-status/${id}`,
   box: (id) =>`/box/${id}`,
   boxEvent: (id,filterParams) =>`/box-event/${id}?${filterParams}`,
   boxEventCnt: (id) =>`/box-event-cnt/${id}`,
   boxTempHum: (id, filterParams) =>`/box-temp-hum/${id}?${filterParams}`,
+  boxCommand: (rtuID) =>`/box/${rtuID}/power/command`,
+  mosCommand:  (siteID) =>`/site/${siteID}/mos/command`,
+
 }

@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchObjectUnqCnt,fetchObjectUnqCntVehicleDirectionTime,fetchObjectUnqCntDirectionTime } from "../api/dashboard";
+import { fetchObjectUnqCnt, fetchTrafficEventRecent} from "../api/dashboard";
 import { fetchObjectCntMovingDirectionTime, fetchSiteRoadDetector, realTimeObject } from "../api/crossroad.js";
+import { fetchBoxDetectorFacilityList } from "../api/box-detector-facility.jsx";
 
 const useAccessRoadMgt = ( {
   siteRoadParams,
@@ -8,11 +9,10 @@ const useAccessRoadMgt = ( {
   objectUnqCntPie1Params,objectUnqCntPie2Params,
   objectUnqCntTable1TodayParams,objectUnqCntTable1YesterdayParams,objectUnqCntTable1OneWeekParams,
   objectUnqCntTable2TodayParams,objectUnqCntTable2YesterdayParams,objectUnqCntTable2OneWeekParams,
-  objectUnqCntVehicleDirectionTimeParams,
-  objectUnqCntMovingDirectionParams,
+  boxDetectorFacilityListParams,
+  trafficEventRecentParams,
 }  ) => {
-
-  //접근로 관련 정보
+    //사이트 관련 정보 - 사이트-횡단보도,교차로
   const { data: roadData} = useQuery({
     queryKey: ["siteRoadParams", siteRoadParams],
     queryFn: () => fetchSiteRoadDetector(siteRoadParams),
@@ -20,6 +20,7 @@ const useAccessRoadMgt = ( {
     cacheTime: 1000 * 60 * 10,
     enabled: !!siteRoadParams
   });
+
   //디지털 트윈
   const { data: realTimeObjectData} = useQuery({
     queryKey: ["realTimeObjectParams", realTimeObjectParams],
@@ -28,6 +29,7 @@ const useAccessRoadMgt = ( {
     cacheTime: 1000 * 60 * 10,
     enabled: !!realTimeObjectParams
   });
+  
 
   //파이차트1
   const { data: objectUnqCntPie1} = useQuery({
@@ -92,37 +94,28 @@ const useAccessRoadMgt = ( {
     enabled: !!objectUnqCntTable2OneWeekParams
   });
 
-  //시간별 진입/진출 교통량
-  const { data: objectUnqCntMovingDirection} = useQuery({
-    queryKey: ["objectUnqCntMovingDirectionParams", objectUnqCntMovingDirectionParams],
-    queryFn: () => fetchObjectCntMovingDirectionTime(objectUnqCntMovingDirectionParams),
+  //사이트(횡단보도) 관련 - 함체/검지기/시설물 정보
+  const { data: boxDetectorFacilityList} = useQuery({
+    queryKey: ["boxDetectorFacilityParams", boxDetectorFacilityListParams],
+    queryFn: () => fetchBoxDetectorFacilityList(boxDetectorFacilityListParams),
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
-    enabled: !!objectUnqCntMovingDirectionParams
-  });
-  
-  //이동류별 차종 교통량
-  const { data: objectUnqCntVehicleDirectionTime} = useQuery({
-    queryKey: ["objectUnqCntVehicleDirectionTimeParams", objectUnqCntVehicleDirectionTimeParams],
-    queryFn: () => fetchObjectUnqCntVehicleDirectionTime(objectUnqCntVehicleDirectionTimeParams),
-    staleTime: 1000 * 60 * 5,
-    cacheTime: 1000 * 60 * 10,
-    enabled: !!objectUnqCntVehicleDirectionTimeParams
+    enabled: !!boxDetectorFacilityListParams
   });
 
-  //시간별 이동류 교통량 그래프
-  const { data: objectUnqCntMovingDirectionTime} = useQuery({
-    queryKey: ["objectUnqCntMovingDirectionParams", objectUnqCntMovingDirectionParams],
-    queryFn: () => fetchObjectUnqCntDirectionTime(objectUnqCntMovingDirectionParams),
+  //최근 발생 이벤트 50건
+  const { data: trafficEventRecent} = useQuery({
+    queryKey: ["trafficEventRecentParams", trafficEventRecentParams],
+    queryFn: () => fetchTrafficEventRecent(trafficEventRecentParams),
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
-    enabled: !!objectUnqCntMovingDirectionParams
+    enabled: !!trafficEventRecentParams
   });
-  
+
   return {
-    //접근로 관련 데이터
+    //횡단보도 관련 데이터
     roadData,
-    //디지털 트윈
+    //리얼타임 데이터
     realTimeObjectData,
     //파이차트 1,2
     objectUnqCntPie1,
@@ -134,12 +127,10 @@ const useAccessRoadMgt = ( {
     objectUnqCntTable2Today,
     objectUnqCntTable2Yesterday,
     objectUnqCntTable2OneWeek,
-    //시간별 진입/진출 교통량
-    objectUnqCntMovingDirection,
-    //이동류별 차종 교통량
-    objectUnqCntVehicleDirectionTime,
-    //시간별 이동류 교통량 그래프
-    objectUnqCntMovingDirectionTime
+     //사이트(횡단보도) 관련 - 함체/검지기/시설물 정보
+    boxDetectorFacilityList,
+    //
+    trafficEventRecent
   };
 };
 

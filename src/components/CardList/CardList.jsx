@@ -75,7 +75,7 @@ const CardList = ({
             </span>
           </div>
           <div className="w-full grid grid-cols-2">
-            <span className={`body2medium ${customSubtitle} text-text-white`}>
+            <span className={`body2medium ${customSubtitle} text-text-white whitespace-nowrap`}>
               {subtitle}
             </span>
             <span className={`${customDate} body2 text-text-white text-right`}>

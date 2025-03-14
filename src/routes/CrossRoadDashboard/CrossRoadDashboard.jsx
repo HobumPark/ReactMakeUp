@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
 
 import IconCar from "../../assets/icon/icon-db-car.svg";
@@ -24,6 +24,7 @@ import useSRDetector from "../../hooks/useSRDetector";
 import useObjectCnt from "../../hooks/useObjectCnt";
 import { getLocalISOString } from "../../utils/date";
 import { CrossRoadCanvas } from "../../components/CrossRoadSvgMap/CrossRoadCanvas";
+import useRealTimeObj from "../../hooks/useRealTimeObj";
 
 
 const CrossRoadDashboard = () => {
@@ -56,9 +57,55 @@ const CrossRoadDashboard = () => {
   const objCompassEntry = objCntCompassEntry?.data;
   const objCompassExit = objCntCompassExit?.data;
 
-  const [videos, setVideos] = useState([
-    srDetectorData?.roads?.map((road) => road.detector?.stream_url) || []
-  ]);
+  const [videos, setVideos] = useState([]);
+
+
+  const [selectedValue, setSelectedValue] = useState("5");
+  const radioOptions = [
+    { id: "radio-5min", label: "5분", value: "5" },
+    { id: "radio-15min", label: "15분", value: "15" },
+    { id: "radio-30min", label: "30분", value: "30" },
+  ];
+
+  const handleRadioChange = (event) => {
+    setSelectedValue(event.target.value); 
+  };
+ 
+
+  const roadIds = srDetectorData?.roads?.map(road => road.road_id) || [];
+  const compassMapping = {
+    "103001": "N",
+    "103002": "NE",
+    "103003": "E",
+    "103004": "SE",
+    "103005": "S",
+    "103006": "SW",
+    "103007": "W",
+    "103008": "NW"
+  };
+
+  const roadPasses = srDetectorData?.roads?.map(road => ({
+    id: road.road_id,
+    incomingPass: compassMapping[road.detector?.incoming_compass] || "Unknown" 
+  })) || [];
+
+
+  const { queries } = useRealTimeObj({
+    roadIds: roadIds,
+    // interval: selectedValue
+  });
+
+  const mergedRoadPasses = roadPasses?.map((roadPass) => {
+    const query = queries?.find((query) => query.id === roadPass.id);
+    if (query && query.data) {
+      return {
+        ...roadPass,
+        data: query.data.length > 0 ? query.data : [],
+      };
+    }
+    return roadPass;
+  });
+  
   
   const [trafficPosData, setTrafficPosData] = useState([
     {
@@ -154,6 +201,34 @@ const CrossRoadDashboard = () => {
     {"road_id": 8, "incoming_compass": "NW"},
   ])
 
+const mergedData = roads.map((road) => {
+    const vehicleInfo = mergedRoadPasses?.find(vehicle => vehicle.incomingPass === road.incoming_compass);
+    
+    if (vehicleInfo && vehicleInfo.data !== undefined) {
+      return {
+        road_id: road.road_id.toString(),
+        data: vehicleInfo.data,
+      };
+    }
+    return undefined;
+  })
+  .filter(item => item !== undefined);
+
+
+  useEffect(() => {
+
+    if (trafficPosData !== mergedData) {
+      setTrafficPosData(mergedData);
+    }
+  }, [mergedData]);
+
+  useEffect(() => {
+    const data = srDetectorData?.roads?.map((road) => road.detector?.stream_url) || 0
+    setVideos(data);
+  }, [srDetectorData]);
+
+
+
   // Fungsi untuk menentukan jumlah kolom grid berdasarkan jumlah video
   const getGridCols = (count) => {
     if (count === 1) return "grid-cols-1"; 
@@ -166,36 +241,51 @@ const CrossRoadDashboard = () => {
     return "grid-cols-4";
   };
   
-  const radioOptions = [
-    { id: "radio-5min", label: "5분", value: "5" },
-    { id: "radio-15min", label: "15분", value: "15" },
-    { id: "radio-30min", label: "30분", value: "30" },
-  ];
 
+  
   //untuk filter mobil
   const [selectedIcons, setSelectedIcons] = useState([]);
 
   const vehicleIcons = [
-    { src: IconCar, alt: "Car" },
-    { src: IconVan, alt: "Van" },
-    { src: IconMotor, alt: "Motor" },
-    { src: IconBicycles, alt: "Bicycle" },
-    { src: IconBus, alt: "Bus" },
-    { src: IconHeavyTruck, alt: "Heavy Truck" },
-    { src: IconTruck, alt: "Truck" },
+    { id: "301001", src: IconCar, alt: "Car" },
+    { id: "301002", src: IconVan, alt: "Van" },
+    { id: "301003", src: IconTruck, alt: "Truck" },
+    { id: "301004", src: IconHeavyTruck, alt: "Heavy Truck" },
+    { id: "301005", src: IconBus, alt: "Bus" },
+    { id: "301006", src: IconMotor, alt: "Motorcycle" },
+    { id: "301007", src: IconBicycles, alt: "Bicycle" },
   ];
+  
 
-  const handleClick = (index) => {
+  const handleClick = (id) => {
     setSelectedIcons((prev) => {
-      if (prev.includes(index)) {
-        return prev.filter((iconIndex) => iconIndex !== index);
+      if (prev.includes(id)) {
+        return prev.filter((iconId) => iconId !== id);
       } else {
-        return [...prev, index];
+        return [...prev, id];
       }
     });
-  };
+  }
   //untuk filter mobil
 
+
+  useEffect(() => {
+    const filteredData = trafficPosData?.map((road) => {
+      const filteredVehicles = road?.data?.filter(
+        (vehicle) => !selectedIcons.includes(vehicle.vehicle_type)
+      );
+      return {
+        ...road,
+        data: filteredVehicles,
+      };
+    });
+    setTrafficPosData(filteredData);
+  }, [selectedIcons, trafficPosData]);
+
+
+
+  
+  
 
   // Tambah video baru secara dinamis
   const addVideo = () => {
@@ -284,6 +374,8 @@ const CrossRoadDashboard = () => {
                             name="time"
                             value={option.value}
                             className=" w-[15px]! h-[15px]!  cursor-pointer"
+                            checked={selectedValue === option.value} 
+                            onChange={handleRadioChange} 
                           />
                           <label
                             htmlFor={option.id}
@@ -296,17 +388,17 @@ const CrossRoadDashboard = () => {
                     </div>
                     <div className="_boxFilterByVihacle bg-red w-fit flex gap-[27px] flex-row bg-bg-grey-500 py-[5px] px-[10px]">
                       <span className="text-text-white title3medium">ALL</span>
-                      {vehicleIcons.map((icon, index) => (
+                      {vehicleIcons.map((icon) => (
                         <img
-                          key={index}
+                          key={icon.id}
                           src={icon.src}
                           alt={icon.alt}
                           className={`cursor-pointer transition-opacity duration-300 ${
-                            selectedIcons.includes(index)
+                            selectedIcons.includes(icon.id)
                               ? "opacity-50"
                               : "opacity-100"
                           }`}
-                          onClick={() => handleClick(index)}
+                          onClick={() => handleClick(icon.id)}
                         />
                       ))}
                     </div>

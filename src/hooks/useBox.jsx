@@ -1,5 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";  
-import { fetchBox, fetchBoxEvent, fetchBoxEventCnt, fetchBoxStatus, fetchBoxTempHum } from "../api/equipment-info";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";  
+import { fetchBox, fetchBoxEvent, fetchBoxEventCnt, fetchBoxStatus, fetchBoxTempHum, boxCommand, mosCommand } from "../api/equipment-info";
 
 const useBox = ({
   id ="",
@@ -57,13 +57,32 @@ const useBox = ({
         onError: () => {
         },
       });
+
+  const boxCommandMutation = useMutation({
+    mutationFn: (rtuID, command) => boxCommand(rtuID, command),
+    onSuccess: (responseData) => {
+        queryClient.invalidateQueries(["boxStatusData", id]);
+        queryClient.invalidateQueries(["box", id]);
+    }
+  });
+
+  const mosCommandMutation = useMutation({
+    mutationFn: (siteID, command) => mosCommand(siteID, command),
+    onSuccess: (responseData) => {
+        queryClient.invalidateQueries(["boxStatusData", id]);
+        queryClient.invalidateQueries(["box", id]);
+    }
+  });
+ 
    
   return {
     boxData,
     boxStatusData,
     BoxEventDataList,
     boxEventCntData,
-    boxTempHumData
+    boxTempHumData,
+    boxCommand: boxCommandMutation.mutate,
+    mosCommand: mosCommandMutation.mutate
   };
 };
 
