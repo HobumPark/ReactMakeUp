@@ -98,8 +98,6 @@ const exitColumns  = [
 //승용차,오토바이,버스,트럭,승합차,자전거,대형트럭,기타
 //301001 301006 301005 301003 301002 301007 301004 301000
 
-
-
 const AccessRoadDashboard = () => {
   const radioOptions = [
     { id: "radio-5min", label: "5분", value: "5" },
@@ -800,7 +798,7 @@ const seriesMovingInOutTime = [
                       alt=""
                       className="object-cover w-full h-full overflow-hidden"
                     /> */}
-                    <AccessRoadCanvas trafficPosData={trafficPosData}></AccessRoadCanvas>
+                    <AccessRoadCanvas trafficPosData={trafficPosData || []}></AccessRoadCanvas>
                   </div>
                   <div className="_boxFilterRadio flex-1 h-[calc(100%-35px)] p-[10px] bg-[#171A1C] overflow-hidden">
                     <div className="w-full flex flex-row items-center justify-between">

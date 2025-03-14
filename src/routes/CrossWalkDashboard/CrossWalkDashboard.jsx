@@ -53,6 +53,11 @@ import TrafficeByVehicle from "../../components/CrossRoadStatistic/TrafficeByVeh
 import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
 import PieChartIn from "../../components/CrossWalkStatistic/PieChartIn";
 import PieChartOut from "../../components/CrossWalkStatistic/PieChartOut";
+import { formatFullDateTime, formatDateTime } from "../../utils/date";
+import { useLocation, useNavigate } from "react-router-dom";
+import useCrossWalkMgt  from "../../hooks/useCrossWalkMgt";
+
+import CrossWalkCanvas from '../../components/CrossRoadSvgMap/CrossWalkCanvas'
 
 // tabulator exit
 
@@ -412,10 +417,53 @@ const CrossWalkDashboard = () => {
   const [detectorLat,setDetectorLat]=useState("")
   const [detectorLon,setDetectorLng]=useState("")
 
+    // State for the query parameters
+     //접근로 정보 파라미터
+    const [siteRoadParams, setSiteRoadParams] = useState("");
+  
+
+  //파이차트 1,2에 사용할 파라미터 parameters
+  const [objectUnqCntPie1Params, setObjectUnqCntPie1Params] = useState("");
+  const [objectUnqCntPie2Params, setObjectUnqCntPie2Params] = useState("");
+  
+  //테이블 1,2에 사용할 파라미터
+  //테이블1 - 오늘,어제,일주일전 parameters
+  const [objectUnqCntTable1TodayParams, setObjectUnqCntTable1TodayParams] = useState("");
+  const [objectUnqCntTable1YesterdayParams, setObjectUnqCntTable1YesterdayParams] = useState("");
+  const [objectUnqCntTable1OneWeekParams, setObjectUnqCntTable1OnedWeekParams] = useState("");
+
+  //테이블2 - 오늘,어제,일주일전 parameters
+  const [objectUnqCntTable2TodayParams, setObjectUnqCntTable2TodayParams] = useState("");
+  const [objectUnqCntTable2YesterdayParams, setObjectUnqCntTable2YesterdayParams] = useState("");
+  const [objectUnqCntTable2OneWeekParams, setObjectUnqCntTable2OneWeekParams] = useState("");
+
+  const [boxDetectorFacilityListParams, setBoxDetectorFacilityListParams] = useState("");
+  
+  const [trafficEventRecentParams, setTrafficEventRecentParams] = useState("");
+
   const [radioTimeValue, setRadioTimeValue] = useState("5"); // Initial time is 5 minutes
   
   const [roadId, setRoadId] = useState(road_id); // Assuming `road_id` is passed as a prop or from context
   
+    const [trafficPosData, setTrafficPosData] = useState([
+      {
+      "vehicle_type": "301003",
+      "xrelpos": 300.31,
+      "yrelpos": 0.769999999999982
+      },
+      {
+      "vehicle_type": "301001",
+      "xrelpos": 200.05,
+      "yrelpos": 30.44
+      },
+      {
+      "vehicle_type": "301005",
+      "xrelpos": 50.01,
+      "yrelpos": -42.44
+      }
+    ])
+  
+
     const today = new Date();
   
     // date time for pie chart
