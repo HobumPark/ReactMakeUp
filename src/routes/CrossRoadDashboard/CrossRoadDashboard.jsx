@@ -57,7 +57,8 @@ const CrossRoadDashboard = () => {
   const objCompassEntry = objCntCompassEntry?.data;
   const objCompassExit = objCntCompassExit?.data;
 
-  const [videos, setVideos] = useState(srDetectorData?.roads?.map((road) => road.detector?.stream_url) || []);
+  const [videos, setVideos] = useState([]);
+
 
   const [selectedValue, setSelectedValue] = useState("5");
   const radioOptions = [
@@ -215,10 +216,17 @@ const mergedData = roads.map((road) => {
 
 
   useEffect(() => {
-    if (JSON.stringify(trafficPosData) !== JSON.stringify(mergedData)) {
+
+    if (trafficPosData !== mergedData) {
       setTrafficPosData(mergedData);
     }
   }, [mergedData]);
+
+  useEffect(() => {
+    const data = srDetectorData?.roads?.map((road) => road.detector?.stream_url) || 0
+    setVideos(data);
+  }, [srDetectorData]);
+
 
 
   // Fungsi untuk menentukan jumlah kolom grid berdasarkan jumlah video
