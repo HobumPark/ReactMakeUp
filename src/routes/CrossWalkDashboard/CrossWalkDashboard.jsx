@@ -44,6 +44,7 @@ import TrafficeByVehicle from "../../components/CrossRoadStatistic/TrafficeByVeh
 import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
 import PieChartIn from "../../components/CrossWalkStatistic/PieChartIn";
 import PieChartOut from "../../components/CrossWalkStatistic/PieChartOut";
+import { CrossWalkCanvas } from "../../components/CrossRoadSvgMap/CrosswalkCanvas";
 
 // tabulator exit
 
@@ -463,7 +464,25 @@ const CrossWalkDashboard = () => {
 
   const mapRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
-  const iconFeatureRef = useRef(null); // Simpan referensi ke ikon
+  const iconFeatureRef = useRef(null); // Simpan referensi ke ikon  
+  // // Assumptions x [-10, 350], y [-50, 50]
+  const [trafficPosData, setTrafficPosData] = useState([
+    {
+    "vehicle_type": "301003",
+    "xrelpos": 300.31,
+    "yrelpos": 0.769999999999982
+    },
+    {
+    "vehicle_type": "301001",
+    "xrelpos": 200.05,
+    "yrelpos": 30.44
+    },
+    {
+    "vehicle_type": "301005",
+    "xrelpos": 50.01,
+    "yrelpos": -42.44
+    }
+  ])
   
   useEffect(() => {
     if (!mapRef.current) return;
@@ -561,11 +580,12 @@ const CrossWalkDashboard = () => {
                 </div>
                 <div className="w-full h-full p-[10px] gap-[10px] flex flex-row  overflow-hidden">
                   <div className="w-[22%] flex  h-[calc(100%-35px)] overflow-hidden">
-                    <img
+                    {/* <img
                       src={ImgOneWay}
                       alt=""
                       className="object-cover w-full h-full overflow-hidden"
-                    />
+                    /> */}
+                    <CrossWalkCanvas trafficPosData={trafficPosData}></CrossWalkCanvas>
                   </div>
                   <div className="_boxFilterRadio flex-1 h-[calc(100%-35px)] p-[10px] bg-[#171A1C] overflow-hidden">
                     <div className="w-full flex flex-row items-center justify-between">
