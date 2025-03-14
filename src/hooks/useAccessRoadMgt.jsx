@@ -1,14 +1,17 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchObjectUnqCnt } from "../api/dashboard";
-import { fetchObjectCntMovingDirectionTime, fetchSiteRoadDetector } from "../api/crossroad.js";
+import { fetchObjectUnqCnt,fetchObjectUnqCntVehicleDirectionTime,fetchObjectUnqCntDirectionTime } from "../api/dashboard";
+import { fetchObjectCntMovingDirectionTime, fetchSiteRoadDetector, realTimeObject } from "../api/crossroad.js";
 
 const useAccessRoadMgt = ( {
   siteRoadParams,
+  realTimeObjectParams,
   objectUnqCntPie1Params,objectUnqCntPie2Params,
   objectUnqCntTable1TodayParams,objectUnqCntTable1YesterdayParams,objectUnqCntTable1OneWeekParams,
   objectUnqCntTable2TodayParams,objectUnqCntTable2YesterdayParams,objectUnqCntTable2OneWeekParams,
-  objectUnqCntMovingDirectionParams
+  objectUnqCntVehicleDirectionTimeParams,
+  objectUnqCntMovingDirectionParams,
 }  ) => {
+
   //접근로 관련 정보
   const { data: roadData} = useQuery({
     queryKey: ["siteRoadParams", siteRoadParams],
@@ -16,6 +19,14 @@ const useAccessRoadMgt = ( {
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
     enabled: !!siteRoadParams
+  });
+  //디지털 트윈
+  const { data: realTimeObjectData} = useQuery({
+    queryKey: ["realTimeObjectParams", realTimeObjectParams],
+    queryFn: () => realTimeObject(realTimeObjectParams),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+    enabled: !!realTimeObjectParams
   });
 
   //파이차트1
@@ -91,12 +102,28 @@ const useAccessRoadMgt = ( {
   });
   
   //이동류별 차종 교통량
+  const { data: objectUnqCntVehicleDirectionTime} = useQuery({
+    queryKey: ["objectUnqCntVehicleDirectionTimeParams", objectUnqCntVehicleDirectionTimeParams],
+    queryFn: () => fetchObjectUnqCntVehicleDirectionTime(objectUnqCntVehicleDirectionTimeParams),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+    enabled: !!objectUnqCntVehicleDirectionTimeParams
+  });
 
-  //이동류 교통량 그래프
-
+  //시간별 이동류 교통량 그래프
+  const { data: objectUnqCntMovingDirectionTime} = useQuery({
+    queryKey: ["objectUnqCntMovingDirectionParams", objectUnqCntMovingDirectionParams],
+    queryFn: () => fetchObjectUnqCntDirectionTime(objectUnqCntMovingDirectionParams),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+    enabled: !!objectUnqCntMovingDirectionParams
+  });
+  
   return {
     //접근로 관련 데이터
     roadData,
+    //디지털 트윈
+    realTimeObjectData,
     //파이차트 1,2
     objectUnqCntPie1,
     objectUnqCntPie2,
@@ -110,8 +137,9 @@ const useAccessRoadMgt = ( {
     //시간별 진입/진출 교통량
     objectUnqCntMovingDirection,
     //이동류별 차종 교통량
-
-     //이동류 교통량 그래프
+    objectUnqCntVehicleDirectionTime,
+    //시간별 이동류 교통량 그래프
+    objectUnqCntMovingDirectionTime
   };
 };
 
