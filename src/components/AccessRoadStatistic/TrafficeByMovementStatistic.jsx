@@ -121,6 +121,22 @@ const options = {
     },
     labels: { colors: "#fff" },
   },
+  tooltip: {
+    enabled: true,
+    theme: "dark", // 툴팁 배경색
+    style: {
+      fontSize: '12px',
+      fontFamily: 'Arial, sans-serif',
+    },
+    // tooltip 아이템에서 마커 없이 텍스트만 보여주기
+    custom: function ({ seriesIndex, dataPointIndex, w }) {
+      const seriesName = w.globals.seriesNames[seriesIndex];
+      const dataValue = w.globals.series[seriesIndex][dataPointIndex];
+      return `<div style="padding: 10px; background: #333; border-radius: 5px; color: #fff;">
+                <strong>${seriesName}</strong>: ${dataValue}
+            </div>`;
+    },
+  },
 };
 
 const TrafficeByMovementStatistic = ({series}) => {

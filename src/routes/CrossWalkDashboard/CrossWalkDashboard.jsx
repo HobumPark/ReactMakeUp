@@ -144,26 +144,13 @@ const exitVehicleTabullator = [
 const FacilityInfoTabullator = [
   {
     title: "구분",
-    field: "type",
+    field: "type_value",
     widthGrow: 0.8,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
-    formatter: (cell, formatterParams, onRendered) => {
-      const value = cell.getValue();
-      
-      // 조건을 체크하여 값 변경
-      if (value === "box") {
-        return "함체";
-      } else if (value === "detector") {
-        return "검지기";  // 다른 type일 경우
-      } else if (value === "vms") {
-        return "전광판";  // 다른 type일 경우
-      } else {
-        return "";  // 다른 type일 경우
-      } 
-    },
+    
   },
   {
     title: "ID",
@@ -445,26 +432,38 @@ const CrossWalkDashboard = () => {
   const [radioTimeValue, setRadioTimeValue] = useState("5"); // Initial time is 5 minutes
   
   const [roadId, setRoadId] = useState(road_id); // Assuming `road_id` is passed as a prop or from context
-  
-  /*
-    const [trafficPosData, setTrafficPosData] = useState([
-      {
-      "vehicle_type": "301003",
-      "xrelpos": 300.31,
-      "yrelpos": 0.769999999999982
-      },
-      {
-      "vehicle_type": "301001",
-      "xrelpos": 200.05,
-      "yrelpos": 30.44
-      },
-      {
-      "vehicle_type": "301005",
-      "xrelpos": 50.01,
-      "yrelpos": -42.44
-      }
-    ])
-  */
+
+  const [trafficPosTestData1, setTrafficPosTestData1] = useState([
+    {
+    "vehicle_type": "301003",
+    "xrelpos": 300.31,
+    "yrelpos": 0.769999999999982
+    },
+    {
+    "vehicle_type": "301001",
+    "xrelpos": 200.05,
+    "yrelpos": 30.44
+    },
+    {
+    "vehicle_type": "301005",
+    "xrelpos": 50.01,
+    "yrelpos": -42.44
+    }
+  ])
+      
+    const [trafficPosTestData2, setTrafficPosTestData2] = useState([
+    {
+    "vehicle_type": "301005",
+    "xrelpos": 364.91,
+    "yrelpos": -31.55000000000001
+    },
+    {
+    "vehicle_type": "301001",
+    "xrelpos": 184.85,
+    "yrelpos": 72.66999999999999
+    },
+  ])
+
   const [trafficPosData, setTrafficPosData]=useState([])
   
 
@@ -531,8 +530,8 @@ const CrossWalkDashboard = () => {
   //console.log('objectUnqCntTable2OneWeek')
   //console.log(objectUnqCntTable2OneWeek)
 
-  //console.log('boxDetectorFacilityList')
-  //console.log(boxDetectorFacilityList)
+  console.log('boxDetectorFacilityList')
+  console.log(boxDetectorFacilityList)
 
   console.log('trafficEventRecent')
   console.log(trafficEventRecent  )//진입
@@ -587,11 +586,11 @@ const CrossWalkDashboard = () => {
     console.log('찾은 road데이터')
     console.log(findRoadData)
 
-    setRoadName(findRoadData.name)
-    setRoadStreamUrl(findRoadData.detector?.stream_url) 
+    setRoadName(findRoadData?.name)
+    setRoadStreamUrl(findRoadData?.detector.stream_url) 
     
-    const lat = findRoadData.detector?.lat || "";
-    const lng = findRoadData.detector?.lng || "";
+    const lat = findRoadData?.detector.lat || "";
+    const lng = findRoadData?.detector.lng || "";
 
     setDetectorLat(lat);  // Lat 업데이트
     setDetectorLng(lng);  // Lng 업데이트
