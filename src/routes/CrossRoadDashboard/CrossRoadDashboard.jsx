@@ -85,9 +85,9 @@ const CrossRoadDashboard = () => {
   };
 
   const roadPasses = srDetectorData?.roads?.map(road => ({
-    id: road.road_id,
-    incomingPass: compassMapping[road.detector?.incoming_compass] || "Unknown" 
-  })) || [];
+    road_id: road.road_id,
+    incoming_compass: compassMapping[road.detector?.incoming_compass] || "Unknown" 
+  })) 
 
 
   const { queries } = useRealTimeObj({
@@ -95,16 +95,17 @@ const CrossRoadDashboard = () => {
     // interval: selectedValue
   });
 
-  const mergedRoadPasses = roadPasses?.map((roadPass) => {
-    const query = queries?.find((query) => query.id === roadPass.id);
-    if (query && query.data) {
-      return {
-        ...roadPass,
-        data: query.data.length > 0 ? query.data : [],
-      };
-    }
-    return roadPass;
-  });
+
+  // const mergedRoadPasses = roadPasses?.map((roadPass) => {
+  //   const query = queries?.find((query) => query.road_id === roadPass.road_id);
+  //   if (query && query.data) {
+  //     return {
+  //       ...roadPass,
+  //       data: query.data.length > 0 ? query.data : [],
+  //     };
+  //   }
+  //   return roadPass;
+  // });
   
   
   const [trafficPosData, setTrafficPosData] = useState([
@@ -190,37 +191,35 @@ const CrossRoadDashboard = () => {
     }
   ])
   
-  const [roads, setRoads] = useState([
-    {"road_id": 1, "incoming_compass": "E"},
-    {"road_id": 2, "incoming_compass": "S"},
-    {"road_id": 3, "incoming_compass": "W"},
-    {"road_id": 4, "incoming_compass": "N"},
-    {"road_id": 5, "incoming_compass": "NE"},
-    {"road_id": 6, "incoming_compass": "SE"},
-    {"road_id": 7, "incoming_compass": "SW"},
-    {"road_id": 8, "incoming_compass": "NW"},
-  ])
+  const [roads, setRoads] = useState([])
 
-const mergedData = roads.map((road) => {
-    const vehicleInfo = mergedRoadPasses?.find(vehicle => vehicle.incomingPass === road.incoming_compass);
+// const mergedData = roads.map((road) => {
+//     const vehicleInfo = mergedRoadPasses?.find(vehicle => vehicle.incomingPass === road.incoming_compass);
     
-    if (vehicleInfo && vehicleInfo.data !== undefined) {
-      return {
-        road_id: road.road_id.toString(),
-        data: vehicleInfo.data,
-      };
-    }
-    return undefined;
-  })
-  .filter(item => item !== undefined);
+//     if (vehicleInfo && vehicleInfo.data !== undefined) {
+//       return {
+//         road_id: road.road_id.toString(),
+//         data: vehicleInfo.data,
+//       };
+//     }
+//     return undefined;
+//   })
+//   .filter(item => item !== undefined);
 
 
   useEffect(() => {
+      console.log(queries);
+      
+      console.log('test')
+  }, [queries]);
 
-    if (trafficPosData !== mergedData) {
-      setTrafficPosData(mergedData);
-    }
-  }, [mergedData]);
+    useEffect(() => {
+
+      setRoads(roadPasses);
+  }, [roadPasses]);
+
+  console.log(queries);
+  
 
   useEffect(() => {
     const data = srDetectorData?.roads?.map((road) => road.detector?.stream_url) || 0
@@ -280,7 +279,7 @@ const mergedData = roads.map((road) => {
       };
     });
     setTrafficPosData(filteredData);
-  }, [selectedIcons, trafficPosData]);
+  }, [selectedIcons]);
 
 
 
@@ -405,7 +404,12 @@ const mergedData = roads.map((road) => {
                   </div>
 
                   <div className="_imgMapsArea w-full h-full flex bg-[#1E2223] relative">
-                    <CrossRoadCanvas roads={roads} trafficPosData={trafficPosData}></CrossRoadCanvas>
+                  {roads && roads.length > 0 && queries && queries.length > 0 ? (
+                        <CrossRoadCanvas roads={roads} trafficPosData={trafficPosData} />
+                      ) : (
+                        <div>No data available to render the canvas.</div>
+                      )}
+
                     {/* <img
                       src={imgMaps}
                       alt=""
@@ -601,7 +605,7 @@ const mergedData = roads.map((road) => {
                     </div>
                   </div>
                   <div className="flex items-center flex-1/2 w-full h-full relative">
-                    <TrafficeByVehicle data={objCntData} />
+                    <TrafficeByVehicle data={objCntData || []} />
                   </div>
                 </div>
               </div>
@@ -613,7 +617,7 @@ const mergedData = roads.map((road) => {
                 </span>
               </div>
               <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                <EntryRate data={objCompassEntry}/>
+                <EntryRate data={objCompassEntry || []}/>
               </div>
             </section>
             <section className=" flex flex-1 h-[full] overflow-hidden bg-[#000] rounded-[5px]">
@@ -623,7 +627,7 @@ const mergedData = roads.map((road) => {
                 </span>
               </div>
               <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                <ExitRate data={objCompassExit} />
+                <ExitRate data={objCompassExit || []} />
               </div>
             </section>
           </div>
