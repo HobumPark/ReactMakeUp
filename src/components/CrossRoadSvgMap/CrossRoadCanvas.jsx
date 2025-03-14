@@ -35,6 +35,8 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
             "301007": Bicycle,
         }
 
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
         // Rotate test
         // 1. move fixed point to origin 
         // 2. rotate R(angle)
@@ -80,8 +82,6 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
             "NE":NECollectionOfPoints,
         }
         const collectionOfPoints = roads.map(r => compassToCollection[r.incoming_compass])
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
 
         ctx.fillStyle = "grey";
         ctx.fillRect(0, 0, rect.get([0]), rect.get([1]));
@@ -110,6 +110,7 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
                 ctx.closePath();
         }
         function drawVehicle(ctx, vPos, compass){
+            // Assumptions x [-10, 350], y [-50, 50]
             const x = vPos["xrelpos"]/ 350 * 150;
             const y = vPos["yrelpos"]/ 350 * 40;
             console.log(x,y)
