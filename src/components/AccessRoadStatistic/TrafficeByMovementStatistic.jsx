@@ -2,14 +2,6 @@ import React from "react";
 import Chart from "react-apexcharts";
 import "./TrafficeByMovementStatistic.css";
 
-const series = [
-  { name: "Straight", data: [5, 10, 15, 20, 12, 14, 18] },
-  { name: "Left turn", data: [8, 14, 10, 16, 18, 22, 20] },
-  { name: "Right turn", data: [6, 12, 8, 14, 16, 18, 19] },
-  { name: "U-turn", data: [4, 8, 6, 10, 12, 14, 13] },
-  { name: "LOS", data: [18, 14, 16, 22, 24, 20, 21] }, // Garis tambahan untuk Level of Service
-];
-
 const options = {
   chart: {
     type: "line",
@@ -131,7 +123,7 @@ const options = {
   },
 };
 
-const TrafficeByMovementStatistic = () => {
+const TrafficeByMovementStatistic = ({series}) => {
   return (
     <Chart
       options={options}

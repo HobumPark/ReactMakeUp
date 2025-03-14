@@ -153,6 +153,9 @@ const AccessRoadDashboard = () => {
    //접근로 정보 파라미터
   const [siteRoadParams, setSiteRoadParams] = useState("");
 
+  //디지털 트윈 parameters
+  const [realTimeObjectParams, setRealTimeObjectParams] = useState("");
+
   //파이차트 1,2에 사용할 파라미터 parameters
   const [objectUnqCntPie1Params, setObjectUnqCntPie1Params] = useState("");
   const [objectUnqCntPie2Params, setObjectUnqCntPie2Params] = useState("");
@@ -170,13 +173,18 @@ const AccessRoadDashboard = () => {
 
   //시간별 진입/진출 교통량 parameters
   const [objectUnqCntMovingDirectionParams, setObjectUnqCntMovingDirectionParams] = useState("");
-  //이동류별 차종 교통량 parameters
 
-  //이동류 교통량 그래프 parameters
+  //이동류별 차종 교통량 parameters
+  const [objectUnqCntVehicleDirectionTimeParams, setObjectUnqCntVehicleDirectionTimeParams] = useState("");
+
+  //시간별 이동류 교통량 그래프 parameters
+  const [objectUnqCntDirectionTimeParams, setObjectUnqCntDirectionTimeParams] = useState("");
 
   const [roadId, setRoadId] = useState(road_id); // Assuming `road_id` is passed as a prop or from context
   // Assumptions x [-10, 350], y [-50, 50]
-  const [trafficPosData, setTrafficPosData] = useState([
+  const [trafficPosData, setTrafficPosData] = useState([])
+  
+  const [trafficPosTestData, setTrafficPosTestData] = useState([
     {
     "vehicle_type": "301003",
     "xrelpos": 300.31,
@@ -193,10 +201,17 @@ const AccessRoadDashboard = () => {
     "yrelpos": -42.44
     }
   ])
-
+  
+  //
   useEffect(() => {
     //road정보 가져오기
     setSiteRoadParams(`${site_id}`)
+  }, [radioTimeValue, roadId]);
+
+  //디지털 트윈 parameters
+  useEffect(() => {
+  
+    setRealTimeObjectParams(`road_id=${road_id}&rotate=0&xoffset=0&yoffset=0`)
   }, [radioTimeValue, roadId]);
 
   // 파이차트 1,2 파라미터 설정
@@ -295,6 +310,8 @@ const AccessRoadDashboard = () => {
   const {
         //접근로 관련 데이터
         roadData,
+        //디지털 트윈 데이터
+        realTimeObjectData,
         //파이차트 데이터
         objectUnqCntPie1,objectUnqCntPie2,
         //테이블1 데이터
@@ -306,12 +323,15 @@ const AccessRoadDashboard = () => {
         objectUnqCntTable2Yesterday,
         objectUnqCntTable2OneWeek,
         //시간별 진입/진출 교통량
-        objectUnqCntMovingDirection
+        objectUnqCntMovingDirection,
         //이동류별 차종 교통량
+        objectUnqCntVehicleDirectionTime,
+        //시간별 이동류 교통량 그래프
+        objectUnqCntDirectionTime
 
-        //이동류 교통량 그래프
   }=useAccessRoadMgt({
     siteRoadParams,
+    realTimeObjectParams,
     objectUnqCntPie1Params,objectUnqCntPie2Params,
     objectUnqCntTable1TodayParams,objectUnqCntTable1YesterdayParams,objectUnqCntTable1OneWeekParams,
     objectUnqCntTable2TodayParams,objectUnqCntTable2YesterdayParams,objectUnqCntTable2OneWeekParams,
@@ -320,6 +340,10 @@ const AccessRoadDashboard = () => {
   })
   console.log('roadData')
   console.log(roadData)//진입
+
+  console.log('realTimeObjectData')
+  console.log(realTimeObjectData)//
+  
   //console.log('objectUnqCnt1')
   //console.log(objectUnqCntPie1)//진입
   //console.log('objectUnqCnt2')
@@ -342,6 +366,11 @@ const AccessRoadDashboard = () => {
   //console.log('objectUnqCntMovingDirection')
   //console.log(objectUnqCntMovingDirection)
 
+  //console.log('objectUnqCntVehicleDirectionTime')
+  //console.log(objectUnqCntVehicleDirectionTime)
+
+  //console.log('objectUnqCntMovingDirectionTime')
+  //console.log(objectUnqCntMovingDirectionTime)
 
   const handleRadioChange = (e) => {
     //alert(e.target.value)
@@ -394,11 +423,11 @@ const AccessRoadDashboard = () => {
     console.log('찾은 road데이터')
     console.log(findRoadData)
 
-    setRoadName(findRoadData.name)
-    setRoadStreamUrl(findRoadData.detector?.stream_url) 
+    setRoadName(findRoadData?.name)
+    setRoadStreamUrl(findRoadData?.detector.stream_url) 
     
-    const lat = findRoadData.detector?.lat || "";
-    const lng = findRoadData.detector?.lng || "";
+    const lat = findRoadData?.detector.lat || "";
+    const lng = findRoadData?.detector.lng || "";
 
     setDetectorLat(lat);  // Lat 업데이트
     setDetectorLng(lng);  // Lng 업데이트
@@ -465,10 +494,34 @@ const AccessRoadDashboard = () => {
     return () => olMap.setTarget(null);
   }, [roadData]);
   
+  //real time object UseEffect
+  useEffect(()=>{
+
+    if(realTimeObjectData == null)
+      return
+
+    const {data:realTimeOjbectDataArray}=realTimeObjectData
+
+    setTrafficPosData(realTimeOjbectDataArray)
+
+  },[realTimeObjectData])
+
+  //이동류별 차종 교통량
+  //objectUnqCntVehicleDirectionTime,
+  //시간별 이동류 교통량 그래프
+  //objectUnqCntMovingDirectionTime
+
+  useEffect(()=>{
+    setObjectUnqCntDirectionTimeParams("")
+    setObjectUnqCntVehicleDirectionTimeParams("")
+  },[roadData])
 
   useEffect(()=>{
     //useNavigate(`/dashboard/accessroad?site_id=${site_id}&road_id=${road_id}`)
   },[roadId])
+
+  //리얼타임 데이터 뽑기
+  const { data: realTimeObjectArrayData } = realTimeObjectData || {};
 
   //파이차트 데이터 뽑기
   const { data: incoming } = objectUnqCntPie1 || {}; // Destructure data from objectUnqCnt1 - incoming data
@@ -760,6 +813,51 @@ const seriesMovingInOutTime = [
   },
 ];
 
+//이동류별 차종 교통량 데이터
+const seriesVehicleTypeTime = [
+  {
+    name: "승용차",
+    data: [60, 72, 80, 60],
+  },
+  {
+    name: "오토바이",
+    data: [100, 12, 14, 16],
+  },
+  {
+    name: "버스",
+    data: [60, 120, 14, 16],
+  },
+  {
+    name: "트럭",
+    data: [5, 19, 14, 16],
+  },
+  {
+    name: "승합차",
+    data: [5, 19, 74, 90],
+  },
+  {
+    name: "자전거",
+    data: [50, 19, 74, 90],
+  },
+  {
+    name: "대형 트럭",
+    data: [50, 47, 24, 90],
+  },
+  {
+    name: "기타",
+    data: [50, 47, 24, 90],
+  },
+];
+
+//
+const seriesMovementTime = [
+  { name: "Straight", data: [5, 10, 15, 20, 12, 14, 18] },
+  { name: "Left turn", data: [8, 14, 10, 16, 18, 22, 20] },
+  { name: "Right turn", data: [6, 12, 8, 14, 16, 18, 19] },
+  { name: "U-turn", data: [4, 8, 6, 10, 12, 14, 13] },
+  { name: "LOS", data: [18, 14, 16, 22, 24, 20, 21] }, // Garis tambahan untuk Level of Service
+];
+
 //console.log(seriesMovingInOutTime);
 //const [checkData,setCheckData]=useState(movingInOutGraphTemp)
 
@@ -797,8 +895,8 @@ const seriesMovingInOutTime = [
                       src={ImgOneWay}
                       alt=""
                       className="object-cover w-full h-full overflow-hidden"
-                    /> */}
-                    <AccessRoadCanvas trafficPosData={trafficPosData || []}></AccessRoadCanvas>
+                    /> */} 
+                    <AccessRoadCanvas trafficPosData={ realTimeObjectData?.data || [] }></AccessRoadCanvas>
                   </div>
                   <div className="_boxFilterRadio flex-1 h-[calc(100%-35px)] p-[10px] bg-[#171A1C] overflow-hidden">
                     <div className="w-full flex flex-row items-center justify-between">
@@ -1050,7 +1148,7 @@ const seriesMovingInOutTime = [
                   </span>
                 </div>
                 <div className="_containerStatisticITrafficeByVehicle overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                  <TrafficeByVehicleTypeStatistic />
+                  <TrafficeByVehicleTypeStatistic series={seriesVehicleTypeTime}/>
                 </div>
               </section>
 
@@ -1061,7 +1159,7 @@ const seriesMovingInOutTime = [
                   </span>
                 </div>
                 <div className="_containerStatisticITrafficeByVehicle overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                  <TrafficeByMovementStatistic />
+                  <TrafficeByMovementStatistic series={seriesMovementTime}/>
                 </div>
               </section>
             </div>

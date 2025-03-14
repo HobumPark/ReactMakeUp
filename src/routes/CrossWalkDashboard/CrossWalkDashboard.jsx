@@ -419,9 +419,10 @@ const CrossWalkDashboard = () => {
 
     // State for the query parameters
      //접근로 정보 파라미터
-    const [siteRoadParams, setSiteRoadParams] = useState("");
+  const [siteRoadParams, setSiteRoadParams] = useState("");
   
-
+  const [realTimeObjectParams, setRealTimeObjectParams] = useState("");
+  
   //파이차트 1,2에 사용할 파라미터 parameters
   const [objectUnqCntPie1Params, setObjectUnqCntPie1Params] = useState("");
   const [objectUnqCntPie2Params, setObjectUnqCntPie2Params] = useState("");
@@ -445,6 +446,7 @@ const CrossWalkDashboard = () => {
   
   const [roadId, setRoadId] = useState(road_id); // Assuming `road_id` is passed as a prop or from context
   
+  /*
     const [trafficPosData, setTrafficPosData] = useState([
       {
       "vehicle_type": "301003",
@@ -462,6 +464,8 @@ const CrossWalkDashboard = () => {
       "yrelpos": -42.44
       }
     ])
+  */
+  const [trafficPosData, setTrafficPosData]=useState([])
   
 
     const today = new Date();
@@ -483,6 +487,8 @@ const CrossWalkDashboard = () => {
   const {
     //사이트 데이터 (사이트(횡단보도)-로드)
     roadData,
+    //리얼 타임 데이터
+    realTimeObjectData,
     //파이차트 데이터
     objectUnqCntPie1,objectUnqCntPie2,
     //테이블1 데이터
@@ -494,6 +500,7 @@ const CrossWalkDashboard = () => {
     trafficEventRecent
   }=useCrossWalkMgt({
     siteRoadParams,
+    realTimeObjectParams,
     objectUnqCntPie1Params,objectUnqCntPie2Params,
     objectUnqCntTable1TodayParams,objectUnqCntTable1YesterdayParams,objectUnqCntTable1OneWeekParams,
     objectUnqCntTable2TodayParams,objectUnqCntTable2YesterdayParams,objectUnqCntTable2OneWeekParams,
@@ -503,6 +510,8 @@ const CrossWalkDashboard = () => {
   console.log('roadData')
   console.log(roadData)//진입
 
+  console.log('realTimeObjectData')
+  console.log(realTimeObjectData)
   //console.log('objectUnqCntPie1')
   //console.log(objectUnqCntPie1)//
   //console.log('objectUnqCntPie2')
@@ -653,6 +662,12 @@ const CrossWalkDashboard = () => {
 
     setSiteRoadParams(`${site_id}`)
   }, [radioTimeValue]);
+
+  //디지털 트윈 parameters
+  useEffect(() => {
+  
+    setRealTimeObjectParams(`road_id=${road_id}&rotate=0&xoffset=0&yoffset=0`)
+  }, [radioTimeValue, roadId]);
 
   // 파이차트 1,2 파라미터 설정
     useEffect(() => {
@@ -1004,7 +1019,7 @@ const { data: boxDetectorFacilityListData } = boxDetectorFacilityList || {};
                       alt=""
                       className="object-cover w-full h-full overflow-hidden"
                     /> */}
-                    <CrossWalkCanvas trafficPosData={trafficPosData}></CrossWalkCanvas>
+                    <CrossWalkCanvas trafficPosData={realTimeObjectData?.data || []}></CrossWalkCanvas>
                   </div>
                   <div className="_boxFilterRadio flex-1 h-[calc(100%-35px)] p-[10px] bg-[#171A1C] overflow-hidden">
                     <div className="w-full flex flex-row items-center justify-between">

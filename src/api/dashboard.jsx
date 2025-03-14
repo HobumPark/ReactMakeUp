@@ -36,6 +36,16 @@ export const fetchObjectUnqCnt= async (params = "") => {
     return await reqGet(url);
 };
 
+export const fetchObjectUnqCntVehicleDirectionTime= async (params = "") => {
+    const url = `${URLS.BACK_DSH}${APIS.objectUnqCntVehicleDirectionTime(params)}`;
+    return await reqGet(url);
+};
+
+export const fetchObjectUnqCntDirectionTime= async (params = "") => {
+    const url = `${URLS.BACK_DSH}${APIS.objectUnqCntDirectionTime(params)}`;
+    return await reqGet(url);
+};
+
 export const fetchObjectUnqCntRoad= async (params = "") => {
     const url = `${URLS.BACK_DSH}${APIS.objectUnqCntRoad(params)}`;
     return await reqGet(url);

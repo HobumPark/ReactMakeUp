@@ -2,41 +2,6 @@ import React from "react";
 import Chart from "react-apexcharts";
 import "./TrafficeByVehicleTypeStatistic.css";
 
-const series = [
-  {
-    name: "승용차",
-    data: [60, 72, 80, 60],
-  },
-  {
-    name: "오토바이",
-    data: [100, 12, 14, 16],
-  },
-  {
-    name: "버스",
-    data: [60, 120, 14, 16],
-  },
-  {
-    name: "트럭",
-    data: [5, 19, 14, 16],
-  },
-  {
-    name: "승합차",
-    data: [5, 19, 74, 90],
-  },
-  {
-    name: "자전거",
-    data: [50, 19, 74, 90],
-  },
-  {
-    name: "대형 트럭",
-    data: [50, 47, 24, 90],
-  },
-  {
-    name: "기타",
-    data: [50, 47, 24, 90],
-  },
-];
-
 const options = {
   chart: {
     type: "bar",
@@ -90,7 +55,7 @@ const options = {
   },
 };
 
-const TrafficeByVehicleTypeStatistic = () => {
+const TrafficeByVehicleTypeStatistic = ({series}) => {
   return (
     <>
       <Chart

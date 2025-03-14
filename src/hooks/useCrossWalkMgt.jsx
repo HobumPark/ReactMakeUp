@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchObjectUnqCnt, fetchTrafficEventRecent} from "../api/dashboard";
-import { fetchObjectCntMovingDirectionTime, fetchSiteRoadDetector } from "../api/crossroad.js";
+import { fetchObjectCntMovingDirectionTime, fetchSiteRoadDetector, realTimeObject } from "../api/crossroad.js";
 import { fetchBoxDetectorFacilityList } from "../api/box-detector-facility.jsx";
 
 const useAccessRoadMgt = ( {
   siteRoadParams,
+  realTimeObjectParams,
   objectUnqCntPie1Params,objectUnqCntPie2Params,
   objectUnqCntTable1TodayParams,objectUnqCntTable1YesterdayParams,objectUnqCntTable1OneWeekParams,
   objectUnqCntTable2TodayParams,objectUnqCntTable2YesterdayParams,objectUnqCntTable2OneWeekParams,
@@ -19,6 +20,16 @@ const useAccessRoadMgt = ( {
     cacheTime: 1000 * 60 * 10,
     enabled: !!siteRoadParams
   });
+
+  //디지털 트윈
+  const { data: realTimeObjectData} = useQuery({
+    queryKey: ["realTimeObjectParams", realTimeObjectParams],
+    queryFn: () => realTimeObject(realTimeObjectParams),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+    enabled: !!realTimeObjectParams
+  });
+  
 
   //파이차트1
   const { data: objectUnqCntPie1} = useQuery({
@@ -104,6 +115,8 @@ const useAccessRoadMgt = ( {
   return {
     //횡단보도 관련 데이터
     roadData,
+    //리얼타임 데이터
+    realTimeObjectData,
     //파이차트 1,2
     objectUnqCntPie1,
     objectUnqCntPie2,
