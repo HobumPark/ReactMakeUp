@@ -332,7 +332,7 @@ const AccessRoadDashboard = () => {
     setRadioTimeValue(e.target.value)
   };
 
-    // 클릭 이벤트를 감지하고 alert을 띄우는 함수
+    // 클릭 이벤트를 감지하고 alert을 띄우는 함수 + 호버효과
   const addSelectInteraction = (map) => {
     const select = new Select({
       condition: click, // 클릭 조건
@@ -351,6 +351,12 @@ const AccessRoadDashboard = () => {
         window.location.href=`/dashboard/accessroad?site_id=${site_id}&road_id=${roadId}`
         //roadId변경해서 useNavigate유발
       }
+    });
+
+     // 지도 상의 마커에 대한 pointermove 이벤트로 커서 변경
+    map.on('pointermove', (event) => {
+      const hit = map.hasFeatureAtPixel(event.pixel); // 마커 위에 마우스가 있는지 확인
+      document.body.style.cursor = hit ? 'pointer' : ''; // 마커 위에 있으면 손가락 모양, 아니면 기본 커서
     });
   };
 
@@ -406,6 +412,7 @@ const AccessRoadDashboard = () => {
           })
         );
 
+        
 
         return markerFeature; // 마커 객체 반환
       }
