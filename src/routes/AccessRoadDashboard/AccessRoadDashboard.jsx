@@ -52,6 +52,7 @@ import TrafficeByMovementStatistic from "../../components/AccessRoadStatistic/Tr
 import { formatFullDateTime, formatDateTime } from "../../utils/date";
 import useAccessRoadMgt from "../../hooks/useAccessRoadMgt";
 import { useLocation, useNavigate } from "react-router-dom";
+import { AccessRoadCanvas } from "../../components/CrossRoadSvgMap/AccessRoadCanvas";
 
 //공통 칼럼
 const commonColumns = [
@@ -176,6 +177,24 @@ const AccessRoadDashboard = () => {
   //이동류 교통량 그래프 parameters
 
   const [roadId, setRoadId] = useState(road_id); // Assuming `road_id` is passed as a prop or from context
+  // Assumptions x [-10, 350], y [-50, 50]
+  const [trafficPosData, setTrafficPosData] = useState([
+    {
+    "vehicle_type": "301003",
+    "xrelpos": 300.31,
+    "yrelpos": 0.769999999999982
+    },
+    {
+    "vehicle_type": "301001",
+    "xrelpos": 200.05,
+    "yrelpos": 30.44
+    },
+    {
+    "vehicle_type": "301005",
+    "xrelpos": 50.01,
+    "yrelpos": -42.44
+    }
+  ])
 
   useEffect(() => {
     //road정보 가져오기
@@ -776,11 +795,12 @@ const seriesMovingInOutTime = [
                 </div>
                 <div className="w-full h-full p-[10px] gap-[10px] flex flex-row  overflow-hidden">
                   <div className="w-[22%] flex  h-[calc(100%-35px)] overflow-hidden">
-                    <img
+                    {/* <img
                       src={ImgOneWay}
                       alt=""
                       className="object-cover w-full h-full overflow-hidden"
-                    />
+                    /> */}
+                    <AccessRoadCanvas trafficPosData={trafficPosData}></AccessRoadCanvas>
                   </div>
                   <div className="_boxFilterRadio flex-1 h-[calc(100%-35px)] p-[10px] bg-[#171A1C] overflow-hidden">
                     <div className="w-full flex flex-row items-center justify-between">

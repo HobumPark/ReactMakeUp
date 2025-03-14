@@ -53,10 +53,6 @@ import TrafficeByVehicle from "../../components/CrossRoadStatistic/TrafficeByVeh
 import EntryRate from "../../components/CrossRoadStatistic/EntryRate";
 import PieChartIn from "../../components/CrossWalkStatistic/PieChartIn";
 import PieChartOut from "../../components/CrossWalkStatistic/PieChartOut";
-import useCrossWalkMgt from "../../hooks/useCrossWalkMgt";
-import { useLocation, useNavigate } from "react-router-dom";
-import { formatFullDateTime, formatDateTime } from "../../utils/date";
-
 
 // tabulator exit
 
@@ -408,28 +404,6 @@ const CrossWalkDashboard = () => {
 
   const mapRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
-  const [siteRoadParams, setSiteRoadParams] = useState("");
-  //파이차트 1,2에 사용할 파라미터 parameters
-  const [objectUnqCntPie1Params, setObjectUnqCntPie1Params] = useState("");
-  const [objectUnqCntPie2Params, setObjectUnqCntPie2Params] = useState("");
-    
-  //테이블 1,2에 사용할 파라미터
-  //테이블1 - 오늘,어제,일주일전 parameters
-  const [objectUnqCntTable1TodayParams, setObjectUnqCntTable1TodayParams] = useState("");
-  const [objectUnqCntTable1YesterdayParams, setObjectUnqCntTable1YesterdayParams] = useState("");
-  const [objectUnqCntTable1OneWeekParams, setObjectUnqCntTable1OnedWeekParams] = useState("");
-
-  //테이블2 - 오늘,어제,일주일전 parameters
-  const [objectUnqCntTable2TodayParams, setObjectUnqCntTable2TodayParams] = useState("");
-  const [objectUnqCntTable2YesterdayParams, setObjectUnqCntTable2YesterdayParams] = useState("");
-  const [objectUnqCntTable2OneWeekParams, setObjectUnqCntTable2OneWeekParams] = useState("");
-
-  //사이트(횡단보도) 관련 - 함체/검지기/시설물 정보 parameters
-  const [boxDetectorFacilityListParams,setBoxDetectorFacilityListParams] = useState("")
-
-  //최근 발생 이벤트 50건 parameters
-  const [trafficEventRecentParams, setTrafficEventRecentParams] = useState("")
-
   const iconFeatureRef = useRef(null); // Simpan referensi ke ikon
   
 
@@ -977,11 +951,12 @@ const { data: boxDetectorFacilityListData } = boxDetectorFacilityList || {};
                 </div>
                 <div className="w-full h-full p-[10px] gap-[10px] flex flex-row  overflow-hidden">
                   <div className="w-[22%] flex  h-[calc(100%-35px)] overflow-hidden">
-                    <img
+                    {/* <img
                       src={ImgOneWay}
                       alt=""
                       className="object-cover w-full h-full overflow-hidden"
-                    />
+                    /> */}
+                    <CrossWalkCanvas trafficPosData={trafficPosData}></CrossWalkCanvas>
                   </div>
                   <div className="_boxFilterRadio flex-1 h-[calc(100%-35px)] p-[10px] bg-[#171A1C] overflow-hidden">
                     <div className="w-full flex flex-row items-center justify-between">
