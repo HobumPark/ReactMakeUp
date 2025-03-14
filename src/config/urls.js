@@ -65,6 +65,7 @@ export const APIS = {
     `/programs/lower/${programID}`,
   deleteProgram: (programID) =>
     `/programs/${programID}`,
+  //
   initialAuthorityUser: (filterParams) => `/authority/groups/users?${filterParams}`,
   authorityUserAssignInfo: (groupCode) => `/authority/groups/${groupCode}/users`,
   authorityUserInfo: (groupCode) => `/authority/groups/${groupCode}`,
@@ -72,6 +73,7 @@ export const APIS = {
   forgotPassword: '/forgot-password',
   updateProfileByUser :'/users/update-user',
   updateProfilePassword: '/users/update-password',
+  //
   unmappedSiteRoad: (filterParams) => `/unmapped-site-road?${filterParams}`,
   //box
   boxList: (filterParams) => `/box?${filterParams}`,
@@ -85,6 +87,8 @@ export const APIS = {
   deleteDetector: (dtID) =>`/detector/${dtID}`,
   createDetector: '/detector',
   updateDetector: (dtID) =>`/detector/${dtID}`,
+  //box-detector-facility
+  boxDetectorFacilityList: (siteId) =>`/box-detector-facility/${siteId}`,
   //site
   siteList:(filterParams) => `/site?${filterParams}`,
   detailSite: (siteId)=>`/site/${siteId}`,
@@ -114,8 +118,12 @@ export const APIS = {
   mapInitialView:'/map/initial-view',
   mapDisplayPOI: '/map/poi',
   siteRoad:(filterParams) => `/site-road?${filterParams}`,
+  //traffic event list
   trafficEventTime:(filterParams) => `/traffic-event-list/by-time?${filterParams}`,
+  trafficEventRecent:(filterParams) => `/traffic-event-list/recent?${filterParams}`,
+  //traffic event
   trafficEvent: (id) =>`/traffic-event/${id}`,
+  //traffic event count
   trafficEventCnt: (filterParams)=>`/traffic-event-cnt?${filterParams}`,
   objectUnqCnt:(filterParams) => `/object-unq-cnt/vehicle/total?${filterParams}`,
   objectUnqCntRoad:(filterParams) => `/object-unq-cnt/road-vehicle?${filterParams}`,

@@ -133,7 +133,7 @@ const AccessRoadDashboard = () => {
   const [detectorLon,setDetectorLng]=useState("")
 
   const [radioTimeValue, setRadioTimeValue] = useState("5"); // Initial time is 5 minutes
-
+  
   const today = new Date();
 
   // date time for pie chart
@@ -756,14 +756,14 @@ const seriesMovingInOutTime = [
             <section className="leftToproad flex flex-1 h-full bg-[#000] overflow-hidden rounded-[5px]">
               <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                 <span className="title3bold text-text-white">
-                  {roadName}
+                  {roadName || ""}
                 </span>
               </div>
 
               <div className="w-full h-full  overflow-hidden p-[10px]">
                 <div className="_containerVideoAccerssRoad w-full h-[calc(100%-35px)] bg-[#171A1C]">
                   {/* you can fill in container */}
-                  <img src={roadStreamUrl} alt="스트리밍" className="w-full h-full object-cover"/>
+                  <img src={roadStreamUrl || ""} alt="스트리밍" className="w-full h-full object-cover"/>
                 </div>
               </div>
             </section>
