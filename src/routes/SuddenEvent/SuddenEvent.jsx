@@ -243,7 +243,7 @@ const SuddenEvent = () => {
 
   // Update the queryParams whenever dateTime1 or dateTime2 changes
   useEffect(() => {
-    const timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}&page=${page}&size=${10}`;
+    const timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}&page=${page}&size=${rowsPerPage}`;
     const cntQuery = `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`;
     
     setQueryParamsTime(timeQuery);
@@ -479,9 +479,12 @@ const SuddenEvent = () => {
 
   const optionsTabulator = {
     debugInvalidOptions: true,
-    pagination: "remote",
+    pagination:true, //enable pagination
+    paginationMode:"remote", 
+    paginationSize: 10,
+    paginationInitialPage: 1,   
+    rowHeight: 41,
     movableRows: false,
-    resizableRows: false,
     index: "id",
     locale: "ko",
     langs: {
@@ -500,16 +503,16 @@ const SuddenEvent = () => {
         // ...
       },
     },
-    paginationSize: 10,
-    selectableRows: 1,
-    rowHeight: 41,
+    resizableRows: false,
     footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">전체 ${trafficEventTime?.data.total_cnt} 개</div>`,
-    ajaxURL: `${`${URLS.BACK_DSH}`}/traffic-event-list/by-time?${queryParamsTime}`,
+    ajaxURL: `${URLS.BACK_DSH}/traffic-event-list/by-time?${queryParamsTime}`,
     ajaxConfig: {
       method: "GET",
       credentials: "include",
     },  
     ajaxResponse: (url, params, response) => {
+      console.log('ajaxResponse')
+      console.log(response)
       return {
         data: response.data.items,
         last: response.data.total_pages
@@ -664,9 +667,10 @@ const SuddenEvent = () => {
   }
 
   useEffect(() => {
+      console.log('useEffect queryParamsTime');
       console.log(queryParamsTime);
       if (tbRef.current) {
-          tbRef.current.setData(`${`${URLS.BACK_DSH}`}/object?${queryParamsTime}`);
+          tbRef.current.setData(`${URLS.BACK_DSH}/traffic-event-list/by-time?${queryParamsTime}`);
       }
   }, [queryParamsTime]);
 
@@ -696,6 +700,14 @@ const SuddenEvent = () => {
     ]);
   }
 
+  useEffect(() => {
+      console.log('queryParamsTime table');
+      console.log(queryParamsTime);
+      if (tbRef.current) {
+        console.log('setTableData');
+          tbRef.current.setData(`${`${URLS.BACK_DSH}`}/object?${queryParamsTime}`);
+      }
+  }, [queryParamsTime]);
 
   return (
     <>
@@ -779,25 +791,31 @@ const SuddenEvent = () => {
 
         <ContainerCard>
           <ReactTabulator
-            data={trafficEventTime?.data.items || []}
+            paginationCounter={true}
             columns={suddenEventTabulator}
             layout={"fitColumns"}
             className="tabulator-custom w-full "
-            paginationMode="remote"
-            total={trafficEventTime?.data.total_cnt || 100}
             options={optionsTabulator}
+            onRef={(r) => {
+              tbRef.current = r.current;
+            }}
             events={{
-              tableBuilt: () => {
-                  tbRef.current.setSort("timestamp", "desc"); 
-              },
-              dataLoaded: function (data) {
-                console.log('dataLoaded', data);
-              },
-              pageLoaded: (pageNumber) => {
-                console.log("Current Page:", pageNumber);
-                console.log("Max Page:", tbRef.current.getPageMax()); // Logs the max pages after the page is loaded
-                  }
-              }}
+            tableBuilt: () => {
+                tbRef.current.setSort("timestamp", "desc"); 
+            },
+            dataLoaded: function (data) {
+              console.log('dataLoaded', data);
+            },
+            pageLoaded: (pageNumber) => {
+              console.log('pageLoaded')
+              console.log("Current Page:", pageNumber);
+             
+              //const timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}&page=${pageNumber}&size=${rowsPerPage}`;
+              //setPage(pageNumber)
+              //setQueryParamsTime(timeQuery);
+              console.log("Max Page:", tbRef.current.getPageMax()); // Logs the max pages after the page is loaded
+                }
+            }}
           />
 
           <div className=" mt-[40px] flex flex-col border-[3px] border-[#E6E6E6] rounded-[3px] p-[10px]">

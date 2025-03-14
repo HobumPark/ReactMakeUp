@@ -52,6 +52,7 @@ import TrafficeByMovementStatistic from "../../components/AccessRoadStatistic/Tr
 import { formatFullDateTime, formatDateTime } from "../../utils/date";
 import useAccessRoadMgt from "../../hooks/useAccessRoadMgt";
 import { useLocation, useNavigate } from "react-router-dom";
+import { AccessRoadCanvas } from "../../components/CrossRoadSvgMap/AccessRoadCanvas";
 
 //공통 칼럼
 const commonColumns = [
@@ -97,8 +98,6 @@ const exitColumns  = [
 //승용차,오토바이,버스,트럭,승합차,자전거,대형트럭,기타
 //301001 301006 301005 301003 301002 301007 301004 301000
 
-
-
 const AccessRoadDashboard = () => {
   const radioOptions = [
     { id: "radio-5min", label: "5분", value: "5" },
@@ -133,7 +132,7 @@ const AccessRoadDashboard = () => {
   const [detectorLon,setDetectorLng]=useState("")
 
   const [radioTimeValue, setRadioTimeValue] = useState("5"); // Initial time is 5 minutes
-
+  
   const today = new Date();
 
   // date time for pie chart
@@ -176,6 +175,24 @@ const AccessRoadDashboard = () => {
   //이동류 교통량 그래프 parameters
 
   const [roadId, setRoadId] = useState(road_id); // Assuming `road_id` is passed as a prop or from context
+  // Assumptions x [-10, 350], y [-50, 50]
+  const [trafficPosData, setTrafficPosData] = useState([
+    {
+    "vehicle_type": "301003",
+    "xrelpos": 300.31,
+    "yrelpos": 0.769999999999982
+    },
+    {
+    "vehicle_type": "301001",
+    "xrelpos": 200.05,
+    "yrelpos": 30.44
+    },
+    {
+    "vehicle_type": "301005",
+    "xrelpos": 50.01,
+    "yrelpos": -42.44
+    }
+  ])
 
   useEffect(() => {
     //road정보 가져오기
@@ -332,7 +349,7 @@ const AccessRoadDashboard = () => {
     setRadioTimeValue(e.target.value)
   };
 
-    // 클릭 이벤트를 감지하고 alert을 띄우는 함수
+    // 클릭 이벤트를 감지하고 alert을 띄우는 함수 + 호버효과
   const addSelectInteraction = (map) => {
     const select = new Select({
       condition: click, // 클릭 조건
@@ -351,6 +368,12 @@ const AccessRoadDashboard = () => {
         window.location.href=`/dashboard/accessroad?site_id=${site_id}&road_id=${roadId}`
         //roadId변경해서 useNavigate유발
       }
+    });
+
+     // 지도 상의 마커에 대한 pointermove 이벤트로 커서 변경
+    map.on('pointermove', (event) => {
+      const hit = map.hasFeatureAtPixel(event.pixel); // 마커 위에 마우스가 있는지 확인
+      document.body.style.cursor = hit ? 'pointer' : ''; // 마커 위에 있으면 손가락 모양, 아니면 기본 커서
     });
   };
 
@@ -406,6 +429,7 @@ const AccessRoadDashboard = () => {
           })
         );
 
+        
 
         return markerFeature; // 마커 객체 반환
       }
@@ -749,14 +773,14 @@ const seriesMovingInOutTime = [
             <section className="leftToproad flex flex-1 h-full bg-[#000] overflow-hidden rounded-[5px]">
               <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                 <span className="title3bold text-text-white">
-                  {roadName}
+                  {roadName || ""}
                 </span>
               </div>
 
               <div className="w-full h-full  overflow-hidden p-[10px]">
                 <div className="_containerVideoAccerssRoad w-full h-[calc(100%-35px)] bg-[#171A1C]">
                   {/* you can fill in container */}
-                  <img src={roadStreamUrl} alt="스트리밍" className="w-full h-full object-cover"/>
+                  <img src={roadStreamUrl || ""} alt="스트리밍" className="w-full h-full object-cover"/>
                 </div>
               </div>
             </section>
@@ -769,11 +793,12 @@ const seriesMovingInOutTime = [
                 </div>
                 <div className="w-full h-full p-[10px] gap-[10px] flex flex-row  overflow-hidden">
                   <div className="w-[22%] flex  h-[calc(100%-35px)] overflow-hidden">
-                    <img
+                    {/* <img
                       src={ImgOneWay}
                       alt=""
                       className="object-cover w-full h-full overflow-hidden"
-                    />
+                    /> */}
+                    <AccessRoadCanvas trafficPosData={trafficPosData || []}></AccessRoadCanvas>
                   </div>
                   <div className="_boxFilterRadio flex-1 h-[calc(100%-35px)] p-[10px] bg-[#171A1C] overflow-hidden">
                     <div className="w-full flex flex-row items-center justify-between">
