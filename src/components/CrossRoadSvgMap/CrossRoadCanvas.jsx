@@ -111,8 +111,8 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
         }
         function drawVehicle(ctx, vPos, compass){
             // Assumptions x [-10, 350], y [-50, 50]
-            const x = vPos["xrelpos"]/ 350 * 150;
-            const y = vPos["yrelpos"]/ 350 * 40;
+            const x = ((vPos["xrelpos"] + 10)/ 360 - 10/360) * roadLength;
+            const y = ((vPos["yrelpos"] + 50)/ 100 - 50/100) * 70;
             console.log(x,y)
             const type = vPos['vehicle_type'];
             let startMatrix = matrix([0,0])
