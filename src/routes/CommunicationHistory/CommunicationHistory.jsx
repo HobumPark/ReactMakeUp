@@ -241,6 +241,8 @@ const CommunicationHistory = () => {
       credentials: "include",
     },  
     ajaxResponse: (url, params, response) => {
+      console.log(params);
+      
       return {
         data: response.data.items,
         last: response.data.total_pages
@@ -251,6 +253,12 @@ const CommunicationHistory = () => {
     },
     ajaxURLGenerator: function (url, config, params) {
       let myUrl = url;
+
+      let page = params['page'];
+      let size = params['size'];
+      if (page) {
+        myUrl += `&page=${page}&size=${size || 10}`;
+      }
       
       if (params['sort'].length > 0) {
         let field = params['sort'][0]['field'];
@@ -264,7 +272,6 @@ const CommunicationHistory = () => {
     sortMode:"remote"
 
   };
-  console.log(tbRef.current);
   
 
   

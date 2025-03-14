@@ -8,7 +8,7 @@ import View from "ol/View";
 import { Tile as TileLayer } from "ol/layer";
 import { OSM } from "ol/source";
 import BingMaps from 'ol/source/BingMaps';  
-
+import { XYZ } from "ol/source";
 import { boundingExtent } from "ol/extent";
 import Cluster from "ol/source/Cluster";
 import { Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
@@ -165,7 +165,8 @@ const MainDashboard = () => {
       : "";
     const typeKeys = Object.keys(selectBtnEvent).filter((key) => !selectBtnEvent[key]);
     const resultSelect = typeKeys.length > 0 ? `&type=${typeKeys.join("&type=")}` : "";
-    const result = resultInput + resultSelect;
+    const size = '&size=100'
+    const result = resultInput + resultSelect + size;
     setTrafficEventParams(result);
   };
 
@@ -189,8 +190,8 @@ const MainDashboard = () => {
   const cardDataEvent = (trafficEventTimeData?.items?.length > 0 
     ? trafficEventTimeData.items.map((event) => ({
         customCard: eventTypeColorMap[event.type_code] || "border-[#000000]",
-        title: `${event.site_name} ${event.road_name} / ${event.vehicle_type}`,
-        subtitle: `${event.lane_direction} / ${event.lane_moving_direction}`,
+        title: `${event.site_name} ${event.road_name}`,
+        subtitle: `${event.vehicle_type} / ${event.lane_direction} / ${event.lane_moving_direction}`,
         date: event.timestamp,
         data: event
       }))
@@ -215,8 +216,6 @@ const MainDashboard = () => {
     setPoiItem(updatedPoiData);
   }, [isHidden, mapDisplay]); 
 
-console.log(poiItem);
-console.log(isHidden);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -438,6 +437,7 @@ console.log(isHidden);
     // **Layer Clustering**
     const clusterLayer = new VectorLayer({
       source: clusterSource,
+      zIndex: 100,
       style: function (feature) {
         const clusteredFeatures = feature.get("features");
         const size = clusteredFeatures.length;
@@ -483,9 +483,16 @@ console.log(isHidden);
           const extent = boundingExtent(
             clusteredFeatures.map((f) => f.getGeometry().getCoordinates())
           );
-          olMap.getView().fit(extent, { duration: 1000, padding: [50, 50, 50, 50] });
+          const minZoom = 100; 
+
+          olMap.getView().fit(extent, { 
+            duration: 1000, 
+            padding: [200, 200, 200, 200], 
+            maxZoom: minZoom 
+          });
+
     
-          isClusterClicked = true; // Tandai bahwa cluster sudah diklik
+          isClusterClicked = true; 
           return true; // Menghentikan iterasi
         }
       });
@@ -519,7 +526,11 @@ console.log(isHidden);
         }
       });
     });
-
+    poiLayer.setVisible(olMap.getView().getZoom() > 14);
+    olMap.on("moveend", function () {
+      poiLayer.setVisible(olMap.getView().getZoom() > 14);
+    });
+    
     olMapRef.current = olMap;
 
     return () => {
@@ -651,7 +662,7 @@ console.log(isHidden);
     const cardData = site.roads && site.roads.length > 0
     ? site.roads.map((road) => ({
         id: `ACCID${road.road_id}`,
-        title: `${road.incoming_compass} / ${road.outgoing_compass} / ${road.incoming_lane_cnt} / ${road.outgoing_lane_cnt}`,
+        title: `${t(road.incoming_compass)} / ${t(road.outgoing_compass)} / ${road.incoming_lane_cnt} / ${road.outgoing_lane_cnt}`,
         subtitle: road.name,
         borderStyle: borderStyle,
       }))
@@ -850,7 +861,7 @@ console.log(isHidden);
                     <div key={id} className="w-full">
                       {/* Accordion Header */}
                       <div
-                        className="flex flex-row w-full justify-between items-center bg-[#404953] border border-[#455665] py-[8px] px-[10px] rounded-[5px]"
+                        className="flex flex-row w-full justify-between items-center bg-[#404953] border border-[#455665] py-[8px] px-[10px] rounded-[5px]  whitespace-nowrap"
                         onClick={() => toggleAccordion(id)}
                       >
                         <div className="flex flex-row w-full items-center gap-[8px]">

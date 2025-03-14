@@ -49,7 +49,6 @@ export const handleErrorCode = (errCode) => {
     isStringify = true,
     fetchOptions = {}
   ) => {
-
     return await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

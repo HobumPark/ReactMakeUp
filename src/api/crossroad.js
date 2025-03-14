@@ -22,6 +22,6 @@ export const fetchObjectCntMovingDirectionTime = async (params = "") => {
 };
 
 export const realTimeObject = async (params = "") => {
-    const url = `${URLS.BACK_DSH}${APIS.realTimeObject(params)}`;
+    const url = `${URLS.rl}${APIS.realTimeObject(params)}`;
     return await reqGet(url);
 };

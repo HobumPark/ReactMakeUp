@@ -3,8 +3,6 @@ import Chart from "react-apexcharts";
 import "./TrafficeByDirection.css";
 
 const TrafficeByDirection = ({data}) => {
-  console.log(data);
-
   const getMaxValue = (data) => {
     const values = [
       ...data.map(item => item["103001"]), 
