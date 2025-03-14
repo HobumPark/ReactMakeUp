@@ -129,9 +129,13 @@ export const APIS = {
   objectUnqCntRoad:(filterParams) => `/object-unq-cnt/road-vehicle?${filterParams}`,
   //Crossroad 
   siteRoadDetector: (id) =>`/site-road-detector/${id}`,
+  //object unq cnt
   objectCntCompass:(filterParams) => `/object-unq-cnt/compass/total?${filterParams}`,
   objectCntCompassTime:(filterParams) => `/object-unq-cnt/compass/time-series?${filterParams}`,
   objectCntMovingDirectionTime:(filterParams) => `/object-unq-cnt/moving-direction/time-series?${filterParams}`,
+  objectCntVehicleDirectionTime:(filterParams) => `/object-unq-cnt/vehicle-direction/time-series?${filterParams}`,
+  objectCntDirectionTime:(filterParams) => `/object-unq-cnt/direction/time-series?${filterParams}`,
+  //real time object position
   realTimeObject:(filterParams) => `/real-time-object?${filterParams}`,
   //Equipment Info 
   boxStatus: (id) =>`/box-status/${id}`,
