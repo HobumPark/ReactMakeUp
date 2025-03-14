@@ -5,8 +5,7 @@ import Draggable from "react-draggable";
 
 const DbVideoModal = ({onClose, data, currentPage}) => {
   console.log(data);
-  
-  const modalRef = useRef(null);
+  const nodeRef = useRef(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [windowSize, setWindowSize] = useState({
     width: 1543,
@@ -21,9 +20,9 @@ const DbVideoModal = ({onClose, data, currentPage}) => {
 
   return (
     <>
-    <Draggable>
+    <Draggable nodeRef={nodeRef}>
    <section
-        ref={modalRef}
+        ref={nodeRef}
         className={`_dbVideoModalContainer flex flex-col bg-center bg-blue-800 overflow-hidden absolute z-10 ${
                 !isFullScreen 
                     ? "w-[286px] h-[200px] top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2" // Not fullscreen

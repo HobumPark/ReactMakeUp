@@ -15,6 +15,8 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Style from "ol/style/Style";
 import Icon from "ol/style/Icon";
+import Select from 'ol/interaction/Select'; // Select interaction 추가
+import { click } from 'ol/events/condition'; // 클릭 조건 추가
 
 import ImgOneWay from "../../assets/icon/img-one-way.svg";
 
@@ -31,6 +33,7 @@ import IconHeavyTruck from "../../assets/icon/icon-db-heavy-truck.svg";
 import IconUnknown from "../../assets/icon/icon-db-unknown.svg";
 
 import IconDetector from "../../assets/icon/icon-db-detector.svg";
+import IconDetectorActive from "../../assets/icon/icon-db-detector-active.svg";
 
 import imgMaps from "../../assets/icon/img-lane-maps.svg";
 
@@ -48,7 +51,7 @@ import TrafficeByVehicleTypeStatistic from "../../components/AccessRoadStatistic
 import TrafficeByMovementStatistic from "../../components/AccessRoadStatistic/TrafficeByMovementStatistic";
 import { formatFullDateTime, formatDateTime } from "../../utils/date";
 import useAccessRoadMgt from "../../hooks/useAccessRoadMgt";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from "react-router-dom";
 import { AccessRoadCanvas } from "../../components/CrossRoadSvgMap/AccessRoadCanvas";
 
 //공통 칼럼
@@ -348,6 +351,34 @@ const AccessRoadDashboard = () => {
     setRadioTimeValue(e.target.value)
   };
 
+    // 클릭 이벤트를 감지하고 alert을 띄우는 함수 + 호버효과
+  const addSelectInteraction = (map) => {
+    const select = new Select({
+      condition: click, // 클릭 조건
+      toggleCondition: click,  // 마커 클릭 시 선택 상태가 계속 유지되도록 설정
+    });
+
+    map.addInteraction(select);
+
+    select.on('select', function (e) {
+      const selectedFeature = e.selected[0];
+      if (selectedFeature) {
+        // 클릭한 마커의 road_id를 alert로 출력
+        //alert(`Marker with road_id: ${selectedFeature.get('id')} clicked`);
+        const roadId=selectedFeature.get('id')
+        setRoadId(roadId)
+        window.location.href=`/dashboard/accessroad?site_id=${site_id}&road_id=${roadId}`
+        //roadId변경해서 useNavigate유발
+      }
+    });
+
+     // 지도 상의 마커에 대한 pointermove 이벤트로 커서 변경
+    map.on('pointermove', (event) => {
+      const hit = map.hasFeatureAtPixel(event.pixel); // 마커 위에 마우스가 있는지 확인
+      document.body.style.cursor = hit ? 'pointer' : ''; // 마커 위에 있으면 손가락 모양, 아니면 기본 커서
+    });
+  };
+
   //접근로 정보 useEffect
   useEffect(() => {
     if (!mapRef.current) return;
@@ -355,169 +386,91 @@ const AccessRoadDashboard = () => {
     if(roadData == null)//데이터가 없으면 종료
       return
 
-  //접근로 데이터 뽑기
-  //접근로 이름, 스트림url
-  //사이트 관련 접근로 배열에서 특정 접근로 찾기
-  const { data: { roads } = {} } = roadData || {}; // roadData에서 data->roads 추출
+    //접근로 데이터 뽑기
+    //접근로 이름, 스트림url
+    //사이트 관련 접근로 배열에서 특정 접근로 찾기
+    const { data: { roads } = {} } = roadData || {}; // roadData에서 data->roads 추출
 
-  const findRoadData = roads?.find(item => item.road_id == road_id) || null;
+    const findRoadData = roads?.find(item => item.road_id == road_id) || null;
 
-  console.log('찾은 road데이터')
-  console.log(findRoadData)
+    console.log('찾은 road데이터')
+    console.log(findRoadData)
 
-  setRoadName(findRoadData.name)
-  setRoadStreamUrl(findRoadData.detector?.stream_url) 
-  
-  const lat = findRoadData.detector?.lat || "";
-  const lng = findRoadData.detector?.lng || "";
-
-  setDetectorLat(lat);  // Lat 업데이트
-  setDetectorLng(lng);  // Lng 업데이트
-
-  // roads 배열에서 각 도로의 detector 정보에서 위도(lat), 경도(lng)를 추출하여 새로운 배열을 생성
-  console.log('detectorList1')
-  setRoads(roads)
-  const markerList = roads.map((data) => {
-    const { detector } = data; // 데이터에서 detector 객체 추출
-    //const road_id = data.road_id
-    const lat = detector?.lat; // 위도(lat)
-    const lng = detector?.lng; // 경도(lon)
+    setRoadName(findRoadData.name)
+    setRoadStreamUrl(findRoadData.detector?.stream_url) 
     
-    if (lat && lng) {
-      // 마커 표시하기
-      const markerFeature = new Feature({
-        geometry: new Point(fromLonLat([lng, lat])), // 마커의 위치 (경도, 위도)
-      });
-  
-      markerFeature.setStyle(
-        new Style({
-          image: new Icon({
-            src: IconDetector, // 사용할 마커 아이콘 URL
-            scale: 1, // 아이콘 크기 조절
-          }),
-        })
-      );
-  
-      return markerFeature; // 마커 객체 반환
-    }
-  
-    return null; // lat 또는 lng가 없으면 null 반환
-  }).filter(Boolean); // null을 필터링하여 실제 마커만 남김
+    const lat = findRoadData.detector?.lat || "";
+    const lng = findRoadData.detector?.lng || "";
+
+    setDetectorLat(lat);  // Lat 업데이트
+    setDetectorLng(lng);  // Lng 업데이트
+
+    // roads 배열에서 각 도로의 detector 정보에서 위도(lat), 경도(lng)를 추출하여 새로운 배열을 생성
+    console.log('detectorList1')
+    setRoads(roads)
+    const markerList = roads.map((data) => {
+      const { detector } = data; // 데이터에서 detector 객체 추출
+      const maker_road_id = data.road_id
+      const lat = detector?.lat; // 위도(lat)
+      const lng = detector?.lng; // 경도(lon)
+      
+      if (lat && lng) {
+        // 마커 표시하기
+        const markerFeature = new Feature({
+          id:data.road_id,
+          geometry: new Point(fromLonLat([lng, lat])), // 마커의 위치 (경도, 위도)
+        });
+        
+        
+        markerFeature.setStyle(
+          new Style({
+            image: new Icon({
+              src: maker_road_id==road_id? IconDetectorActive:IconDetector, // 사용할 마커 아이콘 URL
+              scale: 1, // 아이콘 크기 조절
+            }),
+          })
+        );
+
+        
+
+        return markerFeature; // 마커 객체 반환
+      }
+    
+      return null; // lat 또는 lng가 없으면 null 반환
+    }).filter(Boolean); // null을 필터링하여 실제 마커만 남김
 
 
-  // ✅ Inisialisasi peta
-  const olMap = new Map({
-    target: mapRef.current,
-    layers: [
-      new TileLayer({
-        source: new OSM(),
-      }),
-      // 여기에서 마커 레이어를 추가
-      new VectorLayer({
-        source: new VectorSource({
-          features: markerList // 여기에 마커를 추가할 예정
+    // ✅ Inisialisasi peta
+    const olMap = new Map({
+      target: mapRef.current,
+      layers: [
+        new TileLayer({
+          source: new OSM(),
         }),
+        // 여기에서 마커 레이어를 추가
+        new VectorLayer({
+          source: new VectorSource({
+            features: markerList // 여기에 마커를 추가할 예정
+          }),
+        }),
+      ],
+
+      //126.9762, 37.5647
+      view: new View({
+        center: fromLonLat([lng, lat]),
+        zoom: 17,
       }),
-    ],
+    });
 
-    //126.9762, 37.5647
-    view: new View({
-      center: fromLonLat([lng, lat]),
-      zoom: 17,
-    }),
-  });
-
-
-
-
-    // setTimeout(() => {
-    //   // Ambil elemen kontrol zoom
-    //   const zoomControl = document.querySelector(".ol-zoom");
-    
-    //   if (zoomControl) {
-    //     // ✅ Hapus semua tombol ikon lama sebelum menambahkan yang baru
-    //     zoomControl.querySelectorAll(".custom-icon-button").forEach((btn) => btn.remove());
-    
-    //     const icons = [
-    //       {
-    //         src: IconReturn,
-    //         title: "return",
-    //         action: () => alert("Arrow clicked!"),
-    //       },
-    //       {
-    //         src: IconDefault,
-    //         title: "default",
-    //         action: () => alert("Home clicked!"),
-    //       },
-    //       {
-    //         src: IconRoadMap,
-    //         title: "Location Icon",
-    //         action: () => alert("Location clicked!"),
-    //       },
-    //       {
-    //         src: IconDarkMap,
-    //         title: "Dark MAp",
-    //         action: () => alert("Settings clicked!"),
-    //       },
-    //       {
-    //         src: IconSatelite,
-    //         title: "satelit",
-    //         action: () => alert("Settings clicked!"),
-    //       },
-    //     ];
-    
-    //     icons.forEach((iconData) => {
-    //       // Buat elemen tombol untuk setiap ikon
-    //       const newButton = document.createElement("button");
-    //       newButton.innerHTML = `<img src="${iconData.src}" alt="${iconData.title}" width="20" height="20">`;
-    //       newButton.className = "custom-icon-button";
-    //       newButton.title = iconData.title;
-    
-    //       // Tambahkan event click ke masing-masing tombol
-    //       newButton.onclick = iconData.action;
-    
-    //       // Masukkan ikon ke dalam kontrol zoom
-    //       zoomControl.appendChild(newButton);
-    //     });
-    //   }
-    // }, 100);
-    
-
-    
-
-    // iconFeature.setStyle(
-    //   new Style({
-    //     image: new Icon({
-    //       src: IconCrosswalk,
-    //       scale: 1,
-    //     }),
-    //   })
-    // );
-
-    // iconFeature2.setStyle(
-    //   new Style({
-    //     image: new Icon({
-    //       src: IconIntersection,
-    //       scale: 1,
-    //     }),
-    //   })
-    // );
-
-    // olMap.on("click", (event) => {
-    //   const feature = olMap.forEachFeatureAtPixel(
-    //     event.pixel,
-    //     (feature) => feature
-    //   );
-
-    //   if (feature) {
-    //     setShowModal(true); // Tampilkan modal saat ikon diklik
-    //   }
-    // });
-
+    addSelectInteraction(olMap);
 
     return () => olMap.setTarget(null);
   }, [roadData]);
   
+
+  useEffect(()=>{
+    //useNavigate(`/dashboard/accessroad?site_id=${site_id}&road_id=${road_id}`)
+  },[roadId])
 
   //파이차트 데이터 뽑기
   const { data: incoming } = objectUnqCntPie1 || {}; // Destructure data from objectUnqCnt1 - incoming data
@@ -1082,7 +1035,7 @@ const seriesMovingInOutTime = [
               <section className=" flex flex-1/6 h-[full] overflow-hidden bg-[#000] rounded-[5px]">
                 <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                   <span className="title3bold text-text-white">
-                    시간별 진입/진출 교통량
+                    시간별 유입/유출 교통량
                   </span>
                 </div>
                 <div className="_containerStatisticInOutTraffice overflow-hidden h-[calc(100%-30px)] p-[10px]">

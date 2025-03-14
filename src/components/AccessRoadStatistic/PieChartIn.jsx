@@ -5,6 +5,14 @@ const options = {
   chart: {
     type: "pie",
     background: "transparent",
+    events: {
+      mouseMove: function(event) {
+        event.target.style.cursor = 'pointer';  // 바 위에 마우스 있을 때 커서 포인터로 변경
+      },
+      mouseOut: function(event) {
+        event.target.style.cursor = 'default';  // 바를 벗어나면 기본 커서로 복원
+      }
+    }
   },
   labels: [
     "승용차",

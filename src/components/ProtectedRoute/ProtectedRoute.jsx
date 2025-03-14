@@ -34,11 +34,17 @@ const ProtectedRoutes = () => {
     kor: "관리 페이지",
     ind: "Halaman Manajemen",
   };
+  const titleDashboard = {
+    eng: "Main Dashboard",
+    kor: "대시보드",
+    ind: "Dasbor Utama",
+  };
 
   const initLang = async () => {
-    await fetchUserLanguage(); 
+    await fetchUserLanguage();
     setIsLanguageReady(true);
-    const title = titleMap[i18n.language]
+  
+    const title = isDashboard ? titleDashboard[i18n.language] : titleMap[i18n.language];
     document.title = title;
   };
 

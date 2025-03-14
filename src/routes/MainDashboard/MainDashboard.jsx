@@ -9,6 +9,9 @@ import { Tile as TileLayer } from "ol/layer";
 import { OSM } from "ol/source";
 import BingMaps from 'ol/source/BingMaps';  
 
+import { boundingExtent } from "ol/extent";
+import Cluster from "ol/source/Cluster";
+import { Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
 import { fromLonLat } from "ol/proj";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
@@ -61,6 +64,8 @@ import useObjectCnt from "../../hooks/useObjectCnt";
 const MainDashboard = () => {
   const {t} = useTranslation();
   const [POIData, setPOIData] = useState("");
+  const [isHidden, setIsHidden] = useState([]);
+  const [poiItem, setPoiItem] = useState([]);
   const today = new Date();
   const midnight = new Date(new Date().setHours(0, 0, 0, 0));
   const [dateTime] = useState({
@@ -100,6 +105,14 @@ const MainDashboard = () => {
   const trafficEventTimeData = trafficEventTime?.data;
   const objectUnqCntData = objectUnqCnt?.data;
   const objectUnqCntRoadData = objectUnqCntRoad?.data; 
+
+  useEffect(() => {
+    if (mapDisplay?.poi) {
+      setPoiItem(mapDisplay.poi);
+    }
+  }, [mapDisplay]); 
+
+
 
   const updateSiteRoadParams = () => {
     const resultInput = inputValue ? `input=${inputValue}` : "";
@@ -173,11 +186,11 @@ const MainDashboard = () => {
   };
   
   
-  const cardDataEvent = (trafficEventTimeData?.events?.length > 0 
-    ? trafficEventTimeData.events.map((event) => ({
+  const cardDataEvent = (trafficEventTimeData?.items?.length > 0 
+    ? trafficEventTimeData.items.map((event) => ({
         customCard: eventTypeColorMap[event.type_code] || "border-[#000000]",
         title: `${event.site_name} ${event.road_name} / ${event.vehicle_type}`,
-        subtitle: `${event.lane_direction} ${event.lane_moving_direction} / ${event.lane_number}`,
+        subtitle: `${event.lane_direction} / ${event.lane_moving_direction}`,
         date: event.timestamp,
         data: event
       }))
@@ -188,6 +201,22 @@ const MainDashboard = () => {
   
   const [showModal, setShowModal] = useState(false);
 
+  const togglePOIVisibility = (type) => {
+    if (isHidden.includes(type)) {
+      setIsHidden(isHidden.filter(item => item !== type));
+    } else {
+      setIsHidden([...isHidden, type]);
+    }
+  };
+  
+  
+  useEffect(() => {
+    const updatedPoiData = mapDisplay?.poi.filter((item) => !isHidden.includes(item.type));
+    setPoiItem(updatedPoiData);
+  }, [isHidden, mapDisplay]); 
+
+console.log(poiItem);
+console.log(isHidden);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -210,6 +239,11 @@ const MainDashboard = () => {
         visible: false,
         source: new OSM(),
       }),
+      canvasdark: new TileLayer({
+        title: "canvasdark",
+        visible: false,
+        source: new OSM(),
+      }),
       satellite: new TileLayer({
         title: "satellite",
         visible: false,
@@ -227,6 +261,7 @@ const MainDashboard = () => {
       value: Number("0.1"),
     });
     layerMap.osm.addFilter(enhanceOption);
+    layerMap.canvasdark.addFilter(enhanceOption);
 
     // alt black mode (30, 20, 10)
     // 'color' option - RGB4 ( Blue Dark =  50, 30, 0 )
@@ -239,6 +274,15 @@ const MainDashboard = () => {
       value: Number("1"),
     });
     layerMap.osm.addFilter(colorOption);
+    const blueOption = new Colorize();
+    blueOption.setFilter({
+      operation: "color",
+      red: Number("50"),
+      green: Number("30"),
+      blue: Number("0"),
+      value: Number("1"),
+    });
+    layerMap.canvasdark.addFilter(blueOption);
 
     // 'saturation' option => highlight lines on the land
     const saturationOption = new Colorize();
@@ -247,9 +291,12 @@ const MainDashboard = () => {
       value: Number("0.1"),
     });
     layerMap.osm.addFilter(saturationOption);
+    layerMap.canvasdark.addFilter(saturationOption);
+
 
     var invert_filter = new Colorize();
     layerMap.osm.addFilter(invert_filter);
+    layerMap.canvasdark.addFilter(invert_filter);
     invert_filter.setFilter("invert");
 
     const layers = [
@@ -257,6 +304,7 @@ const MainDashboard = () => {
       layerMap["road"],
       layerMap["canvaslight"],
       layerMap["satellite"],
+      layerMap["canvasdark"],
     ];
 
     // Map definition
@@ -322,7 +370,7 @@ const MainDashboard = () => {
           {
             src: IconDarkMap,
             title: "Dark Map",
-            action: () => changeLayer("osm"),
+            action: () => changeLayer("canvasdark"),
           },
           {
             src: IconSatelite,
@@ -354,37 +402,102 @@ const MainDashboard = () => {
       "box": IconBox               
     };
 
-    const features = mapDisplay?.poi?.map(item => {
+
+    const features = poiItem?.map(item => {
       const iconSrc = iconMapping[item.type] || IconDefault;  
-    const iconFeature = new Feature({
+      const iconFeature = new Feature({
         geometry: new Point(fromLonLat([item.lng, item.lat])),
-    });
-    
-    iconFeature.setStyle(
+      });
+
+      iconFeature.setStyle(
         new Style({
           image: new Icon({
             src: iconSrc,
-            scale: 1,
+            scale: 1 + (olMap.getView().getZoom() - 10) * 0.1,
           }),
         })
       );
+      
       iconFeature.setId(item.type);
       return iconFeature;
     });
 
-    const vectorLayer = new VectorLayer({
+
+    const view = olMap.getView();
+    const resolution = view.getResolution(); 
+    const distanceInMeters = 5000; 
+    const distanceInPixels = distanceInMeters / resolution; 
+
+    const clusterSource = new Cluster({
+      distance: distanceInPixels, 
       source: new VectorSource({
-        features: features,  
+        features: features,
       }),
     });
-    
-    olMap.addLayer(vectorLayer);
 
-    olMap.on('click', (event) => {
+    // **Layer Clustering**
+    const clusterLayer = new VectorLayer({
+      source: clusterSource,
+      style: function (feature) {
+        const clusteredFeatures = feature.get("features");
+        const size = clusteredFeatures.length;
+
+        if (size > 1) {
+          return new Style({
+            image: new CircleStyle({
+              radius: 50,
+              fill: new Fill({ color: "rgba(255, 0, 0, 2)" }),
+              stroke: new Stroke({ color: "#fff", width: 2 }),
+            }),
+            text: new Text({
+              text: size.toString(),
+              fill: new Fill({ color: "#fff" }),
+              stroke: new Stroke({ color: "#000", width: 2 }),
+              font: 'bold 25px Arial',
+            }),
+          });
+        } else {
+          return clusteredFeatures[0].getStyle();
+        }
+      },
+    });
+
+    const poiLayer = new VectorLayer({
+      source: new VectorSource({
+        features: features,
+      }),
+    });
+
+    olMap.addLayer(poiLayer);   
+    olMap.addLayer(clusterLayer);
+
+
+    olMap.on("click", (event) => {
+      let isClusterClicked = false;
+    
+      olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
+        const clusteredFeatures = feature.get("features");
+    
+        if (clusteredFeatures && clusteredFeatures.length > 1) {
+          // Jika fitur yang diklik adalah cluster, lakukan zoom-in
+          const extent = boundingExtent(
+            clusteredFeatures.map((f) => f.getGeometry().getCoordinates())
+          );
+          olMap.getView().fit(extent, { duration: 1000, padding: [50, 50, 50, 50] });
+    
+          isClusterClicked = true; // Tandai bahwa cluster sudah diklik
+          return true; // Menghentikan iterasi
+        }
+      });
+    
+      // Jika cluster diklik, hentikan event (hindari klik POI)
+      if (isClusterClicked) return;
+    
+      // Lanjutkan jika yang diklik bukan cluster
       olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
         const featureId = feature.getId();
-        const clickedItem = mapDisplay.poi?.find(item => item.type === featureId);
-        
+        const clickedItem = mapDisplay.poi?.find((item) => item.type === featureId);
+    
         if (clickedItem) {
           switch (clickedItem.type) {
             case "box":
@@ -396,13 +509,9 @@ const MainDashboard = () => {
             case "102002":
               window.open("/dashboard/crosswalk", "_blank", "width=800,height=600");
               break;
-            case "221001":
-              break;
-            case "221002":
-              break;
             case "detector":
               setPOIData(clickedItem);
-              setShowModal(true); 
+              setShowModal(true);
               break;
             default:
               alert("Unknown icon clicked!");
@@ -410,6 +519,7 @@ const MainDashboard = () => {
         }
       });
     });
+
     olMapRef.current = olMap;
 
     return () => {
@@ -418,15 +528,21 @@ const MainDashboard = () => {
         olMapRef.current = null; // Reset the map reference
       }
     };
-  }, [mapInitial, mapDisplay]);
+  }, [mapInitial, mapDisplay, poiItem]);
 
   const moveMapToPOI = (id) => {
     const mapEntry = mapDisplay?.poi?.find((entry) => entry.id === id);
     if (mapEntry) {
       const { lat, lng } = mapEntry;
+      console.log(id, lat, lng);
+      
       if (lat && lng) {
         olMapRef.current.getView().setCenter(fromLonLat([lng, lat]))
         olMapRef.current.getView().setZoom(6);
+        olMapRef.current.getView().animate({
+          center: fromLonLat([lng, lat]),
+          zoom: 17,
+        });
       } else {
         console.error("Invalid coordinates for the selected POI");
       }
@@ -520,6 +636,7 @@ const MainDashboard = () => {
         ? prev.filter((sectionId) => sectionId !== id)
         : [...prev, id]
     );
+ 
     moveMapToPOI(id);
   };
 
@@ -533,9 +650,9 @@ const MainDashboard = () => {
   
     const cardData = site.roads && site.roads.length > 0
     ? site.roads.map((road) => ({
-        id: road.road_id,
-        title: road.name,
-        subtitle: `${road.incoming_compass} / ${road.outgoing_compass}`,
+        id: `ACCID${road.road_id}`,
+        title: `${road.incoming_compass} / ${road.outgoing_compass} / ${road.incoming_lane_cnt} / ${road.outgoing_lane_cnt}`,
+        subtitle: road.name,
         borderStyle: borderStyle,
       }))
     : [];
@@ -543,7 +660,6 @@ const MainDashboard = () => {
     return {
       id: site.site_id,
       title: site.name,
-      subtitle: `Road Count: ${site.road_cnt}`,
       count: site.road_cnt,
       cardData: cardData,
     };
@@ -594,50 +710,50 @@ const MainDashboard = () => {
                   </span>
                 </div>
                 <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("102002")}>
                     <img src={LegendCrosswalk} alt="" />
-                    <span className="title3 text-[#4B3C3C]">횡단보도</span>
-                  </div>
-                  <div className="flex flex-row gap-[5px]">
+                    <span className={`title3 ${isHidden.includes('102002') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>횡단보도</span>
+                    </div>
+                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("102001")}>
                     <img src={LegendIntersection} alt="" />
-                    <span className="title3 text-[#4B3C3C]">교차로</span>
+                    <span className={`title3 ${isHidden.includes('102001') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>교차로</span>
                   </div>
                 </div>
               </div>
               <div className="bg-[#fff] w-fit h-full flex rounded-[4px] overflow-hidden">
-                <div className="flex items-center bg-[#212527] min-w-[60px] justify-center">
+                <div className="flex items-center bg-[#212527] min-w-[60px] justify-center" >
                   <span className="title3bold text-text-white text-center">
                     시설물
                   </span>
                 </div>
                 <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("221002")}>
                     <img src={LegendBillboard} alt="" />
-                    <span className="title3 text-[#4B3C3C]">전광판</span>
+                    <span className={`title3 ${isHidden.includes('221002') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>전광판</span>
                     <span className="title3 text-[#4B3C3C]">
                       ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.vms_error ?? 0}</span> /{" "}
                       <span>{mapDisplay?.cnt?.[0]?.vms_total ?? 0}</span> )
                     </span>
                   </div>
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("221001")}>
                     <img src={LegendSpeaker} alt="" />
-                    <span className="title3 text-[#4B3C3C]">전광판</span>
+                    <span className={`title3 ${isHidden.includes('221001') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>전광판</span>
                     <span className="title3 text-[#4B3C3C]">
                       ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.speaker_error ?? 0}</span> /{" "}
                       <span>{mapDisplay?.cnt?.[0]?.speaker_total ?? 0}</span> )
                     </span>
                   </div>
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("detector")}>
                     <img src={LegendSignal} alt="" />
-                    <span className="title3 text-[#4B3C3C]">레이더</span>
+                    <span className={`title3 ${isHidden.includes('detector') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>레이더</span>
                     <span className="title3 text-[#4B3C3C]">
                       ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.detector_error ?? 0}</span> /{" "}
                       <span>{mapDisplay?.cnt?.[0]?.detector_total ?? 0}</span> )
                     </span>
                   </div>
-                  <div className="flex flex-row gap-[5px]">
+                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("box")}>
                     <img src={LegendBox} alt="" />
-                    <span className="title3 text-[#4B3C3C]">함체</span>
+                    <span className={`title3 ${isHidden.includes('box') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>함체</span>
                     <span className="title3 text-[#4B3C3C]">
                       ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.box_error ?? 0}</span> /{" "}
                       <span>{mapDisplay?.cnt?.[0]?.box_total ?? 0}</span> )
@@ -722,7 +838,7 @@ const MainDashboard = () => {
                   <input
                     type="text"
                     className="input-db-text w-full col-span-2"
-                    placeholder="number event"
+                    placeholder="접근로명 / 접근로ID"
                     onKeyUp={handleSearch}
                     value={inputValue} 
                     onChange={(e) => setInputValue(e.target.value)}
@@ -875,7 +991,7 @@ const MainDashboard = () => {
             </div>
           </div>
 
-          {showModal && <DbVideoModal data={POIData} onClose={() => setShowModal(false)} />}
+          {showModal && <DbVideoModal data={POIData} currentPage={'main'} onClose={() => setShowModal(false)} />}
         </div>
       </section>
     </>
