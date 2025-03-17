@@ -8,9 +8,56 @@ import Motorcycle from "../../assets/crossroad/motorcycle.svg";
 import Truck from "../../assets/crossroad/truck.svg";
 import Van from "../../assets/crossroad/van.svg";
 import TrafficLight from "../../assets/crossroad/trafficLight.svg";
-export const CrossRoadCanvas = ({roads, trafficPosData}) => {
 
-    React.useEffect(() => {
+const cacheImages = async (srcArray) => {
+    const promises = srcArray.map((src) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => resolve(img);
+        img.onerror = (err) => reject(err);
+      });
+    });
+    return Promise.all(promises);
+  };
+
+export const CrossRoadCanvas = ({roads, trafficPosData}) => {
+    const canvasRef = useRef(null)
+    const [imageMap, setImageMap] = useState({
+        "301001": null,
+        "301002": null,
+        "301003": null,
+        "301004": null,
+        "301005": null,
+        "301006": null,
+        "301007": null,
+        'trafficLight': null,
+    })
+    
+    useEffect(() => {
+        const imageSources = [Car, Van, Truck, LongTruck, Bus, Motorcycle, Bicycle, TrafficLight];
+        const loadImages = async () => {
+          try {
+            const loadedImages = await cacheImages(imageSources);
+            const newImageMap = {};
+            newImageMap['301001'] = loadedImages[0];
+            newImageMap['301002'] = loadedImages[1];
+            newImageMap['301003'] = loadedImages[2];
+            newImageMap['301004'] = loadedImages[3];
+            newImageMap['301005'] = loadedImages[4];
+            newImageMap['301006'] = loadedImages[5];
+            newImageMap['301007'] = loadedImages[6];
+            // newImageMap['301008'] = loadedImages[7];
+            newImageMap['trafficLight'] = loadedImages[7];
+            setImageMap(newImageMap);
+          } catch (error) {
+            console.error('Error loading images:', error);
+          }
+        };
+        loadImages();
+    },[])
+
+    useEffect(() => {
          // In the middle of the canvas
         const w = 786
         const h = 555
@@ -27,6 +74,7 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
         const rightLineStart = add(startOfRoad, rightUnits)
         const rightLineEnd = add(endOfRoad, rightUnits)
         const typeToSvg = {
+            // "301000":
             "301001": Car,
             "301002": Van,
             "301003": Truck,
@@ -35,8 +83,17 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
             "301006": Motorcycle,
             "301007": Bicycle,
         }
+        const typeToColor = {
+            "301001": "#3F07E2",
+            "301002": "#AD00FF",
+            "301003": "#FFA500",
+            "301004":  "#FB5555",
+            "301005":   "#21A957",
+            "301006": "#D533B2",
+            "301007":  "#6A1E55",
+        }
 
-        const canvas = document.getElementById("canvas");
+        const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
         // Rotate test
         // 1. move fixed point to origin 
@@ -132,17 +189,19 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
                 rotated = rotateAboutZero(rotated,270)
                 startMatrix = NorthCollectionOfPoints[0]
             }
-            const el = new Image();
-            el.src = typeToSvg[type]
-            el.onload = () => ctx.drawImage(el,
-                rotated.get([0]) + startMatrix.get([0]) - el.clientWidth / 2,
-                rotated.get([1]) + startMatrix.get([1]) - el.clientHeight/2
-            );
+            const el = imageMap[type];
+            if (el){
+                ctx.drawImage(el,
+                    rotated.get([0]) + startMatrix.get([0]) - el.clientWidth / 2,
+                    rotated.get([1]) + startMatrix.get([1]) - el.clientHeight/2
+                );
+            }
         }
         function drawTrafficLight(ctx, mat){
-            const el = new Image();
-            el.src=TrafficLight;
-            el.onload = () => ctx.drawImage(el,mat.get([0]) - el.clientWidth / 2,mat.get([1]) - el.clientHeight/2, 10, 10);
+            const el = imageMap['trafficLight']
+            if (el) {
+                ctx.drawImage(el,mat.get([0]) - el.clientWidth / 2,mat.get([1]) - el.clientHeight/2, 10, 10);
+            }
         }
         const roadIdToRoad = {}
         roads.forEach(r => roadIdToRoad[r.road_id] = r)
@@ -162,7 +221,7 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
       }, [trafficPosData]);
     return(
         <>
-        <canvas id="canvas" height="555" width="786">
+        <canvas ref={canvasRef} id="canvas" height="555" width="786">
         </canvas>
         </>
     )
