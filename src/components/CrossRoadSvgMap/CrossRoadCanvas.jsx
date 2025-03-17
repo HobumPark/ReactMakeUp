@@ -156,7 +156,6 @@ export const CrossRoadCanvas = ({roads, trafficPosData}) => {
             const road_id = d.road_id;
             const dataForRoad = d.data;
             for (let roadObj of dataForRoad){
-                console.log(roadObj, roadIdToRoad[road_id].incoming_compass)
                 drawVehicle(ctx, roadObj, roadIdToRoad[road_id].incoming_compass)
             }
         }

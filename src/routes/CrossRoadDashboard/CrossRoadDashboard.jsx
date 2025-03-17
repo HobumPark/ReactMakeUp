@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Header from "../../components/Header/Header";
 
 import IconCar from "../../assets/icon/icon-db-car.svg";
@@ -71,8 +71,6 @@ const CrossRoadDashboard = () => {
     setSelectedValue(event.target.value); 
   };
  
-
-  const roadIds = srDetectorData?.roads?.map(road => road.road_id) || [];
   const compassMapping = {
     "103001": "N",
     "103002": "NE",
@@ -90,140 +88,141 @@ const CrossRoadDashboard = () => {
   })) 
 
 
-  const { queries } = useRealTimeObj({
-    roadIds: roadIds,
-    // interval: selectedValue
-  });
+  const [trafficPosData, setTrafficPosData] = useState([]);
 
-
-  // const mergedRoadPasses = roadPasses?.map((roadPass) => {
-  //   const query = queries?.find((query) => query.road_id === roadPass.road_id);
-  //   if (query && query.data) {
-  //     return {
-  //       ...roadPass,
-  //       data: query.data.length > 0 ? query.data : [],
-  //     };
-  //   }
-  //   return roadPass;
-  // });
-  
-  
-  const [trafficPosData, setTrafficPosData] = useState([
-    {
-      road_id: "1",
-      data: [
-        {
-        "vehicle_type": "301003",
-        "xrelpos": 300.31,
-        "yrelpos": 0.769999999999982
-        },
-        {
-        "vehicle_type": "301001",
-        "xrelpos": 200.05,
-        "yrelpos": -200.44
-        },
-        {
-        "vehicle_type": "301005",
-        "xrelpos": 50.01,
-        "yrelpos": -42.44
-        }
-      ]
-    },
-    {
-      road_id: "2",
-      data: [
-        {
-        "vehicle_type": "301003",
-        "xrelpos": 300.31,
-        "yrelpos": 0.769999999999982
-        },
-        {
-        "vehicle_type": "301001",
-        "xrelpos": 200.05,
-        "yrelpos": -200.44
-        },
-        {
-        "vehicle_type": "301005",
-        "xrelpos": 50.01,
-        "yrelpos": -42.44
-        }
-      ]
-    },
-    {
-      road_id: "3",
-      data: [
-        {
-        "vehicle_type": "301003",
-        "xrelpos": 300.31,
-        "yrelpos": 0.769999999999982
-        },
-        {
-        "vehicle_type": "301001",
-        "xrelpos": 200.05,
-        "yrelpos": -200.44
-        },
-        {
-        "vehicle_type": "301005",
-        "xrelpos": 50.01,
-        "yrelpos": -42.44
-        }
-      ]
-    },
-    {
-      road_id: "4",
-      data: [
-        {
-        "vehicle_type": "301003",
-        "xrelpos": 300.31,
-        "yrelpos": 0.769999999999982
-        },
-        {
-        "vehicle_type": "301001",
-        "xrelpos": 200.05,
-        "yrelpos": -200.44
-        },
-        {
-        "vehicle_type": "301005",
-        "xrelpos": 50.01,
-        "yrelpos": -42.44
-        }
-      ]
+  const fetchDataForRoads = async (roadIds) => {
+    try {
+      const results = await Promise.all(
+        roadIds.map(async (roadId) => {
+          const response = await fetch(`http://192.168.20.200:7120/api/dsh/real-time-object?road_id=${roadId}`, {
+            method: 'GET',
+            credentials: 'include', 
+          });
+          const data = await response.json();
+          return { road_id: roadId, data: data.data };
+        })
+      );
+      setTrafficPosData(results);  
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-  ])
-  
-  const [roads, setRoads] = useState([])
+  };
 
-// const mergedData = roads.map((road) => {
-//     const vehicleInfo = mergedRoadPasses?.find(vehicle => vehicle.incomingPass === road.incoming_compass);
-    
-//     if (vehicleInfo && vehicleInfo.data !== undefined) {
-//       return {
-//         road_id: road.road_id.toString(),
-//         data: vehicleInfo.data,
-//       };
-//     }
-//     return undefined;
-//   })
-//   .filter(item => item !== undefined);
+  const roadIds = srDetectorData?.roads?.map(road => road.road_id) || [];
+
+  useEffect(() => {
+    const fetchDataWithInterval = async () => {
+      await fetchDataForRoads(roadIds);
+
+      const interval = setInterval(() => {
+        fetchDataForRoads(roadIds); 
+      }, 60000); 
+
+      return () => clearInterval(interval);
+    };
+
+    fetchDataWithInterval();
+
+  }, [srDetectorData]); 
+
+  useEffect(() => {
+    console.log("Traffic Position Data:", trafficPosData);
+  }, [trafficPosData]); 
+
+  
+  // const [trafficPosData, setTrafficPosData] = useState([
+  //   {
+  //     road_id: "1",
+  //     data: [
+  //       {
+  //       "vehicle_type": "301003",
+  //       "xrelpos": 300.31,
+  //       "yrelpos": 0.769999999999982
+  //       },
+  //       {
+  //       "vehicle_type": "301001",
+  //       "xrelpos": 200.05,
+  //       "yrelpos": -200.44
+  //       },
+  //       {
+  //       "vehicle_type": "301005",
+  //       "xrelpos": 50.01,
+  //       "yrelpos": -42.44
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     road_id: "2",
+  //     data: [
+  //       {
+  //       "vehicle_type": "301003",
+  //       "xrelpos": 300.31,
+  //       "yrelpos": 0.769999999999982
+  //       },
+  //       {
+  //       "vehicle_type": "301001",
+  //       "xrelpos": 200.05,
+  //       "yrelpos": -200.44
+  //       },
+  //       {
+  //       "vehicle_type": "301005",
+  //       "xrelpos": 50.01,
+  //       "yrelpos": -42.44
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     road_id: "3",
+  //     data: [
+  //       {
+  //       "vehicle_type": "301003",
+  //       "xrelpos": 300.31,
+  //       "yrelpos": 0.769999999999982
+  //       },
+  //       {
+  //       "vehicle_type": "301001",
+  //       "xrelpos": 200.05,
+  //       "yrelpos": -200.44
+  //       },
+  //       {
+  //       "vehicle_type": "301005",
+  //       "xrelpos": 50.01,
+  //       "yrelpos": -42.44
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     road_id: "4",
+  //     data: [
+  //       {
+  //       "vehicle_type": "301003",
+  //       "xrelpos": 300.31,
+  //       "yrelpos": 0.769999999999982
+  //       },
+  //       {
+  //       "vehicle_type": "301001",
+  //       "xrelpos": 200.05,
+  //       "yrelpos": -200.44
+  //       },
+  //       {
+  //       "vehicle_type": "301005",
+  //       "xrelpos": 50.01,
+  //       "yrelpos": -42.44
+  //       }
+  //     ]
+  //   }
+  // ])
+  
+  const [roads, setRoads] = useState([]);
 
 
   useEffect(() => {
-      console.log(queries);
-      
-      console.log('test')
-  }, [queries]);
-
-    useEffect(() => {
-
+    const data = srDetectorData?.roads?.map((road) => ({
+      road_id: road.road_id,
+      stream_url: road.detector?.stream_url
+    })) || [];
+      setVideos(data);
       setRoads(roadPasses);
-  }, [roadPasses]);
-
-  console.log(queries);
-  
-
-  useEffect(() => {
-    const data = srDetectorData?.roads?.map((road) => road.detector?.stream_url) || 0
-    setVideos(data);
   }, [srDetectorData]);
 
 
@@ -324,10 +323,10 @@ const CrossRoadDashboard = () => {
                       {videos.length > 0 ? (
                         videos.map((video, index) => (
                           <div key={index} className="_boxVideo w-full h-full relative flex bg-[] overflow-hidden">
-                            <video src={video} className="w-full h-full object-cover" controls />
+                            <video src={video.stream_url} className="w-full h-full object-cover" controls />
                               <img src={IconRightCircle} alt="" className="cursor-pointer absolute right-[20px] top-[10px]"
                                 onClick={() => {
-                                  window.open("/dashboard/accessroad", "_blank", "width=800,height=600");
+                                  window.open(`/dashboard/accessroad?site_id=${site_id}&road_id=${video.road_id}`, "_blank", "width=800,height=600");
                                 }}
                               />
                             {/* <div className="text-text-white absolute right-[20px] top-[10px]">ok</div> */}
@@ -404,10 +403,10 @@ const CrossRoadDashboard = () => {
                   </div>
 
                   <div className="_imgMapsArea w-full h-full flex bg-[#1E2223] relative">
-                  {roads && roads.length > 0 && queries && queries.length > 0 ? (
+                  {roads && roads.length > 0 ? (
                         <CrossRoadCanvas roads={roads} trafficPosData={trafficPosData} />
                       ) : (
-                        <div>No data available to render the canvas.</div>
+                        <div></div>
                       )}
 
                     {/* <img
@@ -507,7 +506,7 @@ const CrossRoadDashboard = () => {
                 </span>
               </div>
               <div className="_containerStatisticTrafficbyDirection overflow-hidden h-[calc(100%-30px)] p-[10px]">
-                <TrafficeByDirection data = {objCntCompassTimeData} />
+                <TrafficeByDirection data = {objCntCompassTimeData || []} />
               </div>
             </section>
             <section className=" flex flex-1/12 h-[full] overflow-hidden bg-[#000] rounded-[5px]">

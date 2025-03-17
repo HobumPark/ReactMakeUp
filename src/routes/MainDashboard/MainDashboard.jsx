@@ -199,6 +199,8 @@ const MainDashboard = () => {
 
   const mapRef = useRef(null);
   const olMapRef = useRef(null);
+  const poiLayerRef = useRef(null);
+  const clusterLayerRef = useRef(null);
   
   const [showModal, setShowModal] = useState(false);
 
@@ -390,8 +392,19 @@ const MainDashboard = () => {
         });
       }
     }, 100);
+    
+    olMapRef.current = olMap;
+
+    return () => {
+      if (olMapRef.current) {
+        olMapRef.current.setTarget(null);
+        olMapRef.current = null; // Reset the map reference
+      }
+    };
+  }, [mapInitial, mapDisplay]);
 
 
+  useEffect(() => {
     const iconMapping = {
       "102001": IconIntersection,  
       "102002": IconCrosswalk,     
@@ -400,19 +413,19 @@ const MainDashboard = () => {
       "detector": IconDetector,  
       "box": IconBox               
     };
-
-
+  //
+  
     const features = poiItem?.map(item => {
       const iconSrc = iconMapping[item.type] || IconDefault;  
       const iconFeature = new Feature({
         geometry: new Point(fromLonLat([item.lng, item.lat])),
       });
-
+  
       iconFeature.setStyle(
         new Style({
           image: new Icon({
             src: iconSrc,
-            scale: 1 + (olMap.getView().getZoom() - 10) * 0.1,
+            scale: 1 + (olMapRef.current.getView().getZoom() - 10) * 0.1,
           }),
         })
       );
@@ -420,20 +433,19 @@ const MainDashboard = () => {
       iconFeature.setId(item.type);
       return iconFeature;
     });
-
-
-    const view = olMap.getView();
+  
+    const view = olMapRef.current.getView();
     const resolution = view.getResolution(); 
-    const distanceInMeters = 5000; 
+    const distanceInMeters = 3000; 
     const distanceInPixels = distanceInMeters / resolution; 
-
+  
     const clusterSource = new Cluster({
       distance: distanceInPixels, 
       source: new VectorSource({
         features: features,
       }),
     });
-
+  
     // **Layer Clustering**
     const clusterLayer = new VectorLayer({
       source: clusterSource,
@@ -441,7 +453,7 @@ const MainDashboard = () => {
       style: function (feature) {
         const clusteredFeatures = feature.get("features");
         const size = clusteredFeatures.length;
-
+  
         if (size > 1) {
           return new Style({
             image: new CircleStyle({
@@ -461,21 +473,35 @@ const MainDashboard = () => {
         }
       },
     });
-
+  
     const poiLayer = new VectorLayer({
       source: new VectorSource({
         features: features,
       }),
     });
 
-    olMap.addLayer(poiLayer);   
-    olMap.addLayer(clusterLayer);
+    
+  // Jika sudah ada layer sebelumnya, hapus layer terlebih dahulu
+  if (poiLayerRef.current) {
+    olMapRef.current.removeLayer(poiLayerRef.current);
+  }
+  if (clusterLayerRef.current) {
+    olMapRef.current.removeLayer(clusterLayerRef.current);
+  }
 
+  // Menyimpan referensi layer untuk penggunaan selanjutnya
+  poiLayerRef.current = poiLayer;
+  clusterLayerRef.current = clusterLayer;
 
-    olMap.on("click", (event) => {
+  // Menambahkan layer yang baru
+  olMapRef.current.addLayer(poiLayerRef.current);
+  olMapRef.current.addLayer(clusterLayerRef.current);
+  
+  
+    olMapRef.current.on("click", (event) => {
       let isClusterClicked = false;
     
-      olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
+      olMapRef.current.forEachFeatureAtPixel(event.pixel, (feature) => {
         const clusteredFeatures = feature.get("features");
     
         if (clusteredFeatures && clusteredFeatures.length > 1) {
@@ -484,13 +510,13 @@ const MainDashboard = () => {
             clusteredFeatures.map((f) => f.getGeometry().getCoordinates())
           );
           const minZoom = 100; 
-
-          olMap.getView().fit(extent, { 
+  
+          olMapRef.current.getView().fit(extent, { 
             duration: 1000, 
             padding: [200, 200, 200, 200], 
             maxZoom: minZoom 
           });
-
+  
     
           isClusterClicked = true; 
           return true; // Menghentikan iterasi
@@ -501,7 +527,7 @@ const MainDashboard = () => {
       if (isClusterClicked) return;
     
       // Lanjutkan jika yang diklik bukan cluster
-      olMap.forEachFeatureAtPixel(event.pixel, (feature) => {
+      olMapRef.current.forEachFeatureAtPixel(event.pixel, (feature) => {
         const featureId = feature.getId();
         const clickedItem = mapDisplay.poi?.find((item) => item.type === featureId);
     
@@ -514,7 +540,7 @@ const MainDashboard = () => {
               window.open(`/dashboard/crossroad?id=${clickedItem.id}`, "_blank", "width=800,height=600");
               break;
             case "102002":
-              window.open("/dashboard/crosswalk", "_blank", "width=800,height=600");
+              window.open(`/dashboard/crosswalk?id=${clickedItem.id}`, "_blank", "width=800,height=600");
               break;
             case "detector":
               setPOIData(clickedItem);
@@ -526,20 +552,12 @@ const MainDashboard = () => {
         }
       });
     });
-    poiLayer.setVisible(olMap.getView().getZoom() > 14);
-    olMap.on("moveend", function () {
-      poiLayer.setVisible(olMap.getView().getZoom() > 14);
+    poiLayerRef.current.setVisible(olMapRef.current.getView().getZoom() > 14);
+    olMapRef.current.on("moveend", function () {
+      poiLayerRef.current.setVisible(olMapRef.current.getView().getZoom() > 14);
     });
-    
-    olMapRef.current = olMap;
-
-    return () => {
-      if (olMapRef.current) {
-        olMapRef.current.setTarget(null);
-        olMapRef.current = null; // Reset the map reference
-      }
-    };
-  }, [mapInitial, mapDisplay, poiItem]);
+    //
+  }, [poiItem]);
 
   const moveMapToPOI = (id) => {
     const mapEntry = mapDisplay?.poi?.find((entry) => entry.id === id);
@@ -561,6 +579,9 @@ const MainDashboard = () => {
       console.error("No POI found with the given id");
     }
   };
+
+
+
 
 
   const vehicleData = [
