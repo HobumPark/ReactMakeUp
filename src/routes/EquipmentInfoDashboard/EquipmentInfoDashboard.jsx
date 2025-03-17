@@ -221,7 +221,7 @@ const EquipmentInfoDashboard = () => {
       ],
       view: new View({
         center: fromLonLat([siteRoadDetector?.lng, siteRoadDetector?.lat]),
-        zoom: 6,
+        zoom: 18,
       }),
     });
 

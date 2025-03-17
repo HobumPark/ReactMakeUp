@@ -27,7 +27,7 @@ const TemperatureHum = ({data}) => {
       yaxis: { lines: { show: true } },
     },
     xaxis: {
-      categories: data?.map(item => item.timestamp.slice(11, 16)),
+      categories: data?.map(item => item.timestamp.slice(11, 16)).reverse(),
       labels: { style: { colors: "#fff" } },
     },
     yaxis: [
@@ -68,8 +68,8 @@ const TemperatureHum = ({data}) => {
   };
 
   const series = [
-    { name: "Temperature", data: data?.map(item => item.temp !== undefined ? item.temp : null) || []  },
-    { name: "Humidity", data: data?.map(item => item.hum !== undefined ? item.hum : null) || []  },
+    { name: "Temperature", data: data?.map(item => item.temp !== undefined ? item.temp : null).reverse() || []  },
+    { name: "Humidity", data: data?.map(item => item.hum !== undefined ? item.hum : null).reverse() || []  },
   ];
 
   return (
