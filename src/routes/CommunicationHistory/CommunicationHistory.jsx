@@ -41,11 +41,12 @@ const CommunicationHistory = () => {
   });
 
   const [queryParams, setQueryParams] = useState(`start_date=${getLocalISOString(yesterdayMidnight)}&end_date=${getLocalISOString(today)}`);
-
+  const [page, setPages] = useState(`start_date=${getLocalISOString(yesterdayMidnight)}&end_date=${getLocalISOString(today)}`)
   
   const { objectListData } = useHistory({
-    queryParams: queryParams
+    queryParams: page
   })
+
 
 
   const data = objectListData?.data;
@@ -319,6 +320,8 @@ const CommunicationHistory = () => {
     }
 }, [queryParams]);
 
+
+
 useEffect(() => {
   if (data) {
     const footerElement = document.getElementById('list_count');
@@ -382,8 +385,13 @@ useEffect(() => {
             },
             dataLoaded: function (data) {
               console.log('dataLoaded', data);
+              const footerElement = document.getElementById('list_count');
+              if (footerElement) {
+                footerElement.textContent = tbRef.current.recalc();
+              }
             },
             pageLoaded: (pageNumber) => {
+              setPages((prevPage) => prevPage + `&page=${pageNumber}`)
               console.log("Current Page:", pageNumber);
               console.log("Max Page:", tbRef.current.getPageMax()); // Logs the max pages after the page is loaded
                 }
