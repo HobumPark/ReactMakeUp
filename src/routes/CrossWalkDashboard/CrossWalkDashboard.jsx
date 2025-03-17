@@ -213,7 +213,7 @@ const eventsTabulator = [
   {
     title: "No",
     formatter: "rownum",
-    width: 40,
+    widthGrow: 0.6,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -256,7 +256,7 @@ const eventsTabulator = [
     resizable: false,
   },
   {
-    title: "차종crt",
+    title: "차종",
     field: "vehicle_type",
     widthGrow: 1,
     hozAlign: "center",
@@ -267,7 +267,7 @@ const eventsTabulator = [
   {
     title: "차선방향",
     field: "lane_moving_direction",
-    widthGrow: 0.7,  // 차선방향 셀 크기 줄이기
+    widthGrow: 0.9,  // 차선방향 셀 크기 줄이기
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -276,7 +276,7 @@ const eventsTabulator = [
   {
     title: "차로",
     field: "lane_number",
-    widthGrow: 0.5,  // 차로 셀 크기 줄이기
+    widthGrow: 0.4,  // 차로 셀 크기 줄이기
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,

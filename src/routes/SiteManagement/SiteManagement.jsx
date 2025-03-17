@@ -90,6 +90,7 @@ const boxTabulator = [
     headerSort: true,
     resizable: false,
   },
+  
 ];
 
 const SiteManagement = () => {
@@ -124,7 +125,7 @@ const SiteManagement = () => {
 
   const [queryParams, setQueryParams] = useState(""); // queryParams 상태
   const [siteId, setSiteId] = useState(null); // siteId 상태
-  const [selectedSiteId, setSelectedSiteId]= useState({
+  const [selectedSiteId, setSelectedSiteId]= useState({//선택된 사이트아이디를 만들기 위한 (하이라이트를 위한)
     site_id: null,
   })
   const [newId, setNewId] = useState('');
@@ -698,6 +699,10 @@ const SiteManagement = () => {
     })
   }
 
+  const handleRegistButtonClickTest = async () => {
+    reloadCallback()
+    //emptyDetail()
+  }
   //등록버튼 클릭시
   const handleRegistButtonClick = async () => {
     //alert('regist!');
@@ -741,12 +746,17 @@ const SiteManagement = () => {
             createRoad({ ...roadItem, site_id }); // 각 요청을 비동기적으로 처리
           }
 
+          //selectedSite set
+          setSelectedSiteId({
+            site_id: site_id,  
+          });
+
           //alert('등록이 완료되었습니다!');
           //등록후 입력폼 초기화 - init site, road form
           InitSiteRoadInputForm()
           
           reloadCallback()
-
+          //emptyDetail()
         },
         onError: (error) => {
           console.error('createSite onError:', error);
@@ -1011,10 +1021,16 @@ const SiteManagement = () => {
           <ReactTabulator
             data={siteListData?.data || []}
             columns={boxTabulator}
+            
             layout={"fitColumns"}
             className="tabulator-custom w-full "
             //   pagination="local"
-            options={optionsTabulator}
+            options={{
+              ...optionsTabulator,
+              initialSort: [
+                { column: "site_id", dir: "desc" }, // 내림차순으로 'updated_time' 컬럼 초기 정렬
+              ],
+            }}
             onRef={(r) => {
               tbRef.current = r.current;
             }}
@@ -1215,6 +1231,7 @@ const SiteManagement = () => {
                   onClickNew={handleNewButtonClick}
                   onClickCancel={handleCancelButtonClick}
                   onClickRegist={handleRegistButtonClick}
+                  //onClickRegist={handleRegistButtonClickTest}
                   onClickConfirm ={handleConfirmButtonClick}
                   isNewClicked={isNewClicked}
                   cancelButtonState={buttonState.cancel}

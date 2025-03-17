@@ -20,7 +20,12 @@ import { URLS } from "../../config/urls";
 const suddenEventTabulator = [
   {
     title: "No",
-    formatter: "rownum",
+    formatter: (cell) => {
+      let row = cell.getRow();
+      let page = row.getTable().getPage();
+      let pageSize = row.getTable().getPageSize();
+      return (page - 1) * pageSize + row.getPosition(true);
+    },
     width: 60,
     hozAlign: "center",
     headerHozAlign: "center",
@@ -237,13 +242,19 @@ const SuddenEvent = () => {
   });
   
   // For queryParams
+  //const [queryParamsTime, setQueryParamsTime] = useState(`start_time=${formatFullDateTime(firstDate)}&end_time=${formatFullDateTime(secondDate)}&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP&page=${1}&size=${10}&sort=timestamp&order=desc`); // queryParams 상태
   const [queryParamsTime, setQueryParamsTime] = useState(""); // queryParams 상태
   const [queryParamsCnt, setQueryParamsCnt] = useState(""); // queryParams 상태
   
+  console.log('queryParamsTime')
+  console.log(queryParamsTime)
 
   // Update the queryParams whenever dateTime1 or dateTime2 changes
   useEffect(() => {
-    const timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}&page=${page}&size=${rowsPerPage}`;
+    let timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
+    //timeQuery+=`&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP`
+    timeQuery+=`&page=${page}&size=${rowsPerPage}&sort=timestamp&order=desc`
+    
     const cntQuery = `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`;
     
     setQueryParamsTime(timeQuery);
@@ -262,6 +273,11 @@ const SuddenEvent = () => {
 
   console.log('trafficEventCnt')
   console.log(trafficEventCnt)
+
+  const data = trafficEventTime?.data;
+  console.log('trafficEventTime data')
+  console.log(trafficEventTime)
+  
 
   //이벤트 유형 선택
   const handleFilterChange = (e) => {
@@ -504,7 +520,7 @@ const SuddenEvent = () => {
       },
     },
     resizableRows: false,
-    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">전체 ${trafficEventTime?.data.total_cnt} 개</div>`,
+    footerElement: `<div style="padding: 0 20px 0 0; text-align: right;">총 <a id="list_count"></a> 건</div>`,
     ajaxURL: `${URLS.BACK_DSH}/traffic-event-list/by-time?${queryParamsTime}`,
     ajaxConfig: {
       method: "GET",
@@ -513,9 +529,12 @@ const SuddenEvent = () => {
     ajaxResponse: (url, params, response) => {
       console.log('ajaxResponse')
       console.log(response)
+      console.log('params')
+      console.log(params);
+
       return {
         data: response.data.items,
-        last: response.data.total_pages
+        last: 1001
       };
     }, 
     dataReceiveParams: {
@@ -523,6 +542,12 @@ const SuddenEvent = () => {
     },
     ajaxURLGenerator: function (url, config, params) {
       let myUrl = url;
+
+      let page = params['page'];
+      let size = params['size'];
+      if (page) {
+        myUrl += `&page=${page}&size=${size || 10}`;
+      }
       
       if (params['sort'].length > 0) {
         let field = params['sort'][0]['field'];
@@ -652,7 +677,7 @@ const SuddenEvent = () => {
       setInput(inputVal)
     } 
     if(type=='All'){
-      timeQuery+=`&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP`
+      //timeQuery+=`&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP`
     }else if(type!=""){
       timeQuery+=`&type=${type}`
     }else if(type==""){
@@ -708,6 +733,24 @@ const SuddenEvent = () => {
           tbRef.current.setData(`${`${URLS.BACK_DSH}`}/object?${queryParamsTime}`);
       }
   }, [queryParamsTime]);
+
+  useEffect(() => {
+    
+    if (data) {
+      console.log('useEffect data')
+      //console.log(data)
+      const footerElement = document.getElementById('list_count');
+      if (footerElement) {
+
+        const totalSum = Object.values(data.cnt).reduce((sum, value) => sum + value, 0);
+
+        console.log(totalSum); // 결과 출력
+
+        footerElement.textContent = totalSum
+      }
+    }
+  }, [data]); 
+  
 
   return (
     <>
@@ -807,6 +850,7 @@ const SuddenEvent = () => {
               console.log('dataLoaded', data);
             },
             pageLoaded: (pageNumber) => {
+              //setPages((prevPage) => prevPage + `&page=${pageNumber}`)
               console.log('pageLoaded')
               console.log("Current Page:", pageNumber);
              

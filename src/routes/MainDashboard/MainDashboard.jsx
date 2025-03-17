@@ -518,7 +518,7 @@ const MainDashboard = () => {
           olMapRef.current.getView().fit(extent, { 
             duration: 1000, 
             padding: [50, 50, 50, 50], 
-            maxZoom: 20 // Pastikan zoom cukup dalam
+            maxZoom: 15
           });
   
     
@@ -569,11 +569,10 @@ const MainDashboard = () => {
       console.log(id, lat, lng);
       
       if (lat && lng) {
-        olMapRef.current.getView().setCenter(fromLonLat([lng, lat]))
-        olMapRef.current.getView().setZoom(6);
         olMapRef.current.getView().animate({
           center: fromLonLat([lng, lat]),
-          zoom: 17,
+          zoom: 17,  // Langsung ke zoom level 17
+          duration: 1000  // Durasi animasi
         });
       } else {
         console.error("Invalid coordinates for the selected POI");
