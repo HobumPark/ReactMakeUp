@@ -303,6 +303,12 @@ const CrossRoadDashboard = () => {
   };
 
 
+  
+  const orderedDirectionsTop = ["NW", "N", "NE"];
+  const orderedDirectionsMiddle= ["W", "E"];
+  const orderedDirectionsBottom= ["SW", "S", "SE"];
+
+
   return (
     <>
       <section className="_CrossRoadContainer w-full h-screen overflow-hidden flex flex-col bg-bg-grey-400">
@@ -419,83 +425,56 @@ const CrossRoadDashboard = () => {
                       className=" w-full h-full object-cover"
                     /> */}
                     <div className="_totalTop absolute p-[10px] justify-between z-20 flex flex-row w-full">
-                      <VehicleCount
-                        customeStyle=""
-                        title="갈현교차로 방면 [북]"
-                        entryCount="300"
-                        exitCount="300"
-                        countTurnLeft="1200"
-                        countStraight="1200"
-                        countTrunRight="1200"
-                      />
-                      <VehicleCount
-                        customeStyle=""
-                        title="Rangkas Bitung"
-                        entryCount="300"
-                        exitCount="300"
-                        countTurnLeft="1200"
-                        countStraight="1200"
-                        countTrunRight="1200"
-                      />
-                      <VehicleCount
-                        customeStyle=""
-                        title="Bandung"
-                        entryCount="300"
-                        exitCount="300"
-                        countTurnLeft="1200"
-                        countStraight="1200"
-                        countTrunRight="1200"
-                      />
+                    {orderedDirectionsTop.map((direction, index) => {
+                        const road = srDetectorData?.roads?.find(road => compassMapping[road.detector.incoming_compass] === direction);
+                        return (
+                          <VehicleCount
+                            key={index}
+                            customeStyle={road ? "" : "invisible"}
+                            title={road ? road.name : 'Road Name'}
+                            entryCount={road ? road.entryCount || "0" : "0"}
+                            exitCount={road ? road.exitCount || "0" : "0"}
+                            countTurnLeft={road ? road.countTurnLeft || "0" : "0"}
+                            countStraight={road ? road.countStraight || "0" : "0"}
+                            countTrunRight={road ? road.countTrunRight || "0" : "0"}
+                          />
+                        );
+                      })}
                     </div>
                     <div className="_totalCenter absolute top-[48%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-[10px] justify-between z-20 flex flex-row w-full">
-                      <VehicleCount
-                        customeStyle=""
-                        title="jakarta"
-                        entryCount="300"
-                        exitCount="300"
-                        countTurnLeft="1200"
-                        countStraight="1200"
-                        countTrunRight="1200"
-                      />
-                      <VehicleCount
-                        customeStyle=""
-                        title="surabaya"
-                        entryCount="300"
-                        exitCount="300"
-                        countTurnLeft="1200"
-                        countStraight="1200"
-                        countTrunRight="1200"
-                      />
+                    {orderedDirectionsMiddle.map((direction, index) => {
+                        const road = srDetectorData?.roads?.find(road => compassMapping[road.detector.incoming_compass] === direction);
+                        return (
+                          <VehicleCount
+                            key={index}
+                            customeStyle={road ? "" : "invisible"}
+                            title={road ? road.name : 'Road Name'}
+                            entryCount={road ? road.entryCount || "0" : "0"}
+                            exitCount={road ? road.exitCount || "0" : "0"}
+                            countTurnLeft={road ? road.countTurnLeft || "0" : "0"}
+                            countStraight={road ? road.countStraight || "0" : "0"}
+                            countTrunRight={road ? road.countTrunRight || "0" : "0"}
+                          />
+                        );
+                      })}
                     </div>
 
                     <div className="_totalBottom absolute bottom-[0px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-[10px] justify-between z-20 flex flex-row w-full">
-                      <VehicleCount
-                        customeStyle=""
-                        title="Sulawesi"
-                        entryCount="300"
-                        exitCount="300"
-                        countTurnLeft="1200"
-                        countStraight="1200"
-                        countTrunRight="1200"
-                      />
-                      <VehicleCount
-                        customeStyle="Karawang"
-                        title="surabaya"
-                        entryCount="300"
-                        exitCount="300"
-                        countTurnLeft="1200"
-                        countStraight="1200"
-                        countTrunRight="1200"
-                      />
-                      <VehicleCount
-                        customeStyle=""
-                        title="Aceh"
-                        entryCount="300"
-                        exitCount="300"
-                        countTurnLeft="1200"
-                        countStraight="1200"
-                        countTrunRight="1200"
-                      />
+                    {orderedDirectionsBottom.map((direction, index) => {
+                        const road = srDetectorData?.roads?.find(road => compassMapping[road.detector.incoming_compass] === direction);
+                        return (
+                          <VehicleCount
+                            key={index}
+                            customeStyle={road ? "" : "invisible"}
+                            title={road ? road.name : 'Road Name'}
+                            entryCount={road ? road.entryCount || "0" : "0"}
+                            exitCount={road ? road.exitCount || "0" : "0"}
+                            countTurnLeft={road ? road.countTurnLeft || "0" : "0"}
+                            countStraight={road ? road.countStraight || "0" : "0"}
+                            countTrunRight={road ? road.countTrunRight || "0" : "0"}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 </div>

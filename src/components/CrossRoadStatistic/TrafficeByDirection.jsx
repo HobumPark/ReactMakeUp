@@ -86,15 +86,18 @@ const TrafficeByDirection = ({data}) => {
       position: "bottom",
       horizontalAlign: "center",
       //   floating: true,
+      fontSize: '10.5px',
       markers: {
         width: 10,
         height: 10,
         radius: 50,
+        size: 6,
         shape: "circle",
         strokeWidth: 0,
         strokeColor: "transparent",
       },
       labels: { colors: "#fff" },
+      
     },
     dataLabels: {
       enabled: false, 
