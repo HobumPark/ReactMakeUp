@@ -542,7 +542,7 @@ const MainDashboard = () => {
               window.open(`/dashboard/crossroad?id=${clickedItem.id}`, "_blank", "width=800,height=600");
               break;
             case "102002":
-              window.open(`/dashboard/crosswalk?site_id=${clickedItem.id}`, "_blank", "width=800,height=600");
+              window.open(`/dashboard/crosswalk?site_id=${clickedItem.id}&road_id=${clickedItem.road_id}`, "_blank", "width=800,height=600");
               break;
             case "detector":
               setPOIData(clickedItem);
