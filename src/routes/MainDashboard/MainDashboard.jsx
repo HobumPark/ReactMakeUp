@@ -518,7 +518,7 @@ const MainDashboard = () => {
           olMapRef.current.getView().fit(extent, { 
             duration: 1000, 
             padding: [50, 50, 50, 50], 
-            maxZoom: 20 // Pastikan zoom cukup dalam
+            maxZoom: 15
           });
   
     

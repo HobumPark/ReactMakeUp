@@ -511,6 +511,31 @@ const EquipmentInfoDashboard = () => {
                 <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
                     <div className="flex flex-row gap-[5px] items-center">
+                      <img
+                        src={IconDoorOpen}
+                        alt=""
+                        className="w-[35px] h-[35px]"
+                      />
+                      <span className="title2bold text-text-white">
+                        Door Open
+                      </span>
+                    </div>
+                  </div>
+            
+                  <div className="flex w-fit flex-col justify-between flex-row gap-[3px] items-center">
+                    <div className="ml-auto w-full flex flex-col justify-center items-center bg-bg-grey-500 rounded-[5px] p-[5px]">
+                      <span className="title3 text-text-white">{boxStatus?.back_door_status === '204001' ? 'ON' : 'OFF'} </span>
+                      <span className="title3bold text-text-danger-400 ">
+                        {t(boxStatus?.back_door_status)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
+                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
+                    <div className="flex flex-row gap-[5px] items-center">
                       <img src={IconFan} alt="" className="w-[35px] h-[35px]" />
                       <span className="title2bold text-text-white">Fan</span>
                     </div>
@@ -533,29 +558,7 @@ const EquipmentInfoDashboard = () => {
                   </div>
                 </div>
 
-                <div className="bx-card-status w-full flex-row h-full justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
-                  <div className="flex w-full justify-between flex-row gap-[3px] items-center">
-                    <div className="flex flex-row gap-[5px] items-center">
-                      <img
-                        src={IconDoorOpen}
-                        alt=""
-                        className="w-[35px] h-[35px]"
-                      />
-                      <span className="title2bold text-text-white">
-                        Door Open
-                      </span>
-                    </div>
-                  </div>
-            
-                  <div className="flex w-fit flex-col justify-between flex-row gap-[3px] items-center">
-                    <div className="ml-auto w-full flex flex-col justify-center items-center bg-bg-grey-500 rounded-[5px] p-[5px]">
-                      <span className="title3 text-text-white">{boxStatus?.back_door_status === '204001' ? 'ON' : 'OFF'} </span>
-                      <span className="title3bold text-text-danger-400 ">
-                        {t(boxStatus?.back_door_status)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+
 
                 <div className="bx-card-status w-full h-full col-span-2 row-span-4 justify-center flex flex-col gap-[5px] px-[10px] py-[6px] border border-[#4D5152] bg-[#2D3238] rounded-[5px]">
                   <div className="flex w-full justify-between flex-row gap-[3px] items-center">
