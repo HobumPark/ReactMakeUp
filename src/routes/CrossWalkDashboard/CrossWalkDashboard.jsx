@@ -57,7 +57,7 @@ import { formatFullDateTime, formatDateTime } from "../../utils/date";
 import { useLocation, useNavigate } from "react-router-dom";
 import useCrossWalkMgt  from "../../hooks/useCrossWalkMgt";
 
-import CrossWalkCanvas from '../../components/CrossRoadSvgMap/CrossWalkCanvas'
+import CrossWalkCanvas from '../../components/CrossRoadSvgMap/CrossWalkCanvas';
 
 // tabulator exit
 
