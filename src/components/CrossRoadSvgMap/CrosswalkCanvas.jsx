@@ -81,4 +81,4 @@ const CrossWalkCanvas = ({trafficPosData}) => {
     )
 }
 
-export default CrossWalkCanvas
+export default CrossWalkCanvas;
