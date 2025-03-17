@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Header from "../../components/Header/Header";
 
 import IconCar from "../../assets/icon/icon-db-car.svg";
@@ -86,7 +86,8 @@ const CrossRoadDashboard = () => {
     road_id: road.road_id,
     incoming_compass: compassMapping[road.detector?.incoming_compass] || "Unknown" 
   })) 
-
+  const [selectedIcons, setSelectedIcons] = useState([]);
+  const selectedIconsRef = useRef(selectedIcons); 
 
   const [trafficPosData, setTrafficPosData] = useState([]);
 
@@ -102,7 +103,17 @@ const CrossRoadDashboard = () => {
           return { road_id: roadId, data: data.data };
         })
       );
-      setTrafficPosData(results);  
+     
+    //  const filteredResults = results.map((road) => ({
+    //   ...road,
+    //   data: road.data.filter((vehicle) => {
+    //       if (selectedIconsRef.current.length === 0) {
+    //         return true;  
+    //       }
+    //       return !selectedIconsRef.current.includes(vehicle.vehicle_type);
+    //   }),
+    // }));
+      setTrafficPosData(results); 
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -116,7 +127,7 @@ const CrossRoadDashboard = () => {
 
       const interval = setInterval(() => {
         fetchDataForRoads(roadIds); 
-      }, 60000); 
+      }, 1000); 
 
       return () => clearInterval(interval);
     };
@@ -124,10 +135,6 @@ const CrossRoadDashboard = () => {
     fetchDataWithInterval();
 
   }, [srDetectorData]); 
-
-  useEffect(() => {
-    console.log("Traffic Position Data:", trafficPosData);
-  }, [trafficPosData]); 
 
   
   // const [trafficPosData, setTrafficPosData] = useState([
@@ -242,7 +249,7 @@ const CrossRoadDashboard = () => {
 
   
   //untuk filter mobil
-  const [selectedIcons, setSelectedIcons] = useState([]);
+
 
   const vehicleIcons = [
     { id: "301001", src: IconCar, alt: "Car" },
@@ -267,23 +274,20 @@ const CrossRoadDashboard = () => {
   //untuk filter mobil
 
 
-  useEffect(() => {
-    const filteredData = trafficPosData?.map((road) => {
-      const filteredVehicles = road?.data?.filter(
-        (vehicle) => !selectedIcons.includes(vehicle.vehicle_type)
-      );
-      return {
-        ...road,
-        data: filteredVehicles,
-      };
-    });
-    setTrafficPosData(filteredData);
-  }, [selectedIcons]);
+  // useEffect(() => {
+  //   selectedIconsRef.current = selectedIcons;
+  //   const filteredData = trafficPosData?.map((road) => {
+  //     const filteredVehicles = road?.data?.filter(
+  //       (vehicle) => !selectedIcons.includes(vehicle.vehicle_type)
+  //     );
+  //     return {
+  //       ...road,
+  //       data: filteredVehicles,
+  //     };
+  //   });
+  //   setTrafficPosData(filteredData);
+  // }, [selectedIcons]);
 
-
-
-  
-  
 
   // Tambah video baru secara dinamis
   const addVideo = () => {

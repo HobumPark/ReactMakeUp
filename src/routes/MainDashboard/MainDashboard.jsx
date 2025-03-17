@@ -434,22 +434,23 @@ const MainDashboard = () => {
       return iconFeature;
     });
   
-    const view = olMapRef.current.getView();
-    const resolution = view.getResolution(); 
-    const distanceInMeters = 3000; 
-    const distanceInPixels = distanceInMeters / resolution; 
+    // const view = olMapRef.current.getView();
+    // const resolution = view.getResolution(); 
+    // const distanceInMeters = 3000; 
+    // const distanceInPixels = distanceInMeters / resolution; 
   
     const clusterSource = new Cluster({
-      distance: distanceInPixels, 
+      distance: 100, 
       source: new VectorSource({
         features: features,
       }),
     });
+
   
     // **Layer Clustering**
     const clusterLayer = new VectorLayer({
       source: clusterSource,
-      zIndex: 100,
+      zIndex:100,
       style: function (feature) {
         const clusteredFeatures = feature.get("features");
         const size = clusteredFeatures.length;
@@ -457,7 +458,7 @@ const MainDashboard = () => {
         if (size > 1) {
           return new Style({
             image: new CircleStyle({
-              radius: 50,
+              radius: 50 + size * 10,
               fill: new Fill({ color: "rgba(255, 0, 0, 2)" }),
               stroke: new Stroke({ color: "#fff", width: 2 }),
             }),
@@ -477,11 +478,12 @@ const MainDashboard = () => {
     const poiLayer = new VectorLayer({
       source: new VectorSource({
         features: features,
-      }),
+      }), 
     });
 
     
-  // Jika sudah ada layer sebelumnya, hapus layer terlebih dahulu
+
+    
   if (poiLayerRef.current) {
     olMapRef.current.removeLayer(poiLayerRef.current);
   }
@@ -489,11 +491,9 @@ const MainDashboard = () => {
     olMapRef.current.removeLayer(clusterLayerRef.current);
   }
 
-  // Menyimpan referensi layer untuk penggunaan selanjutnya
   poiLayerRef.current = poiLayer;
   clusterLayerRef.current = clusterLayer;
 
-  // Menambahkan layer yang baru
   olMapRef.current.addLayer(poiLayerRef.current);
   olMapRef.current.addLayer(clusterLayerRef.current);
   
@@ -505,28 +505,30 @@ const MainDashboard = () => {
         const clusteredFeatures = feature.get("features");
     
         if (clusteredFeatures && clusteredFeatures.length > 1) {
-          // Jika fitur yang diklik adalah cluster, lakukan zoom-in
           const extent = boundingExtent(
             clusteredFeatures.map((f) => f.getGeometry().getCoordinates())
           );
-          const minZoom = 100; 
+          // const minZoom = 100; 
   
+          // olMapRef.current.getView().fit(extent, { 
+          //   duration: 1000, 
+          //   padding: [200, 200, 200, 200], 
+          //   maxZoom: minZoom 
+          // });
           olMapRef.current.getView().fit(extent, { 
             duration: 1000, 
-            padding: [200, 200, 200, 200], 
-            maxZoom: minZoom 
+            padding: [50, 50, 50, 50], 
+            maxZoom: 20 // Pastikan zoom cukup dalam
           });
   
     
           isClusterClicked = true; 
-          return true; // Menghentikan iterasi
+          return true; 
         }
       });
     
-      // Jika cluster diklik, hentikan event (hindari klik POI)
       if (isClusterClicked) return;
     
-      // Lanjutkan jika yang diklik bukan cluster
       olMapRef.current.forEachFeatureAtPixel(event.pixel, (feature) => {
         const featureId = feature.getId();
         const clickedItem = mapDisplay.poi?.find((item) => item.type === featureId);
@@ -540,7 +542,7 @@ const MainDashboard = () => {
               window.open(`/dashboard/crossroad?id=${clickedItem.id}`, "_blank", "width=800,height=600");
               break;
             case "102002":
-              window.open(`/dashboard/crosswalk?id=${clickedItem.id}`, "_blank", "width=800,height=600");
+              window.open(`/dashboard/crosswalk?site_id=${clickedItem.id}`, "_blank", "width=800,height=600");
               break;
             case "detector":
               setPOIData(clickedItem);
@@ -552,10 +554,11 @@ const MainDashboard = () => {
         }
       });
     });
-    poiLayerRef.current.setVisible(olMapRef.current.getView().getZoom() > 14);
+    poiLayerRef.current.setVisible(true);
     olMapRef.current.on("moveend", function () {
-      poiLayerRef.current.setVisible(olMapRef.current.getView().getZoom() > 14);
+      poiLayerRef.current.setVisible(true);
     });
+    
     //
   }, [poiItem]);
 
