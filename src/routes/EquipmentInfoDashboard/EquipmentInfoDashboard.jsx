@@ -303,27 +303,27 @@ const EquipmentInfoDashboard = () => {
     const network = t(event.network_status);
 
     if (event.type === "EVT_TP_TMP") {
-      title = event.message
+      title = event.site_name
       customCard = "border-[#135A78]";
       subtitle = `${eventType} | ${event.temp} ℃`;
     } else if (event.type === "EVT_TP_HUM") {
-      title = event.message
+      title = event.site_name
       customCard = "border-[#1D7E46]";
       subtitle = `${eventType} | ${event.hum} %`;
     } else if (event.type === "EVT_TP_NW") {
-      title = event.message
+      title = event.site_name
       customCard = "border-[#D32F2F]";
       subtitle = `${eventType} | ${network}`;
     } else if (event.type === "EVT_TP_DO") {
-      title = event.message
+      title = event.site_name
       customCard = "border-[#F35A19]";
       subtitle = `${eventType} | ${doorOpen}`;
     } else if (event.type === "EVT_TP_PW") {
-      title = event.message
+      title = event.site_name
       customCard = "border-[#EE9F17]";
       subtitle = `${eventType} | ${power}`;
     } else {
-      title = event.message
+      title = event.site_name
       customCard = "border-[#000]";
       subtitle = "알 수 없는 이벤트";
     }
@@ -368,6 +368,7 @@ const EquipmentInfoDashboard = () => {
       console.log(command);
       mosCommand(site_id,command)
     }else {
+      setIsOn(true)
       const command = {
         target: boxStatus?.heater_mos,
         action: 'On'
@@ -387,12 +388,13 @@ const EquipmentInfoDashboard = () => {
       console.log(command);
       mosCommand(site_id,command)
     }else {
+      setIsOnFan(true)
       const command = {
         target: boxStatus?.fan_mos,
         action: 'On'
       }
       console.log(command);
-      mosCommand(site_id,command)
+      // mosCommand(site_id,command)
     }
   };
 
@@ -604,8 +606,8 @@ const EquipmentInfoDashboard = () => {
                                 className="w-[35px] h-[35px]"
                               />
                               <div className="flex flex-col">
-                                <span className="title2bold text-text-white">
-                                  {road?.detector?.detector_id} |  {road?.name} 
+                                <span className="title2bold text-text-white whitespace-nowrap">
+                                  {road?.name} 
                                 </span>
                                 <span className="title2 text-text-white">
                                 {road?.detector?.installed_date} 
@@ -754,7 +756,7 @@ const EquipmentInfoDashboard = () => {
                 <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
                   <span className="title3bold text-text-white">온/습도</span>
                 </div>
-                <div className="flex flex-col w-full p-[10px]  h-[calc(100%-40px)] overflow-hidden">
+                <div className="flex flex-col w-full p-[10px]  h-full overflow-hidden">
                   <TemperatureHum data={boxTempHump}/>
                 </div>
               </div>
@@ -914,7 +916,7 @@ const EquipmentInfoDashboard = () => {
                       type="event"
                       title={event.title}
                       showID={true}
-                      id={event.event_id}
+                      // id={event.event_id}
                       customCard={event.customCard}
                       subtitle={event.subtitle}
                       date={event.date}
