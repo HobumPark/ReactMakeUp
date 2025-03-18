@@ -53,6 +53,7 @@ import IconReturn from "../../assets/icon/icon-return.svg";
 import IconRoadMap from "../../assets/icon/icon-road-map.svg";
 import IconDarkMap from "../../assets/icon/icon-dark-map.svg";
 import IconSatelite from "../../assets/icon/icon-satelite-map.svg";
+import IconBing from "../../assets/icon/icon-bing-map.svg";
 
 import Colorize from "ol-ext/filter/Colorize";
 import useDashboard from "../../hooks/useDashboard";
@@ -331,6 +332,7 @@ const MainDashboard = () => {
       view: new View({
         center: fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]),
         zoom: mapInitial?.[0]?.view_zoom,
+        minZoom: 8, 
       }),
       
     });
@@ -389,7 +391,7 @@ const MainDashboard = () => {
             action: () => changeLayer("canvasdark"),
           },
           {
-            src: IconSatelite,
+            src: IconBing,
             title: "satelit",
             action: () => changeLayer("satellite"),
           },
