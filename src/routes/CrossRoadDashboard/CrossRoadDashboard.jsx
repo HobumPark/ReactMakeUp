@@ -24,7 +24,6 @@ import useSRDetector from "../../hooks/useSRDetector";
 import useObjectCnt from "../../hooks/useObjectCnt";
 import { getLocalISOString } from "../../utils/date";
 import { CrossRoadCanvas } from "../../components/CrossRoadSvgMap/CrossRoadCanvas";
-import useRealTimeObj from "../../hooks/useRealTimeObj";
 
 
 const CrossRoadDashboard = () => {
@@ -152,89 +151,6 @@ const CrossRoadDashboard = () => {
         window.removeEventListener("blur", onBlur);
     };
   },[]);
-  
-  // const [trafficPosData, setTrafficPosData] = useState([
-  //   {
-  //     road_id: "1",
-  //     data: [
-  //       {
-  //       "vehicle_type": "301003",
-  //       "xrelpos": 300.31,
-  //       "yrelpos": 0.769999999999982
-  //       },
-  //       {
-  //       "vehicle_type": "301001",
-  //       "xrelpos": 200.05,
-  //       "yrelpos": -200.44
-  //       },
-  //       {
-  //       "vehicle_type": "301005",
-  //       "xrelpos": 50.01,
-  //       "yrelpos": -42.44
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     road_id: "2",
-  //     data: [
-  //       {
-  //       "vehicle_type": "301003",
-  //       "xrelpos": 300.31,
-  //       "yrelpos": 0.769999999999982
-  //       },
-  //       {
-  //       "vehicle_type": "301001",
-  //       "xrelpos": 200.05,
-  //       "yrelpos": -200.44
-  //       },
-  //       {
-  //       "vehicle_type": "301005",
-  //       "xrelpos": 50.01,
-  //       "yrelpos": -42.44
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     road_id: "3",
-  //     data: [
-  //       {
-  //       "vehicle_type": "301003",
-  //       "xrelpos": 300.31,
-  //       "yrelpos": 0.769999999999982
-  //       },
-  //       {
-  //       "vehicle_type": "301001",
-  //       "xrelpos": 200.05,
-  //       "yrelpos": -200.44
-  //       },
-  //       {
-  //       "vehicle_type": "301005",
-  //       "xrelpos": 50.01,
-  //       "yrelpos": -42.44
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     road_id: "4",
-  //     data: [
-  //       {
-  //       "vehicle_type": "301003",
-  //       "xrelpos": 300.31,
-  //       "yrelpos": 0.769999999999982
-  //       },
-  //       {
-  //       "vehicle_type": "301001",
-  //       "xrelpos": 200.05,
-  //       "yrelpos": -200.44
-  //       },
-  //       {
-  //       "vehicle_type": "301005",
-  //       "xrelpos": 50.01,
-  //       "yrelpos": -42.44
-  //       }
-  //     ]
-  //   }
-  // ])
   
   const [roads, setRoads] = useState([]);
 
