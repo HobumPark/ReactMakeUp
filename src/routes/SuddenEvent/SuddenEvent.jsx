@@ -191,7 +191,7 @@ const SuddenEvent = () => {
 
   const rowsPerPage = 10; // 한 페이지에 표시할 데이터 개수
 
-  const [type,setType]=useState('')
+  const [type,setType]=useState('All')
   const [input,setInput]=useState('')
   const [searchInput,setSearchInput]=useState('')
 
@@ -252,7 +252,7 @@ const SuddenEvent = () => {
   // Update the queryParams whenever dateTime1 or dateTime2 changes
   useEffect(() => {
     let timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
-    //timeQuery+=`&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP`
+    timeQuery+=`&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP`
     timeQuery+=`&page=${page}&size=${rowsPerPage}&sort=timestamp&order=desc`
     
     const cntQuery = `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`;
@@ -260,7 +260,7 @@ const SuddenEvent = () => {
     setQueryParamsTime(timeQuery);
     setQueryParamsCnt(cntQuery);
   }, []); // Dependency on dateTime1 and dateTime2
-  
+
   const {trafficEventTime,trafficEventCnt} = useSuddenMgt({
     //queryParamsTime: `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`,
     queryParamsTime:queryParamsTime,
@@ -285,6 +285,7 @@ const SuddenEvent = () => {
     console.log(e.target.value)
     setSelectedOption(e.target.value);
     const val=e.target.value
+    //alert(val)
     setType(val)
   };
 
@@ -534,13 +535,16 @@ const SuddenEvent = () => {
 
       return {
         data: response.data.items,
-        last: 1001
+        last: response.data.total_pages
       };
     }, 
     dataReceiveParams: {
       last_page: 'last',
     },
     ajaxURLGenerator: function (url, config, params) {
+      console.log('ajaxURLGenerator')
+      console.log(url)
+      
       let myUrl = url;
 
       let page = params['page'];
@@ -554,6 +558,10 @@ const SuddenEvent = () => {
         let dir = params['sort'][0]['dir'];
         myUrl += `&sort=${field}&order=${dir}`;
       }
+      
+      
+      console.log('myUrl');
+      console.log(myUrl);
 
       return myUrl;
     },
@@ -674,21 +682,28 @@ const SuddenEvent = () => {
     let timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
     if(inputVal!=''){
       timeQuery+=`&input=${inputVal}`
-      setInput(inputVal)
+      setSearchInput(inputVal)
     } 
+    
     if(type=='All'){
-      //timeQuery+=`&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP`
+      timeQuery+=`&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP`
     }else if(type!=""){
       timeQuery+=`&type=${type}`
     }else if(type==""){
       timeQuery+=``
     }
-
+      
+    //alert(timeQuery)
     const cntQuery = `start_time=${dateTime2.start_date}&end_time=${dateTime2.end_date}&interval=${dateTime2.interval}`;
     
     setQueryParamsTime(timeQuery);
     setQueryParamsCnt(cntQuery);
 
+
+    // 테이블 데이터 새로 고침
+    if (tbRef.current) {
+      tbRef.current.setData(`${URLS.BACK_DSH}/traffic-event-list/by-time?${timeQuery}`);
+    }
   }
 
   useEffect(() => {
@@ -729,8 +744,22 @@ const SuddenEvent = () => {
       console.log('queryParamsTime table');
       console.log(queryParamsTime);
       if (tbRef.current) {
+
         console.log('setTableData');
-          tbRef.current.setData(`${`${URLS.BACK_DSH}`}/object?${queryParamsTime}`);
+          let timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
+          
+          if(type=='All'){
+            timeQuery+=`&type=EVT_TP_STP&type=EVT_TP_WWD&type=EVT_TP_SPD&type=EVT_TP_JW&type=EVT_TP_SLV&type=EVT_TP_ILP`
+          }else if(type!=""){
+            timeQuery+=`&type=${type}`
+          }else if(type==""){
+            timeQuery+=``
+          }
+          if(searchInput!=''){
+            timeQuery+=`&input=${searchInput}`
+            setSearchInput(searchInput)
+          } 
+          tbRef.current.setData(`${`${URLS.BACK_DSH}`}/traffic-event-list/by-time?${timeQuery}`);
       }
   }, [queryParamsTime]);
 
@@ -742,11 +771,11 @@ const SuddenEvent = () => {
       const footerElement = document.getElementById('list_count');
       if (footerElement) {
 
-        const totalSum = Object.values(data.cnt).reduce((sum, value) => sum + value, 0);
+        //const totalSum = Object.values(data.cnt).reduce((sum, value) => sum + value, 0);
 
-        console.log(totalSum); // 결과 출력
+        //console.log(totalSum); // 결과 출력
 
-        footerElement.textContent = totalSum
+        footerElement.textContent = data.total_cnt
       }
     }
   }, [data]); 
@@ -853,7 +882,7 @@ const SuddenEvent = () => {
               //setPages((prevPage) => prevPage + `&page=${pageNumber}`)
               console.log('pageLoaded')
               console.log("Current Page:", pageNumber);
-             
+              //setPage(pageNumber)
               //const timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}&page=${pageNumber}&size=${rowsPerPage}`;
               //setPage(pageNumber)
               //setQueryParamsTime(timeQuery);
