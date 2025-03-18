@@ -425,9 +425,16 @@ const EquipmentInfoDashboard = () => {
                   </div>
                   <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
                     <div className="ml-auto flex flex-col justify-end items-end">
-                      <span className="title2bold text-text-danger-400">
-                      {(boxStatus?.ac_24v_input_volt === null || boxStatus?.ac_24v_input_volt === 0) ? 'OFF' : 'ON'}
+                    <span
+                        className={`title2bold ${
+                          boxStatus?.ac_24v_input_volt === null || boxStatus?.ac_24v_input_volt === 0
+                            ? 'text-text-danger-400' 
+                            : 'text-white' 
+                        }`}
+                      >
+                        {boxStatus?.ac_24v_input_volt === null || boxStatus?.ac_24v_input_volt === 0 ? 'OFF' : 'ON'}
                       </span>
+
                       <span className="title2bold text-text-white">
                         {boxStatus?.ac_24v_input_volt} Volt
                       </span>
@@ -450,9 +457,13 @@ const EquipmentInfoDashboard = () => {
                   </div>
                   <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
                     <div className="ml-auto flex flex-col justify-end items-end">
-                      <span className="title2bold text-text-danger-400">
-                        {t(boxStatus?.network_status)}
-                      </span>
+                    <span
+                      className={`title2bold ${
+                        boxStatus?.network_status === '201001' ? 'text-text-danger-400' : 'text-white'
+                      }`}
+                    >
+                      {t(boxStatus?.network_status)}
+                    </span>
                     </div>
                   </div>
                 </div>
@@ -491,7 +502,7 @@ const EquipmentInfoDashboard = () => {
                     </div>
                   </div>
                   <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
-                    <div className="ml-auto flex flex-col justify-end items-end">
+                    {/* <div className="ml-auto flex flex-col justify-end items-end">
                       <div
                         className={`w-14 h-8 flex items-center px-1 rounded-full cursor-pointer transition-all duration-300 ${
                           isOn ? "bg-[#8AC63F]" : "bg-[#BBC0C7]"
@@ -504,6 +515,15 @@ const EquipmentInfoDashboard = () => {
                           }`}
                         ></div>
                       </div>
+                    </div> */}
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                    <span
+                        className={`title2bold ${
+                          boxStatus?.heater_status === '203001' ? 'text-white' : 'text-text-danger-400'
+                        }`}
+                      >
+                        {boxStatus?.heater_status === '203001' ? 'ON' : 'OFF'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -524,10 +544,20 @@ const EquipmentInfoDashboard = () => {
             
                   <div className="flex w-fit flex-col justify-between flex-row gap-[3px] items-center">
                     <div className="ml-auto w-full flex flex-col justify-center items-center bg-bg-grey-500 rounded-[5px] p-[5px]">
-                      <span className="title3 text-text-white">{boxStatus?.back_door_status === '204001' ? 'ON' : 'OFF'} </span>
-                      <span className="title3bold text-text-danger-400 ">
-                        {t(boxStatus?.back_door_status)}
-                      </span>
+                    <span
+                            className={`title3 ${
+                              boxStatus?.back_door_status === '204001' ? 'text-white' : 'text-text-danger-400'
+                            }`}
+                          >
+                            {boxStatus?.back_door_status === '204001' ? 'ON' : 'OFF'}
+                          </span>
+                          <span
+                            className={`title3bold ${
+                              boxStatus?.back_door_status === '204001' ? 'text-white' : 'text-text-danger-400'
+                            }`}
+                          >
+                            {t(boxStatus?.back_door_status)}
+                          </span>
                     </div>
                   </div>
                 </div>
@@ -541,7 +571,7 @@ const EquipmentInfoDashboard = () => {
                     </div>
                   </div>
                   <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
-                    <div className="ml-auto flex flex-col justify-end items-end">
+                    {/* <div className="ml-auto flex flex-col justify-end items-end">
                       <div
                         className={`w-14 h-8 flex items-center px-1 rounded-full cursor-pointer transition-all duration-300 ${
                           isOnFan ? "bg-[#8AC63F]" : "bg-[#BBC0C7]"
@@ -554,6 +584,15 @@ const EquipmentInfoDashboard = () => {
                           }`}
                         ></div>
                       </div>
+                    </div> */}
+                    <div className="ml-auto flex flex-col justify-end items-end">
+                    <span
+                        className={`title2bold ${
+                          boxStatus?.fan_status === '203001' ? 'text-white' : 'text-text-danger-400'
+                        }`}
+                      >
+                        {boxStatus?.fan_status === '203001' ? 'ON' : 'OFF'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -571,7 +610,11 @@ const EquipmentInfoDashboard = () => {
                       <span className="title2bold text-text-white">Edge</span>
                     </div>
                     <div className="ml-auto flex flex-col  gap-[5px] justify-end items-end">
-                      <span className="title2bold text-text-white"> {t(boxStatus?.edge1_network_status)}</span>
+                    <span
+                        className={`title2bold ${
+                          boxStatus?.edge1_network_status === '201001' ? 'text-text-danger-400' : 'text-white'
+                        }`}
+                        > {t(boxStatus?.edge1_network_status)}</span>
                       <button className="body2bold text-text-white min-w-[73px] py-[3px] bg-[#1070C8] rounded-[3px]"  onClick={() => handleRestart('edge', { target: 'AC24V', action: 'ON'})} >
                         Restart
                       </button>
@@ -620,7 +663,14 @@ const EquipmentInfoDashboard = () => {
                           </div>
                           <div className="flex w-full flex-col justify-between flex-row gap-[3px] items-center">
                             <div className="ml-auto flex flex-col justify-end items-end">
-                              <span className="title2bold text-text-white">  {t(road?.detector?.network_status)}</span> 
+                            <span
+                                  className={`title2bold ${
+                                    road?.detector?.network_status === '201002' ? 'text-white' : 'text-text-danger-400'
+                                  }`}
+                                >
+                                  {t(road?.detector?.network_status)}
+                                </span>
+
                               <div className="ml-auto flex flex-row gap-[5px]">
                                 <button className="body2bold text-text-white px-[8px] py-[3px] bg-[#1070C8] rounded-[3px]" onClick={() => openModal(road)}>
                                   <img src={VideoRecord} alt="" />

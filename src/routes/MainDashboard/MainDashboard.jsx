@@ -12,7 +12,7 @@ import { XYZ } from "ol/source";
 import { boundingExtent } from "ol/extent";
 import Cluster from "ol/source/Cluster";
 import { Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
-import { fromLonLat } from "ol/proj";
+import { fromLonLat, get as getProjection } from "ol/proj";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import VectorLayer from "ol/layer/Vector";
@@ -219,13 +219,22 @@ const MainDashboard = () => {
   }, [isHidden, mapDisplay]); 
 
 
+  const opik = "5363C20D-EDEA-3436-88BC-B45CC374A9B4";
   useEffect(() => {
     if (!mapRef.current) return;
 
     const layerMap = {
+      base: new TileLayer({
+        title: "Base",
+        visible: true,
+        type: 'base',
+        source: new XYZ({
+            url: `http://api.vworld.kr/req/wmts/1.0.0/${opik}/Base/{z}/{y}/{x}.png`,
+        }),
+      }),
       osm: new TileLayer({
         title: "osm",
-        visible: true,
+        visible: false,
         source: new OSM(),
       }),
       road: new TileLayer({
@@ -262,6 +271,7 @@ const MainDashboard = () => {
       value: Number("0.1"),
     });
     layerMap.osm.addFilter(enhanceOption);
+    layerMap.base.addFilter(enhanceOption);
     layerMap.canvasdark.addFilter(enhanceOption);
 
     // alt black mode (30, 20, 10)
@@ -275,6 +285,8 @@ const MainDashboard = () => {
       value: Number("1"),
     });
     layerMap.osm.addFilter(colorOption);
+    layerMap.base.addFilter(colorOption);
+
     const blueOption = new Colorize();
     blueOption.setFilter({
       operation: "color",
@@ -292,15 +304,18 @@ const MainDashboard = () => {
       value: Number("0.1"),
     });
     layerMap.osm.addFilter(saturationOption);
+    layerMap.osm.addFilter(saturationOption);
     layerMap.canvasdark.addFilter(saturationOption);
 
 
     var invert_filter = new Colorize();
     layerMap.osm.addFilter(invert_filter);
     layerMap.canvasdark.addFilter(invert_filter);
+    layerMap.base.addFilter(invert_filter);
     invert_filter.setFilter("invert");
 
     const layers = [
+      layerMap["base"],
       layerMap["osm"],
       layerMap["road"],
       layerMap["canvaslight"],
@@ -361,7 +376,7 @@ const MainDashboard = () => {
           {
             src: IconDefault,
             title: "default",
-            action: () => changeLayer("osm"),
+            action: () => changeLayer("base"),
           },
           {
             src: IconRoadMap,
