@@ -86,7 +86,7 @@ const TrafficeByDirection = ({data}) => {
       position: "bottom",
       horizontalAlign: "center",
       //   floating: true,
-      fontSize: '10.5px',
+      fontSize: '9px',
       markers: {
         width: 10,
         height: 10,
