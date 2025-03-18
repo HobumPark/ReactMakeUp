@@ -176,7 +176,6 @@ const EquipmentInfoDashboard = () => {
 
   const { boxData, boxStatusData, BoxEventDataList, boxEventCntData, boxTempHumData, boxCommand, mosCommand } = useBox({
     id: rtu_id,
-    boxTempHumpParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
     boxEventParams: boxEventParams
   })
   
