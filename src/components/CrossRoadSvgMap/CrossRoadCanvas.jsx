@@ -104,10 +104,10 @@ function drawRoad(ctx, collectionOfPoints){
     ctx.setLineDash([])
 }
 
-function drawPoint(x, y) {
+function drawPoint(ctx, x, y, color) {
         ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2, true); // Draw a small circle to represent the point
-        ctx.fillStyle = 'black'; // Set the color of the point
+        ctx.arc(x, y, 6, 0, Math.PI * 2, true); // Draw a small circle to represent the point
+        ctx.fillStyle = color; // Set the color of the point
         ctx.fill();
         ctx.closePath();
 }
@@ -135,10 +135,11 @@ function drawVehicle(ctx, vPos, compass, imageMap){
     }
     const el = imageMap[type];
     if (el){
-        ctx.drawImage(el,
-            rotated.get([0]) + startMatrix.get([0]) - el.clientWidth / 2,
-            rotated.get([1]) + startMatrix.get([1]) - el.clientHeight/2
-        );
+        // ctx.drawImage(el,
+        //     rotated.get([0]) + startMatrix.get([0]) - el.clientWidth / 2,
+        //     rotated.get([1]) + startMatrix.get([1]) - el.clientHeight/2
+        // );
+        drawPoint(ctx, rotated.get([0]) + startMatrix.get([0]), rotated.get([1]) + startMatrix.get([1]), typeToColor[type])
     }
 }
 function drawTrafficLight(ctx, mat, imageMap){
