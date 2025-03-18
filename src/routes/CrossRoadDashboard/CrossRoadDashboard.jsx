@@ -121,23 +121,37 @@ const CrossRoadDashboard = () => {
 
   const roadIds = srDetectorData?.roads?.map(road => road.road_id) || [];
 
+  const [isFocused, setIsFocused] = useState(true);
+
   useEffect(() => {
-    const fetchDataWithInterval = async () => {
-      await fetchDataForRoads(roadIds);
+    const fetchDataWithInterval = () => {
+      fetchDataForRoads(roadIds);
 
       const interval = setInterval(() => {
         fetchDataForRoads(roadIds); 
       }, 1000); 
 
-      // return () => clearInterval(interval);
+      return () => clearInterval(interval);
     };
-    if (roadIds.length !== 0){
+    if (roadIds.length !== 0 && isFocused){
       console.log("BRUH")
-      fetchDataWithInterval();
+      return fetchDataWithInterval();
     }
 
-  }, [srDetectorData]); 
+  }, [srDetectorData, isFocused]); 
 
+  const onFocus = () => setIsFocused(true);
+  const onBlur = () => setIsFocused(false);
+
+  useEffect(() => {
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("blur", onBlur);
+    // Specify how to clean up after this effect:
+    return () => {
+        window.removeEventListener("focus", onFocus);
+        window.removeEventListener("blur", onBlur);
+    };
+  },[]);
   
   // const [trafficPosData, setTrafficPosData] = useState([
   //   {
