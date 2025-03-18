@@ -382,7 +382,7 @@ const MainDashboard = () => {
           },
           {
             src: IconRoadMap,
-            title: "Location Icon",
+            title: "Light Map",
             action: () => changeLayer("canvaslight"),
           },
           {
