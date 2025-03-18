@@ -27,6 +27,7 @@ const useAccessRoadMgt = ( {
     queryFn: () => realTimeObject(realTimeObjectParams),
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
+    refetchInterval: 1000,
     enabled: !!realTimeObjectParams
   });
   

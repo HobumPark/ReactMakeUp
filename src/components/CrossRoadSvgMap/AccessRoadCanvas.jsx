@@ -71,9 +71,6 @@ function drawVehicle(ctx, vPos, imageMap){
     const rotated = rotateAboutZero(matrix([x,y]), 90)
     const el = imageMap[type];
     if (el){
-        console.log(
-            rotated.get([0]) + startMatrix.get([0]) - el.clientWidth / 2,
-            rotated.get([1]) + startMatrix.get([1]) - el.clientHeight/2)
         ctx.drawImage(el,
             rotated.get([0]) + startMatrix.get([0]) - el.clientWidth / 2,
             rotated.get([1]) + startMatrix.get([1]) - el.clientHeight/2
