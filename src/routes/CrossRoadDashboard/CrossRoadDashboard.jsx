@@ -129,10 +129,12 @@ const CrossRoadDashboard = () => {
         fetchDataForRoads(roadIds); 
       }, 1000); 
 
-      return () => clearInterval(interval);
+      // return () => clearInterval(interval);
     };
-
-    fetchDataWithInterval();
+    if (roadIds.length !== 0){
+      console.log("BRUH")
+      fetchDataWithInterval();
+    }
 
   }, [srDetectorData]); 
 
