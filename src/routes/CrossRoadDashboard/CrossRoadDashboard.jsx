@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Header from "../../components/Header/Header";
 
-import IconCar from "../../assets/icon/icon-db-car.svg";
-import IconMotor from "../../assets/icon/icon-db-motorcycles.svg";
-import IconBus from "../../assets/icon/icon-db-bus.svg";
-import IconTruck from "../../assets/icon/icon-db-truck.svg";
-import IconVan from "../../assets/icon/icon-db-van.svg";
-import IconBicycles from "../../assets/icon/icon-db-bicycles.svg";
-import IconHeavyTruck from "../../assets/icon/icon-db-heavy-truck.svg";
+import IconCar from "../../assets/crossroad/car.svg";
+import IconMotor from "../../assets/crossroad/motorcycle.svg";
+import IconBus from "../../assets/crossroad/bus.svg";
+import IconTruck from "../../assets/crossroad/truck.svg";
+import IconVan from "../../assets/crossroad/van.svg";
+import IconBicycles from "../../assets/crossroad/bicycle.svg";
+import IconHeavyTruck from "../../assets/crossroad/long_truck.svg";
 import IconUnknown from "../../assets/icon/icon-db-unknown.svg";
 import IconRightCircle from "../../assets/icon/icon-db-right-circle.svg";
 // import imgMaps from "../../assets/icon/img-lane-maps.svg";
