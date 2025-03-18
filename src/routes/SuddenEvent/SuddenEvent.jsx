@@ -682,7 +682,7 @@ const SuddenEvent = () => {
     let timeQuery = `start_time=${dateTime1.start_date}&end_time=${dateTime1.end_date}`;
     if(inputVal!=''){
       timeQuery+=`&input=${inputVal}`
-      setInput(inputVal)
+      setSearchInput(inputVal)
     } 
     
     if(type=='All'){
@@ -755,6 +755,10 @@ const SuddenEvent = () => {
           }else if(type==""){
             timeQuery+=``
           }
+          if(searchInput!=''){
+            timeQuery+=`&input=${searchInput}`
+            setSearchInput(searchInput)
+          } 
           tbRef.current.setData(`${`${URLS.BACK_DSH}`}/traffic-event-list/by-time?${timeQuery}`);
       }
   }, [queryParamsTime]);
