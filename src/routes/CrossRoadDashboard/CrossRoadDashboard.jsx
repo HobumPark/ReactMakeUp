@@ -133,7 +133,6 @@ const CrossRoadDashboard = () => {
       return () => clearInterval(interval);
     };
     if (roadIds.length !== 0 && isFocused){
-      console.log("BRUH")
       return fetchDataWithInterval();
     }
 
