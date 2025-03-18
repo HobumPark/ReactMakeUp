@@ -137,6 +137,7 @@ const TrafficeByDirection = ({data}) => {
         options={options}
         series={series}
         height={"100%"}
+        type="bar"
         className={
           "_chartTrafficeByDirectioncompo flex w-full !min-h-[0] h-fit!"
         }
