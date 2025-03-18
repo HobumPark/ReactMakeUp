@@ -331,6 +331,10 @@ useEffect(() => {
   }
 }, [data]); 
 
+
+console.log(page);
+
+
   return (
     <>
       <section className="wrap">
@@ -391,7 +395,7 @@ useEffect(() => {
               }
             },
             pageLoaded: (pageNumber) => {
-              setPages((prevPage) => prevPage + `&page=${pageNumber}`)
+              setPages(`start_date=${getLocalISOString(yesterdayMidnight)}&end_date=${getLocalISOString(today)}` + `&page=${pageNumber}`)
               console.log("Current Page:", pageNumber);
               console.log("Max Page:", tbRef.current.getPageMax()); // Logs the max pages after the page is loaded
                 }
