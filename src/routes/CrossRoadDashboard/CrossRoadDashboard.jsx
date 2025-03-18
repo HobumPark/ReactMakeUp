@@ -132,24 +132,24 @@ const CrossRoadDashboard = () => {
 
       return () => clearInterval(interval);
     };
-    if (roadIds.length !== 0 && isFocused){
+    if (roadIds.length !== 0){
       return fetchDataWithInterval();
     }
 
-  }, [srDetectorData, isFocused]); 
+  }, [srDetectorData]); 
 
-  const onFocus = () => setIsFocused(true);
-  const onBlur = () => setIsFocused(false);
+  // const onFocus = () => setIsFocused(true);
+  // const onBlur = () => setIsFocused(false);
 
-  useEffect(() => {
-    window.addEventListener("focus", onFocus);
-    window.addEventListener("blur", onBlur);
-    // Specify how to clean up after this effect:
-    return () => {
-        window.removeEventListener("focus", onFocus);
-        window.removeEventListener("blur", onBlur);
-    };
-  },[]);
+  // useEffect(() => {
+  //   window.addEventListener("focus", onFocus);
+  //   window.addEventListener("blur", onBlur);
+  //   // Specify how to clean up after this effect:
+  //   return () => {
+  //       window.removeEventListener("focus", onFocus);
+  //       window.removeEventListener("blur", onBlur);
+  //   };
+  // },[]);
   
   const [roads, setRoads] = useState([]);
 
