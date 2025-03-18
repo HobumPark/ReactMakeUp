@@ -350,7 +350,9 @@ const SuddenEvent = () => {
       locale: locale,
       position: "bottom center",
       selectedDates: [firstDate],  // 첫 번째 날짜는 -1시간 설정
-      dateFormat: "yyyy-MM-dd hh:mm",  // 시, 분, 초까지 포함한 날짜 포맷
+      timepicker: true,
+      timeFormat: "HH:mm",
+      dateFormat: "yyyy-MM-dd",
       onSelect: (date) => {
         console.log('select start date')
         console.log(date)
@@ -372,7 +374,9 @@ const SuddenEvent = () => {
       locale: locale,
       position: "bottom center",
       selectedDates: [secondDate],  // 두 번째 날짜는 현재 시간 그대로
-      dateFormat: "yyyy-MM-dd hh:mm",  // 시, 분, 초까지 포함한 날짜 포맷 
+      timepicker: true,
+      timeFormat: "HH:mm",
+      dateFormat: "yyyy-MM-dd",
       onSelect: (date) => {
         console.log('select end date')
         console.log(date)
