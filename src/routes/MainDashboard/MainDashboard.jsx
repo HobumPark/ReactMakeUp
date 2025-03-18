@@ -372,12 +372,12 @@ const MainDashboard = () => {
         const icons = [
           {
             src: IconReturn,
-            title: "return",
+            title: "Return",
             action: () => changeMapView(),
           },
           {
             src: IconDefault,
-            title: "default",
+            title: "Default",
             action: () => changeLayer("base"),
           },
           {
@@ -392,7 +392,7 @@ const MainDashboard = () => {
           },
           {
             src: IconBing,
-            title: "satelit",
+            title: "Satellite",
             action: () => changeLayer("satellite"),
           },
         ];
