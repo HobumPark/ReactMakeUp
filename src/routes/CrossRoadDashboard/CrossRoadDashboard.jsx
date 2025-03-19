@@ -264,8 +264,8 @@ const CrossRoadDashboard = () => {
                       {videos.length > 0 ? (
                         videos.map((video, index) => (
                           <div key={index} className="_boxVideo w-full h-full relative flex bg-[] overflow-hidden">
-                            <video src={video.stream_url} className="w-full h-full object-cover" controls />
-                              <img src={IconRightCircle} alt="" className="cursor-pointer absolute right-[20px] top-[10px]"
+                            <img src={video.stream_url} className="w-full h-full object-cover"  />
+                              <img src={IconRightCircle} alt="스트리밍" className="cursor-pointer absolute right-[20px] top-[10px]"
                                 onClick={() => {
                                   window.open(`/dashboard/accessroad?site_id=${site_id}&road_id=${video.road_id}`, "_blank", "width=800,height=600");
                                 }}
