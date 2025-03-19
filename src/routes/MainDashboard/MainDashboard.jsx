@@ -449,7 +449,7 @@ const MainDashboard = () => {
           new Style({
             image: new Icon({
               src: iconSrc,
-              scale: 1 + (olMapRef.current.getView().getZoom() - 10) * 0.1,
+              scale: 0.9,
             }),
           })
         );
@@ -489,7 +489,7 @@ const MainDashboard = () => {
         if (size > 1) {
           return new Style({
             image: new CircleStyle({
-              radius: 100 ,
+              radius: 80 ,
               fill: new Fill({ color: "rgba(255, 0, 0, 1)" }),
               stroke: new Stroke({ color: "#fff", width: 2 }),
             }),
