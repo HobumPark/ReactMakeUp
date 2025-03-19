@@ -79,14 +79,24 @@ const MainDashboard = () => {
     button1: false,
     button2: false,
   });
+
+  const [selectBtnEvent, setselectBtnEvent] = useState({
+    EVT_TP_WWD: false,
+    EVT_TP_STP: false,
+    EVT_TP_SPD: false,
+    EVT_TP_JW: false,
+    EVT_TP_ILP: false,
+    EVT_TP_SLV: false,
+  });
+  
   const siteTypeMap = {
     button1: "102001",
     button2: "102002",
   };
   const [inputValue, setInputValue] = useState("");
   const[siteRoadParams, setSiteRoadParams] = useState('site_type=102001&site_type=102002');
-  const [trafficEventParams, setTrafficEventParams] = useState('')
-  
+  const [trafficEventParams, setTrafficEventParams] = useState('');
+    
   
   const {mapInitialView, mapDisplayPOI, siteRoad } = useDashboard({
     siteRoadParams: siteRoadParams,
@@ -105,9 +115,10 @@ const MainDashboard = () => {
   const mapInitial = mapInitialView?.data;
   const mapDisplay = mapDisplayPOI?.data;
   const siteRoadData = siteRoad?.data;
-  const trafficEventTimeData = trafficEventTime?.data;
+  const [trafficEventTimeData, setItems] = useState([]);
   const objectUnqCntData = objectUnqCnt?.data;
   const objectUnqCntRoadData = objectUnqCntRoad?.data; 
+  const cntEventData = trafficEventTime?.data
 
   useEffect(() => {
     if (mapDisplay?.poi) {
@@ -115,7 +126,20 @@ const MainDashboard = () => {
     }
   }, [mapDisplay]); 
 
+  useEffect(() => {
+    const newItem = trafficEventTime?.data?.items;  // Access the nested array if it exists
+    
+    if (Array.isArray(newItem)) {
+      setItems((prevItems) => [...prevItems, ...newItem]); 
+    } else {
+      console.warn('trafficEventTime?.data.data is not an array:', newItem);
+    }
+  }, [trafficEventTime]);
+  
+  
+  
 
+  const [removedData, setRemovedData] = useState([]);
 
   const updateSiteRoadParams = () => {
     const resultInput = inputValue ? `input=${inputValue}` : "";
@@ -146,14 +170,7 @@ const MainDashboard = () => {
     updateSiteRoadParams(); 
   }, [selectedButtons, inputValue]);
 
-  const [selectBtnEvent, setselectBtnEvent] = useState({
-    EVT_TP_WWD: false,
-    EVT_TP_STP: false,
-    EVT_TP_SPD: false,
-    EVT_TP_JW: false,
-    EVT_TP_ILP: false,
-    EVT_TP_SLV: false,
-  });
+
 
   const handleBtnEventList = (button) => {
     setselectBtnEvent((prev) => ({
@@ -163,16 +180,20 @@ const MainDashboard = () => {
   };
 
   const updateTrafficEventParams = () => {
+    setItems('');
+    setPage(1);
     const resultInput = dateTime
       ? `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`
       : "";
     const typeKeys = Object.keys(selectBtnEvent).filter((key) => !selectBtnEvent[key]);
     const resultSelect = typeKeys.length > 0 ? `&type=${typeKeys.join("&type=")}` : "";
     const size = '&size=10'
-    const page = `&page=${pages}`
+    const page = `&page=1`
     const result = resultInput + resultSelect + size +page;
     setTrafficEventParams(result);
+
   };
+  
 
   useEffect(() => {
     updateTrafficEventParams(); 
@@ -191,8 +212,8 @@ const MainDashboard = () => {
   };
   
   
-  const cardDataEvent = (trafficEventTimeData?.items?.length > 0 
-    ? trafficEventTimeData.items.map((event) => ({
+  const cardDataEvent = (trafficEventTimeData?.length > 0 
+    ? trafficEventTimeData.map((event) => ({
         customCard: eventTypeColorMap[event.type_code] || "border-[#000000]",
         title: `${event.site_name} ${event.road_name}`,
         subtitle: `${event.vehicle_type} / ${event.lane_direction} / ${event.lane_moving_direction}`,
@@ -201,6 +222,8 @@ const MainDashboard = () => {
       }))
     : []);
 
+
+    
   const mapRef = useRef(null);
   const olMapRef = useRef(null);
   const poiLayerRef = useRef(null);
@@ -763,29 +786,15 @@ const MainDashboard = () => {
     "EVT_TP_JW",
     "EVT_TP_ILP",
     "EVT_TP_SLV"
-  ].reduce((sum, eventType) => sum + (trafficEventTimeData?.cnt?.[eventType] || 0), 0);
+  ].reduce((sum, eventType) => sum + (cntEventData?.cnt?.[eventType] || 0), 0);
    
-  const isScrolling = useRef(false);
-  const handleScrollUp = (e) => {
-    const bottom = Math.abs(e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop) < 1
-
-    if (bottom ) {
-
-     console.log('scroll up');
-     setPage((prev) => Math.max(1, prev - 1)); 
-
+  const fetchMoreData = async () => {
+    try {
+      setPage((prevPage) => prevPage + 1); 
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
   };
-  const handleScrollDown = (e) => {
-    const bottom = Math.abs(e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop) < 1
-
-    if (bottom) {
-      console.log('scroll down');
-      setPage((prev) => prev + 1); 
-
-    }
-  };
-
 
   useEffect(() => {
     console.log(pages);
@@ -798,6 +807,11 @@ const MainDashboard = () => {
     }
   }, [pages]);
 
+ console.log(removedData);
+ console.log(trafficEventTimeData);
+ 
+ 
+ 
   return (
     <>
       <section className="w-full h-screen overflow-hidden flex flex-col">
@@ -1015,7 +1029,7 @@ const MainDashboard = () => {
                     onClick={() => handleBtnEventList("EVT_TP_WWD")}
                   >
                     <span className="text-text-white title3">{t('EVT_TP_WWD')}</span>
-                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_WWD}</span>
+                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_WWD}</span>
                   </button>
 
                   <button
@@ -1027,7 +1041,7 @@ const MainDashboard = () => {
                     onClick={() => handleBtnEventList("EVT_TP_STP")}
                   >
                     <span className="text-text-white title3">{t('EVT_TP_STP')}</span>
-                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_STP}</span>
+                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_STP}</span>
                   </button>
 
                   <button
@@ -1039,7 +1053,7 @@ const MainDashboard = () => {
                     onClick={() => handleBtnEventList("EVT_TP_SPD")}
                   >
                     <span className="text-text-white title3">{t('EVT_TP_SPD')}</span>
-                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_SPD}</span>
+                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_SPD}</span>
                   </button>
 
                   <button
@@ -1051,7 +1065,7 @@ const MainDashboard = () => {
                     onClick={() => handleBtnEventList("EVT_TP_JW")}
                   >
                     <span className="text-text-white title3">{t('EVT_TP_JW')}</span>
-                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_JW}</span>
+                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_JW}</span>
                   </button>
 
                   <button
@@ -1063,7 +1077,7 @@ const MainDashboard = () => {
                     onClick={() => handleBtnEventList("EVT_TP_ILP")}
                   >
                     <span className="text-text-white title3">{t('EVT_TP_ILP')}</span>
-                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_ILP}</span>
+                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_ILP}</span>
                   </button>
 
                   <button
@@ -1075,16 +1089,22 @@ const MainDashboard = () => {
                     onClick={() => handleBtnEventList("EVT_TP_SLV")}
                   >
                     <span className="text-text-white title3">{t('EVT_TP_SLV')}</span>
-                    <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_SLV}</span>
+                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_SLV}</span>
                   </button>
                 </div>
                 <ReactScrollWheelHandler
-                    upHandler={handleScrollUp}
-                    downHandler={handleScrollDown}
+                    downHandler={fetchMoreData}
                     style={{
               overflow: 'auto'
           }}
                   >
+                  {/* <InfiniteScroll
+              dataLength={trafficEventTimeData.length}
+              next={fetchMoreData}
+              loader={<h4>Loading...</h4>}
+              endMessage={<p style={{ textAlign: "center" }}>No more data</p>}
+              style={{  overflow: "auto"}}
+            > */}
                 <div className="_containerCardEvntList flex flex-col gap-[3px] overflow-auto h-full"  >
                   {cardDataEvent.map((card, index) => (
                     <CardList
@@ -1099,6 +1119,7 @@ const MainDashboard = () => {
                   ))}
                 </div>
                 </ReactScrollWheelHandler>
+                {/* </InfiniteScroll> */}
               </div>
               
             </div>
