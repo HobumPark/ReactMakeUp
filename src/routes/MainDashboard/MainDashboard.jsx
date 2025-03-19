@@ -22,7 +22,7 @@ import Icon from "ol/style/Icon";
 import DbVideoModal from "../../components/Modal/DbVideoModal/DbVideoModal";
 import CardList from "../../components/CardList/CardList";
 import Chart from "react-apexcharts";
-
+import ReactScrollWheelHandler from "react-scroll-wheel-handler";
 import IconCrosswalk from "../../assets/icon/icon-db-crosswalk.svg";
 import IconIntersection from "../../assets/icon/icon-db-intersection.svg";
 import IconDetector from "../../assets/icon/icon-db-detector.svg";
@@ -68,6 +68,7 @@ const MainDashboard = () => {
   const [POIData, setPOIData] = useState("");
   const [isHidden, setIsHidden] = useState([]);
   const [poiItem, setPoiItem] = useState([]);
+  const [pages, setPage] = useState(1);
   const today = new Date();
   const midnight = new Date(new Date().setHours(0, 0, 0, 0));
   const [dateTime] = useState({
@@ -167,8 +168,9 @@ const MainDashboard = () => {
       : "";
     const typeKeys = Object.keys(selectBtnEvent).filter((key) => !selectBtnEvent[key]);
     const resultSelect = typeKeys.length > 0 ? `&type=${typeKeys.join("&type=")}` : "";
-    const size = '&size=100'
-    const result = resultInput + resultSelect + size;
+    const size = '&size=10'
+    const page = `&page=${pages}`
+    const result = resultInput + resultSelect + size +page;
     setTrafficEventParams(result);
   };
 
@@ -763,6 +765,38 @@ const MainDashboard = () => {
     "EVT_TP_SLV"
   ].reduce((sum, eventType) => sum + (trafficEventTimeData?.cnt?.[eventType] || 0), 0);
    
+  const isScrolling = useRef(false);
+  const handleScrollUp = (e) => {
+    const bottom = Math.abs(e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop) < 1
+
+    if (bottom && !isScrolling.current) {
+
+     console.log('scroll up');
+     setPage((prev) => Math.max(1, prev - 1)); 
+
+    }
+  };
+  const handleScrollDown = (e) => {
+    const bottom = Math.abs(e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop) < 1
+
+    if (bottom && !isScrolling.current) {
+      console.log('scroll down');
+      setPage((prev) => prev + 1); 
+
+    }
+  };
+
+
+  useEffect(() => {
+    console.log(pages);
+    
+    if (pages > 1) {
+      setTrafficEventParams((prev) => {
+        const updatedPrev = prev.replace(/&page=\d+/, '');  
+        return updatedPrev + `&page=${pages}`;  
+      });
+    }
+  }, [pages]);
 
   return (
     <>
@@ -1044,8 +1078,11 @@ const MainDashboard = () => {
                     <span className="text-text-white title2bold">{trafficEventTimeData?.cnt?.EVT_TP_SLV}</span>
                   </button>
                 </div>
-
-                <div className="_containerCardEvntList flex flex-col gap-[3px] overflow-auto h-full">
+                <ReactScrollWheelHandler
+                    upHandler={handleScrollUp}
+                    downHandler={handleScrollDown}
+                  >
+                <div className="_containerCardEvntList flex flex-col gap-[3px] overflow-auto h-full"  >
                   {cardDataEvent.map((card, index) => (
                     <CardList
                       type="event"
@@ -1058,7 +1095,9 @@ const MainDashboard = () => {
                     />
                   ))}
                 </div>
+                </ReactScrollWheelHandler>
               </div>
+              
             </div>
           </div>
 
