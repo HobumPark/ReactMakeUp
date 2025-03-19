@@ -469,7 +469,7 @@ const MainDashboard = () => {
     const distance = zoom > 15 ? 50 : 100;  
   
     const clusterSource = new Cluster({
-      distance: 20, 
+      distance: 100, 
       minDistance:0,
       source: new VectorSource({
         features: features,
@@ -489,7 +489,7 @@ const MainDashboard = () => {
         if (size > 1) {
           return new Style({
             image: new CircleStyle({
-              radius: 50 ,
+              radius: 100 ,
               fill: new Fill({ color: "rgba(255, 0, 0, 1)" }),
               stroke: new Stroke({ color: "#fff", width: 2 }),
             }),
