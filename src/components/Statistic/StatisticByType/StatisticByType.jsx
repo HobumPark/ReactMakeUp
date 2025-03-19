@@ -35,7 +35,7 @@ const statisticByTypeTabulator = [
   {
     title: "사이트",
     field: "site_name",
-    widthGrow: 1,
+    widthGrow: 2,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -44,7 +44,7 @@ const statisticByTypeTabulator = [
   {
     title: "접근로",
     field: "road_name",
-    widthGrow: 1,
+    widthGrow: 2,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -53,7 +53,7 @@ const statisticByTypeTabulator = [
   {
     title: "차종 전체",
     field: "all_cnt",
-    WidthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -63,7 +63,7 @@ const statisticByTypeTabulator = [
   {
     title: "승용차",
     field: "car_cnt",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -73,7 +73,7 @@ const statisticByTypeTabulator = [
   {
     title: "승합차",
     field: "van_cnt",
-    WidthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -83,7 +83,7 @@ const statisticByTypeTabulator = [
   {
     title: "트럭",
     field: "truck_cnt",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -93,7 +93,7 @@ const statisticByTypeTabulator = [
   {
     title: "대형 트럭",
     field: "long_truck_cnt",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -103,7 +103,7 @@ const statisticByTypeTabulator = [
   {
     title: "버스",
     field: "bus_cnt",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -113,7 +113,7 @@ const statisticByTypeTabulator = [
   {
     title: "오토바이",
     field: "motorcycle_cnt",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -123,7 +123,7 @@ const statisticByTypeTabulator = [
   {
     title: "자전거",
     field: "bicycle_cnt",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -133,7 +133,7 @@ const statisticByTypeTabulator = [
   {
     title: "기타",
     field: "unknown_cnt",
-    widthGrow: 1,
+    width: 60,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,

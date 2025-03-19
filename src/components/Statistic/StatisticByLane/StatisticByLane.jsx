@@ -26,7 +26,7 @@ const statisticByTypeTabulator = [
     title: "집계시간",
     field: "aggregated_time",
     hozAlign: "center",
-    widthGrow: 2,
+    widthGrow: 1,
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
@@ -52,7 +52,7 @@ const statisticByTypeTabulator = [
   {
     title: "차로 전체",
     field: "lane_all",
-    WidthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -62,7 +62,7 @@ const statisticByTypeTabulator = [
   {
     title: "1차로",
     field: "lane_1",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -72,7 +72,7 @@ const statisticByTypeTabulator = [
   {
     title: "2차로",
     field: "lane_2",
-    WidthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -82,7 +82,7 @@ const statisticByTypeTabulator = [
   {
     title: "3차로",
     field: "lane_3",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -92,7 +92,7 @@ const statisticByTypeTabulator = [
   {
     title: "4차로",
     field: "lane_4",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -102,7 +102,7 @@ const statisticByTypeTabulator = [
   {
     title: "5차로",
     field: "lane_5",
-    widthGrow: 1,
+    width: 70,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,

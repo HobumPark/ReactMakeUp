@@ -25,7 +25,7 @@ const allStatisticTabulator = [
     title: "집계시간",
     field: "aggregated_time",
     hozAlign: "center",
-    widthGrow: "2",
+    widthGrow: 1.2,
     headerHozAlign: "center",
     headerSort: false,
     resizable: false,
@@ -51,7 +51,7 @@ const allStatisticTabulator = [
   {
     title: "평균 대기길이(m)",
     field: "que_len_avg",
-    widthGrow: 1,
+    width: 120,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -61,7 +61,7 @@ const allStatisticTabulator = [
   {
     title: "최대 대기길이(m)",
     field: "que_len_max",
-    widthGrow: 1,
+    width: 120,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -71,7 +71,7 @@ const allStatisticTabulator = [
   {
     title: "평균 점유율(%)",
     field: "occupancy_avg",
-    widthGrow: 1,
+    width: 120,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -81,7 +81,7 @@ const allStatisticTabulator = [
   {
     title: "평균속도(km/h)",
     field: "speed_avg",
-    widthGrow: 1,
+    width: 120,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
@@ -91,7 +91,7 @@ const allStatisticTabulator = [
   {
     title: "최고속도(km/h)",
     field: "speed_max",
-    widthGrow: 1,
+    width: 120,
     hozAlign: "center",
     headerHozAlign: "center",
     headerSort: false,
