@@ -73,7 +73,7 @@ function SignIn() {
     const isLogin = getIsLogin();
 
     if (isLogin) {
-        navigate("/system-management/user");
+        navigate("/dashboard/main-dashboard");
     }
   }, [navigate]);
 

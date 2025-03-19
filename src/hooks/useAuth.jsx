@@ -25,9 +25,9 @@ const useAuth = ({   userID = null, onLoginFail = () => {} ,onResetFail = () => 
         }
         queryClient.clear();
         if (data.group_id == 1) {
-          navigate("/system-management/user");
+          navigate("/dashboard/main-dashboard");
         } else if (data.group_id == 2) {
-          navigate("/asset-management/box")
+          navigate("/dashboard/main-dashboard");
         } else {
           navigate("/management/unauthorized")
         }

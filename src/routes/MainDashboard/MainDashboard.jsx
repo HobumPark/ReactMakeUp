@@ -769,7 +769,7 @@ const MainDashboard = () => {
   const handleScrollUp = (e) => {
     const bottom = Math.abs(e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop) < 1
 
-    if (bottom && !isScrolling.current) {
+    if (bottom ) {
 
      console.log('scroll up');
      setPage((prev) => Math.max(1, prev - 1)); 
@@ -779,7 +779,7 @@ const MainDashboard = () => {
   const handleScrollDown = (e) => {
     const bottom = Math.abs(e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop) < 1
 
-    if (bottom && !isScrolling.current) {
+    if (bottom) {
       console.log('scroll down');
       setPage((prev) => prev + 1); 
 
@@ -1081,6 +1081,9 @@ const MainDashboard = () => {
                 <ReactScrollWheelHandler
                     upHandler={handleScrollUp}
                     downHandler={handleScrollDown}
+                    style={{
+              overflow: 'auto'
+          }}
                   >
                 <div className="_containerCardEvntList flex flex-col gap-[3px] overflow-auto h-full"  >
                   {cardDataEvent.map((card, index) => (
