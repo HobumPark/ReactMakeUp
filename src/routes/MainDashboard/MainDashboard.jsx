@@ -798,7 +798,7 @@ const MainDashboard = () => {
                   </span>
                 </div>
                 <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
-                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("221002")}>
+                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("221002")}>
                     <img src={LegendBillboard} alt="" />
                     <span className={`title3 ${isHidden.includes('221002') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>전광판</span>
                     <span className="title3 text-[#4B3C3C]">
@@ -806,7 +806,7 @@ const MainDashboard = () => {
                       <span>{mapDisplay?.cnt?.[0]?.vms_total ?? 0}</span> )
                     </span>
                   </div>
-                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("221001")}>
+                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("221001")}>
                     <img src={LegendSpeaker} alt="" />
                     <span className={`title3 ${isHidden.includes('221001') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>전광판</span>
                     <span className="title3 text-[#4B3C3C]">
@@ -814,7 +814,7 @@ const MainDashboard = () => {
                       <span>{mapDisplay?.cnt?.[0]?.speaker_total ?? 0}</span> )
                     </span>
                   </div>
-                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("detector")}>
+                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("detector")}>
                     <img src={LegendSignal} alt="" />
                     <span className={`title3 ${isHidden.includes('detector') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>레이더</span>
                     <span className="title3 text-[#4B3C3C]">
@@ -822,7 +822,7 @@ const MainDashboard = () => {
                       <span>{mapDisplay?.cnt?.[0]?.detector_total ?? 0}</span> )
                     </span>
                   </div>
-                  <div className="flex flex-row gap-[5px]" onClick={() => togglePOIVisibility("box")}>
+                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("box")}>
                     <img src={LegendBox} alt="" />
                     <span className={`title3 ${isHidden.includes('box') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>함체</span>
                     <span className="title3 text-[#4B3C3C]">
