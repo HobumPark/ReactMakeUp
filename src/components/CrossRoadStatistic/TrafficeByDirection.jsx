@@ -105,8 +105,12 @@ const TrafficeByDirection = ({data}) => {
     tooltip: {
       shared: true, 
       intersect: false, 
+      style: {
+        fontSize: '5px',
+      },
       y: {
         formatter: function (value, { seriesIndex }) {
+       
           const lastSeriesIndex = series.length - 1; 
           if (seriesIndex === lastSeriesIndex) {
             return losLevels[Math.round(value)] || value;
@@ -114,18 +118,47 @@ const TrafficeByDirection = ({data}) => {
           return value;
         },
       },
+      custom: function({series, seriesIndex, dataPointIndex, w}) {
+        const customElement = document.createElement('div');
+        customElement.style.padding = '10px';
+        customElement.style.display = 'grid'; 
+        customElement.style.gridTemplateColumns = '1fr 1fr 1fr'; 
+        customElement.style.columnGap = '10px';
+        const xAxisValue = w.config.xaxis.categories[dataPointIndex]; // Ambil nilai x-axis
+        customElement.innerHTML += `
+          <div style="grid-column: span 3; text-align: left; font-weight: bold; margin-bottom: 10px;">
+            ${xAxisValue}
+          </div>
+
+        `;
+        series.forEach((serie, index) => {
+          customElement.innerHTML += `
+            <div style="display: flex; align-items: center;">
+              <div 
+                style="width: 10px; height: 10px; border-radius: 50%; background-color: ${w.config.colors[index]}; margin-right: 10px;">
+              </div>
+              <strong>${w.config.series[index].name}:</strong> ${serie[dataPointIndex]}
+            </div>`;
+        });
+      
+        return customElement;
+      }
+      
+      
     },
+
+
   };
 
   const series = [
-    { name: "North", type: "bar", data: data?.map(item => item["103001"] ?? null) },
-    { name: "Northeast", type: "bar", data: data?.map(item => item["103002"] ?? null) },
-    { name: "East", type: "bar", data: data?.map(item => item["103003"] ?? null) },
-    { name: "Southeast", type: "bar", data: data?.map(item => item["103004"] ?? null) },
-    { name: "South", type: "bar", data: data?.map(item => item["103005"] ?? null) },
-    { name: "Southwest", type: "bar", data: data?.map(item => item["103006"] ?? null) },
-    { name: "West", type: "bar", data: data?.map(item => item["103007"] ?? null) },
-    { name: "Northwest", type: "bar", data: data?.map(item => item["103008"] ?? null) },
+    { name: "북 ", type: "bar", data: data?.map(item => item["103001"] ?? null) },
+    { name: "북동", type: "bar", data: data?.map(item => item["103002"] ?? null) },
+    { name: "동", type: "bar", data: data?.map(item => item["103003"] ?? null) },
+    { name: "남동", type: "bar", data: data?.map(item => item["103004"] ?? null) },
+    { name: "남", type: "bar", data: data?.map(item => item["103005"] ?? null) },
+    { name: "남서", type: "bar", data: data?.map(item => item["103006"] ?? null) },
+    { name: "서 ", type: "bar", data: data?.map(item => item["103007"] ?? null) },
+    { name: "북서", type: "bar", data: data?.map(item => item["103008"] ?? null) },
     { name: "LOS", type: "line", data: convertLOSToNumber(data) },
   ];
   

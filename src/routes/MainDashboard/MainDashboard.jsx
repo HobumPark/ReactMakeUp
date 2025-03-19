@@ -61,6 +61,7 @@ import { formatFullDateTime } from "../../utils/date";
 import { useTranslation } from "react-i18next";
 import useTrafficEvent from "../../hooks/useTrafficEvent";
 import useObjectCnt from "../../hooks/useObjectCnt";
+import NoticeMessage from "../../plugin/noticemessage/noticemessage";
 
 const MainDashboard = () => {
   const {t} = useTranslation();
@@ -331,7 +332,7 @@ const MainDashboard = () => {
 
       view: new View({
         center: fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]),
-        zoom: mapInitial?.[0]?.view_zoom,
+        zoom: 9,
         minZoom: 8, 
       }),
       
@@ -430,34 +431,46 @@ const MainDashboard = () => {
       "detector": IconDetector,  
       "box": IconBox               
     };
-  //
-  
-    const features = poiItem?.map(item => {
-      const iconSrc = iconMapping[item.type] || IconDefault;  
-      const iconFeature = new Feature({
-        geometry: new Point(fromLonLat([item.lng, item.lat])),
+    
+    
+    const features = poiItem
+      ?.filter(item => iconMapping[item.type]) 
+      ?.map(item => {
+        let lat = item.lat;
+        let lng = item.lng;
+    
+        const iconSrc = iconMapping[item.type]; 
+    
+        const iconFeature = new Feature({
+          geometry: new Point(fromLonLat([lng, lat])),
+        });
+    
+        iconFeature.setStyle(
+          new Style({
+            image: new Icon({
+              src: iconSrc,
+              scale: 1 + (olMapRef.current.getView().getZoom() - 10) * 0.1,
+            }),
+          })
+        );
+        
+        iconFeature.setId(`${item.id}-${item.type}`);
+        return iconFeature;
       });
-  
-      iconFeature.setStyle(
-        new Style({
-          image: new Icon({
-            src: iconSrc,
-            scale: 1 + (olMapRef.current.getView().getZoom() - 10) * 0.1,
-          }),
-        })
-      );
-      
-      iconFeature.setId(item.type);
-      return iconFeature;
-    });
+    
   
     // const view = olMapRef.current.getView();
     // const resolution = view.getResolution(); 
     // const distanceInMeters = 3000; 
     // const distanceInPixels = distanceInMeters / resolution; 
+    const view = olMapRef.current.getView();
+    const zoom = view.getZoom();
+
+    const distance = zoom > 15 ? 50 : 100;  
   
     const clusterSource = new Cluster({
-      distance: 100, 
+      distance: 20, 
+      minDistance:0,
       source: new VectorSource({
         features: features,
       }),
@@ -467,16 +480,17 @@ const MainDashboard = () => {
     // **Layer Clustering**
     const clusterLayer = new VectorLayer({
       source: clusterSource,
-      zIndex:100,
+      zIndex: 100,
       style: function (feature) {
         const clusteredFeatures = feature.get("features");
         const size = clusteredFeatures.length;
+        
   
         if (size > 1) {
           return new Style({
             image: new CircleStyle({
-              radius: 50 + size * 10,
-              fill: new Fill({ color: "rgba(255, 0, 0, 2)" }),
+              radius: 50 ,
+              fill: new Fill({ color: "rgba(255, 0, 0, 1)" }),
               stroke: new Stroke({ color: "#fff", width: 2 }),
             }),
             text: new Text({
@@ -525,17 +539,17 @@ const MainDashboard = () => {
           const extent = boundingExtent(
             clusteredFeatures.map((f) => f.getGeometry().getCoordinates())
           );
-          // const minZoom = 100; 
-  
-          // olMapRef.current.getView().fit(extent, { 
-          //   duration: 1000, 
-          //   padding: [200, 200, 200, 200], 
-          //   maxZoom: minZoom 
-          // });
+ 
+          const currentZoom = olMapRef.current.getView().getZoom();
+
+          const minZoom = Math.max(currentZoom - 3, 10);  // pastikan tidak kurang dari 10
+          const maxZoom = Math.min(currentZoom + 3, 20);  // pastikan tidak lebih dari 20
+        
           olMapRef.current.getView().fit(extent, { 
             duration: 1000, 
             padding: [50, 50, 50, 50], 
-            maxZoom: 15
+            maxZoom: maxZoom,  
+            minZoom: minZoom  
           });
   
     
@@ -548,7 +562,8 @@ const MainDashboard = () => {
     
       olMapRef.current.forEachFeatureAtPixel(event.pixel, (feature) => {
         const featureId = feature.getId();
-        const clickedItem = mapDisplay.poi?.find((item) => item.type === featureId);
+        const clickedItem = mapDisplay.poi?.find((item) => `${item.id}-${item.type}` === featureId);
+
     
         if (clickedItem) {
           switch (clickedItem.type) {
@@ -565,6 +580,10 @@ const MainDashboard = () => {
               setPOIData(clickedItem);
               setShowModal(true);
               break;
+            case "221001":
+              return;
+            case "221002":
+              return;
             default:
               alert("Unknown icon clicked!");
           }
@@ -575,6 +594,10 @@ const MainDashboard = () => {
     olMapRef.current.on("moveend", function () {
       poiLayerRef.current.setVisible(true);
     });
+    olMapRef.current.getView().on('change:resolution', function() {
+      clusterSource.refresh(); 
+    });
+    
     
     //
   }, [poiItem]);
@@ -584,24 +607,21 @@ const MainDashboard = () => {
     if (mapEntry) {
       const { lat, lng } = mapEntry;
       console.log(id, lat, lng);
-      
-      if (lat && lng) {
+      const isInSouthKorea = lat >= 33.0 && lat <= 38.6 && lng >= 124.6 && lng <= 131.0;
+
+      if (lat && lng && isInSouthKorea) {
         olMapRef.current.getView().animate({
           center: fromLonLat([lng, lat]),
-          zoom: 17,  // Langsung ke zoom level 17
-          duration: 1000  // Durasi animasi
+          zoom: 17,  
+          duration: 1000 
         });
       } else {
-        console.error("Invalid coordinates for the selected POI");
+        new NoticeMessage("좌표가 대한민국 범위를 벗어났습니다.");
       }
     } else {
-      console.error("No POI found with the given id");
+      new NoticeMessage("POI를 찾을 수 없습니다.");
     }
   };
-
-
-
-
 
   const vehicleData = [
     { label: "승용차", icon: IconCar, count: objectUnqCntData?.["301001"] },

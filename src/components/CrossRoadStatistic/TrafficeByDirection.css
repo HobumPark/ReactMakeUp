@@ -5,3 +5,9 @@
 ._chartTrafficeByDirectioncompo .apexcharts-legend-marker  {
    margin-right: 4px;
 }
+
+._chartTrafficeByDirectioncompo .apexcharts-tooltip .apexcharts-theme-light{
+    position: absolute !important;
+    z-index: 100000 !important; 
+    display: block !important;  
+}

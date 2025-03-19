@@ -897,7 +897,7 @@ const EquipmentInfoDashboard = () => {
                   <input
                     type="text"
                     className="input-db-text w-full"
-                    placeholder="Search, Number Event"
+                    placeholder="시설물명칭 / 발생타입명"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                   />

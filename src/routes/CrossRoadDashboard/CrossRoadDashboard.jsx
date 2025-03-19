@@ -45,7 +45,7 @@ const CrossRoadDashboard = () => {
 
   const { objectUnqCnt, objCntCompassTime, objCntCompassEntry,objCntCompassExit } = useObjectCnt({
     objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}`,
-    objCompassTimeParams: `start_time=${dateTime.start_time}&end_time=${dateTime.end_date}&site_id=${site_id}&interval=15`,
+    objCompassTimeParams: `start_time=${dateTime.start_time}&end_time=${dateTime.end_date}&site_id=${site_id}&interval=30`,
     objCompassParamsExit: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}&moving_direction=108002`,
     objCompassParamsEntry: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&site_id=${site_id}&moving_direction=108001`
   })
