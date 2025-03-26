@@ -350,7 +350,7 @@ const MainDashboard = () => {
         zoom: 15,
         minZoom: 8, 
       }),
-      
+      controls: [] // 기본 컨트롤 모두 제거
     });
 
     const changeMapView = () => {
