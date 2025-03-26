@@ -14,7 +14,7 @@ import i18n from "../../utils/i18n";
 
 const Header = () => {
   const { t } = useTranslation();
-  const { userInfo } = useOutletContext();
+  //const { userInfo } = useOutletContext();
   const [language, setLanguage] = useState("");
   const [time, setTime] = useState(""); 
   const [date, setDate] = useState("");
@@ -22,6 +22,7 @@ const Header = () => {
 
   const { handleLogout } = useAuth();
   const handleLogoutButton = () => {
+    /*
     let checkLogout = new NoticeMessage(t('msg > logout confirm'), {
       mode: "confirm",
     });
@@ -29,6 +30,7 @@ const Header = () => {
     checkLogout.confirmClicked().then(() => {
       handleLogout();
     });
+    */
   };  
   useEffect(() => {
     const langSource = Common.getDTPLangSource(i18n.language);
@@ -64,25 +66,11 @@ const Header = () => {
       <header className="w-full flex flex-row justify-between h-[62px] text-text-white bg-db-black ">
         <div className="flex w-fit">
           <div className="flex  items-center h-full min-w-[218px] bg-header-content ">
-            <span className="m-auto h5bold">SMART TRAFFIC</span>
+            <span className="m-auto h5bold">Wayties</span>
           </div>
           <div className="flex w-fit flex-row h-full items-center">
-            <div className="flex flex-col items-center gap-[5px] w-[97px]" onClick={() => handleNavigate("/statistic/communication-history")}>
-              <img src={IconStatistic} alt="IconStatistic" />
-              <span className="body1medium text-text-white">통계</span>
-            </div>
-            <div className="flex flex-col items-center gap-[5px] w-[97px]"  onClick={() => handleNavigate("/system-management/user")}>
-              <img src={IconSystem} alt="IconSystem" />
-              <span className="body1medium text-text-white">시스템</span>
-            </div>
-            <div className="flex flex-col items-center gap-[5px] w-[97px]"  onClick={() => handleNavigate("/site-management/site")}>
-              <img src={IconSitus} alt="IconSitus" />
-              <span className="body1medium text-text-white">사이트</span>
-            </div>
-            <div className="flex flex-col items-center gap-[5px] w-[97px]"  onClick={() => handleNavigate("/asset-management/box")}>
-              <img src={IconAsset} alt="IconAsset" />
-              <span className="body1medium text-text-white">자산</span>
-            </div>
+            
+            
           </div>
         </div>
         <div className="flex gap-[8px] w-fit">
@@ -93,13 +81,7 @@ const Header = () => {
             </div>
             <span className="h5bold text-text-white">{time}</span>
           </div>
-          <div className="flex  items-center h-full min-w-[218px] bg-header-content justify-between px-[20px] gap-[20px]">
-            <div className="flex flex-row items-center gap-[4px]">
-              <img src={IconUser} alt="user" />
-              <span className="title2bold">{userInfo?.account_id}</span>
-            </div>
-            <img src={IconLogout} alt="" onClick={handleLogoutButton} />
-          </div>
+          
         </div>
       </header>
     </>

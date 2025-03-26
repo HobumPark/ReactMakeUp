@@ -1,0 +1,124 @@
+{
+    "data": [
+        {
+            "id":4023,
+            "type":"car",
+            "lat": 37.5665,
+            "lng": 126.9780,
+            "status":"대기",
+            "detail":"",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        },
+        {
+            "id":4024,
+            "type":"car",
+            "lat": 37.5640,
+            "lng": 126.9780,
+            "status":"오류",
+            "detail":"Network Error / Failed to load Resource",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        },
+        {
+            "id":4025,
+            "type":"car",
+            "lat": 37.5650,
+            "lng": 126.9825,
+            "status":"시작대기",
+            "detail":"",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        },
+        {
+            "id":4026,
+            "type":"car",
+            "lat": 37.5650,
+            "lng": 126.9825,
+            "status":"대기",
+            "detail":"",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        },
+        {
+            "id":4027,
+            "type":"car",
+            "lat": 37.5650,
+            "lng": 126.9825,
+            "status":"대기",
+            "detail":"",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        },
+        {
+            "id":4028,
+            "type":"car",
+            "lat": 37.5650,
+            "lng": 126.9825,
+            "status":"대기",
+            "detail":"",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        },
+        {
+            "id":4029,
+            "type":"car",
+            "lat": 37.5650,
+            "lng": 126.9825,
+            "status":"대기",
+            "detail":"",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        },
+        {
+            "id":4030,
+            "type":"car",
+            "lat": 37.5650,
+            "lng": 126.9825,
+            "status":"대기",
+            "detail":"",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        },
+        {
+            "id":4031,
+            "type":"car",
+            "lat": 37.5650,
+            "lng": 126.9825,
+            "status":"대기",
+            "detail":"",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        },
+        {
+            "id":4032,
+            "type":"car",
+            "lat": 37.5650,
+            "lng": 126.9825,
+            "status":"대기",
+            "detail":"",
+            "test":"TEST-01122",
+            "logfile":"ex0.pcap",
+            "checked":false,
+            "isActive":false
+        }
+    ]
+}

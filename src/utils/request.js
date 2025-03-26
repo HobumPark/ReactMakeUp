@@ -24,6 +24,8 @@ export const handleErrorCode = (errCode) => {
       credentials: "include",
     })
       .then(async (response) => {
+        console.log('reqGet')
+        console.log(response)
         const contentType = response.headers.get("Content-Type");
         const responseData =
           contentType && contentType.indexOf("application/json") !== -1

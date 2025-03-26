@@ -11,6 +11,17 @@ export const fetchMapDisplayPOI = async () => {
     return await reqGet(url);
 };
 
+//테스트용 차량 정보
+export const fetchCarInfoTest = async () => {
+    const url = `/sampleCarInfo.json`;
+    return await reqGet(url);
+};
+//테스트용 차량위치 정보
+export const fetchMapDisplayPOITest = async () => {
+    const url = `/sampleCarMovingData.json`;
+    return await reqGet(url);
+};
+
 export const fetchSiteRoad= async (params = "") => {
     const url = `${URLS.BACK_DSH}${APIS.siteRoad(params)}`;
     return await reqGet(url);

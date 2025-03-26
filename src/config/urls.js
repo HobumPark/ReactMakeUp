@@ -13,7 +13,7 @@ if (DEBUG) {
   // for development
   URLS = {
     FRONT: `${host}:5173`,
-    BACK_DSH: `${host}:7120/api/dsh`,
+    BACK_DSH: `${host}:7140/api/dsh`,//waties dsh sample port
     BACK_ENV: `${host}:7121/api/env`,
     rl: 'http://192.168.20.200:7120/api/dsh'
   };
@@ -117,6 +117,7 @@ export const APIS = {
   //Main dashboard
   mapInitialView:'/map/initial-view',
   mapDisplayPOI: '/map/poi',
+  mapDisplayPOITest: '/map/poi-test',
   siteRoad:(filterParams) => `/site-road?${filterParams}`,
   //traffic event list
   trafficEventTime:(filterParams) => `/traffic-event-list/by-time?${filterParams}`,
@@ -145,5 +146,10 @@ export const APIS = {
   boxTempHum: (id, filterParams) =>`/box-temp-hum/${id}?${filterParams}`,
   boxCommand: (rtuID) =>`/box/${rtuID}/power/command`,
   mosCommand:  (siteID) =>`/site/${siteID}/mos/command`,
-
+  //command
+  command1:  (carId,filterParams) =>`/car/${carId}/command1?${filterParams}`,
+  // `/car/1/command1?air=on&lights=on`
+  command2:  (carId,filterParams) =>`/car/${carId}/command2?${filterParams}`,
+  command3:  (carId,filterParams) =>`/car/${carId}/command3?${filterParams}`,
+  command4:  (carId,filterParams) =>`/car/${carId}/command4?${filterParams}`,
 }

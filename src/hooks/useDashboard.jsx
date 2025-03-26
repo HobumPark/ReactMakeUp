@@ -1,6 +1,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";  
 import { fetchMapDisplayPOI, fetchMapInitial, fetchObjectUnqCnt, fetchObjectUnqCntRoad, fetchSiteRoad, fetchTrafficEvent, fetchTrafficEventTime } from "../api/dashboard";
+import { fetchCarInfoTest, fetchMapDisplayPOITest } from "../api/dashboard";
 
 const useDashboard = ({
   id ="",
@@ -26,6 +27,20 @@ const useDashboard = ({
     cacheTime: 1000 * 60 * 10,
   });
 
+  const { data: carInfoTest} = useQuery({
+    queryKey: ["carInfoTest"],
+    queryFn: () => fetchCarInfoTest(),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+  });
+
+  const { data: mapDisplayPOITest} = useQuery({
+    queryKey: ["mapDisplayPOITest"],
+    queryFn: () => fetchMapDisplayPOITest(),
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+  });
+
    const { data: siteRoad  } = useQuery({
     queryKey: ["siteRoad", siteRoadParams],
     queryFn: () => fetchSiteRoad(siteRoadParams),
@@ -37,6 +52,8 @@ const useDashboard = ({
   return {
     mapInitialView,
     mapDisplayPOI,
+    carInfoTest,
+    mapDisplayPOITest,
     siteRoad
   };
 };

@@ -1,0 +1,292 @@
+{
+    "data": [
+      {
+        "id": 1,
+        "lat": 37.5665,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:01",
+        "type": "car"
+      },
+      {
+        "id": 1,
+        "lat": 37.5670,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:02",
+        "type": "car"
+      },
+      {
+        "id": 1,
+        "lat": 37.5675,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:03",
+        "type": "car"
+      },
+      {
+        "id": 1,
+        "lat": 37.5680,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:04",
+        "type": "car"
+      },
+      {
+        "id": 1,
+        "lat": 37.5685,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:05",
+        "type": "221002"
+      },
+      {
+        "id": 1,
+        "lat": 37.5690,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:06",
+        "type": "car"
+      },
+      {
+        "id": 1,
+        "lat": 37.5695,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:07",
+        "type": "car"
+      },
+      {
+        "id": 1,
+        "lat": 37.5700,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:08",
+        "type": "car"
+      },
+      {
+        "id": 1,
+        "lat": 37.5705,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:09",
+        "type": "car"
+      },
+      {
+        "id": 1,
+        "lat": 37.5710,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:10",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.5640,
+        "lng": 126.9780,
+        "observation_time":"2025-03-20 11:01",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.5635,
+        "lng": 126.9785,
+        "observation_time":"2025-03-20 11:02",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.5630,
+        "lng": 126.9790,
+        "observation_time":"2025-03-20 11:03",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.5625,
+        "lng": 126.9795,
+        "observation_time":"2025-03-20 11:04",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.5620,
+        "lng": 126.9800,
+        "observation_time":"2025-03-20 11:05",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.5615,
+        "lng": 126.9805,
+        "observation_time":"2025-03-20 11:06",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.5610,
+        "lng": 126.9810,
+        "observation_time":"2025-03-20 11:07",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.5605,
+        "lng": 126.9815,
+        "observation_time":"2025-03-20 11:08",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.5600,
+        "lng": 126.9820,
+        "observation_time":"2025-03-20 11:09",
+        "type": "car"
+      },
+      {
+        "id": 2,
+        "lat": 37.55945,
+        "lng": 126.9825,
+        "observation_time":"2025-03-20 11:10",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5650,
+        "lng": 126.9825,
+        "observation_time":"2025-03-20 11:01",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5655,
+        "lng": 126.9830,
+        "observation_time":"2025-03-20 11:02",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5660,
+        "lng": 126.9835,
+        "observation_time":"2025-03-20 11:03",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5660,
+        "lng": 126.9845,
+        "observation_time":"2025-03-20 11:04",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5655,
+        "lng": 126.9850,
+        "observation_time":"2025-03-20 11:05",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5650,
+        "lng": 126.9855,
+        "observation_time":"2025-03-20 11:06",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5645,
+        "lng": 126.9855,
+        "observation_time":"2025-03-20 11:07",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5640,
+        "lng": 126.9855,
+        "observation_time":"2025-03-20 11:08",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5640,
+        "lng": 126.9855,
+        "observation_time":"2025-03-20 11:08",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5635,
+        "lng": 126.9855,
+        "observation_time":"2025-03-20 11:09",
+        "type": "car"
+      },
+      {
+        "id": 3,
+        "lat": 37.5630,
+        "lng": 126.9855,
+        "observation_time":"2025-03-20 11:10",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5655,
+        "lng": 126.9745,
+        "observation_time":"2025-03-20 11:01",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5650,
+        "lng": 126.9735,
+        "observation_time":"2025-03-20 11:02",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5645,
+        "lng": 126.9730,
+        "observation_time":"2025-03-20 11:03",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5640,
+        "lng": 126.9735,
+        "observation_time":"2025-03-20 11:04",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5635,
+        "lng": 126.9740,
+        "observation_time":"2025-03-20 11:05",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5630,
+        "lng": 126.9735,
+        "observation_time":"2025-03-20 11:06",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5625,
+        "lng": 126.9730,
+        "observation_time":"2025-03-20 11:07",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5620,
+        "lng": 126.9735,
+        "observation_time":"2025-03-20 11:08",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5615,
+        "lng": 126.9740,
+        "observation_time":"2025-03-20 11:09",
+        "type": "car"
+      },
+      {
+        "id": 4,
+        "lat": 37.5610,
+        "lng": 126.9735,
+        "observation_time":"2025-03-20 11:10",
+        "type": "car"
+      }
+    ]
+  }
+  

@@ -235,9 +235,9 @@ export default class NoticeMessage {
     const nm_footer_close = document.createElement("button");
     nm_footer_close.className = "nm_footer_btns btn-md primary no-fill";
     nm_footer_close.id = "nm_footer_close";
-    nm_footer_close.textContent = i18n.t('msg > close');
+    nm_footer_close.textContent = i18n.t('취소');
     if (this._locale) {
-      nm_footer_close.dataset.i18n = `msg > close`;
+      nm_footer_close.dataset.i18n = `취소`;
     }
     nm_footer_close.addEventListener("click", () => {
       this.close();
@@ -258,9 +258,9 @@ export default class NoticeMessage {
     const nm_footer_close = document.createElement("button");
     nm_footer_close.className = "nm_footer_btns";
     nm_footer_close.id = "nm_footer_close";
-    nm_footer_close.textContent = i18n.t('msg > close');
+    nm_footer_close.textContent = i18n.t('취소');
     if (this._locale) {
-      nm_footer_close.dataset.i18n = `msg > close`;
+      nm_footer_close.dataset.i18n = `취소`;
     }
     nm_footer_close.addEventListener("click", () => {
       this.close();

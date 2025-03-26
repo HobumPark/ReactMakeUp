@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Header from "../../components/Header/Header";
 import "./MainDashboard.css";
+import "./tool-tip.css";
+
 import "ol/ol.css";
 import Map from "ol/Map";
 import View from "ol/View";
@@ -9,7 +11,6 @@ import { Tile as TileLayer } from "ol/layer";
 import { OSM } from "ol/source";
 import BingMaps from 'ol/source/BingMaps';  
 import { XYZ } from "ol/source";
-import { boundingExtent } from "ol/extent";
 import Cluster from "ol/source/Cluster";
 import { Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
 import { fromLonLat, get as getProjection } from "ol/proj";
@@ -19,233 +20,220 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Style from "ol/style/Style";
 import Icon from "ol/style/Icon";
-import DbVideoModal from "../../components/Modal/DbVideoModal/DbVideoModal";
-import CardList from "../../components/CardList/CardList";
-import Chart from "react-apexcharts";
-import ReactScrollWheelHandler from "react-scroll-wheel-handler";
-import IconCrosswalk from "../../assets/icon/icon-db-crosswalk.svg";
-import IconIntersection from "../../assets/icon/icon-db-intersection.svg";
-import IconDetector from "../../assets/icon/icon-db-detector.svg";
-import IconVms  from "../../assets/icon/icon-db-vms.svg";
-import IconBox from "../../assets/icon/icon-db-box.svg";
-import IconSpeaker from "../../assets/icon/icon-db-speaker.svg";
+import  LineString  from 'ol/geom/LineString'; // 올바른 경로로 임포트
 
-import IconCar from "../../assets/icon/icon-db-car.svg";
-import IconMotor from "../../assets/icon/icon-db-motorcycles.svg";
-import IconBus from "../../assets/icon/icon-db-bus.svg";
-import IconTruck from "../../assets/icon/icon-db-truck.svg";
-import IconVan from "../../assets/icon/icon-db-van.svg";
-import IconBicycles from "../../assets/icon/icon-db-bicycles.svg";
-import IconHeavyTruck from "../../assets/icon/icon-db-heavy-truck.svg";
-import IconUnknown from "../../assets/icon/icon-db-unknown.svg";
-
-import IconArrow from "../../assets/icon/icon-db-arrow-down.svg";
-
-import LegendCrosswalk from "../../assets/icon/icon-top-crosswalk.svg";
-import LegendIntersection from "../../assets/icon/icon-top-intersection.svg";
-import LegendSpeaker from "../../assets/icon/icon-top-speaker.svg";
-import LegendSignal from "../../assets/icon/icon-top-signal.svg";
-import LegendBox from "../../assets/icon/icon-top-box.svg";
-import LegendBillboard from "../../assets/icon/icon-top-billboard.svg";
+import IconRedCar from "../../assets/icon/icon-db-car-red.svg";
+import IconOrangeCar from "../../assets/icon/icon-db-car-orange.svg";
+import IconYellowCar from "../../assets/icon/icon-db-car-yellow.svg";
+import IconGreenCar from "../../assets/icon/icon-db-car-green.svg";
+import IconBlueCar from "../../assets/icon/icon-db-car-blue.svg";
+import IconPurpleCar from "../../assets/icon/icon-db-car-purple.svg";
 
 import IconDefault from "../../assets/icon/icon-default.svg";
 import IconReturn from "../../assets/icon/icon-return.svg";
 import IconRoadMap from "../../assets/icon/icon-road-map.svg";
 import IconDarkMap from "../../assets/icon/icon-dark-map.svg";
-import IconSatelite from "../../assets/icon/icon-satelite-map.svg";
 import IconBing from "../../assets/icon/icon-bing-map.svg";
 
 import Colorize from "ol-ext/filter/Colorize";
 import useDashboard from "../../hooks/useDashboard";
-import { formatFullDateTime } from "../../utils/date";
+import useCarInfoMgt from "../../hooks/useCarInfoMgt";
+import useCommandMgt from "../../hooks/useCommandMgt";
 import { useTranslation } from "react-i18next";
-import useTrafficEvent from "../../hooks/useTrafficEvent";
-import useObjectCnt from "../../hooks/useObjectCnt";
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
+import { formatFullDateTime } from "../../utils/date";
+
+import { ReactTabulator } from "react-tabulator";
+import ReactFullpage from '@fullpage/react-fullpage';
+import CommandInputModal from '../../components/Modal/CommandInputModal/CommandInputModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
+
+import LogList from './LogList';
+
+const carTabulator = [
+  {
+    title: "CAR 001",
+    formatter: "checkbox",
+    widthGrow: "1",
+    field:"car_num1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+    editorParams: {
+      onChange: (value, oldValue, data, cell) => {
+        // 체크박스 변경 시 동작할 함수
+        console.log("체크박스 상태 변경:", value);
+      }
+    }
+  },
+  {
+    title: "CAR 002",
+    formatter: "car_num",
+    field:"car_num2",
+    widthGrow: "1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "CAR 003",
+    formatter: "car_num",
+    field:"car_num3",
+    widthGrow: "1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "CAR 004",
+    formatter: "car_num",
+    field:"car_num4",
+    widthGrow: "1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "CAR 005",
+    formatter: "car_num",
+    field:"car_num5",
+    widthGrow: "1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "CAR 006",
+    formatter: "car_num",
+    field:"car_num6",
+    widthGrow: "1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "CAR 007",
+    formatter: "car_num",
+    field:"car_num7",
+    widthGrow: "1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "CAR 008",
+    formatter: "car_num",
+    field:"car_num8",
+    widthGrow: "1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "CAR 009",
+    formatter: "car_num",
+    field:"car_num9",
+    widthGrow: "1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+  {
+    title: "CAR 010",
+    formatter: "car_num",
+    field:"car_num10",
+    widthGrow: "1",
+    hozAlign: "center",
+    headerHozAlign: "center",
+    headerSort: false,
+    resizable: false,
+  },
+];
+
 
 const MainDashboard = () => {
   const {t} = useTranslation();
-  const [POIData, setPOIData] = useState("");
-  const [isHidden, setIsHidden] = useState([]);
+
   const [poiItem, setPoiItem] = useState([]);
-  const [pages, setPage] = useState(1);
-  const today = new Date();
-  const midnight = new Date(new Date().setHours(0, 0, 0, 0));
-  const [dateTime] = useState({
-    start_date:formatFullDateTime(midnight),
-    end_date:formatFullDateTime(today)
+  const [poiTestItem, setPoiTestItem] = useState([]);//테스트 poi
+  const [carList, setCarList] = useState([]);//테스트 차량목록
+
+
+  const [multiStartMode, setMultiStartMode]=useState(false)
+  const [multiStopMode, setMultiStopMode]=useState(false)
+
+  const [startAllActive, setStartAllActive]=useState(false)
+  const [stopAllActive, setStopAllActive]=useState(false)
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCarId,setSelectedCarId] = useState('')
+  const [inputCommand,setInputCommand] = useState('')
+  const [isLogDelete,setIsLogDelete] = useState(false)
+
+  const [carInfoQueryParams,setCarInfoQueryParams]=useState('')
+  const [carLogQueryParams,setCarLogQueryParams]=useState('')
+
+  const [selectedLogPos, setSelectedLogPos] = useState([]);
+  const [selectedLogInfo, setSelectedLogInfo] = useState([]);
+  //mapDisplayPOITest 는 지도 출력 샘플데이터 시험용
+  const {mapInitialView, mapDisplayPOI, mapDisplayPOITest } = useDashboard({
   });
-  const [selectedButtons, setSelectedButtons] = useState({
-    button1: false,
-    button2: false,
+  /*
+  const {mapInitialView, mapDisplayPOI, mapDisplayPOITest } = useDashboard({
+  });
+  */
+
+  //임시로 파일에서 불러온 차량정보, 차량로그정보
+  const {carInfo,carLogData} = useCarInfoMgt({
+    carInfoQueryParams,carLogQueryParams
   });
 
-  const [selectBtnEvent, setselectBtnEvent] = useState({
-    EVT_TP_WWD: false,
-    EVT_TP_STP: false,
-    EVT_TP_SPD: false,
-    EVT_TP_JW: false,
-    EVT_TP_ILP: false,
-    EVT_TP_SLV: false,
-  });
-  
-  const siteTypeMap = {
-    button1: "102001",
-    button2: "102002",
-  };
-  const [inputValue, setInputValue] = useState("");
-  const[siteRoadParams, setSiteRoadParams] = useState('site_type=102001&site_type=102002');
-  const [trafficEventParams, setTrafficEventParams] = useState('');
-    
-  
-  const {mapInitialView, mapDisplayPOI, siteRoad } = useDashboard({
-    siteRoadParams: siteRoadParams,
-    trafficEventParams: trafficEventParams
-  });
-
-  const {objectUnqCntRoad, objectUnqCnt } = useObjectCnt({
-    objectUnqCntParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`,
-    objectUnqCntRoadParams: `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}&top=5`,
-  });
-
-  const { trafficEventTime } = useTrafficEvent({
-    trafficEventParams: trafficEventParams
-  });
-  
+  //mapDisplayPOITest 는 샘플데이터 시험용
   const mapInitial = mapInitialView?.data;
   const mapDisplay = mapDisplayPOI?.data;
-  const siteRoadData = siteRoad?.data;
-  const [trafficEventTimeData, setItems] = useState([]);
-  const objectUnqCntData = objectUnqCnt?.data;
-  const objectUnqCntRoadData = objectUnqCntRoad?.data; 
-  const cntEventData = trafficEventTime?.data
+  const mapDisplayTest = mapDisplayPOITest?.data;
+
+  console.log('mapDisplay')
+  console.log(mapDisplay)
+  console.log('mapDisplayTest')
+  console.log(mapDisplayTest)
+
+  console.log('carInfo')
+  console.log(carInfo)
+
+  console.log('carLogData')
+  console.log(carLogData)
 
   useEffect(() => {
+    console.log('mapDisplay store')
     if (mapDisplay?.poi) {
       setPoiItem(mapDisplay.poi);
     }
   }, [mapDisplay]); 
 
   useEffect(() => {
-    const newItem = trafficEventTime?.data?.items;  // Access the nested array if it exists
-    
-    if (Array.isArray(newItem)) {
-      setItems((prevItems) => [...prevItems, ...newItem]); 
-    } else {
-      console.warn('trafficEventTime?.data.data is not an array:', newItem);
+    console.log('mapDisplayTest store')
+    if (mapDisplayTest) {
+      setPoiTestItem(mapDisplayTest);
     }
-  }, [trafficEventTime]);
-  
-  
-  
-
-  const [removedData, setRemovedData] = useState([]);
-
-  const updateSiteRoadParams = () => {
-    const resultInput = inputValue ? `input=${inputValue}` : "";
-    const siteType = Object.keys(selectedButtons)
-      .filter((key) => !selectedButtons[key]) 
-      .map((key) => siteTypeMap[key]);
-  
-    const resultSelect = siteType.length > 0 ? `&site_type=${siteType.join("&site_type=")}` : "";
-    const result = resultInput + resultSelect;
-    setSiteRoadParams(result);
-  };
-  
-
-  const handleSearch = useCallback((event) => {
-    if (event.key === "Enter") {
-      updateSiteRoadParams();
-    }
-  }, [inputValue]);
-
-  const handleSelect = (button) => {
-    setSelectedButtons((prev) => ({
-      ...prev,
-      [button]: !prev[button],
-    }));
-  };
-
-  useEffect(() => {
-    updateSiteRoadParams(); 
-  }, [selectedButtons, inputValue]);
+  }, [mapDisplayTest]); 
 
 
-
-  const handleBtnEventList = (button) => {
-    setselectBtnEvent((prev) => ({
-      ...prev,
-      [button]: !prev[button],
-    }));
-  };
-
-  const updateTrafficEventParams = () => {
-    setItems('');
-    setPage(1);
-    const resultInput = dateTime
-      ? `start_time=${dateTime.start_date}&end_time=${dateTime.end_date}`
-      : "";
-    const typeKeys = Object.keys(selectBtnEvent).filter((key) => !selectBtnEvent[key]);
-    const resultSelect = typeKeys.length > 0 ? `&type=${typeKeys.join("&type=")}` : "";
-    const size = '&size=10'
-    const page = `&page=1`
-    const result = resultInput + resultSelect + size +page;
-    setTrafficEventParams(result);
-
-  };
-  
-
-  useEffect(() => {
-    updateTrafficEventParams(); 
-  }, [selectBtnEvent]);
-
-  const [activeIndex, setActiveIndex] = useState(null);
-
-
-  const eventTypeColorMap = {
-    EVT_TP_WWD: "border-[#135A78]",
-    EVT_TP_STP: "border-[#ED3131]",
-    EVT_TP_SPD: "border-[#1D7E46]",
-    EVT_TP_JW:  "border-[#5791AA]",
-    EVT_TP_ILP: "border-[#EE9F17]",
-    EVT_TP_SLV: "border-[#F35A19]",  
-  };
-  
-  
-  const cardDataEvent = (trafficEventTimeData?.length > 0 
-    ? trafficEventTimeData.map((event) => ({
-        customCard: eventTypeColorMap[event.type_code] || "border-[#000000]",
-        title: `${event.site_name} ${event.road_name}`,
-        subtitle: `${event.vehicle_type} / ${event.lane_direction} / ${event.lane_moving_direction}`,
-        date: event.timestamp,
-        data: event
-      }))
-    : []);
-
-
-    
   const mapRef = useRef(null);
   const olMapRef = useRef(null);
   const poiLayerRef = useRef(null);
   const clusterLayerRef = useRef(null);
   
-  const [showModal, setShowModal] = useState(false);
-
-  const togglePOIVisibility = (type) => {
-    if (isHidden.includes(type)) {
-      setIsHidden(isHidden.filter(item => item !== type));
-    } else {
-      setIsHidden([...isHidden, type]);
-    }
-  };
-  
-  
-  useEffect(() => {
-    const updatedPoiData = mapDisplay?.poi.filter((item) => !isHidden.includes(item.type));
-    setPoiItem(updatedPoiData);
-  }, [isHidden, mapDisplay]); 
-
-
   const opik = "5363C20D-EDEA-3436-88BC-B45CC374A9B4";
   useEffect(() => {
     if (!mapRef.current) return;
@@ -356,8 +344,9 @@ const MainDashboard = () => {
       layers: layers,
 
       view: new View({
-        center: fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]),
-        zoom: 9,
+        //center: fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]),
+        center: fromLonLat([126.9780, 37.5665]),//서울시청 위치로 시작함
+        zoom: 15,
         minZoom: 8, 
       }),
       
@@ -365,8 +354,9 @@ const MainDashboard = () => {
 
     const changeMapView = () => {
       if (olMap) {
-        const newCenter = fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]);
-        const newZoom = mapInitial?.[0]?.view_zoom || 5;
+        //const newCenter = fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]);
+        const newCenter = fromLonLat([126.9780, 37.5665]);
+        const newZoom =  15;
   
         olMap.getView().animate({
           center: newCenter,
@@ -449,45 +439,110 @@ const MainDashboard = () => {
 
   useEffect(() => {
     const iconMapping = {
-      "102001": IconIntersection,  
-      "102002": IconCrosswalk,     
-      "221001": IconSpeaker,     
-      "221002": IconVms,         
-      "detector": IconDetector,  
-      "box": IconBox               
-    };
+      "car":IconOrangeCar,
+      "red-car":IconRedCar,
+      "orange-car":IconOrangeCar,
+      "yellow-car":IconYellowCar,
+      "green-car":IconGreenCar,
+      "blue-car":IconBlueCar,
+      "purple-car":IconPurpleCar,
+  };
     
+  // 아이디별로 아이콘과 선을 생성
+  const Iconfeatures = [];
+  const lineFeatures = [];
+  const groupedById = {};
+
+  // 데이터 아이템을 아이디별로 그룹화
+  poiTestItem.forEach(item => {
+    console.log('poiItem mapping');
+    console.log(item);
+
+    const {lat,lng,id} = item;
+
+    let carType = "";
+    if (id == 1) {
+      carType = "red-car";
+    } else if (id == 2) {
+      carType = "orange-car";
+    } else if (id == 3) {
+      carType = "yellow-car";
+    } else if (id == 4) {
+      carType = "green-car";
+    }
+
+    console.log('carType');
+    console.log(carType);
+
+    const iconSrc = iconMapping[carType]; // 아이콘 타입 설정
+
+    // 아이콘 Feature 생성
+    const iconFeature = new Feature({
+      geometry: new Point(fromLonLat([lng, lat])),
+    });
+
+    iconFeature.setStyle(
+      new Style({
+        image: new Icon({
+          src: iconSrc,
+          scale: 0.9,
+        }),
+      })
+    );
+
     
-    const features = poiItem
-      ?.filter(item => iconMapping[item.type]) 
-      ?.map(item => {
-        let lat = item.lat;
-        let lng = item.lng;
+
+    // 아이콘 Feature를 해당 아이디 그룹에 추가
+    if (!groupedById[item.id]) {
+      groupedById[item.id] = [];
+    }
+    groupedById[item.id].push(iconFeature);
+
+    // 선을 그리기 위한 좌표를 해당 아이디 그룹에 추가
+    if (!groupedById[item.id].coordinates) {
+      groupedById[item.id].coordinates = [];
+    }
+    groupedById[item.id].coordinates.push([lng, lat]);
+
+  });
+
+  // 각 아이디별로 선을 생성하고, 아이콘을 그룹에 추가
+  for (const [id, group] of Object.entries(groupedById)) {
+    // 아이콘 Features를 Iconfeatures 배열에 추가
+    Iconfeatures.push(...group);
+
+    // 해당 아이디 그룹의 좌표 배열로 LineString을 생성
+    const lineFeature = new Feature({
+      geometry: new LineString(group.coordinates.map(coord => fromLonLat(coord))),
+    });
+
+    let lineColor="";
+
+    if(id==1){
+      lineColor="red"
+    }else if(id==2){
+      lineColor="orange"
+    }else if(id==3){
+      lineColor="yellow"
+    }else if(id==4){
+      lineColor="green"
+    }
     
-        const iconSrc = iconMapping[item.type]; 
-    
-        const iconFeature = new Feature({
-          geometry: new Point(fromLonLat([lng, lat])),
-        });
-    
-        iconFeature.setStyle(
-          new Style({
-            image: new Icon({
-              src: iconSrc,
-              scale: 0.9,
-            }),
-          })
-        );
-        
-        iconFeature.setId(`${item.id}-${item.type}`);
-        return iconFeature;
-      });
-    
-  
-    // const view = olMapRef.current.getView();
-    // const resolution = view.getResolution(); 
-    // const distanceInMeters = 3000; 
-    // const distanceInPixels = distanceInMeters / resolution; 
+
+    // 선 스타일 설정
+    lineFeature.setStyle(
+      new Style({
+        stroke: new Stroke({
+          color: lineColor, // 선 색상
+          width: 1, // 선 두께
+        }),
+      })
+    );
+
+    // 선 Feature를 lineFeatures 배열에 추가
+    lineFeatures.push(lineFeature);
+  }
+
     const view = olMapRef.current.getView();
     const zoom = view.getZoom();
 
@@ -497,49 +552,16 @@ const MainDashboard = () => {
       distance: 100, 
       minDistance:0,
       source: new VectorSource({
-        features: features,
+        features: Iconfeatures,
       }),
     });
 
-  
-    // **Layer Clustering**
-    const clusterLayer = new VectorLayer({
-      source: clusterSource,
-      zIndex: 100,
-      style: function (feature) {
-        const clusteredFeatures = feature.get("features");
-        const size = clusteredFeatures.length;
-        
-  
-        if (size > 1) {
-          return new Style({
-            image: new CircleStyle({
-              radius: 80 ,
-              fill: new Fill({ color: "rgba(255, 0, 0, 1)" }),
-              stroke: new Stroke({ color: "#fff", width: 2 }),
-            }),
-            text: new Text({
-              text: size.toString(),
-              fill: new Fill({ color: "#fff" }),
-              stroke: new Stroke({ color: "#000", width: 2 }),
-              font: 'bold 25px Arial',
-            }),
-          });
-        } else {
-          return clusteredFeatures[0].getStyle();
-        }
-      },
-    });
-  
     const poiLayer = new VectorLayer({
       source: new VectorSource({
-        features: features,
+        features: [...Iconfeatures, ...lineFeatures],
       }), 
     });
 
-    
-
-    
   if (poiLayerRef.current) {
     olMapRef.current.removeLayer(poiLayerRef.current);
   }
@@ -548,73 +570,9 @@ const MainDashboard = () => {
   }
 
   poiLayerRef.current = poiLayer;
-  clusterLayerRef.current = clusterLayer;
-
+  
   olMapRef.current.addLayer(poiLayerRef.current);
-  olMapRef.current.addLayer(clusterLayerRef.current);
-  
-  
-    olMapRef.current.on("click", (event) => {
-      let isClusterClicked = false;
-    
-      olMapRef.current.forEachFeatureAtPixel(event.pixel, (feature) => {
-        const clusteredFeatures = feature.get("features");
-    
-        if (clusteredFeatures && clusteredFeatures.length > 1) {
-          const extent = boundingExtent(
-            clusteredFeatures.map((f) => f.getGeometry().getCoordinates())
-          );
- 
-          const currentZoom = olMapRef.current.getView().getZoom();
-
-          const minZoom = Math.max(currentZoom - 3, 10);  // pastikan tidak kurang dari 10
-          const maxZoom = Math.min(currentZoom + 3, 20);  // pastikan tidak lebih dari 20
-        
-          olMapRef.current.getView().fit(extent, { 
-            duration: 1000, 
-            padding: [50, 50, 50, 50], 
-            maxZoom: maxZoom,  
-            minZoom: minZoom  
-          });
-  
-    
-          isClusterClicked = true; 
-          return true; 
-        }
-      });
-    
-      if (isClusterClicked) return;
-    
-      olMapRef.current.forEachFeatureAtPixel(event.pixel, (feature) => {
-        const featureId = feature.getId();
-        const clickedItem = mapDisplay.poi?.find((item) => `${item.id}-${item.type}` === featureId);
-
-    
-        if (clickedItem) {
-          switch (clickedItem.type) {
-            case "box":
-              window.open(`/dashboard/equipment-info?id=${clickedItem.id}`, "_blank", "width=800,height=600");
-              break;
-            case "102001":
-              window.open(`/dashboard/crossroad?id=${clickedItem.id}`, "_blank", "width=800,height=600");
-              break;
-            case "102002":
-              window.open(`/dashboard/crosswalk?site_id=${clickedItem.id}&road_id=${clickedItem.road_id}`, "_blank", "width=800,height=600");
-              break;
-            case "detector":
-              setPOIData(clickedItem);
-              setShowModal(true);
-              break;
-            case "221001":
-              return;
-            case "221002":
-              return;
-            default:
-              alert("Unknown icon clicked!");
-          }
-        }
-      });
-    });
+  //olMapRef.current.addLayer(clusterLayerRef.current); - 클러스터링 해제
     poiLayerRef.current.setVisible(true);
     olMapRef.current.on("moveend", function () {
       poiLayerRef.current.setVisible(true);
@@ -624,13 +582,13 @@ const MainDashboard = () => {
     });
     
     
-    //
-  }, [poiItem]);
 
-  const moveMapToPOI = (id) => {
-    const mapEntry = mapDisplay?.poi?.find((entry) => entry.id === id);
-    if (mapEntry) {
-      const { lat, lng } = mapEntry;
+
+  }, [poiItem, poiTestItem]);
+
+  const moveMapToPOI = (id, lat, lng) => {
+    //alert(id)
+
       console.log(id, lat, lng);
       const isInSouthKorea = lat >= 33.0 && lat <= 38.6 && lng >= 124.6 && lng <= 131.0;
 
@@ -643,492 +601,458 @@ const MainDashboard = () => {
       } else {
         new NoticeMessage("좌표가 대한민국 범위를 벗어났습니다.");
       }
-    } else {
-      new NoticeMessage("POI를 찾을 수 없습니다.");
-    }
   };
 
-  const vehicleData = [
-    { label: "승용차", icon: IconCar, count: objectUnqCntData?.["301001"] },
-    { label: "오토바이", icon: IconMotor, count: objectUnqCntData?.["301006"] },
-    { label: "버스", icon: IconBus, count: objectUnqCntData?.["301005"] },
-    { label: "트럭", icon: IconTruck, count: objectUnqCntData?.["301003"] },
-    { label: "승합차", icon: IconVan, count: objectUnqCntData?.["301002"] },
-    { label: "자전거", icon: IconBicycles, count: objectUnqCntData?.["301007"] },
-    { label: "대형 트럭", icon: IconHeavyTruck, count: objectUnqCntData?.["301004"] },
-    { label: "기타", icon: IconUnknown, count: objectUnqCntData?.["301000"] },
-  ];
-  const maxYValue = Math.max(...(objectUnqCntRoadData?.map(item => item.total_cnt) || [0]));
-
-
-  const options = {
-    chart: {
-      type: "bar",
-      background: "transparent",
-      toolbar: { show: false },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: true,
-        barHeight: "60%",
-        distributed: true,
-      },
-    },
-    colors: ["#ff4d4d", "#8c52ff", "#33cc33", "#3399ff", "#ff9933"],
-    dataLabels: {
-      enabled: true,
-      textAnchor: "start",
-      style: {
-        colors: ["#fff"],
-        fontSize: "10px",
-        fontWeight: "bold",
-      },
-      formatter: function (val) {
-        return val;
-      },
-    },
-    xaxis: {
-      categories: objectUnqCntRoadData?.map(item => item.road_name),
-      labels: {
-        style: { colors: "#D1D2D3", fontSize: "10px" },
-      },
-      axisBorder: {
-        show: true,
-        color: "#343A3F",
-      },
-      min: 0,
-      max: maxYValue,
-      tickAmount: 6
-    },
-    yaxis: {
-
-      labels: {
-        style: { colors: "#D1D2D3", fontSize: "10px" },
-      },
-    },
-    grid: {
-      borderColor: "#343A3F",
-      xaxis: { lines: { show: true } },
-      yaxis: { lines: { show: false } },
-    },
-    // colors: ["#ff4d4d", "#8c52ff", "#33cc33", "#3399ff", "#ff9933"],
-    tooltip: { enabled: false },
-    legend: { show: false },
-  };
-
-  const series = [
-    {
-      name: "Data",
-      data: objectUnqCntRoadData?.map(item => item.total_cnt), 
-    },
-  ];
 
   const [openSections, setOpenSections] = useState([]);
   const [activeCard, setActiveCard] = useState(null);
 
-  const toggleAccordion = (id) => {
-    setOpenSections((prev) =>
-      prev.includes(id)
-        ? prev.filter((sectionId) => sectionId !== id)
-        : [...prev, id]
-    );
- 
-    moveMapToPOI(id);
-  };
+  const handleStartAll = () => {
 
-  const handleCardClickSiteList = (cardId, id) => {
-    setActiveCard((prev) => (prev === cardId ? null : cardId));
-    moveMapToPOI(id);
-  };
-
-  const accordionData = siteRoadData?.sites?.map((site) => {
-    const borderStyle = site.type === '102001' ? 'border-[#ED3131]' : 'border-[#EE9F17]';
+    setStartAllActive(!startAllActive)
   
-    const cardData = site.roads && site.roads.length > 0
-    ? site.roads.map((road) => ({
-        id: `ACCID${road.road_id}`,
-        title: `${t(road.incoming_compass)} / ${t(road.outgoing_compass)} / ${road.incoming_lane_cnt} / ${road.outgoing_lane_cnt}`,
-        subtitle: road.name,
-        borderStyle: borderStyle,
-      }))
-    : [];
-  
-    return {
-      id: site.site_id,
-      title: site.name,
-      count: site.road_cnt,
-      cardData: cardData,
-    };
-  });
+    if(stopAllActive==true){
+      setStopAllActive(false)
+    }
 
-  const handleCardClick = (index, data) => {
-    setActiveIndex(index);
-    moveMapToPOI(data.site_id)
+    const cars = carList.map((car) =>{
+      return { ...car, status:'대기',isActive: false }
+    })
+      
+    setCarList(cars);
+
   };
 
-  const handleDoubleClick = (data) => {
-    const newWindow = window.open(
-      `/img-modal?id=${data._id}`,
-      "_blank",
-      "width=800,height=600,left=200,top=100"
-    );
-    if (newWindow) {
-      newWindow.dataId = data._id; 
-      newWindow.focus();
+  const multiModeStart=()=>{
+    //alert('다중 시험 시작')
+    setMultiStartMode(true)
+    //setSelectedAll(true)
+    //setIsModalOpen(true)
+  }
+  
+  const multiModeConfirm=()=>{
+    //alert('선택 완료')
+    //setIsModalOpen(true)
+    console.log('multiModeStart')
+    console.log(multiStartMode)
+    if(multiStartMode===true){
+      //alert('진입')
+      setIsModalOpen(true)
+      //setMultiStartMode(false)
+      //스타트 모드는 커맨드 입력 모달창
+    }else if(multiStopMode==true){
+      //그냥 종료
+      let multiStopConfirm = new NoticeMessage(t('정말로 시험을 종료하시겠습니까?'), {
+        mode: "confirm",
+      });
+    
+      multiStopConfirm.confirmClicked().then(() => {
+        
+        const updatedCarList = carList.map(car => {
+          // checked가 true인 항목만 status를 "대기"로 변경
+          
+  
+          if (car.checked) {
+            return { ...car, checked:false, status: '대기' };
+          }
+          return car;
+        });
+
+        // 업데이트된 carList를 상태로 반영
+        setCarList(updatedCarList);
+        setMultiStopMode(false)
+      });
+
+      
+    
+      
+    }
+  }
+
+  const multiModeStop=()=>{
+    //alert('다중 시험 종료')
+    setMultiStopMode(true)
+    
+    /*
+    const cars = carList.map((car) =>{
+      return { ...car, status:'대기', checked:false, isActive: false }
+    })
+      
+    setCarList(cars);
+    */
+    //setMultiMode(false)
+  }
+
+  const multiModeCancel=()=>{
+    //alert('취소')
+    /*
+    const cars = carList.map((car) => {
+      return {
+        ...car,
+        status: '대기', // status is set to '대기' for all cars
+        isActive: false // Set isActive based on the checked property
+      };
+    });
+    setCarList(cars)
+    setMultiMode(false)
+    */
+    setMultiStartMode(false)
+    setMultiStopMode(false)
+  }
+
+  const handleStopAll = () => {
+    setStopAllActive(!stopAllActive)
+  
+    if(startAllActive==true){
+      setStartAllActive(false)
     }
   };
- 
 
-  const totalEVT = [
-    "EVT_TP_WWD",
-    "EVT_TP_STP",
-    "EVT_TP_SPD",
-    "EVT_TP_JW",
-    "EVT_TP_ILP",
-    "EVT_TP_SLV"
-  ].reduce((sum, eventType) => sum + (cntEventData?.cnt?.[eventType] || 0), 0);
-   
-  const fetchMoreData = async () => {
-    try {
-      setPage((prevPage) => prevPage + 1); 
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  const handleInputCommand=(e)=>{
+    console.log('handleInputCommand')
+    // 입력 값에서 공백 및 한글을 제거
+    const value = e.target.value;
+
+    // 정규 표현식으로 공백과 한글을 검사하여 거르기
+    if (/[\sㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(value)) {
+      // 공백이나 한글이 포함되면 입력을 막고 상태를 변경하지 않음
+      return;
     }
+
+    // 조건에 맞는 경우에만 상태 업데이트
+    setInputCommand(value);
+  }
+
+  const testStart=(carId)=>{
+    //alert('시작:'+carId)
+    setSelectedCarId(carId)
+    setIsModalOpen(true)
+  }
+
+  const testStop=(carId)=>{
+
+    let testStopConfirm = new NoticeMessage(t('정말로 시험을 종료하시겠습니까?'), {
+      mode: "confirm",
+    });
+  
+    testStopConfirm.confirmClicked().then(() => {
+      
+  
+      //alert('종료:'+carId)
+      const cars = carList.map((car) =>
+        car.id === carId ? { ...car, status:'대기', isActive: false } : car
+      )
+      setCarList(cars);
+
+    });
+  }
+
+  const confirmClick=()=>{
+    //alert('완료!')
+    //alert('multiStartMode;'+multiStartMode)
+    //alert('multiStopMode:'+multiStopMode)
+
+    if(multiStartMode==true){
+      const cars = carList.map((car) => {
+        // If car.checked is true, set isActive to true and status to '진행중'
+        if (car.checked==true) {
+          return {
+            ...car,
+            status: '진행중', // Set status to '진행중'
+            isActive: true    // Set isActive to true if checked is true
+          };
+        }
+      
+        // Otherwise, keep the original values
+        return {
+          ...car,
+        };
+      });
+    
+
+
+      //alert(`다중 시험모드:${selectedCarId} 커맨드: ${inputCommand} 시험 시작!`);
+
+      setCarList(cars)
+      //setStartAllActive(true)
+      setIsModalOpen(false)
+      setMultiStartMode(false)
+      
+    }
+  }
+  //
+  const cancelClick=()=>{
+    alert('취소!')
+    setIsModalOpen(false)
+  }
+  //
+  const handleReset=(id)=>{
+    //alert(id+' 리셋!')
+
+    let testResetConfirm = new NoticeMessage(t('정말로 Reset 하시겠습니까?'), {
+      mode: "confirm",
+    });
+  
+    testResetConfirm.confirmClicked().then(() => {
+      
+      const cars = carList.map((car) =>
+        car.id === id ? { ...car, status:'대기', isActive: false } : car
+      )
+      setCarList(cars);
+  
+    });
+  }
+
+  const handleDeleteLog=()=>{
+      setIsLogDelete(true)
+  }
+
+  const logDeleteConfirm=()=>{
+    //console.log('삭제할 로그위치')
+    //console.log(selectedLogPos)
+    //alert('삭제할 로그위치')
+    //alert(selectedLogPos)
+    alert('삭제할 로그 정보')
+    alert(selectedLogInfo)
+    setIsLogDelete(false)
+  }
+
+  const logDeleteCancel=()=>{
+    setIsLogDelete(false)
+  }
+  /*
+  const checkBoxClick = (rowIndex, colIndex) => {
+    alert('체크박스 클릭!:' + rowIndex + "행" + colIndex + "열");
+    //setIsActive(true)
+    //열이 차량번호에 해당할것이고, 행이 특정차량의 몇번째 로그
+    
   };
+  */
+  const checkCarClick=(id)=>{
+    //alert('차량 체크')
+    const cars = carList.map((car) =>
+      car.id === id ? { ...car, checked:!car.checked } : car
+    )
+    setCarList(cars)
+  }
+
 
   useEffect(() => {
-    console.log(pages);
-    
-    if (pages > 1) {
-      setTrafficEventParams((prev) => {
-        const updatedPrev = prev.replace(/&page=\d+/, '');  
-        return updatedPrev + `&page=${pages}`;  
-      });
+    console.log('carList store')
+    if (carInfo) {
+      setCarList(carInfo.data);
+      const ids = carInfo.data.map(car => car.id);
+      setOpenSections(ids)
     }
-  }, [pages]);
+  }, [carInfo]); 
 
- console.log(removedData);
- console.log(trafficEventTimeData);
- 
- 
- 
+
+
   return (
     <>
-      <section className="w-full h-screen overflow-hidden flex flex-col">
-        <Header />
-        {/* ini maps ya */}
-        <div ref={mapRef} className="w-full h-full relative">
-          {/* ini maps ya */}
+    <ReactFullpage
+      licenseKey={'YOUR_KEY_HERE'} // 필요 시, 라이센스 키를 입력하세요.
+      scrollingSpeed={1000} // 섹션 간의 스크롤 속도 설정
+      scrollOverflow={true} // 섹션 내에서 스크롤이 필요한 경우 설정
+      navigation // 네비게이션 표시
+      render={({ state, fullpageApi }) => {
+        return (
+          <div>
+            <div className="section w-full h-[100vh]">
+              <div className="w-full h-[100vh]">
+                <section className="flex h-[100vh] flex-grow">
+                  <Header />
+                  {/* ini maps ya */}
+                  <div ref={mapRef} className="w-full h-[100vh] relative">
+                    {/* ini maps ya */}
 
-          <div className="_legendTop absolute z-10 w-max h-[31px] top-[25px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-[4px] overflow-hidden">
-            <div className="flex gap-[30px] h-full">
-              <div className="bg-[#fff] w-fit h-full flex rounded-[4px]">
-                <div className="flex items-center bg-[#212527] min-w-[60px] justify-center">
-                  <span className="title3bold text-text-white text-center">
-                    SITE
-                  </span>
-                </div>
-                <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
-                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("102002")}>
-                    <img src={LegendCrosswalk} alt="" />
-                    <span className={`title3 ${isHidden.includes('102002') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>횡단보도</span>
+                    <div className="_legendTop absolute z-10 w-max h-[31px] top-[25px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-[4px] overflow-hidden">
+                      <div className="flex gap-[30px] h-full">
+                        <div className="bg-[#fff] w-fit h-full flex rounded-[4px]">
+                            
+                        </div>
+                        <div className="bg-[#fff] w-fit h-full flex rounded-[4px] overflow-hidden">
+                          
+                        </div>
+                      </div>
                     </div>
-                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("102001")}>
-                    <img src={LegendIntersection} alt="" />
-                    <span className={`title3 ${isHidden.includes('102001') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>교차로</span>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-[#fff] w-fit h-full flex rounded-[4px] overflow-hidden">
-                <div className="flex items-center bg-[#212527] min-w-[60px] justify-center" >
-                  <span className="title3bold text-text-white text-center">
-                    시설물
-                  </span>
-                </div>
-                <div className="flex w-full gap-[20px] flex flex-row justify-beetwen items-center px-[10px]">
-                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("221002")}>
-                    <img src={LegendBillboard} alt="" />
-                    <span className={`title3 ${isHidden.includes('221002') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>전광판</span>
-                    <span className="title3 text-[#4B3C3C]">
-                      ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.vms_error ?? 0}</span> /{" "}
-                      <span>{mapDisplay?.cnt?.[0]?.vms_total ?? 0}</span> )
-                    </span>
-                  </div>
-                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("221001")}>
-                    <img src={LegendSpeaker} alt="" />
-                    <span className={`title3 ${isHidden.includes('221001') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>전광판</span>
-                    <span className="title3 text-[#4B3C3C]">
-                      ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.speaker_error ?? 0}</span> /{" "}
-                      <span>{mapDisplay?.cnt?.[0]?.speaker_total ?? 0}</span> )
-                    </span>
-                  </div>
-                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("detector")}>
-                    <img src={LegendSignal} alt="" />
-                    <span className={`title3 ${isHidden.includes('detector') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>레이더</span>
-                    <span className="title3 text-[#4B3C3C]">
-                      ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.detector_error ?? 0}</span> /{" "}
-                      <span>{mapDisplay?.cnt?.[0]?.detector_total ?? 0}</span> )
-                    </span>
-                  </div>
-                  <div className="flex flex-row gap-[5px] cursor-pointer" onClick={() => togglePOIVisibility("box")}>
-                    <img src={LegendBox} alt="" />
-                    <span className={`title3 ${isHidden.includes('box') ? 'text-gray-300' : 'text-[#4B3C3C]'}`}>함체</span>
-                    <span className="title3 text-[#4B3C3C]">
-                      ( <span className="text-text-danger-500">{mapDisplay?.cnt?.[0]?.box_error ?? 0}</span> /{" "}
-                      <span>{mapDisplay?.cnt?.[0]?.box_total ?? 0}</span> )
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* bg-left */}
-          <div className="flex flex-col gap-[5px] overflow-hidden p-[10px] top-[10px] left-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-            <div className="_boxTrafficVihacle flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden">
-              <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
-                <span className="title3bold text-text-white">
-                  차종별 교통량
-                </span>
-              </div>
-              <div className="flex flex-col w-full p-[15px] gap-[15px]">
-                <div className="grid grid-cols-4 gap-[15px]">
-                  {vehicleData.map((vehicle, index) => (
-                    <div
-                      key={index}
-                      className="w-full items-center flex flex-col gap-[2px]"
-                    >
-                      <span className="body2medium text-text-white">
-                        {vehicle.label}
-                      </span>
-                      <img src={vehicle.icon} alt={vehicle.label} />
-                      <span className="title3bold text-text-white">
-                        {vehicle.count}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="_boxTopFiveTraffic flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden">
-              <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
-                <span className="title3bold text-text-white">TOP5 교통량</span>
-              </div>
-              <div className="flex flex-col w-full p-[15px] gap-[15px]">
-                <Chart
-                  options={options}
-                  series={series}
-                  type="bar"
-                  className={"flex w-full !min-h-[0] h-fit mt-[-30px]"}
-                />
-              </div>
-            </div>
-
-            <div className="_boxListSite flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden flex-1">
-              <div className="bg-header-content w-full h-[36px] flex items-center px-[15px]">
-                <span className="title3bold text-text-white">
-                  사이트 리스트
-                </span>
-              </div>
-              <div className="flex flex-col w-full py-[15px] px-[10px] gap-[15px] overflow-hidden flex-1">
-                <div className="grid grid-cols-2 gap-[10px]">
-                  <button
-                    className={`w-full title3 py-[5px] border ${
-                      selectedButtons.button1
-                        ? "bg-transparent border-text-danger-500 text-text-danger-500 text-text-white"
-                        : "bg-text-danger-500 text-text-white border-text-danger-500"
-                    }`}
-                    onClick={() => handleSelect("button1")}
-                  >
-                    교차로  {siteRoadData?.crosswalk_cnt ?? 0}
-                  </button>
-
-                  <button
-                    className={`w-full title3 py-[5px] border ${
-                      selectedButtons.button2
-                        ? "bg-transparent border-text-warning-500 text-text-warning-500 text-text-white"
-                        : "bg-text-warning-500 text-text-white border-text-warning-500"
-                    }`}
-                    onClick={() => handleSelect("button2")}
-                  >
-                  횡단보도  {siteRoadData?.intersection_cnt ?? 0}
-                  </button>
-                  <input
-                    type="text"
-                    className="input-db-text w-full col-span-2"
-                    placeholder="접근로명 / 접근로ID"
-                    onKeyUp={handleSearch}
-                    value={inputValue} 
-                    onChange={(e) => setInputValue(e.target.value)}
-                  />
-                </div>
-
-                <div className="_contentCardList w-full  flex flex-col gap-[5px] overflow-auto h-full">
-                  {accordionData?.map(({ id, title, count, cardData }) => (
-                    <div key={id} className="w-full">
-                      {/* Accordion Header */}
-                      <div
-                        className="flex flex-row w-full justify-between items-center bg-[#404953] border border-[#455665] py-[8px] px-[10px] rounded-[5px]  whitespace-nowrap"
-                        onClick={() => toggleAccordion(id)}
-                      >
-                        <div className="flex flex-row w-full items-center gap-[8px]">
-                        <img src={IconArrow} alt="" className={`transition-transform duration-300 ${openSections.includes(id) ? "rotate-180" : "rotate-0"}`}/>
+                    {/* bg-left */}
+                    <div className="flex flex-col gap-[5px] overflow-hidden p-[5px] top-[10px] left-[10px] w-[20%] absolute z-10  h-[97vh] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+                      
+                      <div className="_boxListSite flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden flex-1">
+                        <div className="bg-header-content w-full h-[33px] flex items-center px-[15px]">
                           <span className="title3bold text-text-white">
-                            {title}
+                            디바이스 리스트
                           </span>
                         </div>
-                        <span className="title3bold text-text-white">
-                          {count}
-                        </span>
-                      </div>
+                        <div className="flex flex-col w-full py-[15px] px-[10px] gap-[15px] overflow-hidden flex-1">
+                          
+                          <div className="grid grid-row-2 gap-[2px] bg-gray-800">
+                            {/* First row with dark gray background */}
+                              <div className="bg-gray-600 text-white p-2">디바이스 다중제어</div>
 
-                      {/* Accordion Content */}
-                      {openSections.includes(id) && (
-                        <div className="flex flex-col gap-[3px] mt-[5px] px-[3px]">
-                          {cardData.map(
-                            ({ id: cardId, title, subtitle, borderStyle }) => (
-                              <CardList
-                                key={cardId}
-                                type="listSite"
-                                customCard={borderStyle}
-                                title={title}
-                                id={cardId}
-                                subtitle={subtitle}
-                                isActive={activeCard === cardId}
-                                onClick={() => handleCardClickSiteList(cardId, id)}
-                              />
-                            )
-                          )}
+                              {/* Second row with darker gray background */}
+                              <div className="bg-gray-700 text-white p-1 flex justify-center items-center gap-4">
+                                  {/* Button styles */}
+                                  {
+                                    multiStartMode==true || multiStopMode==true?
+                                    <button className='bg-white text-black py-1 px-9 rounded cursor-pointer hover:opacity-80 font-bold'
+                                    onClick={()=>multiModeConfirm()}>
+                                      선택 완료
+                                    </button>
+                                    :
+                                    <button className='bg-white text-black py-1 px-9 rounded cursor-pointer hover:opacity-80 font-bold'
+                                    onClick={()=>multiModeStart()}>
+                                      다중 시험 시작
+                                    </button>
+                                  }
+                                  {
+                                    multiStartMode==true || multiStopMode==true?
+                                    <button className="bg-white text-black py-1 px-9 rounded cursor-pointer hover:opacity-80 font-bold"
+                                    onClick={()=>multiModeCancel()}>
+                                      취소
+                                    </button>
+                                    :
+                                    <button className="bg-white text-black py-1 px-9 rounded cursor-pointer hover:opacity-80 font-bold" 
+                                    onClick={()=>multiModeStop()}>
+                                      다중 시험 종료
+                                    </button>
+                                  }
+                                  
+                              </div>
+                          </div>
+
+                          <div className="_contentCardList w-full  flex flex-col gap-[5px] overflow-auto h-full">
+                            {carList?.map(({ id, name, lat,lng, status, isActive, checked, test, logfile, detail,  }) => (
+                              <div key={id} className="w-full">
+                                {/* Accordion Header */}
+                                <div
+                                  className={`flex flex-row w-full justify-between items-center py-[5px] px-[10px] rounded-[5px] whitespace-nowrap 
+                                    ${
+                                      status === "오류" ? "bg-red-500 text-white":'' // status가 "오류"일 때 빨간색
+                                    }
+                                    ${
+                                      status === '진행중'? "bg-green-500 text-white":''
+                                    }`
+                                  }
+                                  //onClick={() => toggleAccordion(id,lat,lng)}
+                                >
+                                  <div className="flex flex-row w-full items-center gap-[8px] ">
+                                    <span className="title3bold text-text-white">
+                                      {
+                                        status=='대기' && multiStartMode==true?
+                                        <FontAwesomeIcon
+                                        icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
+                                        className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} // 색상도 바꿀 수 있음
+                                        onClick={()=>checkCarClick(id)}
+                                        />:''
+                                      }
+                                      {
+                                        (status=='시작대기' || status=='진행중') && multiStopMode==true?
+                                        <FontAwesomeIcon
+                                        icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
+                                        className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} // 색상도 바꿀 수 있음
+                                        onClick={()=>checkCarClick(id)}
+                                        />:''
+                                      }
+                                    
+                                        [{status}] Car {id} 
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <button className={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
+                                    ${status === '진행중' || status=='오류' || status=='시작대기'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'}`}
+                                    disabled={status === '진행중' || status=='오류' || status=='시작대기'? true:false}
+                                      onClick={()=>testStart(id)}>
+                                        시작
+                                      </button>
+                                    <button class={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
+                                    ${status=='대기'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'} `}
+                                    disabled={status=='대기'? true:false}
+                                      onClick={()=>testStop(id)}>
+                                        종료
+                                      </button>
+                                    <button class="w-[40px] h-[30px] bg-white text-black rounded-[5px] font-bold pl-3 pr-14 cursor-pointer hover:opacity-80"
+                                      onClick={()=>handleReset(id)}>
+                                        Reset
+                                      </button>
+                                  </div>
+                                </div>
+
+                                {/* Accordion Content */}
+                                {openSections.includes(id) && (
+                                  <div className="flex flex-col gap-[3px] mt-[5px] px-[3px]">
+                                    <span className="text-white bg-gray-700 p-1 box-border">
+                                      {
+                                        status=="오류"?
+                                        <span>
+                                            {detail}
+                                        </span>:
+                                         <span>
+                                            {test} / {logfile}
+                                        </span>
+                                      }
+                                      
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      )}
+                      </div>
                     </div>
-                  ))}
-                </div>
+                    
+                  </div>
+                  <CommandInputModal
+                  isOpen={isModalOpen}
+                  confirmClick={confirmClick}
+                  cancelClick={cancelClick}
+                  inputCommand={inputCommand}
+                  handleInputCommand={handleInputCommand}
+                  onClose={() => setIsModalOpen(false)}/>
+                </section>
+        
               </div>
             </div>
-          </div>
-
-          {/* bg-right */}
-          <div className="overflow-hidden top-[10px] p-[10px] right-[10px] w-[20%] absolute z-10 h-[calc(100vh-80px)] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-            <div className="_eventListRight flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden h-full">
-              <div className="bg-header-content w-full h-[36px] flex items-center px-[15px] justify-between">
-                <span className="title3bold text-text-white">
-                  이벤트 리스트
-                </span>
-                <span className="title3bold text-text-white">{totalEVT}</span>
+            <div className="section w-full h-[100vh]">
+              <div className="w-full flex justify-end h-[80px] pt-5">
+                
+                {
+                  isLogDelete==false?
+                  <button className="w-[100px] h-[50px] bg-blue-500 text-white rounded mr-15 cursor-pointer hover:opacity-80"
+                    onClick={handleDeleteLog}>
+                    로그 삭제
+                  </button>:
+                  <div className="mr-5">
+                    <button className="bg-[#3b4e6c] text-white rounded hover:bg-blue-600 cursor-pointer hover:opacity-80 mr-5"
+                    style={{ width: "100px", height: "50px" }}
+                    onClick={logDeleteConfirm}>
+                      완료
+                    </button>
+                    <button className="bg-gray-300 text-black rounded hover:bg-gray-400 cursor-pointer hover:opacity-80 mr-"
+                    style={{ width: "100px", height: "50px" }}
+                    onClick={logDeleteCancel}>
+                      취소
+                    </button>
+                  </div>
+                }
               </div>
-              <div className="flex flex-col w-full py-[15px] px-[10px] gap-[15px] overflow-hidden flex-1">
-                <div className="grid grid-cols-3 gap-[5px]">
-                  <button
-                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.EVT_TP_WWD
-                        ? "bg-transparent border-[#135A78] text-text-white"
-                        : "bg-[#135A78] text-text-white border-[#135A78]"
-                    }`}
-                    onClick={() => handleBtnEventList("EVT_TP_WWD")}
-                  >
-                    <span className="text-text-white title3">{t('EVT_TP_WWD')}</span>
-                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_WWD}</span>
-                  </button>
-
-                  <button
-                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.EVT_TP_STP
-                        ? "bg-transparent border-text-danger-500 text-text-danger-500 text-text-white"
-                        : "bg-text-danger-500 text-text-white border-text-danger-500"
-                    }`}
-                    onClick={() => handleBtnEventList("EVT_TP_STP")}
-                  >
-                    <span className="text-text-white title3">{t('EVT_TP_STP')}</span>
-                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_STP}</span>
-                  </button>
-
-                  <button
-                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.EVT_TP_SPD
-                        ? "bg-transparent border-[#1D7E46]  text-text-white"
-                        : "bg-[#1D7E46] text-text-white border-[#1D7E46]"
-                    }`}
-                    onClick={() => handleBtnEventList("EVT_TP_SPD")}
-                  >
-                    <span className="text-text-white title3">{t('EVT_TP_SPD')}</span>
-                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_SPD}</span>
-                  </button>
-
-                  <button
-                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.EVT_TP_JW
-                        ? "bg-transparent border-[#5791AA]  text-text-white"
-                        : "bg-[#5791AA] text-text-white border-[#5791AA]"
-                    }`}
-                    onClick={() => handleBtnEventList("EVT_TP_JW")}
-                  >
-                    <span className="text-text-white title3">{t('EVT_TP_JW')}</span>
-                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_JW}</span>
-                  </button>
-
-                  <button
-                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.EVT_TP_ILP
-                        ? "bg-transparent border-[#EE9F17]  text-text-white"
-                        : "bg-[#EE9F17] text-text-white border-[#EE9F17]"
-                    }`}
-                    onClick={() => handleBtnEventList("EVT_TP_ILP")}
-                  >
-                    <span className="text-text-white title3">{t('EVT_TP_ILP')}</span>
-                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_ILP}</span>
-                  </button>
-
-                  <button
-                    className={`w-full grid grid-cols-1 title3 py-[5px] border ${
-                      selectBtnEvent.EVT_TP_SLV
-                        ? "bg-transparent border-[#F35A19]  text-text-white"
-                        : "bg-[#F35A19] text-text-white border-[#F35A19]"
-                    }`}
-                    onClick={() => handleBtnEventList("EVT_TP_SLV")}
-                  >
-                    <span className="text-text-white title3">{t('EVT_TP_SLV')}</span>
-                    <span className="text-text-white title2bold">{cntEventData?.cnt?.EVT_TP_SLV}</span>
-                  </button>
-                </div>
-                <ReactScrollWheelHandler
-                    downHandler={fetchMoreData}
-                    style={{
-              overflow: 'auto'
-          }}
-                  >
-                  {/* <InfiniteScroll
-              dataLength={trafficEventTimeData.length}
-              next={fetchMoreData}
-              loader={<h4>Loading...</h4>}
-              endMessage={<p style={{ textAlign: "center" }}>No more data</p>}
-              style={{  overflow: "auto"}}
-            > */}
-                <div className="_containerCardEvntList flex flex-col gap-[3px] overflow-auto h-full"  >
-                  {cardDataEvent.map((card, index) => (
-                    <CardList
-                      type="event"
-                      showId={false}
-                      key={index}
-                      {...card}
-                      isActive={activeIndex === index}
-                      onClick={() => handleCardClick(index, card.data)}
-                      onDoubleClick={() => handleDoubleClick(card.data)} 
-                    />
-                  ))}
-                </div>
-                </ReactScrollWheelHandler>
-                {/* </InfiniteScroll> */}
-              </div>
-              
+              <LogList carLogData={carLogData?.data|| ""} isLogDelete={isLogDelete}
+              logDeleteConfirm={logDeleteConfirm}
+              selectedLogPos={selectedLogPos}
+              setSelectedLogPos={setSelectedLogPos }
+              selectedLogInfo={selectedLogInfo}
+              setSelectedLogInfo={setSelectedLogInfo}
+              />
             </div>
           </div>
-
-          {showModal && <DbVideoModal data={POIData} currentPage={'main'} onClose={() => setShowModal(false)} />}
-        </div>
-      </section>
+        );
+      }}
+    />
     </>
+    
   );
 };
 
