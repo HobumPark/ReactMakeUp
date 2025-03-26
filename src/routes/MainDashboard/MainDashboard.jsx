@@ -994,6 +994,16 @@ const MainDashboard = () => {
   }, [carInfo]); 
 
 
+  useEffect(() => {
+    // 페이지 로딩 시 body에 overflow-y: scroll 추가
+    document.body.style.overflowY = 'scroll';
+    document.body.style.height = '100%';
+
+    // cleanup: 컴포넌트 언마운트 시 body overflow 스타일 초기화
+    return () => {
+      document.body.style.overflowY = 'auto';
+    };
+  }, []);
 
   return (
     <>
@@ -1028,19 +1038,19 @@ const MainDashboard = () => {
                     <div className="flex flex-col gap-[5px] overflow-hidden p-[5px] top-[10px] left-[10px] w-[450px] absolute z-10  h-[97vh] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
                       
                       <div className="_boxListSite flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden flex-1">
-                        <div className="bg-header-content w-full h-[33px] flex items-center px-[15px]">
+                        <div className="bg-header-content w-full h-[23px] flex items-center px-[15px]">
                           <span className="title3bold text-text-white">
                             디바이스 리스트
                           </span>
                         </div>
                         <div className="flex flex-col w-full py-[5px] px-[10px] gap-[15px] overflow-hidden flex-1">
                           
-                          <div className="grid grid-row-2 gap-[2px] bg-gray-800 rounded">
+                          <div className="grid grid-row-2 gap-[1px] bg-gray-800 rounded">
                             {/* First row with dark gray background */}
-                              <div className="bg-gray-600 text-white p-2 rounded">디바이스 다중제어</div>
+                              <div className="bg-gray-600 text-white p-1 rounded">디바이스 다중제어</div>
 
                               {/* Second row with darker gray background */}
-                              <div className="bg-gray-700 text-white p-1 flex justify-center items-center gap-4">
+                              <div className="bg-gray-700 text-white p-1 flex justify-center items-center gap-4 -mb-2">
                                   {/* Button styles */}
                                   {
                                     multiStartMode==true || multiStopMode==true?
@@ -1070,22 +1080,25 @@ const MainDashboard = () => {
                               </div>
                           </div>
 
-                          <div className="_contentCardList w-full  flex flex-col gap-[5px] overflow-auto h-full">
+                          <div className="_contentCardList w-full  flex flex-col gap-[5px] overflow-auto h-full bg-gray-800">
                             {carList?.map(({ id, name, lat,lng, status, isActive, checked, test, logfile, detail,  }) => (
                               <div key={id} className="w-full">
                                 {/* Accordion Header */}
                                 <div
-                                  className={`flex flex-row w-full justify-between items-center py-[3px] px-[10px] rounded-[5px] whitespace-nowrap 
+                                  className={`flex flex-row w-full justify-between items-center py-[3px] px-[10px] rounded-[5px] whitespace-nowrap
                                     ${
                                       status === "오류" ? "bg-red-500 text-white":'' // status가 "오류"일 때 빨간색
                                     }
                                     ${
                                       status === '진행중'? "bg-green-500 text-white":''
+                                    }
+                                    ${
+                                      status === '대기' || status === '시작대기'? "bg-gray-600 text-white":''
                                     }`
                                   }
                                   //onClick={() => toggleAccordion(id,lat,lng)}
                                 >
-                                  <div className="flex flex-row w-full items-center gap-[8px] ">
+                                  <div className="flex flex-row w-full items-center gap-[5px]">
                                     <span className="title3bold text-text-white">
                                       {
                                         status=='대기' && multiStartMode==true?
@@ -1129,7 +1142,7 @@ const MainDashboard = () => {
 
                                 {/* Accordion Content */}
                                 {openSections.includes(id) && (
-                                  <div className="flex flex-col gap-[3px] mt-[5px] px-[3px]">
+                                  <div className="flex flex-col gap-[3px] mt-[2px] mb-[2px] px-[3px]">
                                     <span className="text-white bg-gray-700 p-1 box-border">
                                       {
                                         status=="오류"?

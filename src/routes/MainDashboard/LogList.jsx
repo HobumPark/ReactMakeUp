@@ -104,7 +104,7 @@ const LogList = ({ carLogData, isLogDelete, selectedLogPos, setSelectedLogPos, s
                       {...cell.getCellProps()}
                       className="px-4 py-2 text-sm text-center border-b border-gray-300"
                     >
-                      <div className="flex items-center">  {/* flex와 items-center 추가 */}
+                      <div className="flex items-center justify-center">  {/* flex와 items-center 추가 */}
                         {isLogDelete ? (
                           <FontAwesomeIcon
                             icon={selectedLogPos[carKey] && selectedLogPos[carKey][rowIndex] ? faCheckCircle : faCircle}
