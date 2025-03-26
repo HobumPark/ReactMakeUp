@@ -104,15 +104,15 @@ const LogList = ({ carLogData, isLogDelete, selectedLogPos, setSelectedLogPos, s
                       {...cell.getCellProps()}
                       className="px-4 py-2 text-sm text-center border-b border-gray-300"
                     >
-                      <div>
+                      <div className="flex items-center">  {/* flex와 items-center 추가 */}
                         {isLogDelete ? (
                           <FontAwesomeIcon
                             icon={selectedLogPos[carKey] && selectedLogPos[carKey][rowIndex] ? faCheckCircle : faCircle}
-                            className="mt-2 text-gray-500 p-2 rounded cursor-pointer"
+                            className="mt-2 text-2xl text-gray-500 p-2 rounded cursor-pointer"
                             onClick={() => checkBoxClick(rowIndex, colIndex)} // 체크박스 클릭 시, 상태 토글
                           />
                         ) : null}
-                        <span>{cell.value.log}</span>
+                        <span className="ml-2">{cell.value.log}</span> {/* 텍스트와 아이콘 사이에 여백을 주기 위해 ml-2 추가 */}
                       </div>
                     </td>
                   );

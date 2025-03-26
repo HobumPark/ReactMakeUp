@@ -186,7 +186,7 @@ const MainDashboard = () => {
   const [selectedLogPos, setSelectedLogPos] = useState([]);
   const [selectedLogInfo, setSelectedLogInfo] = useState([]);
   //mapDisplayPOITest 는 지도 출력 샘플데이터 시험용
-  const {mapInitialView, mapDisplayPOI, mapDisplayPOITest } = useDashboard({
+  const {mapInitialView, mapDisplayPOI, mapDisplayPOITest, mapDisplayPOIOneTest } = useDashboard({
   });
   /*
   const {mapInitialView, mapDisplayPOI, mapDisplayPOITest } = useDashboard({
@@ -201,7 +201,8 @@ const MainDashboard = () => {
   //mapDisplayPOITest 는 샘플데이터 시험용
   const mapInitial = mapInitialView?.data;
   const mapDisplay = mapDisplayPOI?.data;
-  const mapDisplayTest = mapDisplayPOITest?.data;
+  const mapDisplayTest = mapDisplayPOIOneTest?.data;
+  //const mapDisplayOneTest = mapDisplayPOIOneTest?.data;
 
   console.log('mapDisplay')
   console.log(mapDisplay)
@@ -437,6 +438,130 @@ const MainDashboard = () => {
   }, [mapInitial, mapDisplay]);
 
 
+
+  useEffect(() => {
+    const iconMapping = {
+      "car": IconOrangeCar,
+      "red-car": IconRedCar,
+      "orange-car": IconOrangeCar,
+      "yellow-car": IconYellowCar,
+      "green-car": IconGreenCar,
+      "blue-car": IconBlueCar,
+      "purple-car": IconPurpleCar,
+    };
+  
+    // 아이콘 Features 배열 (ID별로 그룹화 하지 않고 직접 추가)
+    const Iconfeatures = [];
+  
+    // 데이터 아이템을 반복하면서 아이콘을 Features 배열에 추가
+    poiTestItem.forEach(item => {
+      console.log('poiItem mapping');
+      console.log(item);
+  
+      const { lat, lng, id, observation_time } = item;
+      
+       // observationTime을 Date 객체로 변환
+      const date = new Date(observation_time);
+
+      // 연도, 월, 일, 시간, 분 추출
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');  // 월은 0부터 시작하므로 1을 더해줘야 합니다.
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+
+      // 원하는 형식으로 날짜와 시간 포맷팅
+      const formattedDate = `${String(year).slice(2,4)}.${month}.${day} ${hours}:${minutes}`;
+
+
+      let carType = "";
+      if (id === "CAR 4023") {
+        carType = "red-car";
+      } else if (id === "CAR 4024") {
+        carType = "orange-car";
+      } else if (id === "CAR 4025") {
+        carType = "yellow-car";
+      } else if (id === "CAR 4026") {
+        carType = "green-car";
+      }
+  
+      console.log('carType');
+      console.log(carType);
+  
+      const iconSrc = iconMapping[carType]; // 아이콘 타입 설정
+  
+      // 아이콘 Feature 생성
+      const iconFeature = new Feature({
+        geometry: new Point(fromLonLat([lng, lat])),
+      });
+  
+      iconFeature.setStyle(
+        new Style({
+          image: new Icon({
+            src: iconSrc,
+            scale: 1.5,  // 아이콘 크기 조정
+          }),
+          // 아이콘 위에 표시할 텍스트
+          text: new Text({
+            text: item.id+"\n"+"["+formattedDate+"]", // 첫 번째 텍스트: 아이디를 아이콘 위에 표시
+            font: 'bold 12px sans-serif',  // 글자를 굵게 설정
+            fill: new Fill({
+              color: 'rgba(255, 255, 255, 1)',  // 진한 흰색
+            }),
+            offsetY: -30,  // 아이콘 위로 텍스트를 이동
+          }),
+          
+        })
+      );
+      
+      
+  
+      // Features 배열에 추가 (ID별로 그룹화 하지 않음)
+      Iconfeatures.push(iconFeature);
+    });
+  
+    const view = olMapRef.current.getView();
+    const zoom = view.getZoom();
+  
+    const clusterSource = new Cluster({
+      distance: 100,
+      minDistance: 0,
+      source: new VectorSource({
+        features: Iconfeatures,
+      }),
+    });
+  
+    const poiLayer = new VectorLayer({
+      source: new VectorSource({
+        features: [...Iconfeatures],
+      }),
+    });
+  
+    if (poiLayerRef.current) {
+      olMapRef.current.removeLayer(poiLayerRef.current);
+    }
+  
+    if (clusterLayerRef.current) {
+      olMapRef.current.removeLayer(clusterLayerRef.current);
+    }
+  
+    poiLayerRef.current = poiLayer;
+  
+    olMapRef.current.addLayer(poiLayerRef.current);
+  
+    poiLayerRef.current.setVisible(true);
+    olMapRef.current.on("moveend", function () {
+      poiLayerRef.current.setVisible(true);
+    });
+  
+    olMapRef.current.getView().on('change:resolution', function () {
+      clusterSource.refresh();
+    });
+  
+  }, [poiItem, poiTestItem]);
+  
+  
+  /*
   useEffect(() => {
     const iconMapping = {
       "car":IconOrangeCar,
@@ -546,7 +671,7 @@ const MainDashboard = () => {
     const view = olMapRef.current.getView();
     const zoom = view.getZoom();
 
-    const distance = zoom > 15 ? 50 : 100;  
+    //const distance = zoom > 15 ? 50 : 100;  
   
     const clusterSource = new Cluster({
       distance: 100, 
@@ -558,7 +683,8 @@ const MainDashboard = () => {
 
     const poiLayer = new VectorLayer({
       source: new VectorSource({
-        features: [...Iconfeatures, ...lineFeatures],
+        features: [...Iconfeatures],
+        //features: [...Iconfeatures//, ...lineFeatures],
       }), 
     });
 
@@ -585,6 +711,7 @@ const MainDashboard = () => {
 
 
   }, [poiItem, poiTestItem]);
+  */
 
   const moveMapToPOI = (id, lat, lng) => {
     //alert(id)
@@ -777,7 +904,7 @@ const MainDashboard = () => {
       //setStartAllActive(true)
       setIsModalOpen(false)
       setMultiStartMode(false)
-      
+      setInputCommand('')
     }
   }
   //
@@ -812,7 +939,7 @@ const MainDashboard = () => {
     //console.log(selectedLogPos)
     //alert('삭제할 로그위치')
     //alert(selectedLogPos)
-    alert('삭제할 로그 정보')
+    //alert('삭제할 로그 정보')
     alert(selectedLogInfo)
     setIsLogDelete(false)
   }
@@ -878,7 +1005,7 @@ const MainDashboard = () => {
                     </div>
 
                     {/* bg-left */}
-                    <div className="flex flex-col gap-[5px] overflow-hidden p-[5px] top-[10px] left-[10px] w-[20%] absolute z-10  h-[97vh] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+                    <div className="flex flex-col gap-[5px] overflow-hidden p-[5px] top-[10px] left-[10px] w-[450px] absolute z-10  h-[97vh] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
                       
                       <div className="_boxListSite flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden flex-1">
                         <div className="bg-header-content w-full h-[33px] flex items-center px-[15px]">
@@ -886,11 +1013,11 @@ const MainDashboard = () => {
                             디바이스 리스트
                           </span>
                         </div>
-                        <div className="flex flex-col w-full py-[15px] px-[10px] gap-[15px] overflow-hidden flex-1">
+                        <div className="flex flex-col w-full py-[5px] px-[10px] gap-[15px] overflow-hidden flex-1">
                           
-                          <div className="grid grid-row-2 gap-[2px] bg-gray-800">
+                          <div className="grid grid-row-2 gap-[2px] bg-gray-800 rounded">
                             {/* First row with dark gray background */}
-                              <div className="bg-gray-600 text-white p-2">디바이스 다중제어</div>
+                              <div className="bg-gray-600 text-white p-2 rounded">디바이스 다중제어</div>
 
                               {/* Second row with darker gray background */}
                               <div className="bg-gray-700 text-white p-1 flex justify-center items-center gap-4">
@@ -928,7 +1055,7 @@ const MainDashboard = () => {
                               <div key={id} className="w-full">
                                 {/* Accordion Header */}
                                 <div
-                                  className={`flex flex-row w-full justify-between items-center py-[5px] px-[10px] rounded-[5px] whitespace-nowrap 
+                                  className={`flex flex-row w-full justify-between items-center py-[3px] px-[10px] rounded-[5px] whitespace-nowrap 
                                     ${
                                       status === "오류" ? "bg-red-500 text-white":'' // status가 "오류"일 때 빨간색
                                     }

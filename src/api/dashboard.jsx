@@ -16,9 +16,14 @@ export const fetchCarInfoTest = async () => {
     const url = `/sampleCarInfo.json`;
     return await reqGet(url);
 };
-//테스트용 차량위치 정보
+//테스트용 차량위치 정보-10개
 export const fetchMapDisplayPOITest = async () => {
     const url = `/sampleCarMovingData.json`;
+    return await reqGet(url);
+};
+//테스트용 차량위치 정보-1개
+export const fetchMapDisplayPOIOneTest = async () => {
+    const url = `/sampleCarMovingOneData.json`;
     return await reqGet(url);
 };
 

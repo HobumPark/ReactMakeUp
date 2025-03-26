@@ -1,0 +1,33 @@
+{
+    "data": [
+      {
+        "id": "CAR 4023",
+        "lat": 37.5665,
+        "lng": 126.9780,
+        "observation_time":"2025-03-26 12:33",
+        "type": "car"
+      },
+      {
+        "id": "CAR 4024",
+        "lat": 37.5640,
+        "lng": 126.9780,
+        "observation_time":"2025-03-26 12:33",
+        "type": "car"
+      },
+      {
+        "id": "CAR 4025",
+        "lat": 37.5650,
+        "lng": 126.9825,
+        "observation_time":"2025-03-26 12:33",
+        "type": "car"
+      },
+      {
+        "id": "CAR 4026",
+        "lat": 37.5655,
+        "lng": 126.9745,
+        "observation_time":"2025-03-26 12:33",
+        "type": "car"
+      }
+    ]
+  }
+  
