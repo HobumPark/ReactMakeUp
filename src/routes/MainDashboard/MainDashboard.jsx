@@ -905,6 +905,26 @@ const MainDashboard = () => {
       setIsModalOpen(false)
       setMultiStartMode(false)
       setInputCommand('')
+    }else{
+      //다중모드 아닐시엔
+      console.log('다중모드 아닐때')
+      const cars = carList.map((car) => {
+        // If car.checked is true, set isActive to true and status to '진행중'
+        console.log(car)
+        if (car.id==selectedCarId) {
+          return {
+            ...car,
+            status: '진행중', // Set status to '진행중'
+            isActive: true    // Set isActive to true if checked is true
+          };
+        }
+        
+        return car;
+      });
+
+      setCarList(cars)
+      setIsModalOpen(false)
+      setInputCommand('')
     }
   }
   //
