@@ -929,7 +929,7 @@ const MainDashboard = () => {
   }
   //
   const cancelClick=()=>{
-    alert('취소!')
+    //alert('취소!')
     setIsModalOpen(false)
   }
   //
@@ -1010,7 +1010,7 @@ const MainDashboard = () => {
     <ReactFullpage
       licenseKey={'YOUR_KEY_HERE'} // 필요 시, 라이센스 키를 입력하세요.
       scrollingSpeed={1000} // 섹션 간의 스크롤 속도 설정
-      scrollOverflow={true} // 섹션 내에서 스크롤이 필요한 경우 설정
+      scrollOverflow={false} // 섹션 내에서 스크롤이 필요한 경우 설정
       navigation // 네비게이션 표시
       render={({ state, fullpageApi }) => {
         return (
@@ -1176,12 +1176,12 @@ const MainDashboard = () => {
         
               </div>
             </div>
-            <div className="section w-full h-[100vh]">
+            <div className="section w-full h-[100vh] pt-15">
               <div className="w-full flex justify-end h-[80px] pt-5">
                 
                 {
                   isLogDelete==false?
-                  <button className="w-[100px] h-[50px] bg-blue-500 text-white rounded mr-15 cursor-pointer hover:opacity-80"
+                  <button className="w-[100px] h-[50px] bg-blue-500 text-white rounded cursor-pointer hover:opacity-80 mr-5"
                     onClick={handleDeleteLog}>
                     로그 삭제
                   </button>:
@@ -1191,7 +1191,7 @@ const MainDashboard = () => {
                     onClick={logDeleteConfirm}>
                       완료
                     </button>
-                    <button className="bg-gray-300 text-black rounded hover:bg-gray-400 cursor-pointer hover:opacity-80 mr-"
+                    <button className="bg-gray-300 text-black rounded hover:bg-gray-400 cursor-pointer hover:opacity-80 mr-2"
                     style={{ width: "100px", height: "50px" }}
                     onClick={logDeleteCancel}>
                       취소
@@ -1199,7 +1199,9 @@ const MainDashboard = () => {
                   </div>
                 }
               </div>
-              <LogList carLogData={carLogData?.data|| ""} isLogDelete={isLogDelete}
+              <LogList 
+              className="mr-2 mt-25"
+              carLogData={carLogData?.data|| ""} isLogDelete={isLogDelete}
               logDeleteConfirm={logDeleteConfirm}
               selectedLogPos={selectedLogPos}
               setSelectedLogPos={setSelectedLogPos }

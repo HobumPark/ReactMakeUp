@@ -69,3 +69,7 @@
   
   background-color: #ffffff !important; /* 점의 기본 색상 */
 }
+
+.react-fullpage > .section {
+  overflow: hidden; /* 섹션 내 스크롤 숨기기 */
+}
