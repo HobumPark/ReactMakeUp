@@ -1053,23 +1053,46 @@ const MainDashboard = () => {
     };
   }, []);
 
+  const [isScrolling, setIsScrolling] = useState(false); // 휠 스크롤 방지 상태
+
+  useEffect(() => {
+    const handleWheel = (event) => {
+      event.preventDefault(); // 휠 이벤트 기본 동작을 막음
+      if (isScrolling) return;
+
+      setIsScrolling(true); // 스크롤을 시작함
+
+      // 잠시 후 스크롤을 다시 활성화
+      setTimeout(() => {
+        setIsScrolling(false);
+      }, 800); // 휠 이벤트 처리 후 800ms 대기
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [isScrolling]);
+
   return (
     <>
     <ReactFullpage
       licenseKey={'YOUR_KEY_HERE'} // 필요 시, 라이센스 키를 입력하세요.
-      autoScrolling={true}  // 자동 스크롤 활성화
-      scrollOverflow={true} // 스크롤 오버플로우 활성화
-      scrollingSpeed={1000} // 스크롤 속도 조정
-      navigation={true}     // 네비게이션 추가
+      autoScrolling={true}
+      scrollOverflow={true} // 스크롤 오버플로우 설정을 true로
+      scrollingSpeed={800}    // 스크롤 속도 조정
+      navigation={true}       // 네비게이션 활성화
+      //onWheel={handleWheel} // 휠 이벤트 핸들러 추가
       render={({ state, fullpageApi }) => {
         return (
           <div>
-            <div className="section w-full h-[100vh]">
-              <div className="w-full h-[100vh]">
-                <section className="flex h-[100vh] flex-grow">
+            <div className="section w-full h-[100vh] overflow-hidden">
+              <div className="w-full">
+                <section className="flex flex-grow overflow-hidden">
                   <Header />
                   {/* ini maps ya */}
-                  <div ref={mapRef} className="w-full h-[100vh] relative">
+                  <div ref={mapRef} className="w-full h-[calc(100vh-45px)] relative">
                     {/* ini maps ya */}
 
                     <div className="_legendTop absolute z-10 w-max h-[31px] top-[10px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-[4px] overflow-hidden">
@@ -1084,7 +1107,7 @@ const MainDashboard = () => {
                     </div>
 
                     {/* bg-left */}
-                    <div className="flex flex-col gap-[5px] overflow-hidden p-[5px] top-[5px] left-[10px] w-[450px] absolute z-10  h-[97vh] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+                    <div className="flex flex-col gap-[5px] overflow-hidden p-[5px] top-[5px] left-[10px] w-[450px] absolute z-10  h-[94vh] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
                       
                       <div className="_boxListSite flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden flex-1">
                         <div className="bg-header-content w-full h-[23px] flex items-center px-[15px]">
@@ -1092,9 +1115,9 @@ const MainDashboard = () => {
                             디바이스 리스트
                           </span>
                         </div>
-                        <div className="flex flex-col w-full py-[5px] px-[10px] gap-[15px] overflow-hidden flex-1">
+                        <div className="flex flex-col w-full py-[2px] px-[10px] gap-[15px] overflow-hidden flex-1">
                           
-                          <div className="grid grid-row-2 gap-[1px] bg-gray-800 rounded">
+                          <div className="grid grid-row-2 gap-[0px] bg-gray-800 rounded">
                             {/* First row with dark gray background */}
                               <div className="bg-gray-600 text-white p-1 rounded">디바이스 다중제어</div>
 
@@ -1225,8 +1248,8 @@ const MainDashboard = () => {
         
               </div>
             </div>
-            <div className="section w-full h-[100vh] pt-15">
-              <div className="w-full flex justify-end h-[80px] pt-5">
+            <div className="section w-full h-[100vh] mt-10">
+              <div className="w-full flex justify-end h-[80px] pt-0">
                 {
                   isLogDelete==false?
                   <button className="w-[100px] h-[50px] bg-blue-500 text-white rounded cursor-pointer hover:opacity-80 mr-5"
