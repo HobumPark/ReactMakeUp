@@ -49,6 +49,12 @@ import CommandInputModal from '../../components/Modal/CommandInputModal/CommandI
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
 
+import {defaults as defaultControls} from 'ol/control';
+import * as olControl from 'ol/control';
+import { Zoom, Attribution } from 'ol/control';
+import { defaults as defaultInteractions } from 'ol/interaction';
+
+
 import LogList from './LogList';
 
 const carTabulator = [
@@ -350,8 +356,30 @@ const MainDashboard = () => {
         zoom: 15,
         minZoom: 8, 
       }),
-      controls: [] // 기본 컨트롤 모두 제거
+      controls: [
+        new Zoom(),  // Zoom 컨트롤을 추가
+      ],
+      interactions: defaultInteractions({ 
+        mouseWheelZoom: false // 휠로 인한 확대/축소 비활성화
+      }),
     });
+
+    // CSS로 Zoom 컨트롤을 우측으로 배치
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .ol-zoom {
+        position: absolute;
+        width:37px;
+        top:50px;
+        left:75%; /* 우측에 위치 */
+        z-index: 100; /* 컨트롤이 맵 위로 오도록 z-index 추가 */
+        cursor:pointer;
+      }
+      .ol-zoom>button{
+         cursor:pointer;
+      }
+    `;
+    document.head.appendChild(style);
 
     const changeMapView = () => {
       if (olMap) {
@@ -458,7 +486,7 @@ const MainDashboard = () => {
       console.log('poiItem mapping');
       console.log(item);
   
-      const { lat, lng, id, observation_time } = item;
+      const { lat, lng, device_id, observation_time } = item;
       
        // observationTime을 Date 객체로 변환
       const date = new Date(observation_time);
@@ -475,13 +503,13 @@ const MainDashboard = () => {
 
 
       let carType = "";
-      if (id === "CAR 4023") {
+      if (device_id === "CAR 4023") {
         carType = "red-car";
-      } else if (id === "CAR 4024") {
+      } else if (device_id === "CAR 4024") {
         carType = "orange-car";
-      } else if (id === "CAR 4025") {
+      } else if (device_id === "CAR 4025") {
         carType = "yellow-car";
-      } else if (id === "CAR 4026") {
+      } else if (device_id === "CAR 4026") {
         carType = "green-car";
       }
   
@@ -503,7 +531,7 @@ const MainDashboard = () => {
           }),
           // 아이콘 위에 표시할 텍스트
           text: new Text({
-            text: item.id+"\n"+"["+formattedDate+"]", // 첫 번째 텍스트: 아이디를 아이콘 위에 표시
+            text: item.device_id+"\n"+"["+formattedDate+"]", // 첫 번째 텍스트: 아이디를 아이콘 위에 표시
             font: 'bold 12px sans-serif',  // 글자를 굵게 설정
             fill: new Fill({
               color: 'rgba(255, 255, 255, 1)',  // 진한 흰색
@@ -713,10 +741,10 @@ const MainDashboard = () => {
   }, [poiItem, poiTestItem]);
   */
 
-  const moveMapToPOI = (id, lat, lng) => {
+  const moveMapToPOI = (device_id, lat, lng) => {
     //alert(id)
 
-      console.log(id, lat, lng);
+      console.log(device_id, lat, lng);
       const isInSouthKorea = lat >= 33.0 && lat <= 38.6 && lng >= 124.6 && lng <= 131.0;
 
       if (lat && lng && isInSouthKorea) {
@@ -850,13 +878,13 @@ const MainDashboard = () => {
     setInputCommand(value);
   }
 
-  const testStart=(carId)=>{
+  const testStart=(device_id)=>{
     //alert('시작:'+carId)
-    setSelectedCarId(carId)
+    setSelectedCarId(device_id)
     setIsModalOpen(true)
   }
 
-  const testStop=(carId)=>{
+  const testStop=(device_id)=>{
 
     let testStopConfirm = new NoticeMessage(t('정말로 시험을 종료하시겠습니까?'), {
       mode: "confirm",
@@ -867,7 +895,7 @@ const MainDashboard = () => {
   
       //alert('종료:'+carId)
       const cars = carList.map((car) =>
-        car.id === carId ? { ...car, status:'대기', isActive: false } : car
+        car.device_id === device_id ? { ...car, status:'대기', isActive: false } : car
       )
       setCarList(cars);
 
@@ -911,7 +939,7 @@ const MainDashboard = () => {
       const cars = carList.map((car) => {
         // If car.checked is true, set isActive to true and status to '진행중'
         console.log(car)
-        if (car.id==selectedCarId) {
+        if (car.device_id==selectedCarId) {
           return {
             ...car,
             status: '진행중', // Set status to '진행중'
@@ -933,7 +961,7 @@ const MainDashboard = () => {
     setIsModalOpen(false)
   }
   //
-  const handleReset=(id)=>{
+  const handleReset=(device_id)=>{
     //alert(id+' 리셋!')
 
     let testResetConfirm = new NoticeMessage(t('정말로 Reset 하시겠습니까?'), {
@@ -943,7 +971,7 @@ const MainDashboard = () => {
     testResetConfirm.confirmClicked().then(() => {
       
       const cars = carList.map((car) =>
-        car.id === id ? { ...car, status:'대기', isActive: false } : car
+        car.device_id === device_id ? { ...car, status:'대기', isActive: false } : car
       )
       setCarList(cars);
   
@@ -975,10 +1003,10 @@ const MainDashboard = () => {
     
   };
   */
-  const checkCarClick=(id)=>{
+  const checkCarClick=(device_id)=>{
     //alert('차량 체크')
     const cars = carList.map((car) =>
-      car.id === id ? { ...car, checked:!car.checked } : car
+      car.device_id === device_id ? { ...car, checked:!car.checked } : car
     )
     setCarList(cars)
   }
@@ -988,7 +1016,7 @@ const MainDashboard = () => {
     console.log('carList store')
     if (carInfo) {
       setCarList(carInfo.data);
-      const ids = carInfo.data.map(car => car.id);
+      const ids = carInfo.data.map(car => car.device_id);
       setOpenSections(ids)
     }
   }, [carInfo]); 
@@ -1081,8 +1109,8 @@ const MainDashboard = () => {
                           </div>
 
                           <div className="_contentCardList w-full  flex flex-col gap-[5px] overflow-auto h-full bg-gray-800">
-                            {carList?.map(({ id, name, lat,lng, status, isActive, checked, test, logfile, detail,  }) => (
-                              <div key={id} className="w-full">
+                            {carList?.map(({ device_id, name, lat,lng, status, isActive, checked, test, logfile, detail,  }) => (
+                              <div key={device_id} className="w-full">
                                 {/* Accordion Header */}
                                 <div
                                   className={`flex flex-row w-full justify-between items-center py-[3px] px-[10px] rounded-[5px] whitespace-nowrap
@@ -1105,7 +1133,7 @@ const MainDashboard = () => {
                                         <FontAwesomeIcon
                                         icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
                                         className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} // 색상도 바꿀 수 있음
-                                        onClick={()=>checkCarClick(id)}
+                                        onClick={()=>checkCarClick(device_id)}
                                         />:''
                                       }
                                       {
@@ -1113,35 +1141,35 @@ const MainDashboard = () => {
                                         <FontAwesomeIcon
                                         icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
                                         className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} // 색상도 바꿀 수 있음
-                                        onClick={()=>checkCarClick(id)}
+                                        onClick={()=>checkCarClick(device_id)}
                                         />:''
                                       }
                                     
-                                        [{status}] Car {id} 
+                                        [{status}] Car {device_id} 
                                     </span>
                                   </div>
                                   <div>
                                     <button className={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
                                     ${status === '진행중' || status=='오류' || status=='시작대기'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'}`}
                                     disabled={status === '진행중' || status=='오류' || status=='시작대기'? true:false}
-                                      onClick={()=>testStart(id)}>
+                                      onClick={()=>testStart(device_id)}>
                                         시작
                                       </button>
                                     <button class={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
                                     ${status=='대기'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'} `}
                                     disabled={status=='대기'? true:false}
-                                      onClick={()=>testStop(id)}>
+                                      onClick={()=>testStop(device_id)}>
                                         종료
                                       </button>
                                     <button class="w-[40px] h-[30px] bg-white text-black rounded-[5px] font-bold pl-3 pr-14 cursor-pointer hover:opacity-80"
-                                      onClick={()=>handleReset(id)}>
+                                      onClick={()=>handleReset(device_id)}>
                                         Reset
                                       </button>
                                   </div>
                                 </div>
 
                                 {/* Accordion Content */}
-                                {openSections.includes(id) && (
+                                {openSections.includes(device_id) && (
                                   <div className="flex flex-col gap-[3px] mt-[2px] mb-[2px] px-[3px]">
                                     <span className="text-white bg-gray-700 p-1 box-border">
                                       {
@@ -1191,7 +1219,7 @@ const MainDashboard = () => {
                     onClick={logDeleteConfirm}>
                       완료
                     </button>
-                    <button className="bg-gray-300 text-black rounded hover:bg-gray-400 cursor-pointer hover:opacity-80 mr-2"
+                    <button className="bg-gray-300 text-black rounded hover:bg-gray-400 cursor-pointer hover:opacity-80"
                     style={{ width: "100px", height: "50px" }}
                     onClick={logDeleteCancel}>
                       취소
