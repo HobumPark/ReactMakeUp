@@ -357,7 +357,10 @@ const MainDashboard = () => {
         minZoom: 8, 
       }),
       controls: [
-        new Zoom(),  // Zoom 컨트롤을 추가
+        new Zoom({
+          zoomInLabel: '+',  // 확대 버튼에 ' +' 텍스트 표시
+          zoomOutLabel: '-' // 축소 버튼에 ' -' 텍스트 표시
+        }),  // Zoom 컨트롤만 추가
       ],
       interactions: defaultInteractions({ 
         mouseWheelZoom: false // 휠로 인한 확대/축소 비활성화
@@ -369,14 +372,31 @@ const MainDashboard = () => {
     style.innerHTML = `
       .ol-zoom {
         position: absolute;
-        width:37px;
+        width:50px;
+        height:100px;
         top:50px;
-        left:75%; /* 우측에 위치 */
+        left:73%; /* 우측에 위치 */
         z-index: 100; /* 컨트롤이 맵 위로 오도록 z-index 추가 */
         cursor:pointer;
       }
-      .ol-zoom>button{
-         cursor:pointer;
+      .ol-zoom > button {
+        font-size: 28px !important;
+        width: 50px !important;
+        height: 50px !important;
+        cursor: pointer;
+        box-sizing:border-box !important;
+      }
+      .custom-icon-button{
+        display:none !important;
+      }
+      .ol-zoom-in{
+        font-size: 50px !important;
+        width:100% !important;
+        height:50% !important;
+      }
+      .ol-zoom-out{
+        width:100% !important;
+        height:50% !important;
       }
     `;
     document.head.appendChild(style);
@@ -1037,9 +1057,10 @@ const MainDashboard = () => {
     <>
     <ReactFullpage
       licenseKey={'YOUR_KEY_HERE'} // 필요 시, 라이센스 키를 입력하세요.
-      scrollingSpeed={1000} // 섹션 간의 스크롤 속도 설정
-      scrollOverflow={false} // 섹션 내에서 스크롤이 필요한 경우 설정
-      navigation // 네비게이션 표시
+      autoScrolling={true}  // 자동 스크롤 활성화
+      scrollOverflow={true} // 스크롤 오버플로우 활성화
+      scrollingSpeed={1000} // 스크롤 속도 조정
+      navigation={true}     // 네비게이션 추가
       render={({ state, fullpageApi }) => {
         return (
           <div>
@@ -1051,7 +1072,7 @@ const MainDashboard = () => {
                   <div ref={mapRef} className="w-full h-[100vh] relative">
                     {/* ini maps ya */}
 
-                    <div className="_legendTop absolute z-10 w-max h-[31px] top-[25px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-[4px] overflow-hidden">
+                    <div className="_legendTop absolute z-10 w-max h-[31px] top-[10px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-[4px] overflow-hidden">
                       <div className="flex gap-[30px] h-full">
                         <div className="bg-[#fff] w-fit h-full flex rounded-[4px]">
                             
@@ -1063,7 +1084,7 @@ const MainDashboard = () => {
                     </div>
 
                     {/* bg-left */}
-                    <div className="flex flex-col gap-[5px] overflow-hidden p-[5px] top-[10px] left-[10px] w-[450px] absolute z-10  h-[97vh] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+                    <div className="flex flex-col gap-[5px] overflow-hidden p-[5px] top-[5px] left-[10px] w-[450px] absolute z-10  h-[97vh] rounded-lg bg-[rgba(59,71,84,0.52)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
                       
                       <div className="_boxListSite flex w-full bg-db-black shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] flex-col rounded-[5px] overflow-hidden flex-1">
                         <div className="bg-header-content w-full h-[23px] flex items-center px-[15px]">
@@ -1108,12 +1129,12 @@ const MainDashboard = () => {
                               </div>
                           </div>
 
-                          <div className="_contentCardList w-full  flex flex-col gap-[5px] overflow-auto h-full bg-gray-800">
+                          <div className="_contentCardList w-full  flex flex-col gap-[8px] overflow-auto h-full bg-transparent">
                             {carList?.map(({ device_id, name, lat,lng, status, isActive, checked, test, logfile, detail,  }) => (
-                              <div key={device_id} className="w-full">
+                              <div key={device_id} className="w-full mb-[5px] bg-transparent">
                                 {/* Accordion Header */}
                                 <div
-                                  className={`flex flex-row w-full justify-between items-center py-[3px] px-[10px] rounded-[5px] whitespace-nowrap
+                                  className={`flex flex-row w-full justify-between items-center py-[1px] px-[10px] rounded-[5px] whitespace-nowrap mb-[5px] rounded bg-[#404953]
                                     ${
                                       status === "오류" ? "bg-red-500 text-white":'' // status가 "오류"일 때 빨간색
                                     }
@@ -1121,7 +1142,7 @@ const MainDashboard = () => {
                                       status === '진행중'? "bg-green-500 text-white":''
                                     }
                                     ${
-                                      status === '대기' || status === '시작대기'? "bg-gray-600 text-white":''
+                                      status === '대기' || status === '시작대기'? "bg-[##404953] text-white":''
                                     }`
                                   }
                                   //onClick={() => toggleAccordion(id,lat,lng)}
@@ -1170,8 +1191,8 @@ const MainDashboard = () => {
 
                                 {/* Accordion Content */}
                                 {openSections.includes(device_id) && (
-                                  <div className="flex flex-col gap-[3px] mt-[2px] mb-[2px] px-[3px]">
-                                    <span className="text-white bg-gray-700 p-1 box-border">
+                                  <div className="flex flex-col gap-[3px] mt-[-4px] mb-[2px] px-[3px]">
+                                    <span className="text-white bg-[#31363d] p-1 box-border">
                                       {
                                         status=="오류"?
                                         <span>
@@ -1206,7 +1227,6 @@ const MainDashboard = () => {
             </div>
             <div className="section w-full h-[100vh] pt-15">
               <div className="w-full flex justify-end h-[80px] pt-5">
-                
                 {
                   isLogDelete==false?
                   <button className="w-[100px] h-[50px] bg-blue-500 text-white rounded cursor-pointer hover:opacity-80 mr-5"
@@ -1224,18 +1244,21 @@ const MainDashboard = () => {
                     onClick={logDeleteCancel}>
                       취소
                     </button>
-                  </div>
+                </div>
                 }
+                
               </div>
-              <LogList 
-              className="mr-2 mt-25"
-              carLogData={carLogData?.data|| ""} isLogDelete={isLogDelete}
-              logDeleteConfirm={logDeleteConfirm}
-              selectedLogPos={selectedLogPos}
-              setSelectedLogPos={setSelectedLogPos }
-              selectedLogInfo={selectedLogInfo}
-              setSelectedLogInfo={setSelectedLogInfo}
-              />
+              <div>
+                  <LogList 
+                  className="mr-2 mt-25"
+                  carLogData={carLogData?.data|| ""} isLogDelete={isLogDelete}
+                  logDeleteConfirm={logDeleteConfirm}
+                  selectedLogPos={selectedLogPos}
+                  setSelectedLogPos={setSelectedLogPos }
+                  selectedLogInfo={selectedLogInfo}
+                  setSelectedLogInfo={setSelectedLogInfo}
+                  />
+              </div>
             </div>
           </div>
         );

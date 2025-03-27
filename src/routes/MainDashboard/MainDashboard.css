@@ -73,3 +73,15 @@
 .react-fullpage > .section {
   overflow: hidden; /* 섹션 내 스크롤 숨기기 */
 }
+
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  overflow: scroll; /* Fullpage 라이브러리와의 충돌을 피하기 위해 body에서 overflow를 숨깁니다. */
+}
+
+section {
+  height: 100vh; /* 각 섹션의 높이를 뷰포트 높이로 설정 */
+  margin: 0;     /* 섹션 마진을 제거 */
+  padding: 0;    /* 섹션 패딩을 제거 */
+}

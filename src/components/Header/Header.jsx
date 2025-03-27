@@ -63,7 +63,7 @@ const Header = () => {
   };
   return (
     <>
-      <header className="w-full flex flex-row justify-between h-[62px] text-text-white bg-db-black ">
+      <header className="w-full flex flex-row justify-between h-[45px] text-text-white bg-db-black ">
         <div className="flex w-fit">
           <div className="flex  items-center h-full min-w-[218px] bg-header-content ">
             <span className="m-auto h5bold">Wayties</span>
