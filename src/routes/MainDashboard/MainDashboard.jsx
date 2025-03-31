@@ -74,7 +74,7 @@ const MainDashboard = () => {
   const [isLogDelete,setIsLogDelete] = useState(false)
 
   const [deviceStatusQueryParams,setDeviceStatusQueryParams]=useState('')
-  const [deviceLogQueryParams,setDeviceLogQueryParams]=useState('')
+  const [deviceLogQueryParams,setDeviceLogQueryParams]=useState('logList')
   const [commandQueryParams,setCommandQueryParams]=useState('')
 
   const [selectedLogPos, setSelectedLogPos] = useState([]);
@@ -107,7 +107,7 @@ const MainDashboard = () => {
   console.log('mapDisplayTest')
   console.log(mapDisplayTest)
 
-  console.log('deviceInfo')
+  console.log('deviceStatus')
   console.log(deviceStatus)
 
   console.log('deviceLogData')
@@ -728,10 +728,11 @@ const MainDashboard = () => {
     //console.log(selectedLogPos)
     //alert('삭제할 로그위치')
     //alert(selectedLogPos)
-    //alert('삭제할 로그 정보')
+    alert('삭제할 로그 정보')
+    alert(selectedLogInfo)
     deleteLogList(selectedLogInfo)
 
-    alert(selectedLogInfo)
+    
     setIsLogDelete(false)
   }
 
@@ -796,6 +797,34 @@ const MainDashboard = () => {
       window.removeEventListener('wheel', handleWheel);
     };
   }, [isScrolling]);
+
+  const logList = deviceLogData?.data?.devices || [];
+  console.log('logList:', logList);
+
+  // Start transforming the data
+  //const rows = [];
+  const transFormedLogList = []
+  const maxLength = Math.max(...logList.map(device => device.tests?.length || 0)); // Get the max length of tests array
+
+  // Loop through all the devices and create a row for each test entry
+  for (let i = 0; i < maxLength; i++) {
+    const row = {};
+
+    logList.forEach((device, index) => {
+      const test = device.tests[i]; // Get the ith test from the device's tests array
+      // Ensure that all 10 cars (car1 to car10) are represented
+      row[`car${index + 1}`] = test ? test.test_id : ''; // Add car1, car2, ... for each test entry
+    });
+
+    // Fill missing cars with empty string if necessary (car4, car5, ... up to car10)
+    for (let j = logList.length; j < 10; j++) {
+      row[`car${j + 1}`] = ''; // If a car doesn't exist, add empty string
+    }
+
+    transFormedLogList.push(row); // Push the row into the final data array
+  }
+
+  console.log('Transformed Data:', transFormedLogList);
 
   return (
     <>
@@ -875,7 +904,7 @@ const MainDashboard = () => {
                           </div>
 
                           <div className="_contentCardList w-full  flex flex-col gap-[8px] overflow-auto h-full bg-transparent">
-                            {deviceList?.map(({ device_id, status, status_kor, checked, test, log_file_name, detail,  }) => (
+                            {deviceList?.map(({ device_id, status, status_value, status_kor, checked, test_name, log_file_name, error_message,  }) => (
                               <div key={device_id} className="w-full mb-[5px] bg-transparent">
                                 {/* Accordion Header */}
                                 <div
@@ -911,7 +940,7 @@ const MainDashboard = () => {
                                         />:''
                                       }
                                     
-                                        [{status_kor}] Car {device_id} 
+                                        [{status_value}] Car {device_id} 
                                     </span>
                                   </div>
                                   <div>
@@ -943,12 +972,12 @@ const MainDashboard = () => {
                                   <div className="flex flex-col gap-[3px] mt-[-4px] mb-[2px] px-[3px]">
                                     <span className="text-white bg-[#31363d] p-1 box-border">
                                       {
-                                        status=="오류"?
+                                        status=="DEV_ST_ERR"? //오류일때
                                         <span>
-                                            {detail}
+                                            {error_message}
                                         </span>:
                                          <span>
-                                            {test} / {log_file_name}
+                                            {test_name} / {log_file_name}
                                         </span>
                                       }
                                       
@@ -1000,7 +1029,8 @@ const MainDashboard = () => {
               <div>
                   <LogList 
                   className="mr-2 mt-25"
-                  deviceLogData={deviceLogData?.data|| ""} 
+                  //deviceLogData={deviceLogData?.data.devices || []} 
+                  deviceLogData={transFormedLogList || []} 
                   isLogDelete={isLogDelete}
                   selectedLogPos={selectedLogPos}
                   setSelectedLogPos={setSelectedLogPos }

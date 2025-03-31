@@ -7,76 +7,85 @@ const LogList = (
   { deviceLogData, isLogDelete, 
     selectedLogPos, setSelectedLogPos, 
     selectedLogInfo, setSelectedLogInfo }) => {
-  
+
   // 페이지 로드 시 selectedLogs 초기화
   useEffect(() => {
-    const initialSelectedLogs = {};
-    Object.keys(deviceLogData).forEach(car => {
-      initialSelectedLogs[car] = deviceLogData[car].map(logItem => logItem.checked);
-    });
-    setSelectedLogPos(initialSelectedLogs);
+    console.log('LogList Data');
+    console.log(deviceLogData);
   }, [deviceLogData]);
 
-  // useMemo로 columns와 data를 최적화
+  // columns 설정 (CAR 01, CAR 02, CAR 03 ...)
   const columns = useMemo(() => [
-    { Header: 'CAR 01', accessor: 'car01' },
-    { Header: 'CAR 02', accessor: 'car02' },
-    { Header: 'CAR 03', accessor: 'car03' },
-    { Header: 'CAR 04', accessor: 'car04' },
-    { Header: 'CAR 05', accessor: 'car05' },
-    { Header: 'CAR 06', accessor: 'car06' },
-    { Header: 'CAR 07', accessor: 'car07' },
-    { Header: 'CAR 08', accessor: 'car08' },
-    { Header: 'CAR 09', accessor: 'car09' },
+    { Header: 'CAR 01', accessor: 'car1' },
+    { Header: 'CAR 02', accessor: 'car2' },
+    { Header: 'CAR 03', accessor: 'car3' },
+    { Header: 'CAR 04', accessor: 'car4' },
+    { Header: 'CAR 05', accessor: 'car5' },
+    { Header: 'CAR 06', accessor: 'car6' },
+    { Header: 'CAR 07', accessor: 'car7' },
+    { Header: 'CAR 08', accessor: 'car8' },
+    { Header: 'CAR 09', accessor: 'car9' },
     { Header: 'CAR 10', accessor: 'car10' },
   ], []);
 
-  // data 준비 (각 차량의 로그를 배열 형태로 합친 데이터)
+  // 데이터 준비: deviceLogData 배열 그대로 사용
   const data = useMemo(() => {
-    const maxLength = Math.max(
-      ...Object.values(deviceLogData).map(device => device.length)
-    );
-
-    const rows = [];
-    for (let i = 0; i < maxLength; i++) {
-      const row = {};
-      Object.keys(deviceLogData).forEach(car => {
-        row[car] = deviceLogData[car][i] || { log: '', checked: false };
-      });
-      rows.push(row);
-    }
-    return rows;
+    return deviceLogData.map((log, index) => ({
+      car1: log.car1,
+      car2: log.car2,
+      car3: log.car3,
+      car4: log.car4 || '', 
+      car5: log.car5 || '',
+      car6: log.car6 || '',
+      car7: log.car7 || '',
+      car8: log.car8 || '',
+      car9: log.car9 || '',
+      car10: log.car10 || ''
+    }));
   }, [deviceLogData]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows: tableRows, prepareRow } = useTable({
     columns,
-    data, // 데이터 전달
+    data, 
   });
 
   // 체크박스 클릭 시 상태 토글
   const checkBoxClick = (rowIndex, colIndex) => {
-
+    const carKeys = Object.keys(deviceLogData);
+    const carKey = carKeys[colIndex]; // 클릭된 차량의 키 (car1, car2, ...)
   
-    const carKeys = Object.keys(deviceLogData); // 차량 키들 (car01, car02, ..., car10)
-    const carKey = carKeys[colIndex]; // 클릭된 차량의 키 (car01, car02, ...)
-    
-    console.log('체크된 로그 정보')
-    const logItem = deviceLogData[carKey][rowIndex]; // deviceLogData에서 해당 위치의 로그
-    console.log(logItem)
-
-    if(logItem.checked==false){//첫클릭시일때 false이면 false->true이므로 삭제할 로그
-      const updatedLogInfo=[...selectedLogInfo,logItem.log]
-      setSelectedLogInfo(updatedLogInfo)
-    }
-
-
+    // 해당 차량의 해당 row의 로그 항목을 가져옵니다
+    const logItem = deviceLogData[rowIndex]?.[carKey];
+    console.log('logItem');
+    console.log(logItem);
+  
+    // 선택된 로그 상태 업데이트
     const updatedSelectedLogPos = { ...selectedLogPos };
+    updatedSelectedLogPos[carKey] = updatedSelectedLogPos[carKey] || [];
     updatedSelectedLogPos[carKey][rowIndex] = !updatedSelectedLogPos[carKey][rowIndex];
-
-    
-
+  
     setSelectedLogPos(updatedSelectedLogPos);
+  
+    // 여기에 로그 아이디를 selectedLogInfo로 업데이트
+    // 예: logItem.id가 로그의 고유 ID라면 아래처럼 할 수 있습니다
+    if (logItem && logItem.id) {
+      setSelectedLogInfo((prevState) => {
+        const updatedLogInfo = [...prevState];
+        if (updatedSelectedLogPos[carKey][rowIndex]) {
+          // 체크한 경우 로그 아이디 추가
+          updatedLogInfo.push(logItem.id);
+        } else {
+          // 체크 해제 시 로그 아이디 제거
+          const index = updatedLogInfo.indexOf(logItem.id);
+          if (index > -1) {
+            updatedLogInfo.splice(index, 1);
+          }
+        }
+        return updatedLogInfo;
+      });
+    }
   };
+  
 
   return (
     <div className="overflow-x-auto bg-white shadow-md rounded-lg">
@@ -101,21 +110,27 @@ const LogList = (
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell, colIndex) => {
-                  const carKey = Object.keys(deviceLogData)[colIndex]; // 차량 키 (car01, car02, ...)
+                  const carKey = Object.keys(deviceLogData)[colIndex]; // 차량 키 (car1, car2, ...)
+                  console.log('cell value');
+                  console.log(cell.value); 
+
                   return (
                     <td
                       {...cell.getCellProps()}
                       className="px-4 py-2 text-sm text-center border-b border-gray-300"
                     >
-                      <div className="flex items-center justify-center h-[30px]">  {/* flex와 items-center 추가 */}
-                        {isLogDelete ? (
+                      <div className="flex items-center justify-center h-[30px]">
+                        {isLogDelete && cell.value && (  // Only show checkbox if value exists
                           <FontAwesomeIcon
                             icon={selectedLogPos[carKey] && selectedLogPos[carKey][rowIndex] ? faCheckCircle : faCircle}
                             className="mt-2 text-2xl text-gray-500 p-2 rounded cursor-pointer"
                             onClick={() => checkBoxClick(rowIndex, colIndex)} // 체크박스 클릭 시, 상태 토글
                           />
-                        ) : null}
-                        <span className="ml-2">{cell.value.log}</span> {/* 텍스트와 아이콘 사이에 여백을 주기 위해 ml-2 추가 */}
+                        )}
+                        {/* Display the value or a placeholder */}
+                        <span className="ml-2">
+                          {cell.value ? `${cell.value}번 로그` : ''}                   
+                        </span> 
                       </div>
                     </td>
                   );

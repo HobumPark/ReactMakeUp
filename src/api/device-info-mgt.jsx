@@ -5,8 +5,10 @@ import { reqGet, reqPost } from "../utils/request";
 // 디바이스 목록 및 상태 조회
 // DSH_001 - /api/dsh/device-status (GET)
 export const fetchDeviceStatus = async () => {
-    const url = `/sampleDeviceInfo.json`;
-    //const url = `${URLS.BACK_DSH}${APIS.deviceStatus()}`;
+    //const url = `/sampleDeviceInfo.json`;
+    const url = `${URLS.BACK_DSH}${APIS.deviceStatus()}`;
+    console.log('fetchDeviceStatus')
+    console.log(url)
     return await reqGet(url);
 };
 

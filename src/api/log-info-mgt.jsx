@@ -5,8 +5,8 @@ import { reqGet, reqPost, reqDelete } from "../utils/request";
 // 로그 파일 목록 조회
 // DSH_004 - /api/dsh/log (GET)
 export const fetchDeviceLogData = async () => {
-    const url = `/sampleDeviceLogData.json`;
-    //const url = `${URLS.BACK_DSH}${APIS.logList()}`;
+    //const url = `/sampleDeviceLogData.json`;
+    const url = `${URLS.BACK_DSH}${APIS.logList()}`;
     return await reqGet(url);
 };
 

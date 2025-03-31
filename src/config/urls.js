@@ -22,10 +22,10 @@ if (DEBUG) {
 export { URLS };
 
 export const APIS = {
-  deviceStatus:()=>`/device-status`, //DSH_001
+  deviceStatus:()=>`/device/device-status`, //DSH_001
   trace:()=>`/trace`, //DSH_002
   createCommand:()=>`/command`, //DSH_003
-  logList:()=>`/log`, //DSH_004
+  logList:()=>`/device/log`, //DSH_004
   logDelete:(logId)=>`/log/${logId}`, //DSH_005
   heartBeat:()=>`/heartbeat`, //DSH_006
   eachCommand:()=>`/command`, //DSH_007
