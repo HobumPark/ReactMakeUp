@@ -51,6 +51,10 @@ export const handleErrorCode = (errCode) => {
     isStringify = true,
     fetchOptions = {}
   ) => {
+
+    console.log('post url')
+    console.log(receivedDT)
+    
     return await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -115,6 +119,8 @@ export const handleErrorCode = (errCode) => {
   };
   
   export const reqDelete = async (url, fetchOptions = {}) => {
+    console.log('reqDelete')
+    console.log(url)
     return await fetch(url, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },

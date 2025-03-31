@@ -40,8 +40,6 @@ import IconBing from "../../assets/icon/icon-bing-map.svg";
 
 import Colorize from "ol-ext/filter/Colorize";
 import useDashboard from "../../hooks/useDashboard";
-import useDeviceInfoMgt from "../../hooks/useDeviceInfoMgt";
-import useCommandMgt from "../../hooks/useCommandMgt";
 import { useTranslation } from "react-i18next";
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
 import { formatFullDateTime } from "../../utils/date";
@@ -51,11 +49,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
 import { Zoom, Attribution } from 'ol/control';
 import { defaults as defaultInteractions } from 'ol/interaction';
-
-
 import LogList from './LogList';
 
-
+import useDeviceStatusMgt from "../../hooks/useDeviceStatusMgt";
+import useLogInfoMgt from "../../hooks/useLogInfoMgt";
+import useCommandInfoMgt from "../../hooks/useCommandInfoMgt";
 
 const MainDashboard = () => {
   const {t} = useTranslation();
@@ -75,8 +73,9 @@ const MainDashboard = () => {
   const [inputCommand,setInputCommand] = useState('')
   const [isLogDelete,setIsLogDelete] = useState(false)
 
-  const [deviceInfoQueryParams,setDeviceInfoQueryParams]=useState('')
+  const [deviceStatusQueryParams,setDeviceStatusQueryParams]=useState('')
   const [deviceLogQueryParams,setDeviceLogQueryParams]=useState('')
+  const [commandQueryParams,setCommandQueryParams]=useState('')
 
   const [selectedLogPos, setSelectedLogPos] = useState([]);
   const [selectedLogInfo, setSelectedLogInfo] = useState([]);
@@ -85,8 +84,16 @@ const MainDashboard = () => {
   });
 
   //임시로 파일에서 불러온 차량정보, 차량로그정보
-  const {deviceInfo,deviceLogData} = useDeviceInfoMgt({
-    deviceInfoQueryParams,deviceLogQueryParams
+  const {deviceStatus} = useDeviceStatusMgt({
+    deviceStatusQueryParams
+  });
+
+  const {deviceLogData, deleteLogList} = useLogInfoMgt({
+    deviceLogQueryParams
+  });
+
+  const {createCommand} = useCommandInfoMgt({
+
   });
 
   //mapDisplayPOITest 는 샘플데이터 시험용
@@ -101,7 +108,7 @@ const MainDashboard = () => {
   console.log(mapDisplayTest)
 
   console.log('deviceInfo')
-  console.log(deviceInfo)
+  console.log(deviceStatus)
 
   console.log('deviceLogData')
   console.log(deviceLogData)
@@ -397,7 +404,7 @@ const MainDashboard = () => {
     const Iconfeatures = [];
   
     // 데이터 아이템을 반복하면서 아이콘을 Features 배열에 추가
-    deviceInfo?.data.forEach(item => {
+    deviceStatus?.data.forEach(item => {
       console.log('poiItem mapping');
       console.log(item);
   
@@ -497,7 +504,7 @@ const MainDashboard = () => {
       clusterSource.refresh();
     });
   
-  }, [deviceInfo]);
+  }, [deviceStatus]);
   
   
   const moveMapToPOI = (device_id, lat, lng) => {
@@ -517,7 +524,6 @@ const MainDashboard = () => {
   };
 
   const [openSections, setOpenSections] = useState([]);
-  const [activeCard, setActiveCard] = useState(null);
 
   const handleStartAll = () => {
 
@@ -636,6 +642,7 @@ const MainDashboard = () => {
   }
 
   const confirmClick=()=>{
+    //명령어까지 선택완료
     //alert('완료!')
     //alert('multiStartMode;'+multiStartMode)
     //alert('multiStopMode:'+multiStopMode)
@@ -658,6 +665,7 @@ const MainDashboard = () => {
       });
       
       //alert(`다중 시험모드:${selectedDeviceId} 커맨드: ${inputCommand} 시험 시작!`);
+      createCommand('test command')//API Call
 
       setDeviceList(devices)
       //setStartAllActive(true)
@@ -680,6 +688,8 @@ const MainDashboard = () => {
         
         return device;
       });
+
+      createCommand('test command')//API Call
 
       setDeviceList(devices)
       setIsModalOpen(false)
@@ -719,6 +729,8 @@ const MainDashboard = () => {
     //alert('삭제할 로그위치')
     //alert(selectedLogPos)
     //alert('삭제할 로그 정보')
+    deleteLogList(selectedLogInfo)
+
     alert(selectedLogInfo)
     setIsLogDelete(false)
   }
@@ -738,18 +750,18 @@ const MainDashboard = () => {
 
   useEffect(() => {
       console.log('deviceList store')
-      if (deviceInfo) {
-        const updatedDeviceList = deviceInfo.data.map(device => ({
+      if (deviceStatus) {
+        const updatedDeviceList = deviceStatus.data.map(device => ({
           ...device,       // 기존 device 정보 그대로 복사
           checked: false   // checked 속성 추가
       }));
       
       setDeviceList(updatedDeviceList);
       
-      const ids = deviceInfo.data.map(device => device.device_id);
+      const ids = deviceStatus.data.map(device => device.device_id);
       setOpenSections(ids)
     }
-  }, [deviceInfo]); 
+  }, [deviceStatus]); 
 
 
   useEffect(() => {
