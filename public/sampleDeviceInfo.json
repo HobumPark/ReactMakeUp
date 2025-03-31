@@ -1,0 +1,124 @@
+{
+    "data": [
+        {
+            "device_id": 1,
+            "lat": 37.561,
+            "lng": 127.0,
+            "status": "DEV_ST_RDY",
+            "status_eng": "Ready",
+            "status_kor": "대기",
+            "error_message": "",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:01"
+        },
+        {
+            "device_id": 2,
+            "lat": 37.574,
+            "lng": 126.977,
+            "status": "DEV_ST_ERR",
+            "status_eng": "Error",
+            "status_kor": "오류",
+            "error_message": "Network Error",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:02"
+        },
+        {
+            "device_id": 3,
+            "lat": 37.572,
+            "lng": 126.9844,
+            "status": "DEV_ST_RDY",
+            "status_eng": "Ready",
+            "status_kor": "대기",
+            "error_message": "",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:03"
+        },
+        {
+            "device_id": 4,
+            "lat": 37.5667,
+            "lng": 126.96,
+            "status": "DEV_ST_STP",
+            "status_eng": "Stop",
+            "status_kor": "종료 대기",
+            "error_message": "",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:04"
+        },
+        {
+            "device_id": 5,
+            "lat": 37.56,
+            "lng": 126.97,
+            "status": "DEV_ST_RDY",
+            "status_eng": "Ready",
+            "status_kor": "대기",
+            "error_message": "",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:05"
+        },
+        {
+            "device_id": 6,
+            "lat": 37.5672,
+            "lng": 126.97,
+            "status": "DEV_ST_RDY",
+            "status_eng": "Ready",
+            "status_kor": "대기",
+            "error_message": "",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:06"
+        },
+        {
+            "device_id": 7,
+            "lat": 37.56,
+            "lng": 126.982,
+            "status": "DEV_ST_RDY",
+            "status_eng": "Ready",
+            "status_kor": "대기",
+            "error_message": "",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:07"
+        },
+        {
+            "device_id": 8,
+            "lat": 37.568,
+            "lng": 127,
+            "status": "DEV_ST_RDY",
+            "status_eng": "Ready",
+            "status_kor": "대기",
+            "error_message": "",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:08"
+        },
+        {
+            "device_id": 9,
+            "lat": 37.57,
+            "lng": 126.9886,
+            "status": "DEV_ST_RDY",
+            "status_eng": "Ready",
+            "status_kor": "대기",
+            "error_message": "",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:09"
+        },
+        {
+            "device_id": 10,
+            "lat": 37.5650,
+            "lng": 126.9933,
+            "status": "DEV_ST_RDY",
+            "status_eng": "Ready",
+            "status_kor": "대기",
+            "error_message": "",
+            "test": "TEST-01122",
+            "log_file_name": "ex0.pcap",
+            "last_data_reviced_time": "2025-03-28 12:00:10"
+        }
+    ]
+}

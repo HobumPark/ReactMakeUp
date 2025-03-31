@@ -3,16 +3,19 @@ import { useTable } from 'react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
 
-const LogList = ({ carLogData, isLogDelete, selectedLogPos, setSelectedLogPos, selectedLogInfo, setSelectedLogInfo }) => {
+const LogList = (
+  { deviceLogData, isLogDelete, 
+    selectedLogPos, setSelectedLogPos, 
+    selectedLogInfo, setSelectedLogInfo }) => {
   
   // 페이지 로드 시 selectedLogs 초기화
   useEffect(() => {
     const initialSelectedLogs = {};
-    Object.keys(carLogData).forEach(car => {
-      initialSelectedLogs[car] = carLogData[car].map(logItem => logItem.checked);
+    Object.keys(deviceLogData).forEach(car => {
+      initialSelectedLogs[car] = deviceLogData[car].map(logItem => logItem.checked);
     });
     setSelectedLogPos(initialSelectedLogs);
-  }, [carLogData]);
+  }, [deviceLogData]);
 
   // useMemo로 columns와 data를 최적화
   const columns = useMemo(() => [
@@ -31,19 +34,19 @@ const LogList = ({ carLogData, isLogDelete, selectedLogPos, setSelectedLogPos, s
   // data 준비 (각 차량의 로그를 배열 형태로 합친 데이터)
   const data = useMemo(() => {
     const maxLength = Math.max(
-      ...Object.values(carLogData).map(car => car.length)
+      ...Object.values(deviceLogData).map(device => device.length)
     );
 
     const rows = [];
     for (let i = 0; i < maxLength; i++) {
       const row = {};
-      Object.keys(carLogData).forEach(car => {
-        row[car] = carLogData[car][i] || { log: '', checked: false };
+      Object.keys(deviceLogData).forEach(car => {
+        row[car] = deviceLogData[car][i] || { log: '', checked: false };
       });
       rows.push(row);
     }
     return rows;
-  }, [carLogData]);
+  }, [deviceLogData]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows: tableRows, prepareRow } = useTable({
     columns,
@@ -54,11 +57,11 @@ const LogList = ({ carLogData, isLogDelete, selectedLogPos, setSelectedLogPos, s
   const checkBoxClick = (rowIndex, colIndex) => {
 
   
-    const carKeys = Object.keys(carLogData); // 차량 키들 (car01, car02, ..., car10)
+    const carKeys = Object.keys(deviceLogData); // 차량 키들 (car01, car02, ..., car10)
     const carKey = carKeys[colIndex]; // 클릭된 차량의 키 (car01, car02, ...)
     
     console.log('체크된 로그 정보')
-    const logItem = carLogData[carKey][rowIndex]; // carLogData에서 해당 위치의 로그
+    const logItem = deviceLogData[carKey][rowIndex]; // deviceLogData에서 해당 위치의 로그
     console.log(logItem)
 
     if(logItem.checked==false){//첫클릭시일때 false이면 false->true이므로 삭제할 로그
@@ -98,7 +101,7 @@ const LogList = ({ carLogData, isLogDelete, selectedLogPos, setSelectedLogPos, s
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell, colIndex) => {
-                  const carKey = Object.keys(carLogData)[colIndex]; // 차량 키 (car01, car02, ...)
+                  const carKey = Object.keys(deviceLogData)[colIndex]; // 차량 키 (car01, car02, ...)
                   return (
                     <td
                       {...cell.getCellProps()}

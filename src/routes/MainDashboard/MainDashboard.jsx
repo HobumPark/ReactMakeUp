@@ -20,14 +20,17 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Style from "ol/style/Style";
 import Icon from "ol/style/Icon";
-import  LineString  from 'ol/geom/LineString'; // 올바른 경로로 임포트
 
-import IconRedCar from "../../assets/icon/icon-db-car-red.svg";
-import IconOrangeCar from "../../assets/icon/icon-db-car-orange.svg";
-import IconYellowCar from "../../assets/icon/icon-db-car-yellow.svg";
-import IconGreenCar from "../../assets/icon/icon-db-car-green.svg";
-import IconBlueCar from "../../assets/icon/icon-db-car-blue.svg";
-import IconPurpleCar from "../../assets/icon/icon-db-car-purple.svg";
+import IconRedCar from "../../assets/icon/car/icon-db-car-red.svg";
+import IconOrangeCar from "../../assets/icon/car/icon-db-car-orange.svg";
+import IconYellowCar from "../../assets/icon/car/icon-db-car-yellow.svg";
+import IconGreenCar from "../../assets/icon/car/icon-db-car-green.svg";
+import IconBlueCar from "../../assets/icon/car/icon-db-car-blue.svg";
+import IconNavyCar from "../../assets/icon/car/icon-db-car-navy.svg";
+import IconPurpleCar from "../../assets/icon/car/icon-db-car-purple.svg";
+import IconPinkCar from "../../assets/icon/car/icon-db-car-pink.svg";
+import IconTealCar from "../../assets/icon/car/icon-db-car-teal.svg";
+import IconSkyBlueCar from "../../assets/icon/car/icon-db-car-skyblue.svg";
 
 import IconDefault from "../../assets/icon/icon-default.svg";
 import IconReturn from "../../assets/icon/icon-return.svg";
@@ -37,134 +40,21 @@ import IconBing from "../../assets/icon/icon-bing-map.svg";
 
 import Colorize from "ol-ext/filter/Colorize";
 import useDashboard from "../../hooks/useDashboard";
-import useCarInfoMgt from "../../hooks/useCarInfoMgt";
+import useDeviceInfoMgt from "../../hooks/useDeviceInfoMgt";
 import useCommandMgt from "../../hooks/useCommandMgt";
 import { useTranslation } from "react-i18next";
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
 import { formatFullDateTime } from "../../utils/date";
-
-import { ReactTabulator } from "react-tabulator";
 import ReactFullpage from '@fullpage/react-fullpage';
 import CommandInputModal from '../../components/Modal/CommandInputModal/CommandInputModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
-
-import {defaults as defaultControls} from 'ol/control';
-import * as olControl from 'ol/control';
 import { Zoom, Attribution } from 'ol/control';
 import { defaults as defaultInteractions } from 'ol/interaction';
 
 
 import LogList from './LogList';
 
-const carTabulator = [
-  {
-    title: "CAR 001",
-    formatter: "checkbox",
-    widthGrow: "1",
-    field:"car_num1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-    editorParams: {
-      onChange: (value, oldValue, data, cell) => {
-        // 체크박스 변경 시 동작할 함수
-        console.log("체크박스 상태 변경:", value);
-      }
-    }
-  },
-  {
-    title: "CAR 002",
-    formatter: "car_num",
-    field:"car_num2",
-    widthGrow: "1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "CAR 003",
-    formatter: "car_num",
-    field:"car_num3",
-    widthGrow: "1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "CAR 004",
-    formatter: "car_num",
-    field:"car_num4",
-    widthGrow: "1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "CAR 005",
-    formatter: "car_num",
-    field:"car_num5",
-    widthGrow: "1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "CAR 006",
-    formatter: "car_num",
-    field:"car_num6",
-    widthGrow: "1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "CAR 007",
-    formatter: "car_num",
-    field:"car_num7",
-    widthGrow: "1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "CAR 008",
-    formatter: "car_num",
-    field:"car_num8",
-    widthGrow: "1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "CAR 009",
-    formatter: "car_num",
-    field:"car_num9",
-    widthGrow: "1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-  {
-    title: "CAR 010",
-    formatter: "car_num",
-    field:"car_num10",
-    widthGrow: "1",
-    hozAlign: "center",
-    headerHozAlign: "center",
-    headerSort: false,
-    resizable: false,
-  },
-];
 
 
 const MainDashboard = () => {
@@ -172,8 +62,7 @@ const MainDashboard = () => {
 
   const [poiItem, setPoiItem] = useState([]);
   const [poiTestItem, setPoiTestItem] = useState([]);//테스트 poi
-  const [carList, setCarList] = useState([]);//테스트 차량목록
-
+  const [deviceList, setDeviceList] = useState([]);//테스트 차량목록
 
   const [multiStartMode, setMultiStartMode]=useState(false)
   const [multiStopMode, setMultiStopMode]=useState(false)
@@ -182,26 +71,22 @@ const MainDashboard = () => {
   const [stopAllActive, setStopAllActive]=useState(false)
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCarId,setSelectedCarId] = useState('')
+  const [selectedDeviceId,setselectedDeviceId] = useState('')
   const [inputCommand,setInputCommand] = useState('')
   const [isLogDelete,setIsLogDelete] = useState(false)
 
-  const [carInfoQueryParams,setCarInfoQueryParams]=useState('')
-  const [carLogQueryParams,setCarLogQueryParams]=useState('')
+  const [deviceInfoQueryParams,setDeviceInfoQueryParams]=useState('')
+  const [deviceLogQueryParams,setDeviceLogQueryParams]=useState('')
 
   const [selectedLogPos, setSelectedLogPos] = useState([]);
   const [selectedLogInfo, setSelectedLogInfo] = useState([]);
   //mapDisplayPOITest 는 지도 출력 샘플데이터 시험용
   const {mapInitialView, mapDisplayPOI, mapDisplayPOITest, mapDisplayPOIOneTest } = useDashboard({
   });
-  /*
-  const {mapInitialView, mapDisplayPOI, mapDisplayPOITest } = useDashboard({
-  });
-  */
 
   //임시로 파일에서 불러온 차량정보, 차량로그정보
-  const {carInfo,carLogData} = useCarInfoMgt({
-    carInfoQueryParams,carLogQueryParams
+  const {deviceInfo,deviceLogData} = useDeviceInfoMgt({
+    deviceInfoQueryParams,deviceLogQueryParams
   });
 
   //mapDisplayPOITest 는 샘플데이터 시험용
@@ -215,11 +100,11 @@ const MainDashboard = () => {
   console.log('mapDisplayTest')
   console.log(mapDisplayTest)
 
-  console.log('carInfo')
-  console.log(carInfo)
+  console.log('deviceInfo')
+  console.log(deviceInfo)
 
-  console.log('carLogData')
-  console.log(carLogData)
+  console.log('deviceLogData')
+  console.log(deviceLogData)
 
   useEffect(() => {
     console.log('mapDisplay store')
@@ -339,10 +224,10 @@ const MainDashboard = () => {
     const layers = [
       layerMap["base"],
       layerMap["osm"],
-      layerMap["road"],
-      layerMap["canvaslight"],
-      layerMap["satellite"],
-      layerMap["canvasdark"],
+      //layerMap["road"],
+      //layerMap["canvaslight"],
+      //layerMap["satellite"],
+      //layerMap["canvasdark"],
     ];
 
     // Map definition
@@ -386,8 +271,17 @@ const MainDashboard = () => {
         cursor: pointer;
         box-sizing:border-box !important;
       }
-      .custom-icon-button{
-        display:none !important;
+      *[title="Default"] {
+        display: none !important;
+      }
+      *[title="Light Map"] {
+        display: none !important;
+      }
+      *[title="Dark Map"] {
+        display: none !important;
+      }
+      *[title="Satellite"] {
+        display: none !important;
       }
       .ol-zoom-in{
         font-size: 50px !important;
@@ -485,31 +379,34 @@ const MainDashboard = () => {
     };
   }, [mapInitial, mapDisplay]);
 
-
-
   useEffect(() => {
     const iconMapping = {
-      "car": IconOrangeCar,
       "red-car": IconRedCar,
       "orange-car": IconOrangeCar,
       "yellow-car": IconYellowCar,
       "green-car": IconGreenCar,
       "blue-car": IconBlueCar,
+      "navy-car": IconNavyCar,
       "purple-car": IconPurpleCar,
+      "pink-car": IconPinkCar,
+      "teal-car": IconTealCar,
+      "skyblue-car": IconSkyBlueCar,
     };
   
     // 아이콘 Features 배열 (ID별로 그룹화 하지 않고 직접 추가)
     const Iconfeatures = [];
   
     // 데이터 아이템을 반복하면서 아이콘을 Features 배열에 추가
-    poiTestItem.forEach(item => {
+    deviceInfo?.data.forEach(item => {
       console.log('poiItem mapping');
       console.log(item);
   
-      const { lat, lng, device_id, observation_time } = item;
+      const { lat, lng, device_id, last_data_reviced_time } = item;
+      console.log('item')
+      console.log(item)
       
        // observationTime을 Date 객체로 변환
-      const date = new Date(observation_time);
+      const date = new Date(last_data_reviced_time);
 
       // 연도, 월, 일, 시간, 분 추출
       const year = date.getFullYear();
@@ -521,22 +418,18 @@ const MainDashboard = () => {
       // 원하는 형식으로 날짜와 시간 포맷팅
       const formattedDate = `${String(year).slice(2,4)}.${month}.${day} ${hours}:${minutes}`;
 
+      let deviceType = "";
 
-      let carType = "";
-      if (device_id === "CAR 4023") {
-        carType = "red-car";
-      } else if (device_id === "CAR 4024") {
-        carType = "orange-car";
-      } else if (device_id === "CAR 4025") {
-        carType = "yellow-car";
-      } else if (device_id === "CAR 4026") {
-        carType = "green-car";
-      }
-  
-      console.log('carType');
-      console.log(carType);
-  
-      const iconSrc = iconMapping[carType]; // 아이콘 타입 설정
+      // 색상 배열 정의
+      const carColors = [
+        "","red-car","orange-car","yellow-car","green-car","blue-car","navy-car","purple-car","pink-car","teal-car","skyblue-car"
+      ];
+
+      console.log('deviceType');
+      console.log(deviceType);
+      deviceType = carColors[device_id];
+
+      const iconSrc = iconMapping[deviceType]; // 아이콘 타입 설정
   
       // 아이콘 Feature 생성
       const iconFeature = new Feature({
@@ -562,8 +455,6 @@ const MainDashboard = () => {
         })
       );
       
-      
-  
       // Features 배열에 추가 (ID별로 그룹화 하지 않음)
       Iconfeatures.push(iconFeature);
     });
@@ -606,164 +497,11 @@ const MainDashboard = () => {
       clusterSource.refresh();
     });
   
-  }, [poiItem, poiTestItem]);
+  }, [deviceInfo]);
   
   
-  /*
-  useEffect(() => {
-    const iconMapping = {
-      "car":IconOrangeCar,
-      "red-car":IconRedCar,
-      "orange-car":IconOrangeCar,
-      "yellow-car":IconYellowCar,
-      "green-car":IconGreenCar,
-      "blue-car":IconBlueCar,
-      "purple-car":IconPurpleCar,
-  };
-    
-  // 아이디별로 아이콘과 선을 생성
-  const Iconfeatures = [];
-  const lineFeatures = [];
-  const groupedById = {};
-
-  // 데이터 아이템을 아이디별로 그룹화
-  poiTestItem.forEach(item => {
-    console.log('poiItem mapping');
-    console.log(item);
-
-    const {lat,lng,id} = item;
-
-    let carType = "";
-    if (id == 1) {
-      carType = "red-car";
-    } else if (id == 2) {
-      carType = "orange-car";
-    } else if (id == 3) {
-      carType = "yellow-car";
-    } else if (id == 4) {
-      carType = "green-car";
-    }
-
-    console.log('carType');
-    console.log(carType);
-
-    const iconSrc = iconMapping[carType]; // 아이콘 타입 설정
-
-    // 아이콘 Feature 생성
-    const iconFeature = new Feature({
-      geometry: new Point(fromLonLat([lng, lat])),
-    });
-
-    iconFeature.setStyle(
-      new Style({
-        image: new Icon({
-          src: iconSrc,
-          scale: 0.9,
-        }),
-      })
-    );
-
-    
-
-    // 아이콘 Feature를 해당 아이디 그룹에 추가
-    if (!groupedById[item.id]) {
-      groupedById[item.id] = [];
-    }
-    groupedById[item.id].push(iconFeature);
-
-    // 선을 그리기 위한 좌표를 해당 아이디 그룹에 추가
-    if (!groupedById[item.id].coordinates) {
-      groupedById[item.id].coordinates = [];
-    }
-    groupedById[item.id].coordinates.push([lng, lat]);
-
-  });
-
-  // 각 아이디별로 선을 생성하고, 아이콘을 그룹에 추가
-  for (const [id, group] of Object.entries(groupedById)) {
-    // 아이콘 Features를 Iconfeatures 배열에 추가
-    Iconfeatures.push(...group);
-
-    // 해당 아이디 그룹의 좌표 배열로 LineString을 생성
-    const lineFeature = new Feature({
-      geometry: new LineString(group.coordinates.map(coord => fromLonLat(coord))),
-    });
-
-    let lineColor="";
-
-    if(id==1){
-      lineColor="red"
-    }else if(id==2){
-      lineColor="orange"
-    }else if(id==3){
-      lineColor="yellow"
-    }else if(id==4){
-      lineColor="green"
-    }
-    
-
-    // 선 스타일 설정
-    lineFeature.setStyle(
-      new Style({
-        stroke: new Stroke({
-          color: lineColor, // 선 색상
-          width: 1, // 선 두께
-        }),
-      })
-    );
-
-    // 선 Feature를 lineFeatures 배열에 추가
-    lineFeatures.push(lineFeature);
-  }
-
-    const view = olMapRef.current.getView();
-    const zoom = view.getZoom();
-
-    //const distance = zoom > 15 ? 50 : 100;  
-  
-    const clusterSource = new Cluster({
-      distance: 100, 
-      minDistance:0,
-      source: new VectorSource({
-        features: Iconfeatures,
-      }),
-    });
-
-    const poiLayer = new VectorLayer({
-      source: new VectorSource({
-        features: [...Iconfeatures],
-        //features: [...Iconfeatures//, ...lineFeatures],
-      }), 
-    });
-
-  if (poiLayerRef.current) {
-    olMapRef.current.removeLayer(poiLayerRef.current);
-  }
-  if (clusterLayerRef.current) {
-    olMapRef.current.removeLayer(clusterLayerRef.current);
-  }
-
-  poiLayerRef.current = poiLayer;
-  
-  olMapRef.current.addLayer(poiLayerRef.current);
-  //olMapRef.current.addLayer(clusterLayerRef.current); - 클러스터링 해제
-    poiLayerRef.current.setVisible(true);
-    olMapRef.current.on("moveend", function () {
-      poiLayerRef.current.setVisible(true);
-    });
-    olMapRef.current.getView().on('change:resolution', function() {
-      clusterSource.refresh(); 
-    });
-    
-    
-
-
-  }, [poiItem, poiTestItem]);
-  */
-
   const moveMapToPOI = (device_id, lat, lng) => {
     //alert(id)
-
       console.log(device_id, lat, lng);
       const isInSouthKorea = lat >= 33.0 && lat <= 38.6 && lng >= 124.6 && lng <= 131.0;
 
@@ -778,7 +516,6 @@ const MainDashboard = () => {
       }
   };
 
-
   const [openSections, setOpenSections] = useState([]);
   const [activeCard, setActiveCard] = useState(null);
 
@@ -790,11 +527,11 @@ const MainDashboard = () => {
       setStopAllActive(false)
     }
 
-    const cars = carList.map((car) =>{
-      return { ...car, status:'대기',isActive: false }
+    const devices = deviceList.map((device) =>{
+      return { ...device, status:'대기',isActive: false }
     })
       
-    setCarList(cars);
+    setDeviceList(devices);
 
   };
 
@@ -823,54 +560,30 @@ const MainDashboard = () => {
     
       multiStopConfirm.confirmClicked().then(() => {
         
-        const updatedCarList = carList.map(car => {
+        const updatedDeivceList = deviceList.map(device => {
           // checked가 true인 항목만 status를 "대기"로 변경
           
-  
-          if (car.checked) {
-            return { ...car, checked:false, status: '대기' };
+          if (device.checked) {
+            return { ...device, status:"DEV_ST_RDY",status_eng: "Ready",status_kor: "대기" };
           }
-          return car;
+          return device;
         });
 
-        // 업데이트된 carList를 상태로 반영
-        setCarList(updatedCarList);
+        // 업데이트된 deviceList를 상태로 반영
+        setDeviceList(updatedDeivceList);
         setMultiStopMode(false)
       });
 
-      
-    
-      
     }
   }
 
   const multiModeStop=()=>{
     //alert('다중 시험 종료')
     setMultiStopMode(true)
-    
-    /*
-    const cars = carList.map((car) =>{
-      return { ...car, status:'대기', checked:false, isActive: false }
-    })
-      
-    setCarList(cars);
-    */
-    //setMultiMode(false)
   }
 
   const multiModeCancel=()=>{
     //alert('취소')
-    /*
-    const cars = carList.map((car) => {
-      return {
-        ...car,
-        status: '대기', // status is set to '대기' for all cars
-        isActive: false // Set isActive based on the checked property
-      };
-    });
-    setCarList(cars)
-    setMultiMode(false)
-    */
     setMultiStartMode(false)
     setMultiStopMode(false)
   }
@@ -900,7 +613,7 @@ const MainDashboard = () => {
 
   const testStart=(device_id)=>{
     //alert('시작:'+carId)
-    setSelectedCarId(device_id)
+    setselectedDeviceId(device_id)
     setIsModalOpen(true)
   }
 
@@ -912,12 +625,12 @@ const MainDashboard = () => {
   
     testStopConfirm.confirmClicked().then(() => {
       
-  
-      //alert('종료:'+carId)
-      const cars = carList.map((car) =>
-        car.device_id === device_id ? { ...car, status:'대기', isActive: false } : car
-      )
-      setCarList(cars);
+    //alert('종료:'+carId)
+    const devices = deviceList.map((device) =>
+      device.device_id === device_id ? 
+    { ...device, status:"DEV_ST_RDY", status_eng:"Ready", status_kor:"대기" } : device
+    )
+    setDeviceList(devices);
 
     });
   }
@@ -928,27 +641,25 @@ const MainDashboard = () => {
     //alert('multiStopMode:'+multiStopMode)
 
     if(multiStartMode==true){
-      const cars = carList.map((car) => {
+      const devices = deviceList.map((device) => {
         // If car.checked is true, set isActive to true and status to '진행중'
-        if (car.checked==true) {
+        if (device.checked==true) {
           return {
-            ...car,
-            status: '진행중', // Set status to '진행중'
+            ...device,
+            status:"DEV_ST_ING",status_eng: "Test-ing",status_kor: "진행중",
             isActive: true    // Set isActive to true if checked is true
           };
         }
       
         // Otherwise, keep the original values
         return {
-          ...car,
+          ...device,
         };
       });
-    
+      
+      //alert(`다중 시험모드:${selectedDeviceId} 커맨드: ${inputCommand} 시험 시작!`);
 
-
-      //alert(`다중 시험모드:${selectedCarId} 커맨드: ${inputCommand} 시험 시작!`);
-
-      setCarList(cars)
+      setDeviceList(devices)
       //setStartAllActive(true)
       setIsModalOpen(false)
       setMultiStartMode(false)
@@ -956,21 +667,21 @@ const MainDashboard = () => {
     }else{
       //다중모드 아닐시엔
       console.log('다중모드 아닐때')
-      const cars = carList.map((car) => {
+      const devices = deviceList.map((device) => {
         // If car.checked is true, set isActive to true and status to '진행중'
-        console.log(car)
-        if (car.device_id==selectedCarId) {
+        console.log(device)
+        if (device.device_id==selectedDeviceId) {
           return {
-            ...car,
-            status: '진행중', // Set status to '진행중'
+            ...device,
+            status:"DEV_ST_ING",status_eng: "Test-ing",status_kor: "진행중",
             isActive: true    // Set isActive to true if checked is true
           };
         }
         
-        return car;
+        return device;
       });
 
-      setCarList(cars)
+      setDeviceList(devices)
       setIsModalOpen(false)
       setInputCommand('')
     }
@@ -985,15 +696,15 @@ const MainDashboard = () => {
     //alert(id+' 리셋!')
 
     let testResetConfirm = new NoticeMessage(t('정말로 Reset 하시겠습니까?'), {
-      mode: "confirm",
+      mode: 'confirm',
     });
   
     testResetConfirm.confirmClicked().then(() => {
       
-      const cars = carList.map((car) =>
-        car.device_id === device_id ? { ...car, status:'대기', isActive: false } : car
+      const cars = deviceList.map((car) =>
+        car.device_id === device_id ? { ...car, status:'DEV_ST_RDY',status_eng:'Ready',status_kor:'대기'} : car
       )
-      setCarList(cars);
+      setDeviceList(cars);
   
     });
   }
@@ -1015,31 +726,30 @@ const MainDashboard = () => {
   const logDeleteCancel=()=>{
     setIsLogDelete(false)
   }
-  /*
-  const checkBoxClick = (rowIndex, colIndex) => {
-    alert('체크박스 클릭!:' + rowIndex + "행" + colIndex + "열");
-    //setIsActive(true)
-    //열이 차량번호에 해당할것이고, 행이 특정차량의 몇번째 로그
-    
-  };
-  */
+
   const checkCarClick=(device_id)=>{
     //alert('차량 체크')
-    const cars = carList.map((car) =>
-      car.device_id === device_id ? { ...car, checked:!car.checked } : car
+    const cars = deviceList.map((device) =>
+      device.device_id === device_id ? { ...device, checked:!device.checked } : device
     )
-    setCarList(cars)
+    setDeviceList(cars)
   }
 
 
   useEffect(() => {
-    console.log('carList store')
-    if (carInfo) {
-      setCarList(carInfo.data);
-      const ids = carInfo.data.map(car => car.device_id);
+      console.log('deviceList store')
+      if (deviceInfo) {
+        const updatedDeviceList = deviceInfo.data.map(device => ({
+          ...device,       // 기존 device 정보 그대로 복사
+          checked: false   // checked 속성 추가
+      }));
+      
+      setDeviceList(updatedDeviceList);
+      
+      const ids = deviceInfo.data.map(device => device.device_id);
       setOpenSections(ids)
     }
-  }, [carInfo]); 
+  }, [deviceInfo]); 
 
 
   useEffect(() => {
@@ -1153,19 +863,19 @@ const MainDashboard = () => {
                           </div>
 
                           <div className="_contentCardList w-full  flex flex-col gap-[8px] overflow-auto h-full bg-transparent">
-                            {carList?.map(({ device_id, name, lat,lng, status, isActive, checked, test, logfile, detail,  }) => (
+                            {deviceList?.map(({ device_id, status, status_kor, checked, test, log_file_name, detail,  }) => (
                               <div key={device_id} className="w-full mb-[5px] bg-transparent">
                                 {/* Accordion Header */}
                                 <div
                                   className={`flex flex-row w-full justify-between items-center py-[1px] px-[10px] rounded-[5px] whitespace-nowrap mb-[5px] rounded bg-[#404953]
                                     ${
-                                      status === "오류" ? "bg-red-500 text-white":'' // status가 "오류"일 때 빨간색
+                                      status === "DEV_ST_ERR" ? "bg-red-500 text-white":'' // 오류
                                     }
                                     ${
-                                      status === '진행중'? "bg-green-500 text-white":''
+                                      status === 'DEV_ST_ING'? "bg-green-500 text-white":'' //진행중
                                     }
                                     ${
-                                      status === '대기' || status === '시작대기'? "bg-[##404953] text-white":''
+                                      status === 'DEV_ST_RDY' || status === 'DEV_ST_BEG'? "bg-[##404953] text-white":'' //대기 , 시작대기
                                     }`
                                   }
                                   //onClick={() => toggleAccordion(id,lat,lng)}
@@ -1173,7 +883,7 @@ const MainDashboard = () => {
                                   <div className="flex flex-row w-full items-center gap-[5px]">
                                     <span className="title3bold text-text-white">
                                       {
-                                        status=='대기' && multiStartMode==true?
+                                        status=='DEV_ST_RDY' && multiStartMode==true? //대기
                                         <FontAwesomeIcon
                                         icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
                                         className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} // 색상도 바꿀 수 있음
@@ -1181,7 +891,7 @@ const MainDashboard = () => {
                                         />:''
                                       }
                                       {
-                                        (status=='시작대기' || status=='진행중') && multiStopMode==true?
+                                        (status=='DEV_ST_ING' || status=='진행중') && multiStopMode==true? //시작대기
                                         <FontAwesomeIcon
                                         icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
                                         className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} // 색상도 바꿀 수 있음
@@ -1189,23 +899,27 @@ const MainDashboard = () => {
                                         />:''
                                       }
                                     
-                                        [{status}] Car {device_id} 
+                                        [{status_kor}] Car {device_id} 
                                     </span>
                                   </div>
                                   <div>
                                     <button className={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
-                                    ${status === '진행중' || status=='오류' || status=='시작대기'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'}`}
-                                    disabled={status === '진행중' || status=='오류' || status=='시작대기'? true:false}
+                                    ${status === 'DEV_ST_ING' || status=='DEV_ST_ERR' || status=='DEV_ST_BEG'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'}`}
+                                    //              진행중                    오류                  시작대기
+                                    disabled={status === 'DEV_ST_ING' || status=='DEV_ST_ERR' || status=='DEV_ST_BEG'? true:false}
+                                    //              진행중                    오류                  시작대기
                                       onClick={()=>testStart(device_id)}>
                                         시작
                                       </button>
-                                    <button class={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
-                                    ${status=='대기'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'} `}
-                                    disabled={status=='대기'? true:false}
+                                    <button className={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
+                                    ${status=='DEV_ST_RDY'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'} `}
+                                    //         대기
+                                    disabled={status=='DEV_ST_RDY'? true:false}
+                                    //                 대기
                                       onClick={()=>testStop(device_id)}>
                                         종료
                                       </button>
-                                    <button class="w-[40px] h-[30px] bg-white text-black rounded-[5px] font-bold pl-3 pr-14 cursor-pointer hover:opacity-80"
+                                    <button className="w-[40px] h-[30px] bg-white text-black rounded-[5px] font-bold pl-3 pr-14 cursor-pointer hover:opacity-80"
                                       onClick={()=>handleReset(device_id)}>
                                         Reset
                                       </button>
@@ -1222,7 +936,7 @@ const MainDashboard = () => {
                                             {detail}
                                         </span>:
                                          <span>
-                                            {test} / {logfile}
+                                            {test} / {log_file_name}
                                         </span>
                                       }
                                       
@@ -1274,8 +988,8 @@ const MainDashboard = () => {
               <div>
                   <LogList 
                   className="mr-2 mt-25"
-                  carLogData={carLogData?.data|| ""} isLogDelete={isLogDelete}
-                  logDeleteConfirm={logDeleteConfirm}
+                  deviceLogData={deviceLogData?.data|| ""} 
+                  isLogDelete={isLogDelete}
                   selectedLogPos={selectedLogPos}
                   setSelectedLogPos={setSelectedLogPos }
                   selectedLogInfo={selectedLogInfo}
