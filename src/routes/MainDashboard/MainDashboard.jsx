@@ -74,6 +74,10 @@ const MainDashboard = () => {
   //다중디바이스 선택시
   const [selectedDeviceIdList,setselectedDeviceIdList] = useState([])
 
+  // Check 상태를 별도로 관리
+  const [checkedDevices, setCheckedDevices] = useState(new Set());
+
+
   const [inputCommand,setInputCommand] = useState('')
   const [isLogDelete,setIsLogDelete] = useState(false)
 
@@ -577,7 +581,35 @@ const MainDashboard = () => {
       });
     
       multiStopConfirm.confirmClicked().then(() => {
-        
+
+
+        const deviceIds = deviceList
+          .filter(device => 
+            (device.status === 'DEV_ST_ING' || device.status === 'DEV_ST_BEG') && // 상태가 DEV_ST_ING 또는 DEV_ST_BEG인 device만 필터링
+            checkedDevices.has(device.device_id) // 체크된 device만
+          )
+          .map(device => device.device_id); // 필터링된 device에서 device_id만 추출
+
+        console.log(deviceIds); // 체크된 device_id들을 출력
+
+        const deviceCommandList = {
+          commands: deviceIds.map((deviceId) => ({
+            command_id: String(deviceId), // command_id를 device_id로 설정
+            device_id: deviceId,          // device_id
+            command_time: new Date().toISOString(), // 현재 시간 ISO 문자열
+            command_type: "CMD_TP_STP",            // command_type 고정값
+            test_id: deviceId,                           // test_id 빈 문자열
+            test_name: `TEST-${deviceId}`   // test_name을 "TEST-" + device_id로 설정
+          }))
+        };
+  
+        console.log('deviceCommandList')
+        console.log(deviceCommandList)
+  
+        //alert(`다중 시험모드:${selectedDeviceId} 커맨드: ${inputCommand} 시험 시작!`);
+        createCommand(deviceCommandList)//API Call
+
+        /*
         const updatedDeivceList = deviceList.map(device => {
           // checked가 true인 항목만 status를 "대기"로 변경
           
@@ -589,9 +621,10 @@ const MainDashboard = () => {
 
         // 업데이트된 deviceList를 상태로 반영
         setDeviceList(updatedDeivceList);
+        */
         setMultiStopMode(false)
       });
-
+      
     }
   }
 
@@ -605,14 +638,6 @@ const MainDashboard = () => {
     setMultiStartMode(false)
     setMultiStopMode(false)
   }
-
-  const handleStopAll = () => {
-    setStopAllActive(!stopAllActive)
-  
-    if(startAllActive==true){
-      setStartAllActive(false)
-    }
-  };
 
   const handleInputCommand=(e)=>{
     console.log('handleInputCommand')
@@ -701,13 +726,13 @@ const MainDashboard = () => {
       */
 
       const checkedDeviceIds = deviceList
-      .filter((device) => device.checked === true) // checked가 true인 device만 필터링
-      .map((device) => device.device_id);           // device_id만 추출하여 배열로 생성
+        .filter((device) => checkedDevices.has(device.device_id)) // checkedDevices에 포함된 device_id만 필터링
+        .map((device) => device.device_id); // device_id만 추출하여 배열로 생성
 
-      console.log(checkedDeviceIds); // checked가 true인 device_id 배열
-          
+      console.log(checkedDeviceIds); // 결과 배열 출력
+                
       const deviceCommandList = {
-        commands: checkedDeviceIds.map((selectedDeviceId) => ({
+        "commands": checkedDeviceIds.map((selectedDeviceId) => ({
           command_id: String(selectedDeviceId), // command_id를 device_id로 설정
           device_id: selectedDeviceId,          // device_id
           command_time: new Date().toISOString(), // 현재 시간 ISO 문자열
@@ -835,10 +860,17 @@ const MainDashboard = () => {
 
   const checkCarClick=(device_id)=>{
     //alert('차량 체크')
-    const cars = deviceList.map((device) =>
-      device.device_id === device_id ? { ...device, checked:!device.checked } : device
-    )
-    setDeviceList(cars)
+      // 체크 상태 변경
+    const updatedCheckedDevices = new Set(checkedDevices);
+    if (updatedCheckedDevices.has(device_id)) {
+      updatedCheckedDevices.delete(device_id);
+    } else {
+      updatedCheckedDevices.add(device_id);
+    }
+
+    setCheckedDevices(updatedCheckedDevices);
+
+    //setDeviceList(cars)
   }
 
 
@@ -1029,7 +1061,7 @@ for (let i = 0; i < maxLength; i++) {
                                       {
                                         status=='DEV_ST_RDY' && multiStartMode==true? //대기
                                         <FontAwesomeIcon
-                                        icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
+                                        icon={checkedDevices.has(device_id) ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
                                         className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} //다중시작 일때는 대기
                                         onClick={()=>checkCarClick(device_id)}
                                         />:''
@@ -1037,7 +1069,7 @@ for (let i = 0; i < maxLength; i++) {
                                       {
                                         (status=='DEV_ST_ING' || status=='DEV_ST_BEG') && multiStopMode==true? //다중종료 일때는 진행중 또는 시작대기
                                         <FontAwesomeIcon
-                                        icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
+                                        icon={checkedDevices.has(device_id) ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
                                         className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} // 색상도 바꿀 수 있음
                                         onClick={()=>checkCarClick(device_id)}
                                         />:''
