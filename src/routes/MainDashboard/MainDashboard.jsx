@@ -599,7 +599,7 @@ const MainDashboard = () => {
             command_time: new Date().toISOString(), // 현재 시간 ISO 문자열
             command_type: "CMD_TP_STP",            // command_type 고정값
             test_id: deviceId,                           // test_id 빈 문자열
-            test_name: `TEST-${deviceId}`   // test_name을 "TEST-" + device_id로 설정
+            test_name: `TEST-${inputCommand}`   // test_name을 "TEST-" + device_id로 설정
           }))
         };
   
@@ -677,7 +677,7 @@ const MainDashboard = () => {
             "command_time": new Date().toISOString(),
             "command_type": "CMD_TP_STP",
             "test_id": device_id,
-            "test_name": "TEST-"+device_id
+            "test_name": "TEST-"+inputCommand
           }
         ]
       }
@@ -738,7 +738,7 @@ const MainDashboard = () => {
           command_time: new Date().toISOString(), // 현재 시간 ISO 문자열
           command_type: "CMD_TP_BEG",            // command_type 고정값
           test_id: selectedDeviceId,                           // test_id 빈 문자열
-          test_name: `TEST-${selectedDeviceId}`   // test_name을 "TEST-" + device_id로 설정
+          test_name: `TEST-${inputCommand}`   // test_name을 "TEST-" + device_id로 설정
         }))
       };
 
@@ -784,7 +784,7 @@ const MainDashboard = () => {
             "command_time": new Date().toISOString(),
             "command_type": "CMD_TP_BEG",
             "test_id": selectedDeviceId,
-            "test_name": "TEST-"+selectedDeviceId
+            "test_name": "TEST-"+inputCommand
           }
         ]
       }
@@ -1039,7 +1039,7 @@ for (let i = 0; i < maxLength; i++) {
                           </div>
 
                           <div className="_contentCardList w-full  flex flex-col gap-[8px] overflow-auto h-full bg-transparent">
-                            {deviceList?.map(({ device_id, status, status_value, status_kor, checked, test_name, log_file_name, error_message,  }) => (
+                            {deviceList?.map(({ device_id, status, status_value, test_name, error_message,  }) => (
                               <div key={device_id} className="w-full mb-[5px] bg-transparent">
                                 {/* Accordion Header */}
                                 <div
