@@ -542,7 +542,7 @@ const MainDashboard = () => {
     }
 
     const devices = deviceList.map((device) =>{
-      return { ...device, status:'대기',isActive: false }
+      return { ...device, status_value:'대기',isActive: false }
     })
       
     setDeviceList(devices);
@@ -578,7 +578,7 @@ const MainDashboard = () => {
           // checked가 true인 항목만 status를 "대기"로 변경
           
           if (device.checked) {
-            return { ...device, status:"DEV_ST_RDY",status_eng: "Ready",status_kor: "대기" };
+            return { ...device, status:"DEV_ST_RDY",status_value: "대기" };
           }
           return device;
         });
@@ -642,7 +642,7 @@ const MainDashboard = () => {
     //alert('종료:'+carId)
     const devices = deviceList.map((device) =>
       device.device_id === device_id ? 
-    { ...device, status:"DEV_ST_RDY", status_eng:"Ready", status_kor:"대기" } : device
+    { ...device, status:"DEV_ST_RDY", status_value:"대기" } : device
     )
     setDeviceList(devices);
 
@@ -661,7 +661,7 @@ const MainDashboard = () => {
         if (device.checked==true) {
           return {
             ...device,
-            status:"DEV_ST_ING",status_eng: "Test-ing",status_kor: "진행중",
+            status:"DEV_ST_ING",status_value: "진행중",
             isActive: true    // Set isActive to true if checked is true
           };
         }
@@ -689,7 +689,7 @@ const MainDashboard = () => {
         if (device.device_id==selectedDeviceId) {
           return {
             ...device,
-            status:"DEV_ST_ING",status_eng: "Test-ing",status_kor: "진행중",
+            status:"DEV_ST_ING",status_value: "진행중",
             isActive: true    // Set isActive to true if checked is true
           };
         }
@@ -720,7 +720,7 @@ const MainDashboard = () => {
     testResetConfirm.confirmClicked().then(() => {
       
       const cars = deviceList.map((car) =>
-        car.device_id === device_id ? { ...car, status:'DEV_ST_RDY',status_eng:'Ready',status_kor:'대기'} : car
+        car.device_id === device_id ? { ...car, status:'DEV_ST_RDY',status_value:'대기'} : car
       )
       setDeviceList(cars);
   
@@ -731,27 +731,31 @@ const MainDashboard = () => {
       setIsLogDelete(true)
   }
 
-  const logDeleteConfirm = () => {
-    //alert('삭제할 로그 정보');
-    //alert(selectedLogInfo);
-  
-    // selectedLogInfo 배열을 "test_id" 키를 가진 객체로 변환
+  const logDeleteConfirm = async () => {
+    // 삭제할 로그 정보가 담긴 배열을 "test_id" 키를 가진 객체로 변환
     const requestData = {
       test_id: selectedLogInfo, // 배열을 그대로 "test_id" 키에 할당
     };
     console.log('requestData');
     console.log(requestData);
-    
-
-    // 로그 삭제 요청
-    deleteLogList(requestData)
-   
-    setIsLogDelete(false);  // 상태 업데이트
-    // 추가적으로 데이터 상태를 업데이트 (예: 로그 목록 갱신)
-    // setLogs(newLogs);
-
-  };
   
+    try {
+      // 로그 삭제 요청
+       deleteLogList(requestData);
+  
+      // 로그 삭제 완료 후 페이지 리로드
+      // 0.5초 후 페이지 리로드
+    setTimeout(() => {
+      window.location.reload();
+    }, 500); // 500ms = 0.5초
+  
+    } catch (error) {
+      console.error('로그 삭제 실패:', error);
+      alert('로그 삭제 실패');
+    }
+  
+    setIsLogDelete(false);  // 상태 업데이트
+  };
   
   
 

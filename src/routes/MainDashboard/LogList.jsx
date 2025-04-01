@@ -71,7 +71,7 @@ const LogList = (
     }
   
     // test_id를 alert로 표시
-    alert(`Selected test_id: ${logItem.test_id}`);
+    //alert(`Selected test_id: ${logItem.test_id}`);
   
     // 선택된 로그 상태 업데이트
     const updatedSelectedLogPos = { ...selectedLogPos };
