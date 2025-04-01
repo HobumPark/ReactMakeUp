@@ -23,12 +23,15 @@ const useCommandInfoMgt = ({
   const createMultiCommandMutation = useMutation({
     mutationFn: (commandList) => createCommand(commandList),
     onSuccess: (responseData) => {
+      /*
       new NoticeMessage(t('msg > registration success'), {
         callback() {
           queryClient.invalidateQueries(["commandQueryParams", commandQueryParams]);
           onCreateSuccess(responseData);
         }
-      });
+      */
+      queryClient.invalidateQueries(["commandQueryParams", commandQueryParams]);
+      //onCreateSuccess(responseData);
     },
     onError: (err) => {
       console.error("Error creating user:", err);

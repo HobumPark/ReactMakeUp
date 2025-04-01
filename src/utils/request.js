@@ -52,8 +52,8 @@ export const handleErrorCode = (errCode) => {
     fetchOptions = {}
   ) => {
 
-    console.log('post url')
-    console.log(receivedDT)
+    //console.log('post url')
+    //console.log(receivedDT)
     
     return await fetch(url, {
       method: "POST",
@@ -63,8 +63,8 @@ export const handleErrorCode = (errCode) => {
       ...fetchOptions,
     })
       .then(async (response) => {
-        console.log('post response')
-        console.log(response)
+        //console.log('post response')
+        //console.log(response)
         
         const contentType = response.headers.get("Content-Type");
         const responseData =
@@ -142,7 +142,7 @@ export const handleErrorCode = (errCode) => {
       });
   
       // 응답 상태 확인
-      console.log('Response Status:', response.status);
+      //console.log('Response Status:', response.status);
       const contentType = response.headers.get("Content-Type");
       const responseData =
         contentType && contentType.indexOf("application/json") !== -1

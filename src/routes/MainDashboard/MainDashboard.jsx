@@ -59,7 +59,6 @@ const MainDashboard = () => {
   const {t} = useTranslation();
 
   const [poiItem, setPoiItem] = useState([]);
-  const [poiTestItem, setPoiTestItem] = useState([]);//테스트 poi
   const [deviceList, setDeviceList] = useState([]);//테스트 차량목록
 
   const [multiStartMode, setMultiStartMode]=useState(false)
@@ -104,8 +103,6 @@ const MainDashboard = () => {
     commandQueryParams
   });
   
-
-
   //mapDisplayPOITest 는 샘플데이터 시험용
   const mapInitial = mapInitialView?.data;
   const mapDisplay = mapDisplayPOI?.data;
@@ -118,8 +115,8 @@ const MainDashboard = () => {
   //console.log('mapDisplayTest')
   //console.log(mapDisplayTest)
 
-  //console.log('deviceStatus')
-  //console.log(deviceStatus)
+  console.log('deviceStatus')
+  console.log(deviceStatus)
 
   //console.log('deviceLogData')
   //console.log(deviceLogData)
@@ -391,7 +388,7 @@ const MainDashboard = () => {
         olMapRef.current = null; // Reset the map reference
       }
     };
-  }, [mapInitial, mapDisplay]);
+  }, []);
 
   useEffect(() => {
     const iconMapping = {
@@ -646,11 +643,30 @@ const MainDashboard = () => {
   
     testStopConfirm.confirmClicked().then(() => {
       
+    
+      const deviceCommandList = {
+        "commands": [
+          {
+            "command_id": device_id,
+            "device_id": device_id,
+            "command_time": new Date().toISOString(),
+            "command_type": "CMD_TP_STP",
+            "test_id": device_id,
+            "test_name": "TEST-"+device_id
+          }
+        ]
+      }
+
+      createCommand(deviceCommandList)
+
+
     //alert('종료:'+carId)
+    /*
     const devices = deviceList.map((device) =>
       device.device_id === device_id ? 
     { ...device, status:"DEV_ST_RDY", status_value:"대기" } : device
     )
+    */
     setDeviceList(devices);
 
     });
@@ -664,14 +680,15 @@ const MainDashboard = () => {
 
     if(multiStartMode==true){
 
-      alert('다중 디바이스 실행')
+      //alert('다중 디바이스 실행')
 
+      /*
       const devices = deviceList.map((device) => {
         // If car.checked is true, set isActive to true and status to '진행중'
         if (device.checked==true) {
           return {
             ...device,
-            status:"DEV_ST_ING",status_value: "진행중",
+            status:"DEV_ST_BEG",status_value: "시작대기",
             isActive: true    // Set isActive to true if checked is true
           };
         }
@@ -681,6 +698,7 @@ const MainDashboard = () => {
           ...device,
         };
       });
+      */
 
       const checkedDeviceIds = deviceList
       .filter((device) => device.checked === true) // checked가 true인 device만 필터링
@@ -701,15 +719,12 @@ const MainDashboard = () => {
 
       console.log('deviceCommandList')
       console.log(deviceCommandList)
-      /*
-      const requestData = {
-        "commands": commandList
-      };
-      */
+
+
       //alert(`다중 시험모드:${selectedDeviceId} 커맨드: ${inputCommand} 시험 시작!`);
       createCommand(deviceCommandList)//API Call
 
-      setDeviceList(devices)
+      //setDeviceList(devices)
       //setStartAllActive(true)
       setIsModalOpen(false)
       setMultiStartMode(false)
@@ -717,24 +732,24 @@ const MainDashboard = () => {
     }else{
       //다중모드 아닐시엔
       console.log('다중모드 아닐때')
-      alert('단일 디바이스 실행')
-      alert(selectedDeviceId)
+      //alert('단일 디바이스 실행')
+      //alert(selectedDeviceId)
 
+      /*
       const devices = deviceList.map((device) => {
         // If car.checked is true, set isActive to true and status to '진행중'
         console.log(device)
         if (device.device_id==selectedDeviceId) {
           return {
             ...device,
-            status:"DEV_ST_ING",status_value: "진행중",
+            status:"DEV_ST_BEG",status_value: "시작대기",
             isActive: true    // Set isActive to true if checked is true
           };
         }
         
         return device;
       });
-
-      //createCommand('test command')//API Call
+      */
 
       const deviceCommandList = {
         "commands": [
@@ -751,10 +766,13 @@ const MainDashboard = () => {
 
       createCommand(deviceCommandList)
 
-      setDeviceList(devices)
+      //setDeviceList(devices)
       setIsModalOpen(false)
       setInputCommand('')
     }
+
+
+    setIsModalOpen(false)
   }
   //
   const cancelClick=()=>{
@@ -1012,12 +1030,12 @@ for (let i = 0; i < maxLength; i++) {
                                         status=='DEV_ST_RDY' && multiStartMode==true? //대기
                                         <FontAwesomeIcon
                                         icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
-                                        className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} // 색상도 바꿀 수 있음
+                                        className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} //다중시작 일때는 대기
                                         onClick={()=>checkCarClick(device_id)}
                                         />:''
                                       }
                                       {
-                                        (status=='DEV_ST_ING' || status=='진행중') && multiStopMode==true? //시작대기
+                                        (status=='DEV_ST_ING' || status=='DEV_ST_BEG') && multiStopMode==true? //다중종료 일때는 진행중 또는 시작대기
                                         <FontAwesomeIcon
                                         icon={checked ? faCheckCircle : faCircle} // 활성화된 상태에 따라 아이콘 변경
                                         className={`text-xl cursor-pointer hover:opacity-80 mr-2 mt-1`} // 색상도 바꿀 수 있음
