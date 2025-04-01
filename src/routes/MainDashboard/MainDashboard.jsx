@@ -74,44 +74,51 @@ const MainDashboard = () => {
   const [isLogDelete,setIsLogDelete] = useState(false)
 
   const [deviceStatusQueryParams,setDeviceStatusQueryParams]=useState('')
-  const [deviceLogQueryParams,setDeviceLogQueryParams]=useState('logList')
+  const [deviceLogQueryParams,setDeviceLogQueryParams]=useState([])
+  const [traceQueryParams,setTraceQueryParams]=useState('')
+
   const [commandQueryParams,setCommandQueryParams]=useState('')
 
   const [selectedLogPos, setSelectedLogPos] = useState([]);
   const [selectedLogInfo, setSelectedLogInfo] = useState([]);
   //mapDisplayPOITest 는 지도 출력 샘플데이터 시험용
-  const {mapInitialView, mapDisplayPOI, mapDisplayPOITest, mapDisplayPOIOneTest } = useDashboard({
+  const {mapInitialView, mapDisplayPOI  } = useDashboard({
   });
 
   //임시로 파일에서 불러온 차량정보, 차량로그정보
-  const {deviceStatus} = useDeviceStatusMgt({
-    deviceStatusQueryParams
+  const {deviceStatus, trace} = useDeviceStatusMgt({
+    deviceStatusQueryParams,
+    traceQueryParams
   });
 
   const {deviceLogData, deleteLogList} = useLogInfoMgt({
     deviceLogQueryParams
   });
-
+  /*
   const {createCommand} = useCommandInfoMgt({
 
   });
-
+  */
   //mapDisplayPOITest 는 샘플데이터 시험용
   const mapInitial = mapInitialView?.data;
   const mapDisplay = mapDisplayPOI?.data;
-  const mapDisplayTest = mapDisplayPOIOneTest?.data;
+  //const mapDisplayTest = mapDisplayPOIOneTest?.data;
   //const mapDisplayOneTest = mapDisplayPOIOneTest?.data;
 
-  console.log('mapDisplay')
-  console.log(mapDisplay)
-  console.log('mapDisplayTest')
-  console.log(mapDisplayTest)
+  //console.log('mapDisplay')
+  //console.log(mapDisplay)
 
-  console.log('deviceStatus')
-  console.log(deviceStatus)
+  //console.log('mapDisplayTest')
+  //console.log(mapDisplayTest)
 
-  console.log('deviceLogData')
-  console.log(deviceLogData)
+  //console.log('deviceStatus')
+  //console.log(deviceStatus)
+
+  //console.log('deviceLogData')
+  //console.log(deviceLogData)
+
+  console.log('trace')
+  console.log(trace)
 
   useEffect(() => {
     console.log('mapDisplay store')
@@ -119,13 +126,6 @@ const MainDashboard = () => {
       setPoiItem(mapDisplay.poi);
     }
   }, [mapDisplay]); 
-
-  useEffect(() => {
-    console.log('mapDisplayTest store')
-    if (mapDisplayTest) {
-      setPoiTestItem(mapDisplayTest);
-    }
-  }, [mapDisplayTest]); 
 
 
   const mapRef = useRef(null);
@@ -244,7 +244,7 @@ const MainDashboard = () => {
 
       view: new View({
         //center: fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]),
-        center: fromLonLat([126.9780, 37.5665]),//서울시청 위치로 시작함
+        center: fromLonLat([128.55503667976188, 35.885040176827694]),//중심좌표 위도, 경도
         zoom: 15,
         minZoom: 8, 
       }),
@@ -404,14 +404,22 @@ const MainDashboard = () => {
     const Iconfeatures = [];
   
     // 데이터 아이템을 반복하면서 아이콘을 Features 배열에 추가
-    deviceStatus?.data.forEach(item => {
-      console.log('poiItem mapping');
-      console.log(item);
-  
-      const { lat, lng, device_id, last_data_reviced_time } = item;
+
+
+    trace?.data.devices.forEach(item => {
+           
       console.log('item')
       console.log(item)
-      
+  
+      const device_id = parseInt(item.device_id);
+
+      const traceArray = item.trace[0];
+      console.log('traceArray')
+      console.log(traceArray)
+      const last_data_reviced_time = traceArray.heartbeat_time;
+      const lat = traceArray.lat;
+      const lng = traceArray.lng;
+
        // observationTime을 Date 객체로 변환
       const date = new Date(last_data_reviced_time);
 
@@ -504,7 +512,7 @@ const MainDashboard = () => {
       clusterSource.refresh();
     });
   
-  }, [deviceStatus]);
+  }, [trace]);
   
   
   const moveMapToPOI = (device_id, lat, lng) => {
@@ -665,7 +673,7 @@ const MainDashboard = () => {
       });
       
       //alert(`다중 시험모드:${selectedDeviceId} 커맨드: ${inputCommand} 시험 시작!`);
-      createCommand('test command')//API Call
+      //createCommand('test command')//API Call
 
       setDeviceList(devices)
       //setStartAllActive(true)
@@ -689,7 +697,7 @@ const MainDashboard = () => {
         return device;
       });
 
-      createCommand('test command')//API Call
+      //createCommand('test command')//API Call
 
       setDeviceList(devices)
       setIsModalOpen(false)
@@ -723,18 +731,29 @@ const MainDashboard = () => {
       setIsLogDelete(true)
   }
 
-  const logDeleteConfirm=()=>{
-    //console.log('삭제할 로그위치')
-    //console.log(selectedLogPos)
-    //alert('삭제할 로그위치')
-    //alert(selectedLogPos)
-    alert('삭제할 로그 정보')
-    alert(selectedLogInfo)
-    deleteLogList(selectedLogInfo)
-
+  const logDeleteConfirm = () => {
+    //alert('삭제할 로그 정보');
+    //alert(selectedLogInfo);
+  
+    // selectedLogInfo 배열을 "test_id" 키를 가진 객체로 변환
+    const requestData = {
+      test_id: selectedLogInfo, // 배열을 그대로 "test_id" 키에 할당
+    };
+    console.log('requestData');
+    console.log(requestData);
     
-    setIsLogDelete(false)
-  }
+
+    // 로그 삭제 요청
+    deleteLogList(requestData)
+   
+    setIsLogDelete(false);  // 상태 업데이트
+    // 추가적으로 데이터 상태를 업데이트 (예: 로그 목록 갱신)
+    // setLogs(newLogs);
+
+  };
+  
+  
+  
 
   const logDeleteCancel=()=>{
     setIsLogDelete(false)
@@ -807,22 +826,32 @@ const MainDashboard = () => {
   const maxLength = Math.max(...logList.map(device => device.tests?.length || 0)); // Get the max length of tests array
 
   // Loop through all the devices and create a row for each test entry
-  for (let i = 0; i < maxLength; i++) {
-    const row = {};
+for (let i = 0; i < maxLength; i++) {
+  const row = {};
 
-    logList.forEach((device, index) => {
-      const test = device.tests[i]; // Get the ith test from the device's tests array
-      // Ensure that all 10 cars (car1 to car10) are represented
-      row[`car${index + 1}`] = test ? test.test_id : ''; // Add car1, car2, ... for each test entry
-    });
-
-    // Fill missing cars with empty string if necessary (car4, car5, ... up to car10)
-    for (let j = logList.length; j < 10; j++) {
-      row[`car${j + 1}`] = ''; // If a car doesn't exist, add empty string
-    }
-
-    transFormedLogList.push(row); // Push the row into the final data array
+  // Ensure that we always fill cars in the correct order: car1, car2, car3, ..., car10
+  for (let j = 1; j <= 10; j++) {
+    const carKey = `car${j}`;
+    row[carKey] = { log_file_name: '', test_id: null }; // Default to empty if no test exists for this car
   }
+
+  logList.forEach((device) => {
+    const test = device.tests[i]; // Get the ith test from the device's tests array
+    const carKey = `car${device.device_id}`; // `car1`, `car2`, ..., based on the device_id
+
+    // If the test exists and has a log file, assign the file name and include the test ID
+    if (test && test.log_file_name) {
+      row[carKey] = {
+        log_file_name: test.log_file_name, // The log file name
+        test_id: test.test_id // The test id associated with this log entry
+      };
+    } else {
+      row[carKey] = { log_file_name: '', test_id: null }; // Set test_id to null if there's no log file
+    }
+  });
+
+  transFormedLogList.push(row); // Push the row into the final data array
+}
 
   console.log('Transformed Data:', transFormedLogList);
 
@@ -975,11 +1004,21 @@ const MainDashboard = () => {
                                         status=="DEV_ST_ERR"? //오류일때
                                         <span>
                                             {error_message}
-                                        </span>:
-                                         <span>
-                                            {test_name} / {log_file_name}
-                                        </span>
+                                        </span>:''
                                       }
+                                      {
+                                        status=="DEV_ST_RDY"?
+                                        <span>
+
+                                        </span>:''
+                                      }
+                                      {
+                                        status=="DEV_ST_BEG"?
+                                        <span>
+                                          {test_name}
+                                        </span>:''
+                                      }
+
                                       
                                     </span>
                                   </div>

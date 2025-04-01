@@ -23,7 +23,6 @@ export const fetchHeartBeat = async () => {
 // 차량 이동 경로 조회
 // DSH_002 - /api/dsh/trace (GET)
 export const fetchTraceData = async () => {
-    //const url = `${URLS.BACK_DSH}${APIS.trace()}`;
-    const url=''
+    const url = `${URLS.BACK_DSH}${APIS.trace()}`;
     return await reqGet(url);
 };

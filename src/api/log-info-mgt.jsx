@@ -12,13 +12,13 @@ export const fetchDeviceLogData = async () => {
 
 // 로그 파일 삭제
 // DSH_005 - /api/dsh/log (DELETE)
-export const deleteLog = async (logId) => {
+export const deleteLogs = async (logList) => {
     //const url = `/sampleDeviceLogData.json`;
     console.log('deleteLog')
-    console.log(logId)
+    console.log(logList)
     
-    const url = `${URLS.BACK_DSH}${APIS.logDelete(logId)}`;
+    const url = `${URLS.BACK_DSH}${APIS.deleteLogs()}`;
     //const url=''
-    return await reqDelete(url);
+    return await reqDelete(url, logList);
 };
 
