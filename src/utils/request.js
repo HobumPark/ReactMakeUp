@@ -24,8 +24,8 @@ export const handleErrorCode = (errCode) => {
       credentials: "include",
     })
       .then(async (response) => {
-        console.log('reqGet')
-        console.log(response)
+        //console.log('reqGet')
+        //console.log(response)
         const contentType = response.headers.get("Content-Type");
         const responseData =
           contentType && contentType.indexOf("application/json") !== -1
@@ -63,6 +63,9 @@ export const handleErrorCode = (errCode) => {
       ...fetchOptions,
     })
       .then(async (response) => {
+        console.log('post response')
+        console.log(response)
+        
         const contentType = response.headers.get("Content-Type");
         const responseData =
           contentType && contentType.indexOf("application/json") !== -1
@@ -88,9 +91,9 @@ export const handleErrorCode = (errCode) => {
     isStringify = true,
     fetchOptions = {}
   ) => {
-    console.log('reqPut')
-    console.log(url)
-    console.log(receivedDT)
+    //console.log('reqPut')
+    //console.log(url)
+    //console.log(receivedDT)
     return await fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -119,9 +122,9 @@ export const handleErrorCode = (errCode) => {
   };
   
   export const reqDelete = async (url, receivedDT, isStringify = true, fetchOptions = {}) => {
-    console.log('reqDelete');
-    console.log(url);
-    console.log(receivedDT);
+    //console.log('reqDelete');
+    //console.log(url);
+    //console.log(receivedDT);
   
     // 요청 본문에 포함할 데이터 문자열로 변환
     const body = isStringify ? JSON.stringify(receivedDT) : receivedDT;

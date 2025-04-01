@@ -69,7 +69,12 @@ const MainDashboard = () => {
   const [stopAllActive, setStopAllActive]=useState(false)
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  //단일디바이스 선택시 사용
   const [selectedDeviceId,setselectedDeviceId] = useState('')
+
+  //다중디바이스 선택시
+  const [selectedDeviceIdList,setselectedDeviceIdList] = useState([])
+
   const [inputCommand,setInputCommand] = useState('')
   const [isLogDelete,setIsLogDelete] = useState(false)
 
@@ -94,11 +99,13 @@ const MainDashboard = () => {
   const {deviceLogData, deleteLogList} = useLogInfoMgt({
     deviceLogQueryParams
   });
-  /*
+  
   const {createCommand} = useCommandInfoMgt({
-
+    commandQueryParams
   });
-  */
+  
+
+
   //mapDisplayPOITest 는 샘플데이터 시험용
   const mapInitial = mapInitialView?.data;
   const mapDisplay = mapDisplayPOI?.data;
@@ -626,7 +633,7 @@ const MainDashboard = () => {
   }
 
   const testStart=(device_id)=>{
-    //alert('시작:'+carId)
+    //alert('시작:'+device_id)
     setselectedDeviceId(device_id)
     setIsModalOpen(true)
   }
@@ -656,6 +663,9 @@ const MainDashboard = () => {
     //alert('multiStopMode:'+multiStopMode)
 
     if(multiStartMode==true){
+
+      alert('다중 디바이스 실행')
+
       const devices = deviceList.map((device) => {
         // If car.checked is true, set isActive to true and status to '진행중'
         if (device.checked==true) {
@@ -671,9 +681,33 @@ const MainDashboard = () => {
           ...device,
         };
       });
-      
+
+      const checkedDeviceIds = deviceList
+      .filter((device) => device.checked === true) // checked가 true인 device만 필터링
+      .map((device) => device.device_id);           // device_id만 추출하여 배열로 생성
+
+      console.log(checkedDeviceIds); // checked가 true인 device_id 배열
+          
+      const deviceCommandList = {
+        commands: checkedDeviceIds.map((selectedDeviceId) => ({
+          command_id: String(selectedDeviceId), // command_id를 device_id로 설정
+          device_id: selectedDeviceId,          // device_id
+          command_time: new Date().toISOString(), // 현재 시간 ISO 문자열
+          command_type: "CMD_TP_BEG",            // command_type 고정값
+          test_id: selectedDeviceId,                           // test_id 빈 문자열
+          test_name: `TEST-${selectedDeviceId}`   // test_name을 "TEST-" + device_id로 설정
+        }))
+      };
+
+      console.log('deviceCommandList')
+      console.log(deviceCommandList)
+      /*
+      const requestData = {
+        "commands": commandList
+      };
+      */
       //alert(`다중 시험모드:${selectedDeviceId} 커맨드: ${inputCommand} 시험 시작!`);
-      //createCommand('test command')//API Call
+      createCommand(deviceCommandList)//API Call
 
       setDeviceList(devices)
       //setStartAllActive(true)
@@ -683,6 +717,9 @@ const MainDashboard = () => {
     }else{
       //다중모드 아닐시엔
       console.log('다중모드 아닐때')
+      alert('단일 디바이스 실행')
+      alert(selectedDeviceId)
+
       const devices = deviceList.map((device) => {
         // If car.checked is true, set isActive to true and status to '진행중'
         console.log(device)
@@ -698,6 +735,21 @@ const MainDashboard = () => {
       });
 
       //createCommand('test command')//API Call
+
+      const deviceCommandList = {
+        "commands": [
+          {
+            "command_id": "1",
+            "device_id": selectedDeviceId,
+            "command_time": new Date().toISOString(),
+            "command_type": "CMD_TP_BEG",
+            "test_id": selectedDeviceId,
+            "test_name": "TEST-"+selectedDeviceId
+          }
+        ]
+      }
+
+      createCommand(deviceCommandList)
 
       setDeviceList(devices)
       setIsModalOpen(false)

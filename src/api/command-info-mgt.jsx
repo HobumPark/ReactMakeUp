@@ -4,10 +4,12 @@ import { reqGet, reqPost } from "../utils/request";
 
 // 디바이스 다중 제어
 // DSH_003 - /api/dsh/command (POST)
-export const createCommand = async (commandData) => {
-    //const url = ``;
+export const createCommand = async (commandList) => {
+    console.log('command-info-mgt')
+    console.log(commandList)
+    
     const url = `${URLS.BACK_DSH}${APIS.createCommand()}`;
-    return await reqPost(url, commandData);
+    return await reqPost(url, commandList);
 };
 
 
