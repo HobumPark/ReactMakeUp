@@ -134,6 +134,12 @@
   /* color: #19181B; */
   border: 1px solid #6D6F7A;
   font-family: "Noto Sans KR";
+  color:red;
+  border:1px solid red;
+}
+
+.nm_footer_btns:hover{
+  opacity: 0.6;
 }
 
 /* .nm_footer_btns:hover {

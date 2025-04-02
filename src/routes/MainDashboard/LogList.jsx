@@ -108,15 +108,19 @@ const LogList = (
   
   
   return (
-    <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+    <div className="overflow-x-auto bg-white shadow-md">
       <table className="w-[97vw] m0 mx-auto" {...getTableProps()}>
         <thead>
-          {headerGroups.map(headerGroup => (
+          {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
+              {headerGroup.headers.map((column, colIndex) => (
                 <th
                   {...column.getHeaderProps()}
-                  className="px-4 py-2 bg-blue-300 text-sm font-semibold text-center border-b border-gray-300"
+                  className={`
+                    px-4 py-2 bg-[#9cc8dc] text-[#135a78] text-sm font-semibold text-center border-b border-gray-300 
+                    ${colIndex === 0 ? 'rounded-tl-lg' : ''}  // Apply top-left rounding to the first th
+                    ${colIndex === headerGroup.headers.length - 1 ? 'rounded-tr-lg' : ''}  // Apply top-right rounding to the last th
+                  `}
                 >
                   {column.render('Header')}
                 </th>
@@ -128,28 +132,24 @@ const LogList = (
           {tableRows.map((row, rowIndex) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()}>
+              <tr {...row.getRowProps()} className="border-l border-r border-gray-300"> 
                 {row.cells.map((cell, colIndex) => {
                   const carKey = Object.keys(deviceLogData[0])[colIndex]; // 차량 키 (car1, car2, ...)
   
-                  // 체크박스를 클릭 시 상태 토글
                   return (
                     <td
                       {...cell.getCellProps()}
-                      className="px-4 py-2 text-sm text-center border-b border-gray-300"
+                      className="px-4 py-2 text-sm text-center border-b border-gray-300 "
                     >
                       <div className="flex items-center justify-center h-[30px]">
-                        {isLogDelete  && cell.value.log_file_name && (  // Only show checkbox if value exists
+                        {isLogDelete && cell.value.log_file_name && (
                           <FontAwesomeIcon
                             icon={selectedLogPos[carKey] && selectedLogPos[carKey][rowIndex] ? faCheckCircle : faCircle}
-                            className="mt-2 text-2xl text-gray-500 p-2 rounded cursor-pointer"
+                            className="mt-2 text-2xl text-[#dadada] p-2 rounded cursor-pointer"
                             onClick={() => checkBoxClick(rowIndex, colIndex)} // 체크박스 클릭 시, 상태 토글
                           />
                         )}
-                        {/* Display the value or a placeholder */}
-                        <span className="ml-2">
-                          {cell.value ? `${cell.value.log_file_name}` : 'EMPTY'}                   
-                        </span> 
+                        <span className="ml-2">{cell.value ? `${cell.value.log_file_name}` : 'EMPTY'}</span>
                       </div>
                     </td>
                   );
@@ -161,6 +161,7 @@ const LogList = (
       </table>
     </div>
   );
+  
 };
 
 export default LogList;

@@ -219,6 +219,9 @@ export default class NoticeMessage {
     nm_footer_close.addEventListener("click", () => {
       this.close();
     });
+
+    
+
     dest.appendChild(nm_footer_close);
   }
 
@@ -242,6 +245,7 @@ export default class NoticeMessage {
     nm_footer_close.addEventListener("click", () => {
       this.close();
     });
+    
     dest.appendChild(nm_footer_close);
   }
 
@@ -265,6 +269,7 @@ export default class NoticeMessage {
     nm_footer_close.addEventListener("click", () => {
       this.close();
     });
+    
     dest.appendChild(nm_footer_close);
   }
 

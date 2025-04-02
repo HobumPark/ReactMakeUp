@@ -64,9 +64,6 @@ const MainDashboard = () => {
   const [multiStartMode, setMultiStartMode]=useState(false)
   const [multiStopMode, setMultiStopMode]=useState(false)
 
-  const [startAllActive, setStartAllActive]=useState(false)
-  const [stopAllActive, setStopAllActive]=useState(false)
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   //단일디바이스 선택시 사용
   const [selectedDeviceId,setselectedDeviceId] = useState('')
@@ -76,7 +73,6 @@ const MainDashboard = () => {
 
   // Check 상태를 별도로 관리
   const [checkedDevices, setCheckedDevices] = useState(new Set());
-
 
   const [inputCommand,setInputCommand] = useState('')
   const [isLogDelete,setIsLogDelete] = useState(false)
@@ -108,7 +104,6 @@ const MainDashboard = () => {
   });
   
   //mapDisplayPOITest 는 샘플데이터 시험용
-  const mapInitial = mapInitialView?.data;
   const mapDisplay = mapDisplayPOI?.data;
   //const mapDisplayTest = mapDisplayPOIOneTest?.data;
   //const mapDisplayOneTest = mapDisplayPOIOneTest?.data;
@@ -278,6 +273,9 @@ const MainDashboard = () => {
         left:73%; /* 우측에 위치 */
         z-index: 100; /* 컨트롤이 맵 위로 오도록 z-index 추가 */
         cursor:pointer;
+        border:none;
+        border-top-left-radius:10px !important;
+        border-top-right-radius:10px !important;
       }
       .ol-zoom > button {
         font-size: 28px !important;
@@ -313,7 +311,7 @@ const MainDashboard = () => {
     const changeMapView = () => {
       if (olMap) {
         //const newCenter = fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]);
-        const newCenter = fromLonLat([126.9780, 37.5665]);
+        const newCenter = fromLonLat([128.5549534326, 35.8849888403]);
         const newZoom =  15;
   
         olMap.getView().animate({
@@ -467,7 +465,7 @@ const MainDashboard = () => {
           }),
           // 아이콘 위에 표시할 텍스트
           text: new Text({
-            text: item.device_id+"\n"+"["+formattedDate+"]", // 첫 번째 텍스트: 아이디를 아이콘 위에 표시
+            text: "CAR "+item.device_id+"\n"+"("+formattedDate+")", // 첫 번째 텍스트: 아이디를 아이콘 위에 표시
             font: 'bold 12px sans-serif',  // 글자를 굵게 설정
             fill: new Fill({
               color: 'rgba(255, 255, 255, 1)',  // 진한 흰색
@@ -541,22 +539,6 @@ const MainDashboard = () => {
 
   const [openSections, setOpenSections] = useState([]);
 
-  const handleStartAll = () => {
-
-    setStartAllActive(!startAllActive)
-  
-    if(stopAllActive==true){
-      setStopAllActive(false)
-    }
-
-    const devices = deviceList.map((device) =>{
-      return { ...device, status_value:'대기',isActive: false }
-    })
-      
-    setDeviceList(devices);
-
-  };
-
   const multiModeStart=()=>{
     //alert('다중 시험 시작')
     setMultiStartMode(true)
@@ -582,10 +564,10 @@ const MainDashboard = () => {
     
       multiStopConfirm.confirmClicked().then(() => {
 
-
         const deviceIds = deviceList
           .filter(device => 
-            (device.status === 'DEV_ST_ING' || device.status === 'DEV_ST_BEG') && // 상태가 DEV_ST_ING 또는 DEV_ST_BEG인 device만 필터링
+            (device.status === 'DEV_ST_ING' || device.status === 'DEV_ST_BEG') && 
+            // 상태가 DEV_ST_ING (진행중) 또는 DEV_ST_BEG (시작대기) 인 device만 필터링
             checkedDevices.has(device.device_id) // 체크된 device만
           )
           .map(device => device.device_id); // 필터링된 device에서 device_id만 추출
@@ -598,7 +580,7 @@ const MainDashboard = () => {
             device_id: deviceId,          // device_id
             command_time: new Date().toISOString(), // 현재 시간 ISO 문자열
             command_type: "CMD_TP_STP",            // command_type 고정값
-            test_id: deviceId,                           // test_id 빈 문자열
+            test_id: deviceId,                           // test_id 
             test_name: `TEST-${inputCommand}`   // test_name을 "TEST-" + device_id로 설정
           }))
         };
@@ -609,19 +591,6 @@ const MainDashboard = () => {
         //alert(`다중 시험모드:${selectedDeviceId} 커맨드: ${inputCommand} 시험 시작!`);
         createCommand(deviceCommandList)//API Call
 
-        /*
-        const updatedDeivceList = deviceList.map(device => {
-          // checked가 true인 항목만 status를 "대기"로 변경
-          
-          if (device.checked) {
-            return { ...device, status:"DEV_ST_RDY",status_value: "대기" };
-          }
-          return device;
-        });
-
-        // 업데이트된 deviceList를 상태로 반영
-        setDeviceList(updatedDeivceList);
-        */
         setMultiStopMode(false)
       });
       
@@ -668,7 +637,6 @@ const MainDashboard = () => {
   
     testStopConfirm.confirmClicked().then(() => {
       
-    
       const deviceCommandList = {
         "commands": [
           {
@@ -677,7 +645,7 @@ const MainDashboard = () => {
             "command_time": new Date().toISOString(),
             "command_type": "CMD_TP_STP",
             "test_id": device_id,
-            "test_name": "TEST-"+inputCommand
+            "test_name": `STOP TEST-${device_id}`
           }
         ]
       }
@@ -686,12 +654,6 @@ const MainDashboard = () => {
 
 
     //alert('종료:'+carId)
-    /*
-    const devices = deviceList.map((device) =>
-      device.device_id === device_id ? 
-    { ...device, status:"DEV_ST_RDY", status_value:"대기" } : device
-    )
-    */
     setDeviceList(devices);
 
     });
@@ -706,24 +668,6 @@ const MainDashboard = () => {
     if(multiStartMode==true){
 
       //alert('다중 디바이스 실행')
-
-      /*
-      const devices = deviceList.map((device) => {
-        // If car.checked is true, set isActive to true and status to '진행중'
-        if (device.checked==true) {
-          return {
-            ...device,
-            status:"DEV_ST_BEG",status_value: "시작대기",
-            isActive: true    // Set isActive to true if checked is true
-          };
-        }
-      
-        // Otherwise, keep the original values
-        return {
-          ...device,
-        };
-      });
-      */
 
       const checkedDeviceIds = deviceList
         .filter((device) => checkedDevices.has(device.device_id)) // checkedDevices에 포함된 device_id만 필터링
@@ -760,22 +704,6 @@ const MainDashboard = () => {
       //alert('단일 디바이스 실행')
       //alert(selectedDeviceId)
 
-      /*
-      const devices = deviceList.map((device) => {
-        // If car.checked is true, set isActive to true and status to '진행중'
-        console.log(device)
-        if (device.device_id==selectedDeviceId) {
-          return {
-            ...device,
-            status:"DEV_ST_BEG",status_value: "시작대기",
-            isActive: true    // Set isActive to true if checked is true
-          };
-        }
-        
-        return device;
-      });
-      */
-
       const deviceCommandList = {
         "commands": [
           {
@@ -784,7 +712,7 @@ const MainDashboard = () => {
             "command_time": new Date().toISOString(),
             "command_type": "CMD_TP_BEG",
             "test_id": selectedDeviceId,
-            "test_name": "TEST-"+inputCommand
+            "test_name": `TEST-${inputCommand}`
           }
         ]
       }
@@ -813,12 +741,28 @@ const MainDashboard = () => {
     });
   
     testResetConfirm.confirmClicked().then(() => {
-      
+
+      const deviceCommandList = {
+        "commands": [
+          {
+            "command_id": device_id,
+            "device_id": device_id,
+            "command_time": new Date().toISOString(),
+            "command_type": "CMD_TP_REB",
+            "test_id": device_id,
+            "test_name": `RESET-TEST ${device_id}`
+          }
+        ]
+      }
+
+      createCommand(deviceCommandList)
+
+      /*
       const cars = deviceList.map((car) =>
         car.device_id === device_id ? { ...car, status:'DEV_ST_RDY',status_value:'대기'} : car
       )
       setDeviceList(cars);
-  
+      */
     });
   }
 
@@ -853,7 +797,6 @@ const MainDashboard = () => {
   };
   
   
-
   const logDeleteCancel=()=>{
     setIsLogDelete(false)
   }
@@ -885,7 +828,7 @@ const MainDashboard = () => {
       setDeviceList(updatedDeviceList);
       
       const ids = deviceStatus.data.map(device => device.device_id);
-      setOpenSections(ids)
+      //setOpenSections(ids)
     }
   }, [deviceStatus]); 
 
@@ -926,6 +869,7 @@ const MainDashboard = () => {
   const logList = deviceLogData?.data?.devices || [];
   console.log('logList:', logList);
 
+  //받아온 로그 데이터 구조 변환
   // Start transforming the data
   //const rows = [];
   const transFormedLogList = []
@@ -969,7 +913,6 @@ for (let i = 0; i < maxLength; i++) {
       scrollOverflow={true} // 스크롤 오버플로우 설정을 true로
       scrollingSpeed={800}    // 스크롤 속도 조정
       navigation={true}       // 네비게이션 활성화
-      //onWheel={handleWheel} // 휠 이벤트 핸들러 추가
       render={({ state, fullpageApi }) => {
         return (
           <div>
@@ -1017,7 +960,7 @@ for (let i = 0; i < maxLength; i++) {
                                       선택 완료
                                     </button>
                                     :
-                                    <button className='bg-white text-black py-1 px-9 rounded cursor-pointer hover:opacity-80 font-bold'
+                                    <button className='bg-white text-black py-1 px-9 rounded cursor-pointer hover:opacity-80 font-bold mr-5'
                                     onClick={()=>multiModeStart()}>
                                       다중 시험 시작
                                     </button>
@@ -1108,24 +1051,16 @@ for (let i = 0; i < maxLength; i++) {
                                     <span className="text-white bg-[#31363d] p-1 box-border">
                                       {
                                         status=="DEV_ST_ERR"? //오류일때
-                                        <span>
-                                            {error_message}
-                                        </span>:''
+                                        <span>{error_message}</span>:''
                                       }
                                       {
                                         status=="DEV_ST_RDY"?
-                                        <span>
-
-                                        </span>:''
+                                        <span></span>:''
                                       }
                                       {
                                         status=="DEV_ST_BEG"?
-                                        <span>
-                                          {test_name}
-                                        </span>:''
+                                        <span>{test_name}</span>:''
                                       }
-
-                                      
                                     </span>
                                   </div>
                                 )}
@@ -1152,17 +1087,17 @@ for (let i = 0; i < maxLength; i++) {
               <div className="w-full flex justify-end h-[80px] pt-0">
                 {
                   isLogDelete==false?
-                  <button className="w-[100px] h-[50px] bg-blue-500 text-white rounded cursor-pointer hover:opacity-80 mr-5"
+                  <button className="w-[100px] h-[50px] bg-[#135a78] text-white rounded cursor-pointer hover:opacity-80 mr-5"
                     onClick={handleDeleteLog}>
                     로그 삭제
                   </button>:
                   <div className="mr-5">
-                    <button className="bg-[#3b4e6c] text-white rounded hover:bg-blue-600 cursor-pointer hover:opacity-80 mr-5"
+                    <button className="bg-[#135a78] text-white rounded hover:bg-blue-600 cursor-pointer hover:opacity-80 mr-5"
                     style={{ width: "100px", height: "50px" }}
                     onClick={logDeleteConfirm}>
                       완료
                     </button>
-                    <button className="bg-gray-300 text-black rounded hover:bg-gray-400 cursor-pointer hover:opacity-80"
+                    <button className="bg-gray-300 text-white rounded hover:bg-gray-400 cursor-pointer hover:opacity-80"
                     style={{ width: "100px", height: "50px" }}
                     onClick={logDeleteCancel}>
                       취소
@@ -1174,7 +1109,6 @@ for (let i = 0; i < maxLength; i++) {
               <div>
                   <LogList 
                   className="mr-2 mt-25"
-                  //deviceLogData={deviceLogData?.data.devices || []} 
                   deviceLogData={transFormedLogList || []} 
                   isLogDelete={isLogDelete}
                   selectedLogPos={selectedLogPos}
