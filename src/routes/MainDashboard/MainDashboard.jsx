@@ -12,8 +12,8 @@ import { OSM } from "ol/source";
 import BingMaps from 'ol/source/BingMaps';  
 import { XYZ } from "ol/source";
 import Cluster from "ol/source/Cluster";
-import { Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
-import { fromLonLat, get as getProjection } from "ol/proj";
+import { Fill, Text } from "ol/style";
+import { fromLonLat } from "ol/proj";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import VectorLayer from "ol/layer/Vector";
@@ -39,15 +39,13 @@ import IconDarkMap from "../../assets/icon/icon-dark-map.svg";
 import IconBing from "../../assets/icon/icon-bing-map.svg";
 
 import Colorize from "ol-ext/filter/Colorize";
-import useDashboard from "../../hooks/useDashboard";
 import { useTranslation } from "react-i18next";
 import NoticeMessage from "../../plugin/noticemessage/noticemessage";
-import { formatFullDateTime } from "../../utils/date";
 import ReactFullpage from '@fullpage/react-fullpage';
 import CommandInputModal from '../../components/Modal/CommandInputModal/CommandInputModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
-import { Zoom, Attribution } from 'ol/control';
+import { Zoom } from 'ol/control';
 import { defaults as defaultInteractions } from 'ol/interaction';
 import LogList from './LogList';
 
@@ -58,7 +56,6 @@ import useCommandInfoMgt from "../../hooks/useCommandInfoMgt";
 const MainDashboard = () => {
   const {t} = useTranslation();
 
-  const [poiItem, setPoiItem] = useState([]);
   const [deviceList, setDeviceList] = useState([]);//테스트 차량목록
 
   const [multiStartMode, setMultiStartMode]=useState(false)
@@ -68,10 +65,7 @@ const MainDashboard = () => {
   //단일디바이스 선택시 사용
   const [selectedDeviceId,setselectedDeviceId] = useState('')
 
-  //다중디바이스 선택시
-  const [selectedDeviceIdList,setselectedDeviceIdList] = useState([])
-
-  // Check 상태를 별도로 관리
+  // Check 상태를 별도로 관리 - 다중디바이스 시작,종료에 사용
   const [checkedDevices, setCheckedDevices] = useState(new Set());
 
   const [inputCommand,setInputCommand] = useState('')
@@ -85,9 +79,6 @@ const MainDashboard = () => {
 
   const [selectedLogPos, setSelectedLogPos] = useState([]);
   const [selectedLogInfo, setSelectedLogInfo] = useState([]);
-  //mapDisplayPOITest 는 지도 출력 샘플데이터 시험용
-  const {mapInitialView, mapDisplayPOI  } = useDashboard({
-  });
 
   //임시로 파일에서 불러온 차량정보, 차량로그정보
   const {deviceStatus, trace} = useDeviceStatusMgt({
@@ -103,33 +94,14 @@ const MainDashboard = () => {
     commandQueryParams
   });
   
-  //mapDisplayPOITest 는 샘플데이터 시험용
-  const mapDisplay = mapDisplayPOI?.data;
-  //const mapDisplayTest = mapDisplayPOIOneTest?.data;
-  //const mapDisplayOneTest = mapDisplayPOIOneTest?.data;
-
-  //console.log('mapDisplay')
-  //console.log(mapDisplay)
-
-  //console.log('mapDisplayTest')
-  //console.log(mapDisplayTest)
-
-  console.log('deviceStatus')
-  console.log(deviceStatus)
+  //console.log('deviceStatus')
+  //console.log(deviceStatus)
 
   //console.log('deviceLogData')
   //console.log(deviceLogData)
 
-  console.log('trace')
-  console.log(trace)
-
-  useEffect(() => {
-    console.log('mapDisplay store')
-    if (mapDisplay?.poi) {
-      setPoiItem(mapDisplay.poi);
-    }
-  }, [mapDisplay]); 
-
+  //console.log('trace')
+  //console.log(trace)
 
   const mapRef = useRef(null);
   const olMapRef = useRef(null);
@@ -273,9 +245,6 @@ const MainDashboard = () => {
         left:73%; /* 우측에 위치 */
         z-index: 100; /* 컨트롤이 맵 위로 오도록 z-index 추가 */
         cursor:pointer;
-        border:none;
-        border-top-left-radius:10px !important;
-        border-top-right-radius:10px !important;
       }
       .ol-zoom > button {
         font-size: 28px !important;
@@ -410,8 +379,6 @@ const MainDashboard = () => {
     const Iconfeatures = [];
   
     // 데이터 아이템을 반복하면서 아이콘을 Features 배열에 추가
-
-
     trace?.data.devices.forEach(item => {
            
       console.log('item')
@@ -652,7 +619,6 @@ const MainDashboard = () => {
 
       createCommand(deviceCommandList)
 
-
     //alert('종료:'+carId)
     setDeviceList(devices);
 
@@ -757,12 +723,6 @@ const MainDashboard = () => {
 
       createCommand(deviceCommandList)
 
-      /*
-      const cars = deviceList.map((car) =>
-        car.device_id === device_id ? { ...car, status:'DEV_ST_RDY',status_value:'대기'} : car
-      )
-      setDeviceList(cars);
-      */
     });
   }
 
@@ -828,43 +788,10 @@ const MainDashboard = () => {
       setDeviceList(updatedDeviceList);
       
       const ids = deviceStatus.data.map(device => device.device_id);
-      //setOpenSections(ids)
+      setOpenSections(ids)
     }
   }, [deviceStatus]); 
 
-
-  useEffect(() => {
-    // 페이지 로딩 시 body에 overflow-y: scroll 추가
-    document.body.style.overflowY = 'scroll';
-    document.body.style.height = '100%';
-
-    // cleanup: 컴포넌트 언마운트 시 body overflow 스타일 초기화
-    return () => {
-      document.body.style.overflowY = 'auto';
-    };
-  }, []);
-
-  const [isScrolling, setIsScrolling] = useState(false); // 휠 스크롤 방지 상태
-
-  useEffect(() => {
-    const handleWheel = (event) => {
-      event.preventDefault(); // 휠 이벤트 기본 동작을 막음
-      if (isScrolling) return;
-
-      setIsScrolling(true); // 스크롤을 시작함
-
-      // 잠시 후 스크롤을 다시 활성화
-      setTimeout(() => {
-        setIsScrolling(false);
-      }, 800); // 휠 이벤트 처리 후 800ms 대기
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-
-    return () => {
-      window.removeEventListener('wheel', handleWheel);
-    };
-  }, [isScrolling]);
 
   const logList = deviceLogData?.data?.devices || [];
   console.log('logList:', logList);
