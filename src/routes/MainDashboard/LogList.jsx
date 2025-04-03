@@ -16,7 +16,7 @@ const LogList = (
 
   // columns 설정 (CAR 01, CAR 02, CAR 03 ...)
   const columns = useMemo(() => [
-    { Header: 'CAR 00', accessor: 'car00' },
+    { Header: 'CAR 0000', accessor: 'car00' },
     { Header: 'CAR 01', accessor: 'car01' },
     { Header: 'CAR 02', accessor: 'car02' },
     { Header: 'CAR 03', accessor: 'car03' },

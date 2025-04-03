@@ -219,7 +219,7 @@ const MainDashboard = () => {
 
       view: new View({
         //center: fromLonLat([mapInitial?.[0]?.view_lng, mapInitial?.[0]?.view_lat]),
-        center: fromLonLat([128.55503667976188, 35.885040176827694]),//중심좌표 위도, 경도
+        center: fromLonLat([128.6248063, 35.872628899999995]),//중심좌표 위도, 경도
         zoom: 15,
         minZoom: 8, 
       }),
@@ -963,7 +963,7 @@ for (let i = 0; i < maxLength; i++) {
                                   </div>
                                   <div>
                                     <button className={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
-                                    ${(status === 'DEV_ST_ING' || status=='DEV_ST_ERR' || status=='DEV_ST_BEG')? 'bg-gray-300 text-gray-400' : 'bg-white text-black'}`}
+                                    ${(status === 'DEV_ST_ING' || status=='DEV_ST_ERR' || status=='DEV_ST_BEG' || status=='DEV_ST_STP')? 'bg-gray-300 text-gray-400' : 'bg-white text-black'}`}
                                     //              진행중                    오류                  시작대기
                                     disabled={(status === 'DEV_ST_ING' || status=='DEV_ST_ERR' || status=='DEV_ST_BEG' || status=='DEV_ST_STP')? true:false}
                                     //              진행중                    오류                  시작대기
@@ -971,7 +971,7 @@ for (let i = 0; i < maxLength; i++) {
                                         시작
                                       </button>
                                     <button className={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
-                                    ${status=='DEV_ST_RDY'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'} `}
+                                    ${(status=='DEV_ST_RDY' || status=='DEV_ST_STP')? 'bg-gray-300 text-gray-400' : 'bg-white text-black'} `}
                                     //         대기
                                     disabled={(status=='DEV_ST_RDY' || status=='DEV_ST_STP')? true:false}
                                     //                 대기                    종료대기
