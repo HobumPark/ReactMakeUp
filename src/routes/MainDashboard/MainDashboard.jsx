@@ -875,7 +875,7 @@ for (let i = 0; i < maxLength; i++) {
                           
                           <div className="grid grid-row-2 gap-[0px] bg-gray-800 rounded">
                             {/* First row with dark gray background */}
-                              <div className="bg-gray-600 text-white p-1 rounded">디바이스 다중제어</div>
+                              <div className="bg-gray-600 text-white p-1 rounded pl-3">디바이스 다중제어</div>
 
                               {/* Second row with darker gray background */}
                               <div className="bg-gray-700 text-white p-1 flex justify-center items-center gap-4 -mb-2">
@@ -978,11 +978,11 @@ for (let i = 0; i < maxLength; i++) {
                                     <span className="text-white bg-[#31363d] p-1 box-border">
                                       {
                                         status=="DEV_ST_ERR"? //오류일때
-                                        <div className="h-[24px]">{error_message}</div>:''
+                                        <div className="h-[24px] pl-3">{error_message}</div>:''
                                       }
                                       {
-                                        status=="DEV_ST_RDY" || status=="DEV_ST_BEG" || status=="DEV_ST_ING"? //대기, 시작 대기, 진행중
-                                        <div className="h-[24px]">{test_name}</div>:''
+                                        status=="DEV_ST_RDY" || status=="DEV_ST_BEG" || status=="DEV_ST_ING" || status=="DEV_ST_STP"? //대기, 시작 대기, 진행중
+                                        <div className="h-[24px] pl-3">{test_name}</div>:''
                                       }
                                     </span>
                                   </div>
