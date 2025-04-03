@@ -31,15 +31,15 @@ const LogList = (
   // 데이터 준비: deviceLogData 배열 그대로 사용
   const data = useMemo(() => {
     return deviceLogData.map((log, index) => ({
-      car1: log.car1 || '', 
-      car2: log.car2 || '', 
-      car3: log.car3 || '', 
-      car4: log.car4 || '', 
-      car5: log.car5 || '',
-      car6: log.car6 || '',
-      car7: log.car7 || '',
-      car8: log.car8 || '',
-      car9: log.car9 || '',
+      car1: log.car01 || '', 
+      car2: log.car02 || '', 
+      car3: log.car03 || '', 
+      car4: log.car04 || '', 
+      car5: log.car05 || '',
+      car6: log.car06 || '',
+      car7: log.car07 || '',
+      car8: log.car08 || '',
+      car9: log.car09 || '',
       car10: log.car10 || ''
     }));
   }, [deviceLogData]);

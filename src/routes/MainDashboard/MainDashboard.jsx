@@ -97,11 +97,11 @@ const MainDashboard = () => {
   console.log('deviceStatus')
   console.log(deviceStatus)
 
-  console.log('deviceLogData')
-  console.log(deviceLogData)
+  //console.log('deviceLogData')
+  //console.log(deviceLogData)
 
-  console.log('trace')
-  console.log(trace)
+  //console.log('trace')
+  //console.log(trace)
 
   const mapRef = useRef(null);
   const olMapRef = useRef(null);
@@ -381,14 +381,14 @@ const MainDashboard = () => {
     // 데이터 아이템을 반복하면서 아이콘을 Features 배열에 추가
     trace?.data.devices.forEach(item => {
            
-      console.log('item')
-      console.log(item)
+      //console.log('item')
+      //console.log(item)
   
       const device_id = parseInt(item.device_id);
 
       const traceArray = item.trace[0];
-      console.log('traceArray')
-      console.log(traceArray)
+      //console.log('traceArray')
+      //console.log(traceArray)
       const last_data_reviced_time = traceArray.heartbeat_time;
       const lat = traceArray.lat;
       const lng = traceArray.lng;
@@ -413,10 +413,11 @@ const MainDashboard = () => {
         "","red-car","orange-car","yellow-car","green-car","blue-car","navy-car","purple-car","pink-car","teal-car","skyblue-car"
       ];
 
-      console.log('deviceType');
-      console.log(deviceType);
-      deviceType = carColors[device_id];
-      console.log(deviceType);
+      //console.log('deviceType');
+      //console.log(deviceType);
+      let deviceId = parseInt(device_id)
+      deviceType = carColors[deviceId];
+      //console.log(deviceType);
       const iconSrc = iconMapping[deviceType]; // 아이콘 타입 설정
   
       // 아이콘 Feature 생성
@@ -490,7 +491,7 @@ const MainDashboard = () => {
   
   const moveMapToPOI = (device_id, lat, lng) => {
     //alert(id)
-      console.log(device_id, lat, lng);
+      //console.log(device_id, lat, lng);
       const isInSouthKorea = lat >= 33.0 && lat <= 38.6 && lng >= 124.6 && lng <= 131.0;
 
       if (lat && lng && isInSouthKorea) {
@@ -733,7 +734,7 @@ const MainDashboard = () => {
   const logDeleteConfirm = async () => {
     // 삭제할 로그 정보가 담긴 배열을 "test_id" 키를 가진 객체로 변환
     const requestData = {
-      test_id: selectedLogInfo, // 배열을 그대로 "test_id" 키에 할당
+      "log_ids": selectedLogInfo, // 배열을 그대로 "test_id" 키에 할당
     };
     console.log('requestData');
     console.log(requestData);
@@ -800,7 +801,7 @@ const MainDashboard = () => {
   // Start transforming the data
   //const rows = [];
   const transFormedLogList = []
-  const maxLength = Math.max(...logList.map(device => device.tests?.length || 0)); // Get the max length of tests array
+  const maxLength = Math.max(...logList.map(device => device.logs?.length || 0)); // Get the max length of tests array
 
   // Loop through all the devices and create a row for each test entry
 for (let i = 0; i < maxLength; i++) {
@@ -808,19 +809,24 @@ for (let i = 0; i < maxLength; i++) {
 
   // Ensure that we always fill cars in the correct order: car1, car2, car3, ..., car10
   for (let j = 1; j <= 10; j++) {
-    const carKey = `car${j}`;
+
+    const carKey = j != 10? `car0${j}`:`car${j}`;
     row[carKey] = { log_file_name: '', test_id: null }; // Default to empty if no test exists for this car
   }
 
   logList.forEach((device) => {
-    const test = device.tests[i]; // Get the ith test from the device's tests array
-    const carKey = `car${device.device_id}`; // `car1`, `car2`, ..., based on the device_id
+    const logs = device.logs[i]; // Get the ith test from the device's tests array
+    //console.log('logs')
+    //console.log(logs)
+    const deviceId = parseInt(device.device_id)
+    //console.log('transFormed deviceId:'+deviceId)
+    const carKey = deviceId !=10? `car0${deviceId}`:`car${deviceId}`; // `car1`, `car2`, ..., based on the device_id
 
     // If the test exists and has a log file, assign the file name and include the test ID
-    if (test && test.log_file_name) {
+    if (logs && logs.log_file_name) {
       row[carKey] = {
-        log_file_name: test.log_file_name, // The log file name
-        test_id: test.test_id // The test id associated with this log entry
+        log_file_name: logs.log_file_name, // The log file name
+        test_id: logs.test_id // The test id associated with this log entry
       };
     } else {
       row[carKey] = { log_file_name: '', test_id: null }; // Set test_id to null if there's no log file
