@@ -416,7 +416,7 @@ const MainDashboard = () => {
       console.log('deviceType');
       console.log(deviceType);
       deviceType = carColors[device_id];
-
+      console.log(deviceType);
       const iconSrc = iconMapping[deviceType]; // 아이콘 타입 설정
   
       // 아이콘 Feature 생성
@@ -427,7 +427,7 @@ const MainDashboard = () => {
       iconFeature.setStyle(
         new Style({
           image: new Icon({
-            src: iconSrc,
+            src: iconSrc || 'default-icon.png',
             scale: 1.5,  // 아이콘 크기 조정
           }),
           // 아이콘 위에 표시할 텍스트
