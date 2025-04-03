@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
 
 const LogList = (
-  { deviceLogData, isLogDelete, 
+  { deviceIds, deviceLogData, isLogDelete, 
     selectedLogPos, setSelectedLogPos, 
     selectedLogInfo, setSelectedLogInfo }) => {
 
@@ -14,20 +14,13 @@ const LogList = (
     console.log(deviceLogData);
   }, [deviceLogData]);
 
-  // columns 설정 (CAR 01, CAR 02, CAR 03 ...)
-  const columns = useMemo(() => [
-    { Header: 'CAR 0000', accessor: 'car00' },
-    { Header: 'CAR 01', accessor: 'car01' },
-    { Header: 'CAR 02', accessor: 'car02' },
-    { Header: 'CAR 03', accessor: 'car03' },
-    { Header: 'CAR 04', accessor: 'car04' },
-    { Header: 'CAR 05', accessor: 'car05' },
-    { Header: 'CAR 06', accessor: 'car06' },
-    { Header: 'CAR 07', accessor: 'car07' },
-    { Header: 'CAR 08', accessor: 'car08' },
-    { Header: 'CAR 09', accessor: 'car09' },
-    //{ Header: 'CAR 10', accessor: 'car10' },
-  ], []);
+  // 동적으로 컬럼 생성: deviceIds 기반으로
+  const columns = useMemo(() => {
+    return deviceIds.map((deviceId, index) => ({
+      Header: `${deviceId}`, // CAR ID를 4자리로 포맷 (예: 0001, 0002, ...)
+      accessor: `car${index.toString().padStart(2, '0')}`, // car01, car02, ...
+    }));
+  }, [deviceIds]);
 
   // 데이터 준비: deviceLogData 배열 그대로 사용
   const data = useMemo(() => {

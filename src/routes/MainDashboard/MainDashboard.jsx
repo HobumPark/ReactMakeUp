@@ -799,8 +799,16 @@ const MainDashboard = () => {
   }, [deviceStatus]); 
 
 
+  
+
   const logList = deviceLogData?.data?.devices || [];
   console.log('logList:', logList);
+
+  // device_id만 추출하여 새로운 배열로 만들기
+  const deviceIds = logList.map(item => item.device_id);
+
+  console.log(deviceIds);  // 출력: ["001", "002", "003", "004"]
+
 
   //받아온 로그 데이터 구조 변환
   // Start transforming the data
@@ -1045,6 +1053,7 @@ for (let i = 0; i < maxLength; i++) {
               <div>
                   <LogList 
                   className="mr-2 mt-25"
+                  deviceIds={deviceIds || []} 
                   deviceLogData={transFormedLogList || []} 
                   isLogDelete={isLogDelete}
                   selectedLogPos={selectedLogPos}
