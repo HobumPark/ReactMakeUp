@@ -16,31 +16,33 @@ const LogList = (
 
   // columns 설정 (CAR 01, CAR 02, CAR 03 ...)
   const columns = useMemo(() => [
-    { Header: 'CAR 01', accessor: 'car1' },
-    { Header: 'CAR 02', accessor: 'car2' },
-    { Header: 'CAR 03', accessor: 'car3' },
-    { Header: 'CAR 04', accessor: 'car4' },
-    { Header: 'CAR 05', accessor: 'car5' },
-    { Header: 'CAR 06', accessor: 'car6' },
-    { Header: 'CAR 07', accessor: 'car7' },
-    { Header: 'CAR 08', accessor: 'car8' },
-    { Header: 'CAR 09', accessor: 'car9' },
-    { Header: 'CAR 10', accessor: 'car10' },
+    { Header: 'CAR 00', accessor: 'car00' },
+    { Header: 'CAR 01', accessor: 'car01' },
+    { Header: 'CAR 02', accessor: 'car02' },
+    { Header: 'CAR 03', accessor: 'car03' },
+    { Header: 'CAR 04', accessor: 'car04' },
+    { Header: 'CAR 05', accessor: 'car05' },
+    { Header: 'CAR 06', accessor: 'car06' },
+    { Header: 'CAR 07', accessor: 'car07' },
+    { Header: 'CAR 08', accessor: 'car08' },
+    { Header: 'CAR 09', accessor: 'car09' },
+    //{ Header: 'CAR 10', accessor: 'car10' },
   ], []);
 
   // 데이터 준비: deviceLogData 배열 그대로 사용
   const data = useMemo(() => {
     return deviceLogData.map((log, index) => ({
-      car1: log.car01 || '', 
-      car2: log.car02 || '', 
-      car3: log.car03 || '', 
-      car4: log.car04 || '', 
-      car5: log.car05 || '',
-      car6: log.car06 || '',
-      car7: log.car07 || '',
-      car8: log.car08 || '',
-      car9: log.car09 || '',
-      car10: log.car10 || ''
+      car00: log.car00 || '',
+      car01: log.car01 || '', 
+      car02: log.car02 || '', 
+      car03: log.car03 || '', 
+      car04: log.car04 || '', 
+      car05: log.car05 || '',
+      car06: log.car06 || '',
+      car07: log.car07 || '',
+      car08: log.car08 || '',
+      car09: log.car09 || '',
+      //car10: log.car10 || ''
     }));
   }, [deviceLogData]);
 
@@ -65,7 +67,7 @@ const LogList = (
     console.log('logItem for row', rowIndex, 'and carKey', carKey, ':', logItem);  // 데이터 확인
   
     // 로그 항목이 없는 경우
-    if (!logItem || !logItem.test_id) {
+    if (!logItem || !logItem.log_file_name) {
       console.log('logItem is undefined or empty for row', rowIndex, 'and carKey', carKey);
       return;  // logItem이 없거나 test_id가 없다면 아무 작업도 하지 않음
     }

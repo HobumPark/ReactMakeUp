@@ -416,7 +416,12 @@ const MainDashboard = () => {
       //console.log('deviceType');
       //console.log(deviceType);
       let deviceId = parseInt(device_id)
-      deviceType = carColors[deviceId];
+      if(deviceId==0){//디바이스 아이디 00처리 (0처리)
+        deviceType = carColors[10];
+      }else{
+        deviceType = carColors[deviceId];
+      }
+      
       //console.log(deviceType);
       const iconSrc = iconMapping[deviceType]; // 아이콘 타입 설정
   
@@ -808,9 +813,9 @@ for (let i = 0; i < maxLength; i++) {
   const row = {};
 
   // Ensure that we always fill cars in the correct order: car1, car2, car3, ..., car10
-  for (let j = 1; j <= 10; j++) {
+  for (let j = 0; j <= 9; j++) {
 
-    const carKey = j != 10? `car0${j}`:`car${j}`;
+    const carKey = j == 0? `car0${j}`:`car00`;
     row[carKey] = { log_file_name: '', test_id: null, log_file_id: null }; // Default to empty if no test exists for this car
   }
 
@@ -820,7 +825,8 @@ for (let i = 0; i < maxLength; i++) {
     //console.log(logs)
     const deviceId = parseInt(device.device_id)
     //console.log('transFormed deviceId:'+deviceId)
-    const carKey = deviceId !=10? `car0${deviceId}`:`car${deviceId}`; // `car1`, `car2`, ..., based on the device_id
+    
+    const carKey = deviceId ==0? `car0${deviceId}`:`car0${deviceId}`; // `car1`, `car2`, ..., based on the device_id
 
     // If the test exists and has a log file, assign the file name and include the test ID
     if (logs && logs.log_file_name) {
