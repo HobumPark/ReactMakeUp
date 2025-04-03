@@ -94,14 +94,14 @@ const MainDashboard = () => {
     commandQueryParams
   });
   
-  //console.log('deviceStatus')
-  //console.log(deviceStatus)
+  console.log('deviceStatus')
+  console.log(deviceStatus)
 
-  //console.log('deviceLogData')
-  //console.log(deviceLogData)
+  console.log('deviceLogData')
+  console.log(deviceLogData)
 
-  //console.log('trace')
-  //console.log(trace)
+  console.log('trace')
+  console.log(trace)
 
   const mapRef = useRef(null);
   const olMapRef = useRef(null);
@@ -950,9 +950,9 @@ for (let i = 0; i < maxLength; i++) {
                                   </div>
                                   <div>
                                     <button className={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
-                                    ${status === 'DEV_ST_ING' || status=='DEV_ST_ERR' || status=='DEV_ST_BEG'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'}`}
+                                    ${(status === 'DEV_ST_ING' || status=='DEV_ST_ERR' || status=='DEV_ST_BEG')? 'bg-gray-300 text-gray-400' : 'bg-white text-black'}`}
                                     //              진행중                    오류                  시작대기
-                                    disabled={status === 'DEV_ST_ING' || status=='DEV_ST_ERR' || status=='DEV_ST_BEG'? true:false}
+                                    disabled={(status === 'DEV_ST_ING' || status=='DEV_ST_ERR' || status=='DEV_ST_BEG' || status=='DEV_ST_STP')? true:false}
                                     //              진행중                    오류                  시작대기
                                       onClick={()=>testStart(device_id)}>
                                         시작
@@ -960,8 +960,8 @@ for (let i = 0; i < maxLength; i++) {
                                     <button className={`w-[40px] h-[30px] rounded-[5px] font-bold pl-3 pr-10 mr-3 cursor-pointer hover:opacity-80
                                     ${status=='DEV_ST_RDY'? 'bg-gray-300 text-gray-400' : 'bg-white text-black'} `}
                                     //         대기
-                                    disabled={status=='DEV_ST_RDY'? true:false}
-                                    //                 대기
+                                    disabled={(status=='DEV_ST_RDY' || status=='DEV_ST_STP')? true:false}
+                                    //                 대기                    종료대기
                                       onClick={()=>testStop(device_id)}>
                                         종료
                                       </button>
@@ -974,19 +974,15 @@ for (let i = 0; i < maxLength; i++) {
 
                                 {/* Accordion Content */}
                                 {openSections.includes(device_id) && (
-                                  <div className="flex flex-col gap-[3px] mt-[-4px] mb-[2px] px-[3px]">
+                                  <div className="flex flex-col gap-[3px] mt-[-4px] mb-[1px] px-[3px]">
                                     <span className="text-white bg-[#31363d] p-1 box-border">
                                       {
                                         status=="DEV_ST_ERR"? //오류일때
-                                        <span>{error_message}</span>:''
+                                        <div className="h-[24px]">{error_message}</div>:''
                                       }
                                       {
-                                        status=="DEV_ST_RDY"?
-                                        <span></span>:''
-                                      }
-                                      {
-                                        status=="DEV_ST_BEG"?
-                                        <span>{test_name}</span>:''
+                                        status=="DEV_ST_RDY" || status=="DEV_ST_BEG" || status=="DEV_ST_ING"? //대기, 시작 대기, 진행중
+                                        <div className="h-[24px]">{test_name}</div>:''
                                       }
                                     </span>
                                   </div>
