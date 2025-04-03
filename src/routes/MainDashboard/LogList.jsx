@@ -90,12 +90,12 @@ const LogList = (
       // 체크한 경우 test_id 추가
       if (updatedSelectedLogPos[carKey][rowIndex]) {
         // test_id가 이미 배열에 있으면 추가하지 않음
-        if (!updatedLogInfo.includes(logItem.test_id)) {
-          updatedLogInfo.push(logItem.test_id);
+        if (!updatedLogInfo.includes(logItem.log_file_id)) {
+          updatedLogInfo.push(logItem.log_file_id);
         }
       } else {
         // 체크 해제 시 test_id 제거
-        const index = updatedLogInfo.indexOf(logItem.test_id);
+        const index = updatedLogInfo.indexOf(logItem.log_file_id);
         if (index > -1) {
           updatedLogInfo.splice(index, 1); // test_id를 배열에서 제거
         }

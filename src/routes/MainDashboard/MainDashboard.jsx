@@ -811,7 +811,7 @@ for (let i = 0; i < maxLength; i++) {
   for (let j = 1; j <= 10; j++) {
 
     const carKey = j != 10? `car0${j}`:`car${j}`;
-    row[carKey] = { log_file_name: '', test_id: null }; // Default to empty if no test exists for this car
+    row[carKey] = { log_file_name: '', test_id: null, log_file_id: null }; // Default to empty if no test exists for this car
   }
 
   logList.forEach((device) => {
@@ -826,10 +826,11 @@ for (let i = 0; i < maxLength; i++) {
     if (logs && logs.log_file_name) {
       row[carKey] = {
         log_file_name: logs.log_file_name, // The log file name
-        test_id: logs.test_id // The test id associated with this log entry
+        test_id: logs.test_id, // The test id associated with this log entry
+        log_file_id: logs.log_file_id
       };
     } else {
-      row[carKey] = { log_file_name: '', test_id: null }; // Set test_id to null if there's no log file
+      row[carKey] = { log_file_name: '', test_id: null, log_file_id: null }; // Set test_id to null if there's no log file
     }
   });
 
