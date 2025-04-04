@@ -15,18 +15,12 @@ if (DEBUG) {
     FRONT: `${host}:5173`,
     BACK_DSH: `${host}:7140/api/dsh`,//waties dsh sample port
     BACK_ENV: `${host}:7121/api/env`,
-    rl: 'http://192.168.20.200:7120/api/dsh'
+    url: 'http://192.168.20.200:7120/api/dsh'
   };
 }
 
 export { URLS };
 
 export const APIS = {
-  deviceStatus:()=>`/device/device-status`, //DSH_001
-  trace:()=>`/device/trace`, //DSH_002
-  createCommand:()=>`/device/command`, //DSH_003
-  logList:()=>`/device/log`, //DSH_004
-  deleteLogs:()=>`/device/log`, //DSH_005
-  heartBeat:()=>`/device/heartbeat`, //DSH_006
-  eachCommand:()=>`/device/command`, //DSH_007
+  popularCosmetics:`/api/v1/products.json?rating_greater_than=4`, //
 }

@@ -1,90 +1,31 @@
 import React, { useEffect, useState } from "react";
-import IconStatistic from "../../assets/icon/icon-db-statistic.svg";
-import IconSystem from "../../assets/icon/icon-db-system.svg";
-import IconSitus from "../../assets/icon/icon-db-situs.svg";
-import IconAsset from "../../assets/icon/icon-db-asset.svg";
-import IconUser from "../../assets/icon/icon-db-people.svg";
-import IconLogout from "../../assets/icon/icon-db-logout.svg";
-import useAuth from "../../hooks/useAuth";
-import NoticeMessage from "../../plugin/noticemessage/noticemessage";
 import { useTranslation } from "react-i18next";
-import { useOutletContext } from "react-router-dom";
-import Common from "../../utils/standard";
-import i18n from "../../utils/i18n";
+import logo from "../../assets/icon/logo/ic_logo_amoreMall_s158x28_000.svg";
 
 const Header = () => {
   const { t } = useTranslation();
-  //const { userInfo } = useOutletContext();
-  const [language, setLanguage] = useState("");
-  const [time, setTime] = useState(""); 
-  const [date, setDate] = useState("");
-  const [day, setDay] = useState("");
 
-  const { handleLogout } = useAuth();
-  const handleLogoutButton = () => {
-    /*
-    let checkLogout = new NoticeMessage(t('msg > logout confirm'), {
-      mode: "confirm",
-    });
-  
-    checkLogout.confirmClicked().then(() => {
-      handleLogout();
-    });
-    */
-  };  
-  useEffect(() => {
-    const langSource = Common.getDTPLangSource(i18n.language);
-    setLanguage(i18n.language.toLocaleUpperCase());
-    const updateDateTime = () => {
-      const now = new Date();
-      const hours = now.getHours().toString().padStart(2, "0");
-      const minutes = now.getMinutes().toString().padStart(2, "0");
-      const seconds = now.getSeconds().toString().padStart(2, "0");
-
-      const dayName = langSource.days[now.getDay()];
-      const monthName = langSource.months[now.getMonth()];
-      const dayMins = langSource.dayMins; 
-      const day = now.getDate();
-      const year = now.getFullYear();
-
-      setTime(`${hours}:${minutes}:${seconds}`);
-      setDate(`${year}년 ${monthName} ${day}일`);
-      setDay(dayName);
-    };
-
-    updateDateTime();
-    const intervalId = setInterval(updateDateTime, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [i18n.language]);
-
-  const handleNavigate = (url) => {
-    window.open(url, "_blank");
-  };
   return (
-    <>
-      <header className="w-full flex flex-row justify-between h-[45px] text-text-white bg-db-black ">
-        <div className="flex w-fit">
-          <div className="flex  items-center h-full min-w-[218px] bg-header-content ">
-            <span className="m-auto h5bold">Wayties</span>
+    <header className="w-9/10 h-[100px] mx-auto bg-gray-200">
+      <div className="flex w-full h-[50%] bg-gray-400">
+          <div className="flex items-center">
+              <span className="">
+                  <a href="#">
+                    <img src={`${logo}`} alt="" />
+                  </a>
+              </span>
+              <span className="ml-auto">
+                  <button>열기/닫기</button>
+              </span>
           </div>
-          <div className="flex w-fit flex-row h-full items-center">
+          <div className="flex-1 bg-red-500 text-right">
             
-            
           </div>
-        </div>
-        <div className="flex gap-[8px] w-fit">
-          <div className="flex w-fit flex-row h-full items-center gap-[8px]">
-            <div className="flex flex-col text-right ">
-                <span className="text-text-white title2">{day}</span>
-                <span className="text-text-white title2">{date}</span>
-            </div>
-            <span className="h5bold text-text-white">{time}</span>
-          </div>
-          
-        </div>
-      </header>
-    </>
+      </div>
+      <div className="flex w-full h-[50%] bg-gray-200">
+        
+      </div>
+    </header>
   );
 };
 
