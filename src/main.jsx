@@ -9,8 +9,10 @@ import Layout from './components/Layout/Layout.jsx';
 
 import Home from './routes/Home/Home.jsx';
 import Search from './routes/Search/Search.jsx';
+import Display from './routes/Display/Display.jsx';
 import "./utils/i18n.js";
 
+//https://www.amoremall.com/kr/ko/display/main
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,11 @@ const router = createBrowserRouter([
       {
         path: "/search",
         element: <Search/>,
+      },
+      ,
+      {
+        path: "/display",
+        element: <Display/>,
       }
     ]
    },
