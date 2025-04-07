@@ -16,8 +16,8 @@ const Home = () => {
   console.log(popularCostmeticList)
 
   return (
-    <div className="w-10/10 h-[1000px] bg-gray-500">
-      ddd
+    <div className="w-10/10 h-[500px] bg-gray-500">
+      홈
     </div>
   );
 };

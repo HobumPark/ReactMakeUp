@@ -10,5 +10,12 @@ export default defineConfig({
   server: {
     host: true,
     historyApiFallback: true,
+    proxy: {
+      '/api/v1': {
+        target: 'http://makeup-api.herokuapp.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/v1/, '/api/v1'),
+      },
+    },
   },
 })

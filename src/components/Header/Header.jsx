@@ -4,11 +4,29 @@ import logo from "../../assets/icon/logo/ic_logo_amoreMall_s158x28_000.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faShoppingCart, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { useLocation } from 'react-router-dom';
+
 
 const Header = () => {
   const { t } = useTranslation();
+  const location = useLocation();
 
   const [isOpen, setIsOpen] = useState(false);
+  
+  const [activeMenu, setActiveMenu] = useState('홈');
+
+  const menuItems = [
+    { label: 'LIVE', href: '/live' },
+    { label: '홈', href: '/' },
+    { label: 'BEST', href: '/best' },
+    { label: '아모레위크', href: '/amoreweek' },
+    { label: '같이살래?', href: '/together' },
+    { label: '선물하기', href: '/gift' },
+    { label: '브랜드', href: '/brand' },
+    { label: '세일', href: '/sale' },
+    { label: '신상', href: '/new' },
+    { label: '이벤트', href: '/event' },
+  ];
 
   const toggleIcon = () => {
     setIsOpen(!isOpen);  // 상태를 토글
@@ -24,7 +42,7 @@ const Header = () => {
                   </a>
               </span>
               <span className="ml-auto">
-                <button onClick={toggleIcon} className="flex items-center">
+                <button onClick={toggleIcon} className="flex items-center cursor-pointer">
                   <FontAwesomeIcon 
                     icon={isOpen ? faArrowUp : faArrowDown} 
                     className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
@@ -50,38 +68,23 @@ const Header = () => {
           </div>
       </div>
       <div className="flex w-full h-[50%] bg-gray-200">
-        <ul className="flex flex-row justify-start w-full p-4 space-x-4">
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">LIVE</a>
-          </li>
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">홈</a>
-          </li>
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">BEST</a>
-          </li>
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">아모레위크</a>
-          </li>
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">같이살래?</a>
-          </li>
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">선물하기</a>
-          </li>
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">브랜드</a>
-          </li>
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">세일</a>
-          </li>
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">신상</a>
-          </li>
-          <li className="cursor-pointer hover:text-blue-500">
-            <a href="#">이벤트</a>
-          </li>
+              <ul className="flex flex-row justify-start w-full p-4 space-x-4">
+          {menuItems.map(({ label, href }) => {
+            const isActive = location.pathname === href;
+
+            return (
+              <li
+                key={label}
+                className={`cursor-pointer hover:text-blue-500 pb-7 border-b-3 ${
+                  isActive ? 'text-white font-bold' : 'border-transparent'
+                }`}
+              >
+                <a href={href}>{label}</a>
+              </li>
+            );
+          })}
         </ul>
+
       </div>
 
     </header>

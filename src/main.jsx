@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import Layout from './components/Layout/Layout.jsx';
 
 import Home from './routes/Home/Home.jsx';
+import Live from './routes/Live/Live.jsx';
 import Search from './routes/Search/Search.jsx';
 import Display from './routes/Display/Display.jsx';
 import "./utils/i18n.js";
@@ -26,16 +27,19 @@ const router = createBrowserRouter([
         element: <Home/>,
       },
       {
-        path: "/search",
-        element: <Search/>,
+        path: "/live",
+        element: <Live/>,
       },
-      ,
       {
         path: "/display",
         element: <Display/>,
       }
     ]
    },
+   {
+      path: "/search",
+      element: <Search/>,
+   }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
