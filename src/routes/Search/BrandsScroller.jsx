@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useTranslation } from "react-i18next";
 
 const brands = [
   "almay", "alva", "anna sui", "annabelle", "benefit", "boosh", "burt's bees",
@@ -15,10 +16,11 @@ const brands = [
   "smashbox", "stila", "suncoat", "w3llpeople", "wet n wild", "zorah",
   "zorah biocosmetiques"
 ];
-const {t} = useTranslation();
 
-const BrandScroller = () => {
+
+const BrandsScroller = () => {
   const scrollRef = useRef(null);
+  const {t} = useTranslation();
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -69,4 +71,4 @@ const BrandScroller = () => {
   );
 };
 
-export default BrandScroller;
+export default BrandsScroller;

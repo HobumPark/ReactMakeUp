@@ -5,11 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faShoppingCart, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
   
@@ -32,6 +33,10 @@ const Header = () => {
     setIsOpen(!isOpen);  // 상태를 토글
   };
 
+  const goToSearch=()=>{
+    navigate('/search'); // 원하는 경로로 수정
+  }
+
   return (
     <header className="w-7/10 h-[100px] mx-auto bg-gray-200">
       <div className="flex w-full h-[50%] bg-gray-400">
@@ -52,7 +57,7 @@ const Header = () => {
           </div>
           <div className="flex-1 bg-red-500 text-right">
             {/* 돋보기 아이콘 */}
-            <button className="text-white mx-4 mt-3 hover:opacity-70 cursor-pointer">
+            <button className="text-white mx-4 mt-3 hover:opacity-70 cursor-pointer" onClick={goToSearch}>
               <FontAwesomeIcon icon={faSearch} className="text-2xl"/>
             </button>
 

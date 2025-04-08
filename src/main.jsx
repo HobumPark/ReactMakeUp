@@ -11,6 +11,7 @@ import Home from './routes/Home/Home.jsx';
 import Live from './routes/Live/Live.jsx';
 import Search from './routes/Search/Search.jsx';
 import Display from './routes/Display/Display.jsx';
+import Category from './routes/Category/Category.jsx';
 import "./utils/i18n.js";
 
 //https://www.amoremall.com/kr/ko/display/main
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: "/display",
         element: <Display/>,
+      },
+      {
+        path: "/category",
+        element: <Category/>,
       }
     ]
    },
