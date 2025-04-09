@@ -22,6 +22,6 @@ if (DEBUG) {
 export { URLS };
 
 export const APIS = {
-  popularCosmetics:`/api/v1/products.json?rating_greater_than=4`, //
-  filterCosmetics:(cosmeticFilterParams)=>`/api/v1/products.json?${cosmeticFilterParams}`, //
+  popularCosmetics:(popularParams)=>`/api/v1/products.json?${popularParams}`, //
+  searchCosmetics:(cosmeticSearchParams)=>`/api/v1/products.json?${cosmeticSearchParams}`, //
 }

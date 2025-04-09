@@ -53,35 +53,39 @@ const Category = () => {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [isRankingModalOpen, setIsRankingModalOpen] = useState(false);
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
-  const [cosmeticFilterParams, setCosmeticFilterParams] = useState("");
+  const [cosmeticSearchParams, setCosmeticSearchParams] = useState("");
 
   // URL 쿼리 읽어서 상태 초기화
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const category = searchParams.get("category");
-    const productType = searchParams.get("product_type");
     const brand = searchParams.get("brand");
     const option = searchParams.get("option");
-
-    if (category) {
-      const index = leftItems.findIndex((item) => item.englishName === category);
-      setActiveIndex(index >= 0 ? index : 0);
+    const productType = searchParams.get("product_type");
+  
+    const params = {};
+  
+    if (brand) params.brand = brand;
+    if (productType && productType !== "all") params.product_type = productType;
+  
+    // 옵션: 예를 들어 rating filter로 처리
+    if (option === "highRating") {
+      params.rating_greater_than = 4;
+    } else if (option === "midRating") {
+      params.rating_greater_than = 2;
+      params.rating_less_than = 4;
     }
-
-    if (productType) {
-      setActiveProductType(productType);
-    }
-
-    if (option) {
-      setSelectedOption(option);
-    }
-
-    if (brand) {
-      setSelectedBrand(brand);
-    }
+  
+    const queryStr = new URLSearchParams(params).toString();
+    setCosmeticSearchParams(queryStr);
   }, [location]);
+  
+  
 
-  const { cosmeticList } = useCosmetic({ cosmeticFilterParams });
+  const { searchCosmeticList } = useCosmetic({ searchParams: cosmeticSearchParams });
+  console.log('cosmeticSearchParams')
+  console.log(cosmeticSearchParams)
+  console.log('searchCosmeticList')
+  console.log(searchCosmeticList)
 
   // 왼쪽 메뉴 클릭 시
   const handleLeftItemClick = (idx, item) => {
