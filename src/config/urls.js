@@ -23,4 +23,5 @@ export { URLS };
 
 export const APIS = {
   popularCosmetics:`/api/v1/products.json?rating_greater_than=4`, //
+  filterCosmetics:(cosmeticFilterParams)=>`/api/v1/products.json?${cosmeticFilterParams}`, //
 }
