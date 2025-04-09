@@ -14,7 +14,7 @@ import Display from './routes/Display/Display.jsx';
 import Category from './routes/Category/Category.jsx';
 import "./utils/i18n.js";
 
-//https://www.amoremall.com/kr/ko/display/main
+// https://www.amoremall.com/kr/ko/display/main
 
 const queryClient = new QueryClient();
 

@@ -11,18 +11,22 @@ const Search = () => {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
 
-  const leftItems = [
-    { name: "스킨케어", display_category_sn: 101 },
-    { name: "메이크업", display_category_sn: 102 },
-    { name: "향수", display_category_sn: 137 },
-    { name: "생활용품", display_category_sn: 104 },
+  //Blush, Bronzer, Eyebrow, Eyeliner, Eyeshadow, Foundation, Lip liner, Lipstick, Mascara, Nail polish
+
+   // 왼쪽 메뉴 (얼굴, 눈, 립 카테고리)
+   const leftItems = [
+    { name: "페이스", display_category_sn: 201 },
+    { name: "아이", display_category_sn: 202 },
+    { name: "립", display_category_sn: 203 },
+    { name: "네일", display_category_sn: 204 },
   ];
 
+  // 오른쪽 메뉴 (각각의 카테고리에 대한 하위 항목)
   const rightContents = {
-    101: ["전체", "클렌징", "모이스처라이징"],
-    102: ["전체", "페이스", "립"],
-    137: ["전체", "향수"],
-    104: ["전체", "바디", "구강"],
+    201: ["전체", "블러셔", "브론저", "파운데이션", "브러시"],   // 얼굴
+    202: ["전체", "아이브로우", "아이라이너", "아이섀도우", "마스카라"],   // 눈
+    203: ["전체", "립 라이너", "립스틱"],  // 립
+    204: ["전체", "네일"],  // 립
   };
 
   const [activeIndex, setActiveIndex] = useState(0); // 기본 선택 인덱스

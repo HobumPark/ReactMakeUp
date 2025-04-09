@@ -17,7 +17,6 @@ const brands = [
   "zorah biocosmetiques"
 ];
 
-
 const BrandsScroller = () => {
   const scrollRef = useRef(null);
   const {t} = useTranslation();

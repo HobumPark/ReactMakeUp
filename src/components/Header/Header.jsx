@@ -37,6 +37,9 @@ const Header = () => {
     navigate('/search'); // 원하는 경로로 수정
   }
 
+  // 경로가 category일 때만 ul > li를 렌더링하지 않음
+  const isCategoryPage = location.pathname.includes('category');
+
   return (
     <header className="w-7/10 h-[100px] mx-auto bg-gray-200">
       <div className="flex w-full h-[50%] bg-gray-400">
@@ -72,25 +75,26 @@ const Header = () => {
             </button>
           </div>
       </div>
-      <div className="flex w-full h-[50%] bg-gray-200">
-              <ul className="flex flex-row justify-start w-full p-4 space-x-4">
-          {menuItems.map(({ label, href }) => {
-            const isActive = location.pathname === href;
+      {!isCategoryPage && (
+        <div className="flex w-full h-[50%] bg-gray-200">
+          <ul className="flex flex-row justify-start w-full p-4 space-x-4">
+            {menuItems.map(({ label, href }) => {
+              const isActive = location.pathname === href;
 
-            return (
-              <li
-                key={label}
-                className={`cursor-pointer hover:text-blue-500 pb-7 border-b-3 ${
-                  isActive ? 'text-white font-bold' : 'border-transparent'
-                }`}
-              >
-                <a href={href}>{label}</a>
-              </li>
-            );
-          })}
-        </ul>
-
-      </div>
+              return (
+                <li
+                  key={label}
+                  className={`cursor-pointer hover:text-blue-500 pb-7 border-b-3 ${
+                    isActive ? 'text-white font-bold' : 'border-transparent'
+                  }`}
+                >
+                  <a href={href}>{label}</a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
     </header>
   );
