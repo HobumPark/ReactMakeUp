@@ -9,32 +9,62 @@ import BrandsScroller from "./BrandsScroller";
 const Search = () => {
   const { t } = useTranslation();
   const [input, setInput] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedProductType, setSelectedProductType] = useState(null);
   const navigate = useNavigate();
 
-  //Blush, Bronzer, Eyebrow, Eyeliner, Eyeshadow, Foundation, Lip liner, Lipstick, Mascara, Nail polish
-
-   // 왼쪽 메뉴 (얼굴, 눈, 립 카테고리)
-   const leftItems = [
-    { name: "페이스", display_category_sn: 201 },
-    { name: "아이", display_category_sn: 202 },
-    { name: "립", display_category_sn: 203 },
-    { name: "네일", display_category_sn: 204 },
+  const leftItems = [
+    { name: "페이스", englishName: "face", display_category_sn: 201 },
+    { name: "아이", englishName: "eye", display_category_sn: 202 },
+    { name: "립", englishName: "lip", display_category_sn: 203 },
+    { name: "네일", englishName: "nail", display_category_sn: 204 },
   ];
 
-  // 오른쪽 메뉴 (각각의 카테고리에 대한 하위 항목)
   const rightContents = {
-    201: ["전체", "블러셔", "브론저", "파운데이션", "브러시"],   // 얼굴
-    202: ["전체", "아이브로우", "아이라이너", "아이섀도우", "마스카라"],   // 눈
-    203: ["전체", "립 라이너", "립스틱"],  // 립
-    204: ["전체", "네일"],  // 립
+    201: [
+      { name: "전체", englishName: "all" },
+      { name: "블러셔", englishName: "blusher" },
+      { name: "브론저", englishName: "bronzer" },
+      { name: "파운데이션", englishName: "foundation" },
+      { name: "브러시", englishName: "brush" },
+    ],
+    202: [
+      { name: "전체", englishName: "all" },
+      { name: "아이브로우", englishName: "eyebrow" },
+      { name: "아이라이너", englishName: "eyeliner" },
+      { name: "아이섀도우", englishName: "eyeshadow" },
+      { name: "마스카라", englishName: "mascara" },
+    ],
+    203: [
+      { name: "전체", englishName: "all" },
+      { name: "립 라이너", englishName: "lipliner" },
+      { name: "립스틱", englishName: "lipstick" },
+    ],
+    204: [
+      { name: "전체", englishName: "all" },
+      { name: "네일", englishName: "nail" },
+    ],
   };
 
-  const [activeIndex, setActiveIndex] = useState(0); // 기본 선택 인덱스
+  const handleBrandClick = (brand) => {
+    setSelectedBrand(brand);
+    if (selectedProductType) {
+      moveToCategory(brand, selectedProductType);
+    }
+  };
 
-  const handleRightItemClick = (rightItem) => {
-    const { display_category_sn } = leftItems[activeIndex];
-    const search_category = encodeURIComponent(rightItem);
-    navigate(`/category?display_category_sn=${display_category_sn}&search_category=${search_category}`);
+  const handleRightItemClick = (item) => {
+    const productType = item.englishName;
+    setSelectedProductType(productType);
+    if (selectedBrand) {
+      moveToCategory(selectedBrand, productType);
+    }
+  };
+
+  const moveToCategory = (brand, productType) => {
+    const category = leftItems[activeIndex].englishName;
+    navigate(`/category?brand=${brand}&category=${category}&product_type=${productType}`);
   };
 
   return (
@@ -69,7 +99,10 @@ const Search = () => {
 
       {/* 브랜드 스크롤 */}
       <div className="h-[150px] bg-gray-300 flex flex-row items-center">
-        <BrandsScroller />
+        <BrandsScroller
+          selectedBrand={selectedBrand}
+          onBrandClick={handleBrandClick}
+        />
       </div>
 
       {/* 카테고리 선택 */}
@@ -96,9 +129,10 @@ const Search = () => {
               <div
                 key={i}
                 onClick={() => handleRightItemClick(item)}
-                className="bg-white p-4 rounded shadow text-left cursor-pointer hover:bg-blue-100"
+                className={`p-4 rounded shadow text-left cursor-pointer 
+                  ${selectedProductType === item.englishName ? 'bg-blue-400 text-white' : 'bg-white hover:bg-blue-100'}`}
               >
-                {item}
+                {item.name}
               </div>
             ))}
           </div>
