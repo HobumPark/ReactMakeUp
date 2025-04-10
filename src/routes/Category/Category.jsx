@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import RankingModal from "../../components/Modal/RankingModal";
 import BrandModal from "../../components/Modal/BrandModal";
 import useCosmetic from "../../hooks/useCosmetic";
+import CosmeticList from "../Cosmetic/CosmeticList";
+import Pagination from "../Cosmetic/Pagination";
 
 const Category = () => {
   const { t } = useTranslation();
@@ -50,10 +52,15 @@ const Category = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeProductType, setActiveProductType] = useState("all");
   const [selectedOption, setSelectedOption] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");  // 브랜드 상태 추가
   const [isRankingModalOpen, setIsRankingModalOpen] = useState(false);
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
   const [cosmeticSearchParams, setCosmeticSearchParams] = useState("");
+
+  const [cosmetics, setCosmetics] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const cosmeticsPerPage = 12; // 한 페이지당 화장품 수
 
   // URL 쿼리 읽어서 상태 초기화
   useEffect(() => {
@@ -64,7 +71,10 @@ const Category = () => {
   
     const params = {};
   
-    if (brand) params.brand = brand;
+    if (brand) {
+      setSelectedBrand(brand); // 브랜드를 상태에 설정
+      params.brand = brand;
+    }
     if (productType && productType !== "all") params.product_type = productType;
   
     // 옵션: 예를 들어 rating filter로 처리
@@ -78,8 +88,6 @@ const Category = () => {
     const queryStr = new URLSearchParams(params).toString();
     setCosmeticSearchParams(queryStr);
   }, [location]);
-  
-  
 
   const { searchCosmeticList } = useCosmetic({ searchParams: cosmeticSearchParams });
   console.log('cosmeticSearchParams')
@@ -87,18 +95,32 @@ const Category = () => {
   console.log('searchCosmeticList')
   console.log(searchCosmeticList)
 
+  useEffect(() => {
+    
+    setCosmetics(searchCosmeticList)
+
+  },[searchCosmeticList])
+
+  // 페이지 수 계산
+  useEffect(() => {
+    if (cosmetics && cosmetics.length > 0) {
+      const totalCosmetics = cosmetics.length;
+      setTotalPages(Math.ceil(totalCosmetics / cosmeticsPerPage));
+    }
+  }, [cosmetics]);
+
   // 왼쪽 메뉴 클릭 시
   const handleLeftItemClick = (idx, item) => {
     setActiveIndex(idx);
     setActiveProductType("all");
-    navigate(`?category=${item.englishName}&product_type=all`);
+    navigate(`?brand=${selectedBrand}&category=${item.englishName}&product_type=all`);
   };
 
   // 오른쪽 제품 클릭 시
   const handleRightItemClick = (item) => {
     const category = leftItems[activeIndex].englishName;
     setActiveProductType(item.englishName);
-    navigate(`?category=${category}&product_type=${item.englishName}`);
+    navigate(`?brand=${selectedBrand}&category=${category}&product_type=${item.englishName}`);
   };
 
   // 랭킹/브랜드 선택 시
@@ -109,7 +131,7 @@ const Category = () => {
   };
 
   return (
-    <div className="w-full h-[1200px] bg-gray-500">
+    <div className="w-full h-[1300px] bg-gray-500">
       {/* 상위 카테고리 */}
       <div className="w-full h-[50px] bg-gray-400 flex items-center justify-start px-4 space-x-4">
         {leftItems.map((item, idx) => (
@@ -144,8 +166,8 @@ const Category = () => {
       </div>
 
       {/* 원형 메뉴 (랭킹/브랜드) */}
-      <div className="h-[120px] bg-gray-200 p-6 mt-4">
-        <div className="w-full bg-white p-4 rounded shadow">
+      <div className="h-[80px] bg-gray-200 p-3 mt-2">
+        <div className="w-full bg-white p-1 rounded shadow">
           <div className="flex space-x-6 justify-center">
             <button
               onClick={() => setIsRankingModalOpen(true)}
@@ -162,7 +184,12 @@ const Category = () => {
           </div>
         </div>
       </div>
-
+      <div className="h-[900px] bg-gray-200 p-3 mt-2">
+         <CosmeticList cosmetics={cosmetics || []}/>
+      </div>
+      <div className="h-[100px] bg-gray-200 p-3 mt-2">
+         <Pagination currentPage={currentPage} totalPages={totalPages}/>   
+      </div>
       {/* 모달 */}
       <RankingModal
         isOpen={isRankingModalOpen}
@@ -175,8 +202,10 @@ const Category = () => {
       <BrandModal
         isOpen={isBrandModalOpen}
         onClose={() => setIsBrandModalOpen(false)}
+        selectedBrand={selectedBrand}  // 초기 브랜드 값 전달
         onSelectBrand={(brand) => {
-          handleOptionSelect(brand);
+          setSelectedBrand(brand);
+          handleOptionSelect(brand); // 브랜드 선택 후 업데이트
           setIsBrandModalOpen(false);
         }}
       />

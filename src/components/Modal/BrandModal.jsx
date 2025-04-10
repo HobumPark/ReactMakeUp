@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom"; // useNavigate로 변경
@@ -72,6 +72,19 @@ const BrandModal = ({ isOpen, onClose, onApply }) => {
   // 브랜드 한글명 리스트
   const brandOptions = Object.keys(brandMapping);
 
+  // URL 쿼리에서 'brand' 파라미터를 읽어 선택된 브랜드를 설정
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const brandFromURL = queryParams.get("brand");
+
+    if (brandFromURL) {
+      const brandName = Object.keys(brandMapping).find(
+        (key) => brandMapping[key] === brandFromURL
+      );
+      setSelectedBrand(brandName || null);
+    }
+  }, [isOpen]); // 모달이 열릴 때마다 쿼리 파라미터 체크
+
   // 브랜드 선택 시 상태 업데이트 및 쿼리스트링 추가
   const handleBrandSelect = (brand) => {
     setSelectedBrand(brand); // 선택된 브랜드 상태 업데이트
@@ -83,7 +96,7 @@ const BrandModal = ({ isOpen, onClose, onApply }) => {
 
     // URL에서 'brand' 파라미터 삭제
     const queryParams = new URLSearchParams(window.location.search);
-    queryParams.delete('brand'); // 'brand' 파라미터 삭제
+    queryParams.delete("brand"); // 'brand' 파라미터 삭제
 
     // URL에 쿼리 스트링 적용
     navigate({
@@ -96,7 +109,7 @@ const BrandModal = ({ isOpen, onClose, onApply }) => {
     if (selectedBrand) {
       const queryParams = new URLSearchParams(window.location.search);
       const brandEnglishName = brandMapping[selectedBrand]; // 선택된 브랜드의 영문명
-      queryParams.set('brand', brandEnglishName); // 선택된 브랜드를 'brand' 파라미터로 추가
+      queryParams.set("brand", brandEnglishName); // 선택된 브랜드를 'brand' 파라미터로 추가
 
       // URL에 쿼리 스트링 적용
       navigate({

@@ -12,6 +12,7 @@ import Live from './routes/Live/Live.jsx';
 import Search from './routes/Search/Search.jsx';
 import Display from './routes/Display/Display.jsx';
 import Category from './routes/Category/Category.jsx';
+import CosmeticView from './routes/Cosmetic/CosmeticView.jsx';
 import "./utils/i18n.js";
 
 // https://www.amoremall.com/kr/ko/display/main
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "/category",
         element: <Category/>,
+      },
+      {
+        path: "/product/:id", // 화장품 상세보기 경로
+        element: <CosmeticView />,
       }
     ]
    },
