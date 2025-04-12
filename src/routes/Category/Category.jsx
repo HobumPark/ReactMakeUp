@@ -13,7 +13,6 @@ const Category = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 왼쪽 카테고리 메뉴 (영문명 추가)
   const leftItems = [
     { name: "페이스", englishName: "face", display_category_sn: 201 },
     { name: "아이", englishName: "eye", display_category_sn: 202 },
@@ -21,7 +20,6 @@ const Category = () => {
     { name: "네일", englishName: "nail", display_category_sn: 204 },
   ];
 
-  // 오른쪽 제품 타입 메뉴
   const rightContents = {
     201: [
       { name: "전체", englishName: "all" },
@@ -48,11 +46,10 @@ const Category = () => {
     ],
   };
 
-  // 상태값
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeProductType, setActiveProductType] = useState("all");
   const [selectedOption, setSelectedOption] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("");  // 브랜드 상태 추가
+  const [selectedBrand, setSelectedBrand] = useState("");
   const [isRankingModalOpen, setIsRankingModalOpen] = useState(false);
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
   const [cosmeticSearchParams, setCosmeticSearchParams] = useState("");
@@ -60,74 +57,71 @@ const Category = () => {
   const [cosmetics, setCosmetics] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const cosmeticsPerPage = 12; // 한 페이지당 화장품 수
+  const cosmeticsPerPage = 12;
 
-  // URL 쿼리 읽어서 상태 초기화
+  // 쿼리 파라미터로 상태 동기화
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const brand = searchParams.get("brand");
-    const option = searchParams.get("option");
-    const productType = searchParams.get("product_type");
-  
-    const params = {};
-  
-    if (brand) {
-      setSelectedBrand(brand); // 브랜드를 상태에 설정
-      params.brand = brand;
-    }
-    if (productType && productType !== "all") params.product_type = productType;
-  
-    // 옵션: 예를 들어 rating filter로 처리
-    if (option === "highRating") {
-      params.rating_greater_than = 4;
-    } else if (option === "midRating") {
-      params.rating_greater_than = 2;
-      params.rating_less_than = 4;
-    }
-  
-    const queryStr = new URLSearchParams(params).toString();
+    const brand = searchParams.get("brand") || "";
+    const category = searchParams.get("category") || "face";
+    const option = searchParams.get("option") || "";
+    const productType = searchParams.get("product_type") || "all";
+
+    setSelectedBrand(brand);
+    setSelectedOption(option);
+    setActiveProductType(productType);
+
+    const idx = leftItems.findIndex(item => item.englishName === category);
+    if (idx !== -1) setActiveIndex(idx);
+
+    const queryStr = new URLSearchParams({
+      brand,
+      category,
+      product_type: productType,
+      option,
+    }).toString();
     setCosmeticSearchParams(queryStr);
   }, [location]);
 
   const { searchCosmeticList } = useCosmetic({ searchParams: cosmeticSearchParams });
-  console.log('cosmeticSearchParams')
-  console.log(cosmeticSearchParams)
-  console.log('searchCosmeticList')
-  console.log(searchCosmeticList)
 
   useEffect(() => {
-    
-    setCosmetics(searchCosmeticList)
+    setCosmetics(searchCosmeticList || []);
+  }, [searchCosmeticList]);
 
-  },[searchCosmeticList])
-
-  // 페이지 수 계산
   useEffect(() => {
     if (cosmetics && cosmetics.length > 0) {
-      const totalCosmetics = cosmetics.length;
-      setTotalPages(Math.ceil(totalCosmetics / cosmeticsPerPage));
+      setTotalPages(Math.ceil(cosmetics.length / cosmeticsPerPage));
     }
   }, [cosmetics]);
 
-  // 왼쪽 메뉴 클릭 시
+  const updateQueryParams = (updates = {}) => {
+    const params = new URLSearchParams(location.search);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+    });
+    navigate(`?${params.toString()}`);
+  };
+
   const handleLeftItemClick = (idx, item) => {
     setActiveIndex(idx);
     setActiveProductType("all");
-    navigate(`?brand=${selectedBrand}&category=${item.englishName}&product_type=all`);
+    updateQueryParams({ category: item.englishName, product_type: "all" });
   };
 
-  // 오른쪽 제품 클릭 시
   const handleRightItemClick = (item) => {
     const category = leftItems[activeIndex].englishName;
     setActiveProductType(item.englishName);
-    navigate(`?brand=${selectedBrand}&category=${category}&product_type=${item.englishName}`);
+    updateQueryParams({ category, product_type: item.englishName });
   };
 
-  // 랭킹/브랜드 선택 시
   const handleOptionSelect = (option) => {
-    const category = leftItems[activeIndex].englishName;
     setSelectedOption(option);
-    navigate(`?brand=${selectedBrand}&category=${category}&product_type=${activeProductType}&option=${option}`);
+    updateQueryParams({ option });
   };
 
   return (
@@ -184,12 +178,17 @@ const Category = () => {
           </div>
         </div>
       </div>
+
+      {/* 리스트 */}
       <div className="h-[900px] bg-gray-200 p-3 mt-2">
-         <CosmeticList cosmetics={cosmetics || []}/>
+        <CosmeticList cosmetics={cosmetics || []} />
       </div>
+
+      {/* 페이지네이션 */}
       <div className="h-[100px] bg-gray-200 p-3 mt-2">
-         <Pagination currentPage={currentPage} totalPages={totalPages}/>   
+        <Pagination currentPage={currentPage} totalPages={totalPages} />
       </div>
+
       {/* 모달 */}
       <RankingModal
         isOpen={isRankingModalOpen}
@@ -202,10 +201,10 @@ const Category = () => {
       <BrandModal
         isOpen={isBrandModalOpen}
         onClose={() => setIsBrandModalOpen(false)}
-        selectedBrand={selectedBrand}  // 초기 브랜드 값 전달
+        selectedBrand={selectedBrand}
         onSelectBrand={(brand) => {
           setSelectedBrand(brand);
-          handleOptionSelect(brand); // 브랜드 선택 후 업데이트
+          updateQueryParams({ brand });
           setIsBrandModalOpen(false);
         }}
       />
