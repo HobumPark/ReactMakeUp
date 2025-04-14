@@ -23,5 +23,8 @@ export { URLS };
 
 export const APIS = {
   popularCosmetics:(popularParams)=>`/api/v1/products.json?${popularParams}`, //
+  popularFace:(popularFace)=>`/api/v1/products.json?${popularFace}`, //
+  popularEye:(popularEye)=>`/api/v1/products.json?${popularEye}`, //
+  popularLip:(popularLip)=>`/api/v1/products.json?${popularLip}`, //
   searchCosmetics:(cosmeticSearchParams)=>`/api/v1/products.json?${cosmeticSearchParams}`, //
 }

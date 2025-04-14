@@ -7,6 +7,21 @@ export const fetchPopularCosmetics = async (popularParams) => {
   return await reqGet(url);
 };
 
+export const fetchPopularFace = async (popularFaceParams) => {
+  const url = `${APIS.popularFace(popularFaceParams)}`;
+  return await reqGet(url);
+};
+
+export const fetchPopularEye = async (popularEyeParams) => {
+  const url = `${APIS.popularEye(popularEyeParams)}`;
+  return await reqGet(url);
+};
+
+export const fetchPopularLip = async (popularLip) => {
+  const url = `${APIS.popularLip(popularLip)}`;
+  return await reqGet(url);
+};
+
 // 왼쪽 카테고리 메뉴 (영문명 추가)
 const cosmeticType = [
   { name: "face", list:["blusher","bronzer","foundation","brush"]},
