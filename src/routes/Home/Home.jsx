@@ -29,7 +29,7 @@ const Home = () => {
   console.log(popularEyelinerList)
 
   return (
-    <div className="w-10/10 h-[1500px] bg-gray-500">
+    <div className="w-10/10 h-[1500px] bg-gray-500 pt-2">
       {/* 인기 파운데이션 영역 */}
       <div className="bg-white rounded-lg shadow-md p-3 mb-3 mt-3">
         <h2 className="text-2xl font-bold mb-3 text-gray-800">🔥 인기 파운데이션</h2>

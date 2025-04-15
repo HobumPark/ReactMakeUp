@@ -26,20 +26,22 @@ const CosmeticView = () => {
         alt={cosmetic.name}
         className="w-full h-[400px] object-contain mb-4"
       />
-      
+
       {/* 가격, 평점, 평점 수 */}
-      <div className="mb-4">
+      <div className="bg-white p-4 rounded shadow mb-4">
         <p className="text-lg font-semibold">가격: {cosmetic.price}$</p>
         <p className="text-sm text-gray-500">평점: {rating} ({ratingCount}명)</p>
       </div>
 
       {/* 설명 */}
-      <p className="mb-4">{cosmetic.description}</p>
+      <div className="bg-white p-4 rounded shadow mb-4">
+        <p>{cosmetic.description}</p>
+      </div>
 
       {/* 색상 원형 표시 및 이름 추가 */}
       <div className="mt-4">
         <h3 className="font-semibold">색상</h3>
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 bg-white overflow-x-scroll">
           {cosmetic.product_colors?.map((color, idx) => (
             <div key={idx} className="flex items-center space-x-2">
               {/* 색상 원 */}
