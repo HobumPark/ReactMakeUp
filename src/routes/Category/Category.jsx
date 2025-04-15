@@ -89,11 +89,22 @@ const Category = () => {
     setCosmetics(searchCosmeticList || []);
   }, [searchCosmeticList]);
 
+  // Category 컴포넌트에서
   useEffect(() => {
     if (cosmetics && cosmetics.length > 0) {
       setTotalPages(Math.ceil(cosmetics.length / cosmeticsPerPage));
     }
   }, [cosmetics]);
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // 페이지네이션을 적용한 데이터를 얻기
+  const paginatedCosmetics = cosmetics.slice(
+    (currentPage - 1) * cosmeticsPerPage,
+    currentPage * cosmeticsPerPage
+  );
 
   const updateQueryParams = (updates = {}) => {
     const params = new URLSearchParams(location.search);
@@ -125,7 +136,7 @@ const Category = () => {
   };
 
   return (
-    <div className="w-full h-[1300px] bg-gray-500">
+    <div className="w-full bg-gray-500">
       {/* 상위 카테고리 */}
       <div className="w-full h-[50px] bg-gray-400 flex items-center justify-start px-4 space-x-4">
         {leftItems.map((item, idx) => (
@@ -180,13 +191,12 @@ const Category = () => {
       </div>
 
       {/* 리스트 */}
-      <div className="h-[900px] bg-gray-200 p-3 mt-2">
-        <CosmeticList cosmetics={cosmetics || []} />
+      <div className="bg-gray-200 p-3 mt-2">
+        <CosmeticList cosmetics={paginatedCosmetics || []} />
       </div>
-
       {/* 페이지네이션 */}
-      <div className="h-[100px] bg-gray-200 p-3 mt-2">
-        <Pagination currentPage={currentPage} totalPages={totalPages} />
+      <div className="h-[100px] bg-gray-200 p-3 mt-2 mb-2">
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePagination} />
       </div>
 
       {/* 모달 */}
