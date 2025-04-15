@@ -1,37 +1,30 @@
-import { fetchPopularCosmetics, fetchSearchCosmetics } from "../api/cosmetic";
+import { fetchSearchCosmetics} from "../api/cosmetic";
+import { fetchPopularFoundation, fetchPopularLipstick, fetchPopularEyeliner } from "../api/cosmetic";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useCosmetic = ({
-  popularParams,
-  popularFaceParams,
-  popularLipParams,
-  popularEyeParams,
+  popularFoundationParams,
+  popularLipstickParams,
+  popularEyelinerParams,
   searchParams,
 }) => {
-  const { data: popularFaceList } = useQuery({
-    queryKey: ["popularFaceParams", popularFaceParams],
-    queryFn: () => fetchPopularFace(popularFaceParams),
+  const { data: popularFoundationList } = useQuery({
+    queryKey: ["popularFoundationParams", popularFoundationParams],
+    queryFn: () => fetchPopularFoundation(popularFoundationParams),
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
   });
 
-  const { data: popularLipList } = useQuery({
-    queryKey: ["popularLipParams", popularLipParams],
-    queryFn: () => fetchPopularLip(popularLipParams),
+  const { data: popularLipstickList } = useQuery({
+    queryKey: ["popularLipstickParams", popularLipstickParams],
+    queryFn: () => fetchPopularLipstick(popularLipstickParams),
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
   });
 
-  const { data: popularEyeList } = useQuery({
-    queryKey: ["popularEyeParams", popularEyeParams],
-    queryFn: () => fetchPopularEye(popularEyeParams),
-    staleTime: 1000 * 60 * 5,
-    cacheTime: 1000 * 60 * 10,
-  });
-
-  const { data: popularCosmeticList } = useQuery({
-    queryKey: ["popularParams", popularParams],
-    queryFn: () => fetchPopularCosmetics(popularParams),
+  const { data: popularEyelinerList } = useQuery({
+    queryKey: ["popularEyelinerParams", popularEyelinerParams],
+    queryFn: () => fetchPopularEyeliner(popularEyelinerParams),
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
   });
@@ -44,10 +37,9 @@ const useCosmetic = ({
   });
 
   return {
-    popularCosmeticList,
-    popularFaceList,
-    popularLipList,
-    popularEyeList,
+    popularFoundationList,
+    popularLipstickList,
+    popularEyelinerList,
     searchCosmeticList,
   };
 };

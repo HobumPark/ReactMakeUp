@@ -2,23 +2,18 @@ import { URLS, APIS } from "../config/urls";
 import { reqGet } from "../utils/request";
 import queryString from 'query-string';
 
-export const fetchPopularCosmetics = async (popularParams) => {
-  const url = `${APIS.popularCosmetics(popularParams)}`;
+export const fetchPopularFoundation = async (popularFoundationParams) => {
+  const url = `${APIS.popularFoundation(popularFoundationParams)}`;
   return await reqGet(url);
 };
 
-export const fetchPopularFace = async (popularFaceParams) => {
-  const url = `${APIS.popularFace(popularFaceParams)}`;
+export const fetchPopularEyeliner = async (popularEyelinerParams) => {
+  const url = `${APIS.popularEyeliner(popularEyelinerParams)}`;
   return await reqGet(url);
 };
 
-export const fetchPopularEye = async (popularEyeParams) => {
-  const url = `${APIS.popularEye(popularEyeParams)}`;
-  return await reqGet(url);
-};
-
-export const fetchPopularLip = async (popularLip) => {
-  const url = `${APIS.popularLip(popularLip)}`;
+export const fetchPopularLipstick = async (popularLiplinerParams) => {
+  const url = `${APIS.popularLipstick(popularLiplinerParams)}`;
   return await reqGet(url);
 };
 
