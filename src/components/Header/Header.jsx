@@ -39,6 +39,7 @@ const Header = () => {
 
   // 경로가 category일 때만 ul > li를 렌더링하지 않음
   const isCategoryPage = location.pathname.includes('category');
+  const isProductPage = location.pathname.includes('product');
 
   return (
     <header className="w-7/10 h-[100px] mx-auto bg-gray-200">
@@ -75,7 +76,7 @@ const Header = () => {
             </button>
           </div>
       </div>
-      {!isCategoryPage && (
+      { (!isCategoryPage && !isProductPage) && (
         <div className="flex w-full h-[50%] bg-gray-200">
           <ul className="flex flex-row justify-start w-full p-4 space-x-4">
             {menuItems.map(({ label, href }) => {
