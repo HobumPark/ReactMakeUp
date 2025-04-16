@@ -1,5 +1,5 @@
 [[redirects]]
   from = "/api/v1/*"
-  to = "http://makeup-api.herokuapp.com"
+  to = "http://makeup-api.herokuapp.com/:splat"
   status = 200
   force = true
