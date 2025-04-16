@@ -1,5 +1,5 @@
 [[redirects]]
-  from = "/proxy/*"
+  from = "/api/v1/*"
   to = "http://makeup-api.herokuapp.com"
   status = 200
   force = true
