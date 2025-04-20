@@ -1,9 +1,5 @@
-[build]
-  command = "npm run build"
-  publish = "dist"
-
 [[redirects]]
-  from = "/api/v1/products.json?*"
-  to = "http://makeup-api.herokuapp.com/:splat"
-  status = 200
-  force = true
+from = "/api/v1/*"
+to = "http://makeup-api.herokuapp.com/api/v1/:splat"
+status = 200
+force = true
