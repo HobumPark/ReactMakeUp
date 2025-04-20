@@ -3,7 +3,7 @@
   publish = "dist"
 
 [[redirects]]
-  from = "/api/v1/*"
+  from = "/api/v1/products.json?*"
   to = "http://makeup-api.herokuapp.com/:splat"
   status = 200
   force = true
